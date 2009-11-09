@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="workflow-web" default="build-module" basedir=".">
+
+	<property name="project.dir" location="../.."/>
+	<property name="root.dir" location="${project.dir}/.."/>
+	
+	<property name="module.name" value="web"/>
+	<property name="module.jar" value="35workflow-web.jar"/>
+
+	<import file="${root.dir}/build-inc-mod.xml"/>
+	<property file="${root.dir}/build.properties"/>
+
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <fileset id="cuba-jars" dir="${root.dir}/cuba/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <path id="compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <fileset refid="cuba-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
+    </path>
+
+    <path id="test-compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <fileset refid="cuba-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
+    </path>
+
+    <target name="build-module" depends="base-mod.build-module">
+        <mkdir dir="${build.dir}/conf"/>
+        <copy todir="${build.dir}/conf">
+            <fileset dir="src-conf" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="deploy-module" depends="base-mod.deploy-module">
+        <copy todir="${jboss.dir}/server/default/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="deploy4test-module" depends="base-mod.deploy4test-module">
+        <copy todir="${jboss-embedded.dir}/bootstrap/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
+    </target>
+
+</project>

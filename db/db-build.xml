@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="workflow-db">
+    
+    <property name="project.dir" location=".."/>
+    <property name="root.dir" location="${project.dir}/.."/>
+
+    <import file="${root.dir}/build-inc-prj.xml"/>
+
+    <property file="${root.dir}/build.properties"/>
+    <property file="${project.dir}/local.build.properties"/>
+    <property file="${project.dir}/build.properties"/>
+
+    <property name="sql.dir" value="init/sql"/>
+
+    <path id="run-cp">
+        <fileset refid="server-lib-fs"/>
+    </path>
+
+    <target name="create-db">
+        <echo message="Workflow create-db: sql.dir=${sql.dir}"/>
+
+        <ant antfile="${root.dir}/cuba/db/db-build.xml" target="create-db" inheritall="false">
+            <property name="sql.dir" value="${sql.dir}"/>
+            <property name="sql.delimiter" value="^"/>
+            <property name="db.name" value="${db.name}"/>
+            <property name="db.driver" value="${db.driver}"/>
+            <property name="db.url" value="${db.url}"/>
+            <property name="db.user" value="${db.user}"/>
+            <property name="db.password" value="${db.password}"/>
+        </ant>
+
+        <sql classpathref="run-cp" src="${sql.dir}/create-db.sql" delimiter="^"
+            driver="${db.driver}"
+            url="${db.url}"
+            userid="${db.user}" password="${db.password}"
+            autocommit="true"/>
+    </target>
+
+</project>

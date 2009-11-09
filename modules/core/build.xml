@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="workflow-core" default="build-module" basedir=".">
+
+	<property name="project.dir" location="../.."/>
+	<property name="root.dir" location="${project.dir}/.."/>
+	
+	<property name="module.name" value="core"/>
+	<property name="module.jar" value="30workflow-core.jar"/>
+    <property name="module.global.jar" value="workflow-core-global.jar"/>
+    <property name="module.service.xml" value="31workflow-core-service.xml"/>
+
+    <import file="${root.dir}/build-inc-mod.xml"/>
+	<property file="${root.dir}/build.properties"/>
+
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <fileset id="cuba-jars" dir="${root.dir}/cuba/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <path id="compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <fileset refid="cuba-jars"/>
+    </path>
+
+    <path id="test-compile-cp">
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+        <fileset refid="test-lib-fs"/>
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <fileset refid="cuba-jars"/>
+    </path>
+
+    <path id="enhance-cp">
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <fileset refid="cuba-jars"/>
+    </path>
+
+    <target name="clean-module" depends="base-mod.clean-module">
+		<delete file="${build.dir}/${module.global.jar}"/>
+        <delete file="${build.dir}/${module.service.xml}"/>
+    </target>
+
+    <target name="compile-module" depends="base-mod.compile-module">
+        <echo>==> enhancing ${project.dir} ${module.name}</echo>
+        <java classpathref="enhance-cp"
+              classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
+            <arg value="-properties"/>
+            <arg value="META-INF/workflow-persistence.xml"/>
+        </java>
+    </target>
+
+    <target name="build-module" depends="compile-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+        <mkdir dir="${build.dir}"/>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
+            <exclude name="**/entity/*"/>
+            <exclude name="**/global/*"/>
+        </jar>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.global.jar}">
+            <include name="**/entity/*"/>
+            <include name="**/global/*"/>
+        </jar>
+        <copy file="src-serv/${module.service.xml}" todir="${build.dir}"/>
+        <mkdir dir="${build.dir}/conf"/>
+        <copy todir="${build.dir}/conf">
+            <fileset dir="src-conf" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="deploy-module" depends="base-mod.deploy-module">
+        <copy file="${build.dir}/${module.global.jar}" todir="${jboss.deploy.dir}"/>
+        <copy file="${build.dir}/${module.service.xml}" todir="${jboss.deploy.dir}"/>
+    </target>
+
+    <target name="deploy4test-module" depends="base-mod.deploy4test-module">
+        <copy file="${build.dir}/${module.global.jar}" todir="${jboss-embedded.deploy.dir}"/>
+        <copy file="${build.dir}/${module.service.xml}" todir="${jboss-embedded.deploy.dir}"/>
+        <copy todir="${jboss-embedded.dir}/bootstrap/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="undeploy-module" depends="base-mod.undeploy-module">
+        <delete file="${jboss.dir}/server/default/deploy/${module.global.jar}"/>
+        <delete file="${jboss.dir}/server/default/deploy/${module.service.xml}"/>
+    </target>
+
+</project>

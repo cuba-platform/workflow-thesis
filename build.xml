@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="workflow" basedir=".">
+
+	<property name="root.dir" location=".."/>
+
+	<import file="${root.dir}/build-inc-prj.xml"/>
+	<property file="${root.dir}/build.properties"/>
+	<property file="lib.properties"/>
+
+	<target name="delegate">
+		<property name="target" value="noop" />
+        <ant dir="modules/core" target="${target}" inheritAll="false"/>
+        <ant dir="modules/web" target="${target}" inheritAll="false"/>
+        <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
+	</target>
+
+	<target name="clean">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="clean-module"/>
+		</antcall>
+	</target>
+		
+	<target name="install-lib">
+    </target>
+    
+	<target name="compile">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="compile-module"/>
+		</antcall>
+	</target>
+		
+	<target name="build">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="build-module"/>
+		</antcall>
+	</target>
+
+    <target name="deploy">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="deploy-module"/>
+        </antcall>
+    </target>
+
+    <target name="deploy4test">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="deploy4test-module"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="undeploy-module"/>
+        </antcall>
+    </target>
+
+    <target name="start">
+        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
+            <env key="NOPAUSE" value="true"/>
+            <arg line="/c start callAndExit.bat debug.bat -b0.0.0.0"/>
+        </exec>
+    </target>
+
+    <target name="stop">
+        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe">
+            <env key="NOPAUSE" value="true"/>
+            <arg line="/c start callAndExit.bat shutdown.bat -S"/>
+        </exec>
+    </target>
+
+    <target name="restart">
+        <parallel>
+            <antcall target="stop"/>
+            <antcall target="deploy"/>
+        </parallel>
+        <waitfor maxwait="6" maxwaitunit="second" checkevery="2" checkeveryunit="second">
+            <not>
+                <socket server="localhost" port="8787"/>
+            </not>
+        </waitfor>
+        <antcall target="start"/>
+    </target>
+
+    <target name="clean-build-deploy-start" depends="clean,build,deploy,start">
+    </target>
+
+    <target name="output">
+        <mkdir dir="${output.replace.dir}/deploy"/>
+        <mkdir dir="${output.replace.dir}/conf"/>
+        <mkdir dir="${output.merge.dir}/deploy"/>
+        <mkdir dir="${output.merge.dir}/conf"/>
+
+        <copy todir="${output.replace.dir}/deploy">
+            <fileset dir="build">
+                <include name="*.jar"/>
+                <include name="*.war"/>
+                <include name="31workflow-core-service.xml"/>
+            </fileset>
+        </copy>
+
+        <delete file="${output.replace.dir}/deploy/24cuba.war"/>
+
+        <copy todir="${output.merge.dir}/deploy">
+            <fileset dir="build">
+                <include name="adbins-ds.xml"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${output.replace.dir}/conf">
+            <fileset dir="build/conf">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+    </target>
+
+</project>

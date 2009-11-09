@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <servlet>
+        <servlet-name>cuba_servlet</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet
+        </servlet-class>
+        <init-param>
+            <param-name>application</param-name>
+            <param-value>com.haulmont.cuba.web.App</param-value>
+        </init-param>
+        <init-param>
+            <param-name>widgetset</param-name>
+            <param-value>com.haulmont.cuba.toolkit.gwt.WidgetSet</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>jr_image_servlet</servlet-name>
+        <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>cuba_servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>jr_image_servlet</servlet-name>
+        <url-pattern>/jasperreport/image</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>CubaHttpFilter</filter-name>
+        <filter-class>com.haulmont.cuba.web.sys.CubaHttpFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CubaHttpFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>
