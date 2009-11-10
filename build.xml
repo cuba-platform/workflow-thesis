@@ -34,10 +34,7 @@
 
         <!-- install jBPM -->
         <ext:install-files todir="${jboss.default.dir}"
-                       dir="${jbpm.repo}/install/src/jboss/config.common" includes="**/*"/>
-
-        <ext:install-files todir="${jboss.default.dir}"
-                       dir="${jbpm.repo}/install/src/jboss/config.jboss5" includes="**/*"/>
+                       dir="${jbpm.repo}/install/src/jboss/config" includes="**/*"/>
 
         <ext:install-file file="${jbpm.repo}/install/src/cfg/hibernate/datasource/${database}.hibernate.cfg.xml"
                       tofile="${jboss.deploy.dir}/jbpm/jbpm-service.sar/jbpm.hibernate.cfg.xml"/>
@@ -48,14 +45,11 @@
         <ext:install-files todir="${jboss.dir}/common/lib"
                        dir="${jbpm.repo}" includes="jbpm.jar"/>
 
-        <ext:install-files todir="${jboss.deploy.dir}/jbpm/jbpm-service.sar"
-                       dir="${jbpm.repo}/lib" includes="jbpm-spi.jar"/>
+        <ext:install-files todir="${jboss.dir}/common/lib"
+                       dir="${jbpm.repo}/lib" includes="jbpm-jboss.jar"/>
 
         <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
                        dir="${jbpm.repo}/lib" includes="jbpm-jboss5.jar"/>
-
-        <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
-                       dir="${jbpm.repo}/lib" includes="jbpm-spi.jar"/>
     </target>
     
 	<target name="compile">
