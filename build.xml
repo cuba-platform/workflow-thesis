@@ -8,6 +8,9 @@
 	<property file="${root.dir}/build.properties"/>
 	<property file="lib.properties"/>
 
+    <property name="jboss.repo" value="${repository.dir}/appservers/jboss-${jboss.version}"/>
+    <property name="jbpm.repo" value="${repository.dir}/appservers/jbpm-${jbpm.version}"/>
+
 	<target name="delegate">
 		<property name="target" value="noop" />
         <ant dir="modules/core" target="${target}" inheritAll="false"/>
@@ -22,6 +25,37 @@
 	</target>
 		
 	<target name="install-lib">
+        <!-- install JMS -->
+        <ext:install-files todir="${jboss.deploy.dir}"
+                       dir="${jboss.repo}-jms/server/default/deploy" includes="**/*"/>
+
+        <replace dir="${jboss.deploy.dir}/messaging" includes="**/*.xml"
+                 token="DefaultDS" value="${datasource.name}"/>
+
+        <!-- install jBPM -->
+        <ext:install-files todir="${jboss.default.dir}"
+                       dir="${jbpm.repo}/install/src/jboss/config.common" includes="**/*"/>
+
+        <ext:install-files todir="${jboss.default.dir}"
+                       dir="${jbpm.repo}/install/src/jboss/config.jboss5" includes="**/*"/>
+
+        <ext:install-file file="${jbpm.repo}/install/src/cfg/hibernate/datasource/${database}.hibernate.cfg.xml"
+                      tofile="${jboss.deploy.dir}/jbpm/jbpm-service.sar/jbpm.hibernate.cfg.xml"/>
+
+        <replace dir="${jboss.deploy.dir}/jbpm" includes="**/*.xml"
+                 token="JbpmDS" value="${datasource.name}"/>
+
+        <ext:install-files todir="${jboss.dir}/common/lib"
+                       dir="${jbpm.repo}" includes="jbpm.jar"/>
+
+        <ext:install-files todir="${jboss.deploy.dir}/jbpm/jbpm-service.sar"
+                       dir="${jbpm.repo}/lib" includes="jbpm-spi.jar"/>
+
+        <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
+                       dir="${jbpm.repo}/lib" includes="jbpm-jboss5.jar"/>
+
+        <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
+                       dir="${jbpm.repo}/lib" includes="jbpm-spi.jar"/>
     </target>
     
 	<target name="compile">

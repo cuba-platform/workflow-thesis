@@ -21,7 +21,7 @@
 
         <ant antfile="${root.dir}/cuba/db/db-build.xml" target="create-db" inheritall="false">
             <property name="sql.dir" value="${sql.dir}"/>
-            <property name="sql.delimiter" value="^"/>
+            <property name="sql.delimiter" value="${sql.delimiter}"/>
             <property name="db.name" value="${db.name}"/>
             <property name="db.driver" value="${db.driver}"/>
             <property name="db.url" value="${db.url}"/>
@@ -29,7 +29,13 @@
             <property name="db.password" value="${db.password}"/>
         </ant>
 
-        <sql classpathref="run-cp" src="${sql.dir}/create-db.sql" delimiter="^"
+        <sql classpathref="run-cp" src="${sql.dir}/jbpm.create-db.sql" delimiter=";"
+            driver="${db.driver}"
+            url="${db.url}"
+            userid="${db.user}" password="${db.password}"
+            autocommit="true"/>
+
+        <sql classpathref="run-cp" src="${sql.dir}/create-db.sql" delimiter="${sql.delimiter}"
             driver="${db.driver}"
             url="${db.url}"
             userid="${db.user}" password="${db.password}"
