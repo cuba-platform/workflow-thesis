@@ -4,11 +4,15 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 09.11.2009 15:48:15
+ * Created: 10.11.2009 12:10:36
  *
  * $Id$
  */
 package com.haulmont.workflow.core.app;
 
-public class WorkflowDeployer implements WorkflowDeployerMBean {
+import org.jbpm.api.ProcessEngine;
+
+public interface WfEngineAPI {
+
+    ProcessEngine getProcessEngine();
 }

@@ -4,13 +4,11 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 09.11.2009 15:47:12
+ * Created: 09.11.2009 15:48:15
  *
  * $Id$
  */
 package com.haulmont.workflow.core.app;
 
-public interface WorkflowDeployerMBean {
-
-    String OBJECT_NAME = "haulmont.workflow:service=WorkflowDeployer";
+public class WfDeployer implements WfDeployerMBean {
 }

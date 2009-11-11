@@ -3,8 +3,13 @@
                      "-//JBoss//DTD MBean Service 3.2//EN"
                      "http://www.jboss.org/j2ee/dtd/jboss-service_3_2.dtd">
 <server>
-    <mbean code="com.haulmont.workflow.core.app.WorkflowDeployer"
-           name="haulmont.workflow:service=WorkflowDeployer">
+    <mbean code="com.haulmont.workflow.core.app.WfEngine"
+           name="haulmont.workflow:service=WfEngine">
         <depends>haulmont.cuba:service=CubaDeployer</depends>
+    </mbean>
+
+    <mbean code="com.haulmont.workflow.core.app.WfDeployer"
+           name="haulmont.workflow:service=WfDeployer">
+        <depends>haulmont.workflow:service=WfEngine</depends>
     </mbean>
 </server>

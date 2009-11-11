@@ -50,6 +50,14 @@
 
         <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
                        dir="${jbpm.repo}/lib" includes="jbpm-jboss5.jar"/>
+
+        <copy file="${jboss.dir}/common/lib/jbpm.jar" todir="${lib.server.dir}"/>
+        <ext:install-file file="${jbpm.repo}/jbpm-src.zip"
+                      tofile="${lib.server.dir}/src/jbpm-src.zip"/>
+
+        <!-- install libs -->
+        <ext:install-jboss-lib name="hibernate-core" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.server.dir}"/>
     </target>
     
 	<target name="compile">
@@ -67,12 +75,6 @@
     <target name="deploy">
         <antcall target="delegate" inheritAll="false">
             <param name="target" value="deploy-module"/>
-        </antcall>
-    </target>
-
-    <target name="deploy4test">
-        <antcall target="delegate" inheritAll="false">
-            <param name="target" value="deploy4test-module"/>
         </antcall>
     </target>
 
@@ -101,7 +103,7 @@
             <antcall target="stop"/>
             <antcall target="deploy"/>
         </parallel>
-        <waitfor maxwait="6" maxwaitunit="second" checkevery="2" checkeveryunit="second">
+        <waitfor maxwait="10" maxwaitunit="second" checkevery="2" checkeveryunit="second">
             <not>
                 <socket server="localhost" port="8787"/>
             </not>
