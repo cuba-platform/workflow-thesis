@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process name="New Process 1">
+
+  <start name="StartEvent_1" g="75,91,48,48" >
+    <transition name="SequenceFlow_1" to="TestActivity"/>
+  </start>
+
+  <java name="TestActivity" class="com.haulmont.workflow.core.app.action.TestAction"
+        method="run" var="" g="240,75,100,80" myattr="some value">
+	<myelement>aaaaaa</myelement>
+    <transition name="SequenceFlow_2" to="EndEvent_1"/>
+  </java>
+
+  <end name="EndEvent_1" g="474,90,48,48" />
+
+</process>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
-    <persistence-unit name="workflow" transaction-type="JTA">
+    <persistence-unit name="docflow" transaction-type="JTA">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <jta-data-source>java:/CubaDS</jta-data-source>
 
@@ -26,7 +26,12 @@
 
         <class>com.haulmont.workflow.core.entity.Card</class>
         <class>com.haulmont.workflow.core.entity.Attachment</class>
-        
+
+        <class>com.haulmont.docflow.entity.DfRole</class>
+        <class>com.haulmont.docflow.entity.DfUserRole</class>
+        <class>com.haulmont.docflow.entity.Doc</class>
+        <class>com.haulmont.docflow.entity.DocRole</class>
+
         <properties>
             <property name="openjpa.ManagedRuntime"
                       value="org.apache.openjpa.ee.JNDIManagedRuntime"/>

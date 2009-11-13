@@ -48,10 +48,4 @@
         </copy>
     </target>
 
-    <target name="deploy4test-module" depends="base-mod.deploy4test-module">
-        <copy todir="${jboss-embedded.dir}/bootstrap/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
-        </copy>
-    </target>
-
 </project>

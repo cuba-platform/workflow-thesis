@@ -177,6 +177,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/_root.iml" filepath="$PROJECT_DIR$/_root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/dfcore/dfcore.iml" filepath="$PROJECT_DIR$/modules/dfcore/dfcore.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
@@ -274,6 +275,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jbpm.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/hibernate-core.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3-ext-api.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/el-api.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/juel.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

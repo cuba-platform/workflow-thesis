@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Konstantin Krivopustov
+ * Created: 13.11.2009 11:04:50
+ *
+ * $Id$
+ */
+package com.haulmont.workflow.core.entity;
+
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import java.util.Date;
+
+@MappedSuperclass
+public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
+
+    private static final long serialVersionUID = -6180254942462308853L;
+
+    @Column(name = "UPDATE_TS")
+    protected Date updateTs;
+
+    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    protected String updatedBy;
+
+    @Column(name = "DELETE_TS")
+    protected Date deleteTs;
+
+    @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    protected String deletedBy;
+
+    public Date getUpdateTs() {
+        return updateTs;
+    }
+
+    public void setUpdateTs(Date updateTs) {
+        this.updateTs = updateTs;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Boolean isDeleted() {
+        return deleteTs != null;
+    }
+
+    public Date getDeleteTs() {
+        return deleteTs;
+    }
+
+    public void setDeleteTs(Date deleteTs) {
+        this.deleteTs = deleteTs;
+    }
+
+    public String getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+}

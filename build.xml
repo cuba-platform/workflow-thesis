@@ -16,6 +16,7 @@
         <ant dir="modules/core" target="${target}" inheritAll="false"/>
         <ant dir="modules/web" target="${target}" inheritAll="false"/>
         <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
+        <ant dir="modules/dfcore" target="${target}" inheritAll="false"/>
 	</target>
 
 	<target name="clean">
@@ -46,18 +47,21 @@
                        dir="${jbpm.repo}" includes="jbpm.jar"/>
 
         <ext:install-files todir="${jboss.dir}/common/lib"
-                       dir="${jbpm.repo}/lib" includes="jbpm-jboss.jar"/>
+                       dir="${jbpm.repo}/lib" includes="**/*"/>
 
         <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
                        dir="${jbpm.repo}/lib" includes="jbpm-jboss5.jar"/>
 
         <copy file="${jboss.dir}/common/lib/jbpm.jar" todir="${lib.server.dir}"/>
+        <copy file="${jboss.dir}/common/lib/juel.jar" todir="${lib.server.dir}"/>
+
         <ext:install-file file="${jbpm.repo}/jbpm-src.zip"
                       tofile="${lib.server.dir}/src/jbpm-src.zip"/>
 
         <!-- install libs -->
         <ext:install-jboss-lib name="hibernate-core" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
     </target>
     
 	<target name="compile">

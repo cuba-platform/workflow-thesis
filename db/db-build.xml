@@ -40,6 +40,12 @@
             url="${db.url}"
             userid="${db.user}" password="${db.password}"
             autocommit="true"/>
+
+        <sql classpathref="run-cp" src="${sql.dir}/df.create-db.sql" delimiter="${sql.delimiter}"
+            driver="${db.driver}"
+            url="${db.url}"
+            userid="${db.user}" password="${db.password}"
+            autocommit="true"/>
     </target>
 
 </project>

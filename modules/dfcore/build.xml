@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="workflow-core" default="build-module" basedir=".">
+	name="docflow-core" default="build-module" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
 	
-	<property name="module.name" value="core"/>
-	<property name="module.jar" value="30workflow-core.jar"/>
-    <property name="module.global.jar" value="workflow-core-global.jar"/>
-    <property name="module.service.xml" value="31workflow-core-service.xml"/>
+	<property name="module.name" value="dfcore"/>
+	<property name="module.jar" value="40docflow-core.jar"/>
+    <property name="module.global.jar" value="docflow-core-global.jar"/>
+    <property name="module.service.xml" value="41docflow-core-service.xml"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -26,6 +26,7 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
     </path>
 
     <path id="test-compile-cp">
@@ -35,6 +36,7 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
     </path>
 
     <path id="enhance-cp">
@@ -43,6 +45,7 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
     </path>
 
     <target name="clean-module" depends="base-mod.clean-module">
@@ -55,7 +58,7 @@
         <java classpathref="enhance-cp"
               classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
             <arg value="-properties"/>
-            <arg value="META-INF/workflow-persistence.xml"/>
+            <arg value="META-INF/docflow-persistence.xml"/>
         </java>
     </target>
 

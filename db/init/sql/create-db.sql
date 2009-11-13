@@ -1,6 +1,4 @@
-------------------------------------------------------------------------------------------------------------
-
-create table WF_PROCESS_DEF (
+create table WF_CARD (
     ID varchar(36),
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -9,6 +7,5 @@ create table WF_PROCESS_DEF (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    NAME varchar(255),
     primary key (ID)
 );

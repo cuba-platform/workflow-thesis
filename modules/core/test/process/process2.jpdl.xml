@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process name="New Process 2">
+
+    <start name="StartEvent_1" g="75,91,48,48">
+        <transition name="SequenceFlow_1" to="review"/>
+    </start>
+
+    <task name="review" assignee="testuser">
+        <transition to="EndEvent_1"/>
+    </task>
+
+    <end name="EndEvent_1" g="474,90,48,48"/>
+
+</process>
