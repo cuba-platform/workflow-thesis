@@ -15,7 +15,7 @@
 		<property name="target" value="noop" />
         <ant dir="modules/core" target="${target}" inheritAll="false"/>
         <ant dir="modules/web" target="${target}" inheritAll="false"/>
-        <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
+        <!--<ant dir="modules/web-war" target="${target}" inheritAll="false"/>-->
         <ant dir="modules/dfcore" target="${target}" inheritAll="false"/>
 	</target>
 

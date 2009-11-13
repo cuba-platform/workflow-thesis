@@ -36,6 +36,7 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars"/>
+        <pathelement location="${test.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/core"/>
     </path>
 
