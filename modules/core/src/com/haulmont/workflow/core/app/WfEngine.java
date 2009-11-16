@@ -26,8 +26,15 @@ import java.util.Set;
 
 public class WfEngine implements WfEngineMBean, WfEngineAPI {
 
+    private volatile ProcessEngine processEngine;
+
     public WfEngineAPI getAPI() {
         return this;
+    }
+
+    public String getJbpmConfigName() {
+        String name = System.getProperty(JBPM_CFG_NAME_PROP);
+        return name == null ? DEF_JBPM_CFG_NAME : name;
     }
 
     public String deployJpdlXml(String fileName) {
@@ -117,11 +124,15 @@ public class WfEngine implements WfEngineMBean, WfEngineAPI {
     }
 
     public ProcessEngine getProcessEngine() {
-        try {
-            ProcessEngine pe = (ProcessEngine) Locator.getJndiContext().lookup("java:/ProcessEngine");
-            return pe;
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
+        if (processEngine == null) {
+            synchronized (this) {
+                if (processEngine == null) {
+                    processEngine = new Configuration()
+                            .setResource(getJbpmConfigName())
+                            .buildProcessEngine();
+                }
+            }
         }
+        return processEngine;
     }
 }

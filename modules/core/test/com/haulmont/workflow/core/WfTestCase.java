@@ -19,6 +19,6 @@ public abstract class WfTestCase extends CubaTestCase {
 
     @Override
     protected void beforeInitEjb() throws Exception {
-        ProcessEngine processEngine = new Configuration().buildProcessEngine();
+//        ProcessEngine processEngine = new Configuration().buildProcessEngine();
     }
 }

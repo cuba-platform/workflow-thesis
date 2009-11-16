@@ -14,7 +14,13 @@ public interface WfEngineMBean {
 
     String OBJECT_NAME = "haulmont.workflow:service=WfEngine";
 
+    String JBPM_CFG_NAME_PROP = "cuba.jbpmCfgName";
+
+    String DEF_JBPM_CFG_NAME = "META-INF/wf.jbpm.cfg.xml";
+
     WfEngineAPI getAPI();
+
+    String getJbpmConfigName();
 
     String deployJpdlXml(String fileName);
 

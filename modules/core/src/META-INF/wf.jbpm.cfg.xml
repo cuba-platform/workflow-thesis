@@ -2,7 +2,7 @@
 
 <jbpm-configuration jndi-name="java:/ProcessEngine">
 
-  <import resource="jbpm.default.cfg.xml" />
+  <import resource="META-INF/wf.jbpm.default.cfg.xml" />
   <import resource="jbpm.businesscalendar.cfg.xml" />
   <import resource="jbpm.tx.jta.cfg.xml" />
   <import resource="jbpm.jpdl.cfg.xml" />

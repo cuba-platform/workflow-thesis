@@ -26,42 +26,14 @@
 	</target>
 		
 	<target name="install-lib">
-        <!-- install JMS -->
-        <ext:install-files todir="${jboss.deploy.dir}"
-                       dir="${jboss.repo}-jms/server/default/deploy" includes="**/*"/>
-
-        <replace dir="${jboss.deploy.dir}/messaging" includes="**/*.xml"
-                 token="DefaultDS" value="${datasource.name}"/>
-
-        <!-- install jBPM -->
-        <ext:install-files todir="${jboss.default.dir}"
-                       dir="${jbpm.repo}/install/src/jboss/config" includes="**/*"/>
-
-        <ext:install-file file="${jbpm.repo}/install/src/cfg/hibernate/datasource/${database}.hibernate.cfg.xml"
-                      tofile="${jboss.deploy.dir}/jbpm/jbpm-service.sar/jbpm.hibernate.cfg.xml"/>
-
-        <replace dir="${jboss.deploy.dir}/jbpm" includes="**/*.xml"
-                 token="JbpmDS" value="${datasource.name}"/>
-
-        <ext:install-files todir="${jboss.dir}/common/lib"
-                       dir="${jbpm.repo}" includes="jbpm.jar"/>
-
-        <ext:install-files todir="${jboss.dir}/common/lib"
-                       dir="${jbpm.repo}/lib" includes="**/*"/>
-
-        <ext:install-files todir="${jboss.default.dir}/deployers/jbpm.deployer"
-                       dir="${jbpm.repo}/lib" includes="jbpm-jboss5.jar"/>
-
-        <copy file="${jboss.dir}/common/lib/jbpm.jar" todir="${lib.server.dir}"/>
-        <copy file="${jboss.dir}/common/lib/juel.jar" todir="${lib.server.dir}"/>
-
-        <ext:install-file file="${jbpm.repo}/jbpm-src.zip"
-                      tofile="${lib.server.dir}/src/jbpm-src.zip"/>
-
-        <!-- install libs -->
+        <ext:install-lib name="jbpm" version="${jbpm.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="juel" version="${juel.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="hibernate-core" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <!-- init local jboss with jbpm -->
+        <copy file="${lib.server.dir}/jbpm-${jbpm.version}.jar" todir="${jboss.dir}/common/lib"/>
+        <copy file="${lib.server.dir}/juel-${juel.version}.jar" todir="${jboss.dir}/common/lib"/>
     </target>
     
 	<target name="compile">
