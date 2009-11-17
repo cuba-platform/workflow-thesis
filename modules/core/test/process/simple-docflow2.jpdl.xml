@@ -9,17 +9,21 @@
         <transition name="ToAgreement" to="Agreement"/>
     </state>
 
-    <task name="Agreement">
-        <assignment-handler class="com.haulmont.docflow.process.AgreementAssignmentHandler"/>
+    <custom name="Agreement" class="com.haulmont.workflow.core.proc.Assigner">
+        <property name="assignee">
+            <string value="admin"/>
+        </property>
         <transition name="Ok" to="Approval"/>
         <transition name="NotOk" to="New"/>
-    </task>
+    </custom>
 
-    <task name="Approval" assignee="approvaluser">
-        <!--<assignment-handler class="com.haulmont.docflow.process.AgreementAssignmentHandler"/>-->
+    <custom name="Approval" class="com.haulmont.workflow.core.proc.Assigner">
+        <property name="assignee">
+            <string value="admin"/>
+        </property>
         <transition name="Ok" to="End"/>
         <transition name="NotOk" to="New"/>
-    </task>
+    </custom>
 
     <end name="End"/>
 

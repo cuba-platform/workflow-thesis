@@ -10,21 +10,27 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.ManagementBean;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Proc;
+import static com.google.common.base.Preconditions.checkArgument;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jbpm.api.*;
 
-import javax.naming.NamingException;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-public class WfEngine implements WfEngineMBean, WfEngineAPI {
+public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
 
     private volatile ProcessEngine processEngine;
 
@@ -38,8 +44,11 @@ public class WfEngine implements WfEngineMBean, WfEngineAPI {
     }
 
     public String deployJpdlXml(String fileName) {
+        Transaction tx = Locator.createTransaction();
         try {
+            login();
             RepositoryService rs = getProcessEngine().getRepositoryService();
+
             NewDeployment deployment = rs.createDeployment();
             File file = new File(fileName);
             if (!file.exists())
@@ -48,9 +57,31 @@ public class WfEngine implements WfEngineMBean, WfEngineAPI {
             deployment.setName(file.getName());
             deployment.setTimestamp(file.lastModified());
             deployment.deploy();
+
+            ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
+            ProcessDefinition pd = pdq.uniqueResult();
+
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
+            q.setParameter(1, pd.getKey());
+            List<Proc> processes = q.getResultList();
+            if (processes.isEmpty()) {
+                Proc proc = new Proc();
+                proc.setName(pd.getName());
+                proc.setJbpmProcessKey(pd.getKey());
+                em.persist(proc);
+            } else {
+                Proc proc = processes.get(0);
+                proc.setName(pd.getName());
+            }
+
+            tx.commit();
             return "Deployed: " + deployment;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
+            logout();
         }
     }
 
@@ -134,5 +165,70 @@ public class WfEngine implements WfEngineMBean, WfEngineAPI {
             }
         }
         return processEngine;
+    }
+
+    public List<Assignment> getUserAssignments(UUID userId) {
+        checkArgument(userId != null, "userId is null");
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query q = em.createQuery("select a from wf$Assignment a where a.user.id = ?1 and a.finished is null");
+            q.setParameter(1, userId);
+            List<Assignment> list = q.getResultList();
+
+            tx.commit();
+            return list;
+        } finally {
+            tx.end();
+        }
+    }
+
+    public List<Assignment> getUserAssignments(String userLogin) {
+        checkArgument(!StringUtils.isBlank(userLogin), "userLogin is blank");
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query q = em.createQuery("select a from wf$Assignment a where a.user.loginLowerCase = ?1 and a.finished is null");
+            q.setParameter(1, userLogin.toLowerCase());
+            List<Assignment> list = q.getResultList();
+
+            tx.commit();
+            return list;
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void finishAssignment(UUID assignmentId) {
+        finishAssignment(assignmentId, null);
+    }
+
+    public void finishAssignment(UUID assignmentId, String outcome) {
+        checkArgument(assignmentId != null, "assignmentId is null");
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Assignment assignment = em.find(Assignment.class, assignmentId);
+            if (assignment == null)
+                throw new RuntimeException("Assignment not found: " + assignmentId);
+
+            assignment.setFinished(TimeProvider.currentTimestamp());
+
+            ExecutionService es = getProcessEngine().getExecutionService();
+
+            ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());
+            Execution execution = pi.findActiveExecutionIn(assignment.getName());
+            if (execution == null)
+                throw new RuntimeException("No active execution in " + assignment.getName());
+
+            es.signalExecutionById(execution.getId(), outcome);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
     }
 }

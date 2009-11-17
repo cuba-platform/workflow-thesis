@@ -16,6 +16,14 @@
         <fileset refid="server-lib-fs"/>
     </path>
 
+    <target name="run-hsqldb">
+        <ant antfile="${root.dir}/cuba/db/db-build.xml" target="run-hsqldb" inheritall="false"/>
+    </target>
+
+    <target name="remove-db">
+        <ant antfile="${root.dir}/cuba/db/db-build.xml" target="remove-db" inheritall="false"/>
+    </target>
+
     <target name="create-db">
         <echo message="Workflow create-db: sql.dir=${sql.dir}"/>
 
@@ -47,5 +55,7 @@
             userid="${db.user}" password="${db.password}"
             autocommit="true"/>
     </target>
+
+    <target name="recreate-db" depends="remove-db, run-hsqldb, create-db"/>
 
 </project>

@@ -15,11 +15,14 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.Date;
 
-@MappedSuperclass
+@Entity(name = "wf$Card")
+@Table(name = "WF_CARD")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorValue("0")
 public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -6180254942462308853L;
@@ -35,6 +38,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     protected String deletedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_ID")
+    private Proc proc;
+
+    @Column(name = "JBPM_PROCESS_ID", length = 255)
+    private String jbpmProcessId;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -70,5 +80,21 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
+    }
+
+    public Proc getProc() {
+        return proc;
+    }
+
+    public void setProc(Proc proc) {
+        this.proc = proc;
+    }
+
+    public String getJbpmProcessId() {
+        return jbpmProcessId;
+    }
+
+    public void setJbpmProcessId(String jbpmProcessId) {
+        this.jbpmProcessId = jbpmProcessId;
     }
 }

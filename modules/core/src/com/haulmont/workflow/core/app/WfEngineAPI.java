@@ -10,9 +10,21 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.workflow.core.entity.Assignment;
 import org.jbpm.api.ProcessEngine;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface WfEngineAPI {
 
     ProcessEngine getProcessEngine();
+
+    List<Assignment> getUserAssignments(UUID userId);
+
+    List<Assignment> getUserAssignments(String userLogin);
+
+    void finishAssignment(UUID assignmentId);
+
+    void finishAssignment(UUID assignmentId, String outcome);
 }

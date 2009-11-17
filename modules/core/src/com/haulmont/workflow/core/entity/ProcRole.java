@@ -8,25 +8,35 @@
  *
  * $Id$
  */
-package com.haulmont.docflow.entity;
+package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
+import javax.persistence.*;
 
-@Entity(name = "df$Role")
-@Table(name = "DF_ROLE")
-public class DfRole extends StandardEntity {
+@Entity(name = "wf$ProcRole")
+@Table(name = "WF_PROC_ROLE")
+public class ProcRole extends StandardEntity {
 
     private static final long serialVersionUID = 8160964587888346590L;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROCESS_ID")
+    private Proc proc;
 
     @Column(name = "CODE", length = 50)
     private String code;
 
     @Column(name = "NAME", length = 100)
     private String name;
+
+    public Proc getProc() {
+        return proc;
+    }
+
+    public void setProc(Proc proc) {
+        this.proc = proc;
+    }
 
     public String getCode() {
         return code;

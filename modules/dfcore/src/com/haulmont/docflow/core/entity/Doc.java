@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.docflow.entity;
+package com.haulmont.docflow.core.entity;
 
 import com.haulmont.workflow.core.entity.Card;
 
@@ -18,19 +18,17 @@ import java.util.Set;
 
 @Entity(name = "df$Doc")
 @Table(name = "DF_DOC")
-@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorValue("1")
+@PrimaryKeyJoinColumn(name = "CARD_ID", referencedColumnName = "ID")
 public class Doc extends Card {
 
     private static final long serialVersionUID = 8152910192913195923L;
 
-    @Column(name = "DOC_NUM", length = 50)
+    @Column(name = "NUMBER", length = 50)
     private String docNum;
 
-    @Column(name = "DOC_DATE")
+    @Column(name = "DATE")
     private Date docDate;
-
-    @OneToMany(mappedBy = "doc", fetch = FetchType.LAZY)
-    private Set<DocRole> docRoles;
 
     public String getDocNum() {
         return docNum;
@@ -46,13 +44,5 @@ public class Doc extends Card {
 
     public void setDocDate(Date docDate) {
         this.docDate = docDate;
-    }
-
-    public Set<DocRole> getDocRoles() {
-        return docRoles;
-    }
-
-    public void setDocRoles(Set<DocRole> docRoles) {
-        this.docRoles = docRoles;
     }
 }

@@ -11,14 +11,12 @@
 package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.Locator;
-import org.jbpm.api.Configuration;
-import org.jbpm.api.ProcessEngine;
+import com.haulmont.cuba.core.PersistenceProvider;
 
 public abstract class WfTestCase extends CubaTestCase {
 
-    @Override
-    protected void beforeInitEjb() throws Exception {
-//        ProcessEngine processEngine = new Configuration().buildProcessEngine();
+    static {
+        System.setProperty(PersistenceProvider.PERSISTENCE_XML, "META-INF/workflow-persistence.xml");
+        System.setProperty(PersistenceProvider.PERSISTENCE_UNIT, "workflow");
     }
 }

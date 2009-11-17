@@ -24,13 +24,14 @@
         <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
 
+        <class>com.haulmont.workflow.core.entity.Proc</class>
+        <class>com.haulmont.workflow.core.entity.ProcRole</class>
         <class>com.haulmont.workflow.core.entity.Card</class>
+        <class>com.haulmont.workflow.core.entity.CardRole</class>
         <class>com.haulmont.workflow.core.entity.Attachment</class>
+        <class>com.haulmont.workflow.core.entity.Assignment</class>
 
-        <class>com.haulmont.docflow.entity.DfRole</class>
-        <class>com.haulmont.docflow.entity.DfUserRole</class>
-        <class>com.haulmont.docflow.entity.Doc</class>
-        <class>com.haulmont.docflow.entity.DocRole</class>
+        <class>com.haulmont.docflow.core.entity.Doc</class>
 
         <properties>
             <property name="openjpa.ManagedRuntime"
@@ -55,8 +56,8 @@
                       value="true"/>
 
             <property name="openjpa.jdbc.MappingDefaults"
-                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidPostgresValueHandler'"/>
-            
+                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler'"/>
+
             <property name="openjpa.DataCache"
                       value="true(CacheSize=50000)"/>
 

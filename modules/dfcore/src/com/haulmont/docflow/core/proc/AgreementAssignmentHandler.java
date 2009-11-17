@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.docflow.process;
+package com.haulmont.docflow.core.proc;
 
 import org.jbpm.api.task.AssignmentHandler;
 import org.jbpm.api.task.Assignable;

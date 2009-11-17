@@ -8,45 +8,45 @@
  *
  * $Id$
  */
-package com.haulmont.docflow.entity;
+package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
 
-@Entity(name = "df$DocRole")
-@Table(name = "DF_DOC_ROLE")
-public class DocRole extends StandardEntity {
+@Entity(name = "wf$CardRole")
+@Table(name = "WF_CARD_ROLE")
+public class CardRole extends StandardEntity {
 
     private static final long serialVersionUID = -2251386967542354599L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOC_ID")
-    private Doc doc;
+    private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ROLE_ID")
-    private DfRole role;
+    @JoinColumn(name = "PROC_ROLE_ID")
+    private ProcRole procRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    public Doc getDoc() {
-        return doc;
+    public Card getCard() {
+        return card;
     }
 
-    public void setDoc(Doc doc) {
-        this.doc = doc;
+    public void setCard(Card card) {
+        this.card = card;
     }
 
-    public DfRole getRole() {
-        return role;
+    public ProcRole getProcRole() {
+        return procRole;
     }
 
-    public void setRole(DfRole role) {
-        this.role = role;
+    public void setProcRole(ProcRole procRole) {
+        this.procRole = procRole;
     }
 
     public User getUser() {

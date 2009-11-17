@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.haulmont.docflow;
+package com.haulmont.workflow.core;
 
-import com.haulmont.workflow.core.WfTestCase;
-import com.haulmont.workflow.core.app.WfEngineMBean;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.workflow.core.app.WfEngineMBean;
+import junit.framework.Assert;
 import org.jbpm.api.*;
 import org.jbpm.api.task.Task;
 
@@ -23,8 +23,8 @@ public class SimpleDocflowTest extends WfTestCase {
     public void test() {
         WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
         String curDir = System.getProperty("user.dir");
-        String res = mBean.deployJpdlXml(curDir + "/modules/dfcore/src-conf/docflow/process/simple-docflow.jpdl.xml");
-        assertTrue(res.startsWith("Deployed:"));
+        String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow.jpdl.xml");
+        Assert.assertTrue(res.startsWith("Deployed:"));
 
         ProcessEngine pe = mBean.getAPI().getProcessEngine();
         ExecutionService es = pe.getExecutionService();
@@ -33,12 +33,12 @@ public class SimpleDocflowTest extends WfTestCase {
         ProcessInstance pi;
 
         pi = es.startProcessInstanceByKey("SimpleDocflow");
-        assertNotNull(pi);
+        Assert.assertNotNull(pi);
 
         // New
 
         Execution inNew = pi.findActiveExecutionIn("New");
-        assertNotNull(inNew);
+        Assert.assertNotNull(inNew);
 
         es.signalExecutionById(pi.getId(), "ToAgreement");
 
@@ -47,15 +47,15 @@ public class SimpleDocflowTest extends WfTestCase {
         pi = es.findProcessInstanceById(pi.getId());
 
         Execution inAgreement = pi.findActiveExecutionIn("Agreement");
-        assertNotNull(inAgreement);
+        Assert.assertNotNull(inAgreement);
 
         List<Task> testuserTaskList = ts.findPersonalTasks("testuser");
-        assertEquals(1, testuserTaskList.size());
+        Assert.assertEquals(1, testuserTaskList.size());
         Task testuserTask = testuserTaskList.get(0);
         ts.completeTask(testuserTask.getId());
 
         List<Task> agreementuserTaskList = ts.findPersonalTasks("agreementuser");
-        assertEquals(1, testuserTaskList.size());
+        Assert.assertEquals(1, testuserTaskList.size());
         Task agreementuserTask = agreementuserTaskList.get(0);
         ts.completeTask(agreementuserTask.getId(), "Ok");
 
@@ -64,10 +64,10 @@ public class SimpleDocflowTest extends WfTestCase {
         pi = es.findProcessInstanceById(pi.getId());
 
         Execution inApproval = pi.findActiveExecutionIn("Approval");
-        assertNotNull(inApproval);
+        Assert.assertNotNull(inApproval);
 
         List<Task> approvaluserTaskList = ts.findPersonalTasks("approvaluser");
-        assertEquals(1, approvaluserTaskList.size());
+        Assert.assertEquals(1, approvaluserTaskList.size());
 
         Task task = approvaluserTaskList.get(0);
         ts.completeTask(task.getId(), "Ok");
@@ -75,6 +75,6 @@ public class SimpleDocflowTest extends WfTestCase {
         // End
 
         pi = es.findProcessInstanceById(pi.getId());
-        assertNull(pi);
+        Assert.assertNull(pi);
     }
 }
