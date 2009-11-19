@@ -46,6 +46,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @Column(name = "JBPM_PROCESS_ID", length = 255)
     private String jbpmProcessId;
 
+    @Column(name = "STATE", length = 255)
+    private String state;
+
     public Date getUpdateTs() {
         return updateTs;
     }
@@ -96,5 +99,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setJbpmProcessId(String jbpmProcessId) {
         this.jbpmProcessId = jbpmProcessId;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

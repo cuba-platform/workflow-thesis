@@ -25,6 +25,7 @@ create table WF_CARD (
     TYPE integer,
     PROC_ID uuid,
     JBPM_PROCESS_ID varchar(255),
+    STATE varchar(255),
     primary key (ID)
 )^
 
@@ -63,14 +64,19 @@ create table WF_ASSIGNMENT (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     USER_ID uuid,
-    MASTER_ASSIGNMENT_ID uuid,
+    CARD_ID uuid,
+    MASTER_ASSIGNMENT_ID varchar(36),
     NAME varchar(255),
+    DESCRIPTION varchar(1000),
     JBPM_PROCESS_ID varchar(255),
     FINISHED timestamp,
+    OUTCOME varchar(255),
     primary key (ID)
 )^
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
+
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

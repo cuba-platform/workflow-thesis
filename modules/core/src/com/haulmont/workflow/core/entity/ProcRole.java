@@ -21,7 +21,7 @@ public class ProcRole extends StandardEntity {
     private static final long serialVersionUID = 8160964587888346590L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID")
+    @JoinColumn(name = "PROC_ID")
     private Proc proc;
 
     @Column(name = "CODE", length = 50)

@@ -260,8 +260,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-jboss-logging.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-api.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/antlr.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-vfs-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

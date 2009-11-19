@@ -22,7 +22,7 @@ public class CardRole extends StandardEntity {
     private static final long serialVersionUID = -2251386967542354599L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DOC_ID")
+    @JoinColumn(name = "CARD_ID")
     private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)

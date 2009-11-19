@@ -27,17 +27,27 @@ public class Assignment extends StandardEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CARD_ID")
+    private Card card;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MASTER_ASSIGNMENT_ID")
     private Assignment masterAssignment;
 
-    @Column(name = "NAME", length = 500)
+    @Column(name = "NAME", length = 255)
     private String name;
+
+    @Column(name = "DESCRIPTION", length = 1000)
+    private String description;
 
     @Column(name = "JBPM_PROCESS_ID", length = 255)
     private String jbpmProcessId;
 
     @Column(name = "FINISHED")
     private Date finished;
+
+    @Column(name = "OUTCOME", length = 255)
+    private String outcome;
 
     public String getName() {
         return name;
@@ -47,12 +57,28 @@ public class Assignment extends StandardEntity {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
     }
 
     public Assignment getMasterAssignment() {
@@ -77,5 +103,13 @@ public class Assignment extends StandardEntity {
 
     public void setFinished(Date finished) {
         this.finished = finished;
+    }
+
+    public String getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
     }
 }

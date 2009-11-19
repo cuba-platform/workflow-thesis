@@ -10,12 +10,12 @@
  */
 package com.haulmont.workflow.core.app;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Proc;
-import static com.google.common.base.Preconditions.checkArgument;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,10 +25,7 @@ import org.jbpm.api.*;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
 
@@ -216,16 +213,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
             assignment.setFinished(TimeProvider.currentTimestamp());
+            assignment.setOutcome(outcome);
 
             ExecutionService es = getProcessEngine().getExecutionService();
-
             ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());
             Execution execution = pi.findActiveExecutionIn(assignment.getName());
             if (execution == null)
                 throw new RuntimeException("No active execution in " + assignment.getName());
 
-            es.signalExecutionById(execution.getId(), outcome);
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("assignment", assignment);
 
+            es.signalExecutionById(execution.getId(), outcome, params);
             tx.commit();
         } finally {
             tx.end();

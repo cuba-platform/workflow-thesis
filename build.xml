@@ -29,7 +29,6 @@
         <ext:install-lib name="jbpm" version="${jbpm.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="juel" version="${juel.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="hibernate-core" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <!-- init local jboss with jbpm -->
         <copy file="${lib.server.dir}/jbpm-${jbpm.version}.jar" todir="${jboss.dir}/common/lib"/>
