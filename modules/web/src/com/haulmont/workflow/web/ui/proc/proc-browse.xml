@@ -1,0 +1,30 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.proc.ProcBrowser"
+        messagesPack="com.haulmont.workflow.web.ui.proc"
+        caption="msg://procBrowser.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local">
+            <query>
+                select p from wf$Proc p order by p.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel" expand="procTable" spacing="true">
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="procTable.edit" icon="icons/edit.png"/>
+            </hbox>
+            <table id="procTable" editable="false">
+                <columns>
+                    <column id="name" caption="msg://name"/>
+                    <column id="jbpmProcessKey" caption="msg://jbpmProcessKey"/>
+                </columns>
+                <rows datasource="procDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

@@ -38,4 +38,13 @@
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
 
+    <screen id="wf$Proc.browse"
+            template="/com/haulmont/workflow/web/ui/proc/proc-browse.xml"/>
+
+    <screen id="wf$Proc.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-edit.xml"/>
+
+    <screen id="wf$Assignment.browse"
+            template="/com/haulmont/workflow/web/app/ui/assignment/assignment-browse.xml"/>
+
 </screen-config>

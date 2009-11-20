@@ -1,4 +1,8 @@
 <menu-config>
+    <menu id="workflow">
+        <item id="wf$Proc.browse"/>
+        <!--<item id="wf$Assignment.browse"/>-->
+    </menu>
     <menu id="security">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>

@@ -3,4 +3,8 @@
                      "-//JBoss//DTD MBean Service 3.2//EN"
                      "http://www.jboss.org/j2ee/dtd/jboss-service_3_2.dtd">
 <server>
+    <mbean code="com.haulmont.docflow.core.app.DocflowDeployer"
+           name="haulmont.docflow:service=DocflowDeployer">
+        <depends>haulmont.workflow:service=WorkflowDeployer</depends>
+    </mbean>
 </server>

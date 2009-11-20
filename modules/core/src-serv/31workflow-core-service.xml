@@ -8,8 +8,8 @@
         <depends>haulmont.cuba:service=CubaDeployer</depends>
     </mbean>
 
-    <mbean code="com.haulmont.workflow.core.app.WfDeployer"
-           name="haulmont.workflow:service=WfDeployer">
+    <mbean code="com.haulmont.workflow.core.app.WorkflowDeployer"
+           name="haulmont.workflow:service=WorkflowDeployer">
         <depends>haulmont.workflow:service=WfEngine</depends>
     </mbean>
 </server>

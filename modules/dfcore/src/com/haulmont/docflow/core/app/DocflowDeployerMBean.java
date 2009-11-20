@@ -4,11 +4,11 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 09.11.2009 15:48:15
+ * Created: 20.11.2009 11:49:55
  *
  * $Id$
  */
-package com.haulmont.workflow.core.app;
+package com.haulmont.docflow.core.app;
 
-public class WfDeployer implements WfDeployerMBean {
+public interface DocflowDeployerMBean {
 }

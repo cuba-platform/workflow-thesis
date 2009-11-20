@@ -11,7 +11,7 @@
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.haulmont.cuba.web.App</param-value>
+            <param-value>com.haulmont.workflow.web.WorkflowApp</param-value>
         </init-param>
         <init-param>
             <param-name>widgetset</param-name>

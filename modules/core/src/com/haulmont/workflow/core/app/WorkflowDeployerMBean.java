@@ -10,7 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
-public interface WfDeployerMBean {
+public interface WorkflowDeployerMBean {
 
     String OBJECT_NAME = "haulmont.workflow:service=WfDeployer";
 }
