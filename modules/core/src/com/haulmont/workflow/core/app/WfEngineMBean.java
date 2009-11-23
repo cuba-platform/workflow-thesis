@@ -29,4 +29,6 @@ public interface WfEngineMBean {
     String printDeploymentResource(String id);
 
     String printProcessDefinitions();
+
+    String deployTestProcesses();
 }

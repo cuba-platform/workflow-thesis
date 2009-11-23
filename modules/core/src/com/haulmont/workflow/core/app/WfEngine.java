@@ -13,7 +13,9 @@ package com.haulmont.workflow.core.app;
 import static com.google.common.base.Preconditions.checkArgument;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
@@ -149,6 +151,11 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         }
+    }
+
+    public String deployTestProcesses() {
+        String dir = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
+        return deployJpdlXml(dir + "/workflow/test/test1.jpdl.xml");
     }
 
     public ProcessEngine getProcessEngine() {

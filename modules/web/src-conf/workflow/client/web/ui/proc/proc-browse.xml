@@ -1,7 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.workflow.web.ui.proc.ProcBrowser"
-        messagesPack="com.haulmont.workflow.web.ui.proc"
+        class="workflow.client.web.ui.proc.ProcBrowser"
+        messagesPack="workflow.client.web.ui.proc"
         caption="msg://procBrowser.caption"
         >
 

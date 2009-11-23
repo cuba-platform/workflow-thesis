@@ -19,7 +19,9 @@
             template="/com/haulmont/cuba/web/app/ui/security/group/lookup/group-lookup.xml"/>
 
     <screen id="sec$Role.browse"
-            template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>
+            template="cuba/client/web/ui/security/role/role-browse.xml"/>
+    <!--<screen id="sec$Role.browse"-->
+            <!--template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>-->
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/role-edit.xml"/>
 
@@ -39,12 +41,15 @@
             template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
 
     <screen id="wf$Proc.browse"
-            template="/com/haulmont/workflow/web/ui/proc/proc-browse.xml"/>
+            template="workflow/client/web/ui/proc/proc-browse.xml"/>
 
     <screen id="wf$Proc.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-edit.xml"/>
+            template="workflow/client/web/ui/proc/proc-edit.xml"/>
+
+    <screen id="wf$ProcRole.edit"
+            template="workflow/client/web/ui/proc/proc-role-edit.xml"/>
 
     <screen id="wf$Assignment.browse"
-            template="/com/haulmont/workflow/web/app/ui/assignment/assignment-browse.xml"/>
+            template="workflow/client/web/ui/assignment/assignment-browse.xml"/>
 
 </screen-config>

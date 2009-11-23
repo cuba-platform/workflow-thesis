@@ -1,0 +1,47 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.components.BasicEditor"
+        messagesPack="workflow.client.web.ui.proc"
+        datasource="roleDs"
+        caption="msg://roleEditor.caption"
+        >
+
+    <dsContext>
+        <datasource
+                id="roleDs"
+                class="com.haulmont.workflow.core.entity.ProcRole"
+                view="_local">
+        </datasource>
+    </dsContext>
+
+    <#assign width = 400>
+    <layout expand="spring">
+        <hbox stylename="edit-area">
+            <vbox margin="true">
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://code"/>
+                            <textField id="code" datasource="roleDs" property="code"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://name"/>
+                            <textField id="name" datasource="roleDs" property="name"
+                                       width="${width}"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+        </hbox>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+        <vbox id="spring"/>
+    </layout>
+</window>

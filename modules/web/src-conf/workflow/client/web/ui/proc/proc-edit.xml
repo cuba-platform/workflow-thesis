@@ -1,0 +1,68 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.proc.ProcEditor"
+        messagesPack="workflow.client.web.ui.proc"
+        datasource="procDs"
+        caption="msg://procEditor.caption"
+        >
+
+    <metadataContext>
+        <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
+            <property name="roles" view="_local"/>
+        </view>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+                id="procDs"
+                class="com.haulmont.workflow.core.entity.Proc"
+                view="edit">
+            <collectionDatasource id="rolesDs" property="roles"/>
+        </datasource>
+    </dsContext>
+
+    <#assign width = 400>
+    <layout expand="rolesPane">
+        <hbox stylename="edit-area">
+            <vbox margin="true">
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://name"/>
+                            <textField id="name" datasource="procDs" property="name"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://jbpmProcessKey"/>
+                            <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
+                                       width="${width}" editable="false"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+        </hbox>
+        <vbox id="rolesPane" expand="rolesTable">
+            <label value="msg://roles"/>
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="rolesTable.create" icon="icons/create.png"/>
+                <button action="rolesTable.edit" icon="icons/edit.png"/>
+                <button action="rolesTable.remove" icon="icons/remove.png"/>
+            </hbox>
+            <table id="rolesTable" editable="false">
+                <columns>
+                    <column id="code" caption="msg://code"/>
+                    <column id="name" caption="msg://name"/>
+                </columns>
+                <rows datasource="rolesDs"/>
+            </table>
+        </vbox>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>

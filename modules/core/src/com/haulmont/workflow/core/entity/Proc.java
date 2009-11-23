@@ -11,10 +11,13 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity(name = "wf$Proc")
 @Table(name = "WF_PROC")
@@ -27,6 +30,10 @@ public class Proc extends StandardEntity {
 
     @Column(name = "JBPM_PROCESS_KEY", length = 255)
     private String jbpmProcessKey;
+
+    @OneToMany(mappedBy = "proc")
+    @Aggregation
+    private List<ProcRole> roles;
 
     public String getName() {
         return name;
@@ -42,5 +49,13 @@ public class Proc extends StandardEntity {
 
     public void setJbpmProcessKey(String jbpmProcessKey) {
         this.jbpmProcessKey = jbpmProcessKey;
+    }
+
+    public List<ProcRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<ProcRole> roles) {
+        this.roles = roles;
     }
 }
