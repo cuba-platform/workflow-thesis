@@ -18,6 +18,8 @@ public interface WfEngineMBean {
 
     String DEF_JBPM_CFG_NAME = "META-INF/wf.jbpm.cfg.xml";
 
+    void create(); 
+
     WfEngineAPI getAPI();
 
     String getJbpmConfigName();
@@ -31,4 +33,6 @@ public interface WfEngineMBean {
     String printProcessDefinitions();
 
     String deployTestProcesses();
+
+    String startProcessByKey(String key);
 }

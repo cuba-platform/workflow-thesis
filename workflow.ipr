@@ -240,7 +240,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-1.0-rc2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/mail.jar!/" />
@@ -264,6 +263,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-vfs-1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.5.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -277,6 +277,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-logging-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/google-collect-1.0-rc2-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9.4-patch1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.6.5-src.zip!/" />
       </SOURCES>
     </library>
     <library name="server">

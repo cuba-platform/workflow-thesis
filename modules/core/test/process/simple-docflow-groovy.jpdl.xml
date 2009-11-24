@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process name="Simple Docflow Groovy" key="SimpleDocflowGroovy" xmlns="http://jbpm.org/4.2/jpdl">
+
+    <start name="Start">
+        <transition to="New"/>
+    </start>
+
+    <custom name="New" class="workflow.activity.Assigner">
+        <property name="role">
+            <string value="Initiator"/>
+        </property>
+        <transition name="ToAgreement" to="Agreement"/>
+    </custom>
+
+    <custom name="Agreement" class="workflow.activity.ParallelAssigner">
+        <property name="role">
+            <string value="AgreementMember"/>
+        </property>
+        <property name="successTransition">
+            <string value="Ok"/>
+        </property>
+        <transition name="Ok" to="Approval"/>
+        <transition name="NotOk" to="New"/>
+    </custom>
+
+    <custom name="Approval" class="workflow.activity.Assigner">
+        <property name="role">
+            <string value="Approval"/>
+        </property>
+        <transition name="Ok" to="Approved"/>
+        <transition name="NotOk" to="New"/>
+    </custom>
+
+    <custom name="Approved" class="workflow.activity.CardActivity">
+        <transition to="End"/>
+    </custom>
+
+    <end name="End"/>
+
+</process>

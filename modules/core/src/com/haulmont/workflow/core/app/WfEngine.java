@@ -14,8 +14,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
@@ -32,6 +33,11 @@ import java.util.*;
 public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
 
     private volatile ProcessEngine processEngine;
+
+    public void create() {
+        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
+            System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getGroovyClassLoader");
+    }
 
     public WfEngineAPI getAPI() {
         return this;
@@ -156,6 +162,17 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public String deployTestProcesses() {
         String dir = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
         return deployJpdlXml(dir + "/workflow/test/test1.jpdl.xml");
+    }
+
+    public String startProcessByKey(String key) {
+        try {
+            ProcessEngine pe = getProcessEngine();
+            ExecutionService es = pe.getExecutionService();
+            ProcessInstance pi = es.startProcessInstanceByKey(key);
+            return "ProcessInstance.id=" + pi.getId();
+        } catch (Exception e) {
+            return ExceptionUtils.getStackTrace(e);
+        }
     }
 
     public ProcessEngine getProcessEngine() {

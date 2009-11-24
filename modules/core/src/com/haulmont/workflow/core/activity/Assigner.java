@@ -10,20 +10,20 @@
  */
 package com.haulmont.workflow.core.activity;
 
-import com.haulmont.cuba.core.*;
+import static com.google.common.base.Preconditions.checkState;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
-import com.google.common.base.Preconditions;
-import static com.google.common.base.Preconditions.checkState;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.jbpm.api.activity.ActivityExecution;
 import org.jbpm.api.activity.ExternalActivityBehaviour;
-import org.apache.commons.lang.StringUtils;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 

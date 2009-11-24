@@ -12,11 +12,18 @@ package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Locator;
 
 public abstract class WfTestCase extends CubaTestCase {
 
     static {
         System.setProperty(PersistenceProvider.PERSISTENCE_XML, "META-INF/workflow-persistence.xml");
         System.setProperty(PersistenceProvider.PERSISTENCE_UNIT, "workflow");
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        System.out.println(Locator.isInTransaction());
     }
 }

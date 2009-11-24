@@ -49,6 +49,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @Column(name = "STATE", length = 255)
     private String state;
 
+    @Column(name = "DESCRIPTION", length = 1000)
+    private String description;
+
     public Date getUpdateTs() {
         return updateTs;
     }
@@ -107,5 +110,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

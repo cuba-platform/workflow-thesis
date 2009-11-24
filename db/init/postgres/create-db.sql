@@ -26,6 +26,7 @@ create table WF_CARD (
     PROC_ID uuid,
     JBPM_PROCESS_ID varchar(255),
     STATE varchar(255),
+    DESCRIPTION varchar(1000),
     primary key (ID)
 )^
 
