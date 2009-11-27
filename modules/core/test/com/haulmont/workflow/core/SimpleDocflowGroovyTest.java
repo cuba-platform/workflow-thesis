@@ -231,7 +231,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assertEquals(1, assignments.size());
             assignment = assignments.get(0);
             assertEquals(card, assignment.getCard());
-            wf.finishAssignment(assignment.getId(), "ToAgreement");
+            wf.finishAssignment(assignment.getId(), "ToAgreement", null);
 
             tx.commitRetaining();
 
@@ -245,7 +245,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assignments = wf.getUserAssignments("agreementUser1");
             Assert.assertEquals(1, assignments.size());
             assignment = assignments.get(0);
-            wf.finishAssignment(assignment.getId(), "Ok");
+            wf.finishAssignment(assignment.getId(), "Ok", null);
 
             tx.commitRetaining();
 
@@ -257,7 +257,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assignments = wf.getUserAssignments("agreementUser2");
             Assert.assertEquals(1, assignments.size());
             assignment = assignments.get(0);
-            wf.finishAssignment(assignment.getId(), "Ok");
+            wf.finishAssignment(assignment.getId(), "Ok", null);
 
             tx.commitRetaining();
 
@@ -271,7 +271,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assignments = wf.getUserAssignments("approvalUser");
             assertEquals(1, assignments.size());
             assignment = assignments.get(0);
-            wf.finishAssignment(assignment.getId(), "Ok");
+            wf.finishAssignment(assignment.getId(), "Ok", null);
 
             tx.commitRetaining();
 

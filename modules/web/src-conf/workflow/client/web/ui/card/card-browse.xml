@@ -1,0 +1,34 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.card.CardBrowser"
+        messagesPack="workflow.client.web.ui.card"
+        caption="msg://cardBrowser.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="cardDs" class="com.haulmont.workflow.core.entity.Card" view="browse">
+            <query>
+                select c from wf$Card c order by c.createTs
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel" expand="cardTable" spacing="true">
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="cardTable.refresh" icon="icons/refresh.png"/>
+                <button action="cardTable.create" icon="icons/create.png"/>
+                <button action="cardTable.edit" icon="icons/edit.png"/>
+                <button action="cardTable.remove" icon="icons/remove.png"/>
+            </hbox>
+            <table id="cardTable" editable="false">
+                <columns>
+                    <column id="description" caption="msg://description"/>
+                    <column id="proc.name" caption="msg://procName"/>
+                    <column id="state" caption="msg://state"/>
+                </columns>
+                <rows datasource="cardDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

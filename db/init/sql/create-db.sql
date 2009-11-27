@@ -9,6 +9,7 @@ create table WF_PROC (
     DELETED_BY varchar(50),
     NAME varchar(255),
     JBPM_PROCESS_KEY varchar(255),
+    MESSAGES_PACK varchar(200),
     primary key (ID)
 );
 
@@ -72,6 +73,7 @@ create table WF_ASSIGNMENT (
     JBPM_PROCESS_ID varchar(255),
     FINISHED timestamp,
     OUTCOME varchar(255),
+    COMMENT varchar(2000),
     primary key (ID)
 );
 
@@ -93,6 +95,7 @@ create table WF_PROC_ROLE (
     PROC_ID varchar(36),
     CODE varchar(50),
     NAME varchar(100),
+    IS_MULTI_USER smallint,
     primary key (ID)
 );
 

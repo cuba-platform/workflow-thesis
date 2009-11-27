@@ -1,7 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.gui.components.BasicEditor"
-        messagesPack="workflow.client.web.ui.proc"
+        messagesPack="workflow.client.web.ui.card"
         datasource="roleDs"
         caption="msg://roleEditor.caption"
         >
@@ -9,9 +9,17 @@
     <dsContext>
         <datasource
                 id="roleDs"
-                class="com.haulmont.workflow.core.entity.ProcRole"
-                view="_local">
+                class="com.haulmont.workflow.core.entity.CardRole"
+                view="card-edit">
         </datasource>
+
+        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="_local">
+            <query>
+                select r from wf$ProcRole r where r.proc.id = :param$proc
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local"/>
     </dsContext>
 
     <#assign width = 400>
@@ -26,19 +34,14 @@
                     </columns>
                     <rows>
                         <row>
-                            <label value="msg://code"/>
-                            <textField id="code" datasource="roleDs" property="code"
-                                       width="${width}"/>
+                            <label value="msg://role"/>
+                            <lookupField id="roleLookup" datasource="roleDs" property="procRole"
+                                       optionsDatasource="procRolesDs" width="${width}"/>
                         </row>
                         <row>
-                            <label value="msg://name"/>
-                            <textField id="name" datasource="roleDs" property="name"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://multiUser"/>
-                            <checkBox id="multiUser" datasource="roleDs" property="multiUser"
-                                      width="${width}"/>
+                            <label value="msg://user"/>
+                            <lookupField id="userLookup" datasource="roleDs" property="user"
+                                       optionsDatasource="usersDs" width="${width}"/>
                         </row>
                     </rows>
                 </grid>

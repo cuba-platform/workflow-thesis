@@ -20,9 +20,8 @@
 	</target>
 
 	<target name="clean">
-		<antcall target="delegate" inheritAll="false">
-			<param name="target" value="clean-module"/>
-		</antcall>
+        <delete dir="build"/>
+        <delete dir="out"/>
 	</target>
 		
 	<target name="install-lib">

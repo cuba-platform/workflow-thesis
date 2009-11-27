@@ -312,6 +312,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.10-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/hibernate-core-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jbpm-4.2-patch1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
       </SOURCES>
     </library>
     <library name="chile">

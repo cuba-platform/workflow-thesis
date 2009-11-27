@@ -11,11 +11,13 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
 
 @Entity(name = "wf$ProcRole")
 @Table(name = "WF_PROC_ROLE")
+@NamePattern("%s|name")
 public class ProcRole extends StandardEntity {
 
     private static final long serialVersionUID = 8160964587888346590L;
@@ -29,6 +31,9 @@ public class ProcRole extends StandardEntity {
 
     @Column(name = "NAME", length = 100)
     private String name;
+
+    @Column(name = "IS_MULTI_USER")
+    private Boolean multiUser;
 
     public Proc getProc() {
         return proc;
@@ -52,5 +57,13 @@ public class ProcRole extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getMultiUser() {
+        return multiUser;
+    }
+
+    public void setMultiUser(Boolean multiUser) {
+        this.multiUser = multiUser;
     }
 }

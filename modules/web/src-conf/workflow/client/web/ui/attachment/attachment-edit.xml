@@ -1,0 +1,52 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.attachment.AttachmentEditor"
+        messagesPack="workflow.client.web.ui.attachment"
+        datasource="attachmentDs"
+        caption="msg://editorCaption">
+
+    <dsContext>
+        <datasource id="attachmentDs" class="com.haulmont.workflow.core.entity.Attachment" view="card-edit">
+            <datasource id="fileDs" property="file"/>
+        </datasource>
+    </dsContext>
+
+    <layout expand="windowActions">
+        <vbox margin="true" spacing="true" stylename="edit-area">
+            <upload id="uploadField"/>
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://fileName"/>
+                        <textField id="fileName" datasource="fileDs" property="name"
+                                   width="200px"/>
+                    </row>
+                    <row>
+                        <label value="msg://extension"/>
+                        <label id="extension" datasource="fileDs" property="extension"/>
+                    </row>
+                    <row>
+                        <label value="msg://size"/>
+                        <label id="size" datasource="fileDs" property="size"/>
+                    </row>
+                    <row>
+                        <label value="msg://createDate"/>
+                        <label id="createDate" datasource="fileDs" property="createDate">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                       format="msg://dateTimeFormat"/>
+                        </label>
+                    </row>
+                    <row>
+                        <label value="msg://name"/>
+                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

@@ -1,5 +1,11 @@
 <screen-config>
 
+    <screen id="core$FileDescriptor.browse"
+            template="/com/haulmont/cuba/web/app/ui/core/file/file-browse.xml"/>
+
+    <screen id="core$FileDescriptor.edit"
+            template="/com/haulmont/cuba/web/app/ui/core/file/file-edit.xml"/>
+
     <screen id="core$Server.browse"
             template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
@@ -48,6 +54,18 @@
 
     <screen id="wf$ProcRole.edit"
             template="workflow/client/web/ui/proc/proc-role-edit.xml"/>
+
+    <screen id="wf$Card.browse"
+            template="workflow/client/web/ui/card/card-browse.xml"/>
+
+    <screen id="wf$Card.edit"
+            template="workflow/client/web/ui/card/card-edit.xml"/>
+
+    <screen id="wf$CardRole.edit"
+            template="workflow/client/web/ui/card/card-role-edit.xml"/>
+
+    <screen id="wf$Attachment.edit"
+            template="workflow/client/web/ui/attachment/attachment-edit.xml"/>
 
     <screen id="wf$Assignment.browse"
             template="workflow/client/web/ui/assignment/assignment-browse.xml"/>

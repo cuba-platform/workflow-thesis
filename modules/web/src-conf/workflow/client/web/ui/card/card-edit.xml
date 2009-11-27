@@ -1,0 +1,99 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.card.CardEditor"
+        messagesPack="workflow.client.web.ui.card"
+        datasource="cardDs"
+        caption="msg://cardEditor.caption"
+        >
+
+    <dsContext>
+        <datasource
+                id="cardDs"
+                class="com.haulmont.workflow.core.entity.Card"
+                view="edit">
+            <collectionDatasource id="rolesDs" property="roles"/>
+            <collectionDatasource id="attachmentsDs" property="attachments"/>
+        </datasource>
+
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_minimal"/>
+    </dsContext>
+
+    <#assign width = 400>
+    <layout expand="mainPane">
+
+        <hbox id="mainPane" expand="tabsheet">
+            <tabsheet id="tabsheet">
+                <tab id="mainTab" caption="msg://mainTab">
+                    <vbox margin="true" expand="attachmentsPane">
+                        <hbox spacing="true">
+                            <hbox stylename="edit-area">
+                                <vbox margin="true">
+                                    <grid spacing="true" width="100%">
+                                        <columns>
+                                            <column flex="1"/>
+                                            <column flex="1"/>
+                                            <column flex="1"/>
+                                        </columns>
+                                        <rows>
+                                            <row>
+                                                <label value="msg://description"/>
+                                                <textField id="description" datasource="cardDs" property="description"
+                                                           width="${width}"/>
+                                            </row>
+                                            <row>
+                                                <label value="msg://procName"/>
+                                                <lookupField id="proc" datasource="cardDs" property="proc"
+                                                             optionsDatasource="procDs" width="${width}"/>
+                                            </row>
+                                        </rows>
+                                    </grid>
+                                </vbox>
+                            </hbox>
+                        </hbox>
+
+                        <vbox id="attachmentsPane" expand="attachmentsTable">
+                            <label value="msg://attachments"/>
+                            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                <button id="createRole" action="attachmentsTable.create" icon="icons/create.png"/>
+                                <button id="editRole" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                                <button id="removeRole" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                            </hbox>
+                            <table id="attachmentsTable" editable="false">
+                                <columns>
+                                    <column id="name" caption="msg://attachName"/>
+                                    <column id="file.name" caption="msg://fileName"/>
+                                </columns>
+                                <rows datasource="attachmentsDs"/>
+                            </table>
+                        </vbox>
+                    </vbox>
+                </tab>
+
+                <tab id="rolesTab" caption="msg://rolesTab">
+                    <vbox margin="true" expand="rolesTable">
+                        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                            <button id="createRole" action="rolesTable.create" icon="icons/create.png"/>
+                            <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
+                            <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
+                        </hbox>
+                        <table id="rolesTable" editable="false">
+                            <columns>
+                                <column id="procRole.name" caption="msg://role"/>
+                                <column id="user" caption="msg://user"/>
+                            </columns>
+                            <rows datasource="rolesDs"/>
+                        </table>
+                    </vbox>
+                </tab>
+            </tabsheet>
+
+            <vbox id="actionsPane" width="300px" margin="true">
+                <iframe id="actions" src="workflow/client/web/ui/actions/actions-frame.xml"/>
+            </vbox>
+        </hbox>
+
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>

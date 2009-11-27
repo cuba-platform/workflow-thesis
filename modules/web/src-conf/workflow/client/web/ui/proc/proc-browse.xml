@@ -16,6 +16,7 @@
     <layout>
         <vbox id="table-panel" expand="procTable" spacing="true">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="procTable.refresh" icon="icons/refresh.png"/>
                 <button action="procTable.edit" icon="icons/edit.png"/>
             </hbox>
             <table id="procTable" editable="false">

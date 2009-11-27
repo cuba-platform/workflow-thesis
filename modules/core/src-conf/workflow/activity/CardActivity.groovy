@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.PersistenceProvider
 public class CardActivity implements ActivityBehaviour {
 
   public void execute(ActivityExecution execution) {
+    super.execute(execution)
     Card card = findCard(execution)
     card.setState(execution.getActivityName())
   }

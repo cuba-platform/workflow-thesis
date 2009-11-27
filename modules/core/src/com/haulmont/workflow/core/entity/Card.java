@@ -14,9 +14,11 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "wf$Card")
 @Table(name = "WF_CARD")
@@ -51,6 +53,16 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     @Column(name = "DESCRIPTION", length = 1000)
     private String description;
+    
+    @OneToMany(mappedBy = "card")
+    @OrderBy("createTs")
+    @Aggregation
+    private List<CardRole> roles;
+
+    @OneToMany(mappedBy = "card")
+    @OrderBy("name")
+    @Aggregation
+    private List<Attachment> attachments;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -118,5 +130,21 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<CardRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<CardRole> roles) {
+        this.roles = roles;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }

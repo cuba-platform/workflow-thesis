@@ -49,6 +49,9 @@ public class Assignment extends StandardEntity {
     @Column(name = "OUTCOME", length = 255)
     private String outcome;
 
+    @Column(name = "COMMENT", length = 2000)
+    private String comment;
+
     public String getName() {
         return name;
     }
@@ -111,5 +114,13 @@ public class Assignment extends StandardEntity {
 
     public void setOutcome(String outcome) {
         this.outcome = outcome;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

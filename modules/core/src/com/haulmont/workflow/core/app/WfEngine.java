@@ -15,9 +15,11 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -25,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jbpm.api.*;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -74,6 +77,11 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Proc proc = new Proc();
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
+
+                int dot = file.getName().indexOf(".jpdl.xml");
+                String s = StringUtils.substring(file.getName(), 0, dot);
+                proc.setMessagesPack("process." + s);
+
                 em.persist(proc);
             } else {
                 Proc proc = processes.get(0);
@@ -161,7 +169,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     public String deployTestProcesses() {
         String dir = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
-        return deployJpdlXml(dir + "/workflow/test/test1.jpdl.xml");
+        return deployJpdlXml(dir + "/process/test1/test1.jpdl.xml");
     }
 
     public String startProcessByKey(String key) {
@@ -189,30 +197,44 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public List<Assignment> getUserAssignments(UUID userId) {
-        checkArgument(userId != null, "userId is null");
-
-        Transaction tx = Locator.getTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select a from wf$Assignment a where a.user.id = ?1 and a.finished is null");
-            q.setParameter(1, userId);
-            List<Assignment> list = q.getResultList();
-
-            tx.commit();
-            return list;
-        } finally {
-            tx.end();
-        }
+        return getUserAssignments(userId, null);
     }
 
     public List<Assignment> getUserAssignments(String userLogin) {
         checkArgument(!StringUtils.isBlank(userLogin), "userLogin is blank");
 
+        User user;
         Transaction tx = Locator.getTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select a from wf$Assignment a where a.user.loginLowerCase = ?1 and a.finished is null");
+            Query q = em.createQuery("select u from sec$User u where u.loginLowerCase = ?1");
             q.setParameter(1, userLogin.toLowerCase());
+            List<User> list = q.getResultList();
+            if (list.isEmpty())
+                throw new RuntimeException("User not found: " + userLogin);
+            user = list.get(0);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return getUserAssignments(user.getId());
+    }
+
+    public List<Assignment> getUserAssignments(UUID userId, @Nullable Card card) {
+        checkArgument(userId != null, "userId is null");
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            String s = "select a from wf$Assignment a where a.user.id = ?1 and a.finished is null";
+            if (card != null)
+                s = s + " and a.card.id = ?2";
+            Query q = em.createQuery(s);
+            q.setParameter(1, userId);
+            if (card != null)
+                q.setParameter(2, card.getId());
+
             List<Assignment> list = q.getResultList();
 
             tx.commit();
@@ -223,10 +245,10 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public void finishAssignment(UUID assignmentId) {
-        finishAssignment(assignmentId, null);
+        finishAssignment(assignmentId, null, null);
     }
 
-    public void finishAssignment(UUID assignmentId, String outcome) {
+    public void finishAssignment(UUID assignmentId, String outcome, String comment) {
         checkArgument(assignmentId != null, "assignmentId is null");
 
         Transaction tx = Locator.getTransaction();
@@ -238,6 +260,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
             assignment.setFinished(TimeProvider.currentTimestamp());
             assignment.setOutcome(outcome);
+            assignment.setComment(comment);
 
             ExecutionService es = getProcessEngine().getExecutionService();
             ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());

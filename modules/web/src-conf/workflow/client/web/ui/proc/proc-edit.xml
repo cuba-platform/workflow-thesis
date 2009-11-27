@@ -6,12 +6,6 @@
         caption="msg://procEditor.caption"
         >
 
-    <metadataContext>
-        <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
-            <property name="roles" view="_local"/>
-        </view>
-    </metadataContext>
-
     <dsContext>
         <datasource
                 id="procDs"
@@ -57,6 +51,7 @@
                 <columns>
                     <column id="code" caption="msg://code"/>
                     <column id="name" caption="msg://name"/>
+                    <column id="multiUser" caption="msg://multiUser"/>
                 </columns>
                 <rows datasource="rolesDs"/>
             </table>

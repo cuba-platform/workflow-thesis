@@ -23,6 +23,7 @@ public class ProcBrowser extends AbstractWindow {
     super.init(params)
     Table table = getComponent("procTable")
     TableActionsHelper helper = new TableActionsHelper(this, table)
+    helper.createRefreshAction()
     helper.createEditAction()
   }
 }

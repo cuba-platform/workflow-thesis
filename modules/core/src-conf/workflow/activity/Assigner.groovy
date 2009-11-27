@@ -21,62 +21,63 @@ import static org.apache.commons.lang.StringUtils.isBlank
 
 import java.util.List
 import java.util.Map
+import org.apache.commons.lang.StringUtils
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
-    protected String assignee
-    protected String role
+  String assignee
+  String role
+  String description
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee
+  public void execute(ActivityExecution execution) throws Exception {
+    checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
+    checkState(Locator.isInTransaction(), 'An active transaction required')
+    super.execute(execution)
+    createAssignment(execution)
+    execution.waitForSignal()
+  }
+
+  protected void createAssignment(ActivityExecution execution) {
+    EntityManager em = PersistenceProvider.getEntityManager()
+
+    User user
+    Card card = findCard(execution)
+
+    if (!isBlank(assignee)) {
+      Query q = em.createQuery('select u from sec$User u where u.loginLowerCase = ?1')
+      q.setParameter(1, assignee.toLowerCase())
+      List<User> list = q.getResultList()
+      if (list.isEmpty())
+        throw new RuntimeException('User not found: ' + assignee)
+      user = list.get(0)
+    } else {
+      Query q = em.createQuery('select cr.user from wf$CardRole cr ' +
+              'where cr.card.id = ?1 and cr.procRole.code = ?2')
+      q.setParameter(1, card.getId())
+      q.setParameter(2, role)
+      List<User> list = q.getResultList()
+      if (list.isEmpty())
+        throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
+      user = list.get(0)
     }
 
-    public void setRole(String role) {
-        this.role = role
+    Assignment assignment = new Assignment()
+    assignment.setName(execution.getActivityName())
+
+    if (StringUtils.isBlank(description))
+      assignment.setDescription('msg://' + getMessage(execution.getActivityName()))
+    else {
+      assignment.setDescription(description)
     }
 
-    public void execute(ActivityExecution execution) throws Exception {
-        checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
-        checkState(Locator.isInTransaction(), 'An active transaction required')
-        super.execute(execution)
-        createAssignment(execution)
-        execution.waitForSignal()
-    }
+    assignment.setJbpmProcessId(execution.getProcessInstance().getId())
+    assignment.setUser(user)
+    assignment.setCard(card)
 
-    protected void createAssignment(ActivityExecution execution) {
-        EntityManager em = PersistenceProvider.getEntityManager()
+    em.persist(assignment)
+  }
 
-        User user
-        Card card = findCard(execution)
-
-        if (!isBlank(assignee)) {
-            Query q = em.createQuery('select u from sec$User u where u.loginLowerCase = ?1')
-            q.setParameter(1, assignee.toLowerCase())
-            List<User> list = q.getResultList()
-            if (list.isEmpty())
-                throw new RuntimeException('User not found: ' + assignee)
-            user = list.get(0)
-        } else {
-            Query q = em.createQuery('select cr.user from wf$CardRole cr ' +
-                    'where cr.card.id = ?1 and cr.procRole.code = ?2')
-            q.setParameter(1, card.getId())
-            q.setParameter(2, role)
-            List<User> list = q.getResultList()
-            if (list.isEmpty())
-                throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
-            user = list.get(0)
-        }
-
-        Assignment assignment = new Assignment()
-        assignment.setName(execution.getActivityName())
-        assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-        assignment.setUser(user)
-        assignment.setCard(card)
-
-        em.persist(assignment)
-    }
-
-    public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
-        execution.take(signalName)
-    }
+  public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
+    execution.take(signalName)
+  }
 }

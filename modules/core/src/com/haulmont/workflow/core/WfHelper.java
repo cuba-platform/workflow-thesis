@@ -13,11 +13,26 @@ package com.haulmont.workflow.core;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.app.WfEngineMBean;
 import com.haulmont.cuba.core.Locator;
+import org.jbpm.api.ProcessEngine;
+import org.jbpm.api.ExecutionService;
+import org.jbpm.api.RepositoryService;
 
 public class WfHelper {
 
     public static WfEngineAPI getWfEngineAPI() {
         WfEngineMBean mbean = Locator.lookupMBean(WfEngineMBean.class);
         return mbean.getAPI();
+    }
+
+    public static ProcessEngine getProcessEngine() {
+        return getWfEngineAPI().getProcessEngine();
+    }
+
+    public static ExecutionService getExecutionService() {
+        return getWfEngineAPI().getProcessEngine().getExecutionService();
+    }
+
+    public static RepositoryService getRepositoryService() {
+        return getWfEngineAPI().getProcessEngine().getRepositoryService();
     }
 }
