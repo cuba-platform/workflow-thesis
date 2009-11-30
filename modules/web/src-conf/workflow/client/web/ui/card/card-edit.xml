@@ -15,7 +15,7 @@
             <collectionDatasource id="attachmentsDs" property="attachments"/>
         </datasource>
 
-        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_minimal"/>
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local"/>
     </dsContext>
 
     <#assign width = 400>
@@ -87,13 +87,9 @@
                 </tab>
             </tabsheet>
 
-            <vbox id="actionsPane" width="300px" margin="true">
+            <vbox id="actionsPane" width="250px" margin="true">
                 <iframe id="actions" src="workflow/client/web/ui/actions/actions-frame.xml"/>
             </vbox>
         </hbox>
-
-        <vbox margin="true">
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        </vbox>
     </layout>
 </window>

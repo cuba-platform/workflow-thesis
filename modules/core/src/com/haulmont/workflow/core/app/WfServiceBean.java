@@ -49,7 +49,7 @@ public class WfServiceBean implements WfService {
             String processId = card.getJbpmProcessId();
             if (processId != null) {
                 List<Assignment> assignments = WfHelper.getWfEngineAPI().getUserAssignments(
-                        SecurityProvider.currentUserId(), card);
+                        SecurityProvider.currentOrSubstitutedUserId(), card);
                 if (!assignments.isEmpty()) {
                     Assignment assignment = assignments.get(0);
                     info = new AssignmentInfo(assignment);

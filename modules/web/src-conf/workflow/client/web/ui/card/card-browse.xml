@@ -17,8 +17,8 @@
         <vbox id="table-panel" expand="cardTable" spacing="true">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                 <button action="cardTable.refresh" icon="icons/refresh.png"/>
+                <button action="cardTable.open" icon="icons/edit.png"/>
                 <button action="cardTable.create" icon="icons/create.png"/>
-                <button action="cardTable.edit" icon="icons/edit.png"/>
                 <button action="cardTable.remove" icon="icons/remove.png"/>
             </hbox>
             <table id="cardTable" editable="false">

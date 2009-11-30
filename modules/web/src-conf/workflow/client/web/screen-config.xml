@@ -1,13 +1,13 @@
 <screen-config>
 
+    <screen id="core$Server.browse"
+            template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
+
     <screen id="core$FileDescriptor.browse"
             template="/com/haulmont/cuba/web/app/ui/core/file/file-browse.xml"/>
 
     <screen id="core$FileDescriptor.edit"
             template="/com/haulmont/cuba/web/app/ui/core/file/file-edit.xml"/>
-
-    <screen id="core$Server.browse"
-            template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>
@@ -18,6 +18,12 @@
     <screen id="sec$User.changePassw"
             template="/com/haulmont/cuba/web/app/ui/security/user/changepassw/user-changepassw.xml"/>
 
+    <screen id="sec$UserSubstitution.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/usersubst/edit/usersubst-edit.xml"/>
+
+    <screen id="sec$Group.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/group/edit/group-edit.xml"/>
+
     <screen id="sec$Group.browse"
             template="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.xml"/>
 
@@ -26,8 +32,7 @@
 
     <screen id="sec$Role.browse"
             template="cuba/client/web/ui/security/role/role-browse.xml"/>
-    <!--<screen id="sec$Role.browse"-->
-            <!--template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>-->
+
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/role-edit.xml"/>
 
@@ -45,6 +50,9 @@
 
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
+
+    <screen id="sec$Constraint.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/constraint/edit/constraint-edit.xml"/>
 
     <screen id="wf$Proc.browse"
             template="workflow/client/web/ui/proc/proc-browse.xml"/>

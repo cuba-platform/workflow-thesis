@@ -10,10 +10,9 @@
  */
 package workflow.client.web.ui.card
 
-import com.haulmont.cuba.gui.components.AbstractWindow
-import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.TableActionsHelper
-import com.haulmont.cuba.gui.components.IFrame
+import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.components.Window
 
 public class CardBrowser extends AbstractWindow {
 
@@ -27,7 +26,22 @@ public class CardBrowser extends AbstractWindow {
     TableActionsHelper helper = new TableActionsHelper(this, table)
     helper.createRefreshAction()
     helper.createCreateAction()
-    helper.createEditAction()
+    table.addAction(new ActionAdapter('open', [
+            actionPerform: {
+              Set selected = table.getSelected()
+              if (selected.size() == 1) {
+                Window window = openEditor('wf$Card.edit', selected.iterator().next(), WindowManager.OpenType.THIS_TAB)
+                window.addListener({String actionId -> 
+                  if (actionId == Window.COMMIT_ACTION_ID) {
+                    table.getDatasource().refresh()
+                  }
+                } as Window.CloseListener)
+              }
+            },
+            getCaption: {
+              return getMessage('open')
+            }
+    ]))
     helper.createRemoveAction()
   }
 }

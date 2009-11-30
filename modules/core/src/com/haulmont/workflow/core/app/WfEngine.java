@@ -66,6 +66,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             deployment.setTimestamp(file.lastModified());
             deployment.deploy();
 
+            int dot = file.getName().indexOf(".jpdl.xml");
+            String pName = StringUtils.substring(file.getName(), 0, dot);
+
             ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
             ProcessDefinition pd = pdq.uniqueResult();
 
@@ -77,15 +80,12 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Proc proc = new Proc();
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
-
-                int dot = file.getName().indexOf(".jpdl.xml");
-                String s = StringUtils.substring(file.getName(), 0, dot);
-                proc.setMessagesPack("process." + s);
-
+                proc.setMessagesPack("process." + pName);
                 em.persist(proc);
             } else {
                 Proc proc = processes.get(0);
                 proc.setName(pd.getName());
+                proc.setMessagesPack("process." + pName);
             }
 
             tx.commit();

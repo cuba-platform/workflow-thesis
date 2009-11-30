@@ -20,6 +20,7 @@ import workflow.client.web.ui.actions.ProcessAction
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.core.global.MessageProvider
 import com.haulmont.cuba.core.global.MessageUtils
+import com.haulmont.cuba.core.global.PersistenceHelper
 
 public class ActionsFrame extends AbstractFrame {
 
@@ -33,33 +34,32 @@ public class ActionsFrame extends AbstractFrame {
   public void initActions(Card card) {
     List<Button> buttons = []
     for (i in 0..4) {
-      buttons.add(getComponent("actionBtn$i"))
+      Component btn = getComponent("actionBtn$i")
+      btn.setVisible(false)
+      buttons.add(btn)
     }
 
-    Label assignmentLab = getComponent("assignmentLab")
     TextField descrText = getComponent("descrText")
     Label commentLab = getComponent("commentLab")
     commentText = getComponent("commentText")
 
-
-    List<String> actions
+    List<String> actions = [WfConstants.ACTION_SAVE]
     if (card.jbpmProcessId) {
       WfService wfs = ServiceLocator.lookup(WfService.JNDI_NAME)
       info = wfs.getAssignmentInfo(card)
       if (info) {
-        assignmentLab.setVisible(true)
-
         descrText.setVisible(true)
-        descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()))
+        if (info.getDescription())
+          descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()))
         descrText.setEditable(false)
 
         commentLab.setVisible(true) 
         commentText.setVisible(true)
 
-        actions = info.getActions()
+        actions.addAll(info.getActions())
       }
-    } else {
-      actions = [WfConstants.ACTION_START]
+    } else if (card.getProc() && !card.getJbpmProcessId()) {
+      actions.add(WfConstants.ACTION_START)
     }
 
     buttons.eachWithIndex {Button btn, int idx ->

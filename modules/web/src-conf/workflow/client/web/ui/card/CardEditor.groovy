@@ -10,27 +10,27 @@
  */
 package workflow.client.web.ui.card
 
-import com.haulmont.cuba.gui.components.AbstractEditor
-import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.workflow.core.entity.Card
-import com.haulmont.cuba.gui.data.Datasource
-import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.TableActionsHelper
-import com.haulmont.cuba.gui.components.ValueProvider
-import com.haulmont.cuba.gui.components.Button
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.entity.FileDescriptor
-import com.haulmont.cuba.gui.components.LookupField
-import com.haulmont.cuba.gui.data.ValueListener
-import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
-import com.haulmont.cuba.web.app.FileDownloadHelper
+import com.haulmont.cuba.core.global.PersistenceHelper
 import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.WindowManager.OpenType
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
+import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
+import com.haulmont.cuba.web.app.FileDownloadHelper
+import com.haulmont.workflow.core.entity.Card
+import java.util.List
 import workflow.client.web.ui.actions.ActionsFrame
+import com.haulmont.cuba.gui.components.*
 
-public class CardEditor extends AbstractEditor {  
+public class CardEditor extends AbstractEditor {
 
+  private Datasource<Card> cardDs
   private Table attachmentsTable
   private List rolesButtons
 
@@ -41,7 +41,7 @@ public class CardEditor extends AbstractEditor {
   protected void init(Map<String, Object> params) {
     super.init(params);
 
-    Datasource<Card> cardDs = getDsContext().get('cardDs')
+    cardDs = getDsContext().get('cardDs')
 
     attachmentsTable = getComponent('attachmentsTable')
     TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable)
@@ -86,7 +86,19 @@ public class CardEditor extends AbstractEditor {
     FileDownloadHelper.initGeneratedColumn(attachmentsTable, 'file');
 
     ActionsFrame actionsFrame = getComponent('actions')
-    actionsFrame.initActions(item)
+
+    if (PersistenceHelper.isNew(item)) {
+      cardDs.addListener([
+              valueChanged: {
+                Object source, String property, Object prevValue, Object value ->
+                if (property == 'proc') {
+                  actionsFrame.initActions(source)
+                }
+              }
+      ] as DsListenerAdapter)
+    } else {
+      actionsFrame.initActions(item)
+    }
   }
 
   private void enableRolesChange(boolean enable) {

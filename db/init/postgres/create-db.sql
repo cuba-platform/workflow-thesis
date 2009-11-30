@@ -1,4 +1,4 @@
-create table WF_PROCESS (
+create table WF_PROC (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),

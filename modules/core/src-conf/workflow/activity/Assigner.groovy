@@ -10,18 +10,20 @@
  */
 package workflow.activity
 
-import com.haulmont.cuba.core.*
+import com.google.common.base.Preconditions
+import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Locator
+import com.haulmont.cuba.core.PersistenceProvider
+import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
-import static com.google.common.base.Preconditions.checkState
+import org.apache.commons.lang.StringUtils
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
+import workflow.activity.CardActivity
+import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
-
-import java.util.List
-import java.util.Map
-import org.apache.commons.lang.StringUtils
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -65,10 +67,9 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setName(execution.getActivityName())
 
     if (StringUtils.isBlank(description))
-      assignment.setDescription('msg://' + getMessage(execution.getActivityName()))
-    else {
+      assignment.setDescription('msg://' + execution.getActivityName())
+    else
       assignment.setDescription(description)
-    }
 
     assignment.setJbpmProcessId(execution.getProcessInstance().getId())
     assignment.setUser(user)

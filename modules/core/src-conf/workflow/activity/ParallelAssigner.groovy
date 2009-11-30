@@ -62,6 +62,12 @@ public class ParallelAssigner extends Assigner {
     for (User user: users) {
       Assignment assignment = new Assignment()
       assignment.setName(execution.getActivityName())
+
+      if (StringUtils.isBlank(description))
+        assignment.setDescription('msg://' + execution.getActivityName())
+      else
+        assignment.setDescription(description)
+
       assignment.setJbpmProcessId(execution.getProcessInstance().getId())
       assignment.setCard(card)
       assignment.setUser(user)
@@ -81,7 +87,7 @@ public class ParallelAssigner extends Assigner {
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
       execution.take(signalName)
-    } else if (successTransition.equals(signalName)) {
+    } else {
       log.debug("Trying to finish assignment with success outcome")
 
       EntityManager em = PersistenceProvider.getEntityManager()
@@ -92,21 +98,28 @@ public class ParallelAssigner extends Assigner {
       q.setParameter(1, assignment.getMasterAssignment().getId())
       q.setParameter(2, assignment.getId())
       List<Assignment> siblings = q.getResultList()
+
+      String resultTransition = signalName
       for (Assignment sibling: siblings) {
-        if (sibling.getFinished() == null || !successTransition.equals(sibling.getOutcome())) {
-          log.debug("Parallel assignment not finished or has not succesfull outcome: assignment.id=${sibling.getId()}")
+        if (sibling.getFinished() == null) {
+          log.debug("Parallel assignment is not finished: assignment.id=${sibling.getId()}")
           execution.waitForSignal()
           return
         }
+        if (sibling.getOutcome() != successTransition)
+          resultTransition = sibling.getOutcome()
       }
 
-      log.debug("All of parallel assignments have been finished successfully")
       ExecutionService es = WfHelper.getWfEngineAPI().getProcessEngine().getExecutionService()
-
       Map<String, Object> params = new HashMap<String, Object>()
       params.put("assignment", assignment.getMasterAssignment())
 
-      es.signalExecutionById(execution.getId(), signalName, params)
+      if (resultTransition != successTransition)
+        log.debug("Some of parallel assignments have been finished unsuccessfully")
+      else
+        log.debug("All of parallel assignments have been finished successfully")
+
+      es.signalExecutionById(execution.getId(), resultTransition, params)
     }
   }
 }
