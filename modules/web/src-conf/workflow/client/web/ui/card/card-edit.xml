@@ -45,6 +45,11 @@
                                                 <lookupField id="proc" datasource="cardDs" property="proc"
                                                              optionsDatasource="procDs" width="${width}"/>
                                             </row>
+                                            <row>
+                                                <label value="msg://state"/>
+                                                <textField id="state" datasource="cardDs" property="state"
+                                                             width="${width}" editable="false"/>
+                                            </row>
                                         </rows>
                                     </grid>
                                 </vbox>
