@@ -25,7 +25,7 @@
                 <columns>
                     <column id="description" caption="msg://description"/>
                     <column id="proc.name" caption="msg://procName"/>
-                    <column id="state" caption="msg://state"/>
+                    <column id="locState" caption="msg://state"/>
                 </columns>
                 <rows datasource="cardDs"/>
             </table>

@@ -23,12 +23,10 @@
             </hbox>
             <table id="aTable" editable="false">
                 <columns>
-                    <column id="description" caption="msg://description">
-                        <!--<formatter class=""-->
-                    </column>
+                    <column id="locDescription" caption="msg://description"/>
                     <column id="card.description" caption="msg://card"/>
                     <column id="card.proc.name" caption="msg://procName"/>
-                    <column id="card.state" caption="msg://state"/>
+                    <column id="card.locState" caption="msg://state"/>
                 </columns>
                 <rows datasource="aDs"/>
             </table>

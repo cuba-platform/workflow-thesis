@@ -11,10 +11,12 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -146,5 +148,16 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    @MetaProperty
+    public String getLocState() {
+        if (getState() == null)
+            return "";
+        if (getProc() != null) {
+            String messagesPack = getProc().getMessagesPack();
+            return MessageUtils.loadString(messagesPack, "msg://" + getState());
+        }
+        return getState();
     }
 }

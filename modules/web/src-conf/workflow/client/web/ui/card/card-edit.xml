@@ -16,6 +16,12 @@
         </datasource>
 
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local"/>
+
+        <collectionDatasource id="lookupRoleDs" class="com.haulmont.workflow.core.entity.ProcRole" view="_local">
+            <query>
+                select pr from wf$ProcRole pr where pr.proc.id = :custom$procId order by pr.code
+            </query>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width = 400>
@@ -47,7 +53,7 @@
                                             </row>
                                             <row>
                                                 <label value="msg://state"/>
-                                                <textField id="state" datasource="cardDs" property="state"
+                                                <textField id="state" datasource="cardDs" property="locState"
                                                              width="${width}" editable="false"/>
                                             </row>
                                         </rows>
@@ -77,7 +83,7 @@
                 <tab id="rolesTab" caption="msg://rolesTab">
                     <vbox margin="true" expand="rolesTable">
                         <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                            <button id="createRole" action="rolesTable.create" icon="icons/create.png"/>
+                            <lookupField id="createRoleLookup"/>
                             <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
                             <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
                         </hbox>

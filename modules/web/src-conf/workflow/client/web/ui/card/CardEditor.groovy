@@ -24,15 +24,23 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
 import com.haulmont.cuba.web.app.FileDownloadHelper
 import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.ProcRole
 import java.util.List
 import workflow.client.web.ui.actions.ActionsFrame
 import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.security.entity.User
+import com.haulmont.workflow.core.entity.CardRole
 
 public class CardEditor extends AbstractEditor {
 
   private Datasource<Card> cardDs
+  private CollectionDatasource<CardRole, UUID> rolesDs
+  private CollectionDatasource<ProcRole, UUID> lookupRoleDs
   private Table attachmentsTable
-  private List rolesButtons
+  private List rolesActions
+  private LookupField roleCreateLookup
+
+  private String createRoleCaption
 
   def CardEditor(IFrame frame) {
     super(frame);
@@ -41,9 +49,14 @@ public class CardEditor extends AbstractEditor {
   protected void init(Map<String, Object> params) {
     super.init(params);
 
+    createRoleCaption = getMessage('createRoleCaption')
     cardDs = getDsContext().get('cardDs')
-
+    rolesDs = getDsContext().get('rolesDs')
+    lookupRoleDs = getDsContext().get('lookupRoleDs')
     attachmentsTable = getComponent('attachmentsTable')
+    roleCreateLookup = getComponent('createRoleLookup')
+    rolesActions = [roleCreateLookup, getComponent('editRole'), getComponent('removeRole')]
+
     TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable)
     attachmentsTH.createCreateAction([
             getParameters: { [:] },
@@ -53,15 +66,14 @@ public class CardEditor extends AbstractEditor {
     attachmentsTH.createRemoveAction(false)
 
     LookupField procLookup = getComponent('proc')
-    procLookup.addListener({
-      Object source, String property, Object prevValue, Object value ->
+    procLookup.addListener({ Object source, String property, Object prevValue, Object value ->
       if (value == null)
         enableRolesChange(false)
       else
         enableRolesChange(true)
+      lookupRoleDs.refresh([procId: value])
+      initRoleCreateLookup()
     } as ValueListener)
-
-    rolesButtons = [getComponent('createRole'), getComponent('editRole'), getComponent('removeRole')]
 
     Table rolesTable = getComponent('rolesTable')
     TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable)
@@ -72,11 +84,28 @@ public class CardEditor extends AbstractEditor {
     rolesTH.createEditAction(WindowManager.OpenType.DIALOG)
     rolesTH.createRemoveAction(false)
 
-    CollectionDatasource rolesDs = getDsContext().get('rolesDs')
-    rolesDs.addListener([collectionChanged: {
-      CollectionDatasource ds, Operation operation ->
+    rolesDs.addListener([collectionChanged: { CollectionDatasource ds, Operation operation ->
       procLookup.setEnabled(ds.getItemIds().isEmpty())
+      initRoleCreateLookup()
     }] as CollectionDsListenerAdapter)
+
+    roleCreateLookup.addListener({Object source, String property, Object prevValue, Object value ->
+      if (value && value != createRoleCaption) {
+        def lookupHandler = { Collection items ->
+          if (!items.isEmpty()) {
+            User user = items.iterator().next()
+            CardRole cr = new CardRole()
+            cr.setProcRole(value)
+            cr.setUser(user)
+            cr.setCard(getItem())
+            rolesDs.addItem(cr) 
+          }
+        }
+        openLookup('sec$User.browse', lookupHandler as Window.Lookup.Handler, WindowManager.OpenType.THIS_TAB)
+
+        roleCreateLookup.setValue(null) 
+      }
+    } as ValueListener)
   }
 
   public void setItem(Entity item) {
@@ -102,7 +131,21 @@ public class CardEditor extends AbstractEditor {
   }
 
   private void enableRolesChange(boolean enable) {
-    rolesButtons.each {Button btn -> btn.setEnabled(enable) }
+    rolesActions.each { Component comp -> comp.setEnabled(enable) }
   }
 
+  private void initRoleCreateLookup() {
+    // add ProcRole if it has multiUser == true or not added yet
+    List items = getDsItems(lookupRoleDs)
+            .findAll { ProcRole pr -> 
+              pr.getMultiUser() || !getDsItems(rolesDs).find { CardRole cr -> cr.getProcRole() == pr }
+            }
+    items.add(0, createRoleCaption)
+    roleCreateLookup.setOptionsList(items)
+    roleCreateLookup.setNullOption(createRoleCaption)
+  }
+
+  private List getDsItems(CollectionDatasource ds) {
+    ds.getItemIds().asList().collect { id -> ds.getItem(id) }
+  }
 }

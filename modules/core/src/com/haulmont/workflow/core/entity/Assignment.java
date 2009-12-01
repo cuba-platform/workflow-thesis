@@ -11,7 +11,9 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -122,5 +124,14 @@ public class Assignment extends StandardEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @MetaProperty
+    public String getLocDescription() {
+        if (getCard() != null && getCard().getProc() != null) {
+            String messagesPack = getCard().getProc().getMessagesPack();
+            return MessageUtils.loadString(messagesPack, getDescription());
+        }
+        return getDescription() != null ? getDescription() : "";
     }
 }
