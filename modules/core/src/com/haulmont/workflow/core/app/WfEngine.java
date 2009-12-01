@@ -186,10 +186,16 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public ProcessEngine getProcessEngine() {
         if (processEngine == null) {
             synchronized (this) {
-                if (processEngine == null) {
-                    processEngine = new Configuration()
-                            .setResource(getJbpmConfigName())
-                            .buildProcessEngine();
+                Transaction tx = Locator.createTransaction();
+                try {
+                    if (processEngine == null) {
+                        processEngine = new Configuration()
+                                .setResource(getJbpmConfigName())
+                                .buildProcessEngine();
+                    }
+                    tx.commit();
+                } finally {
+                    tx.end();
                 }
             }
         }

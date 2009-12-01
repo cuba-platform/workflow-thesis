@@ -67,7 +67,7 @@ create table WF_ASSIGNMENT (
     DELETED_BY varchar(50),
     USER_ID uuid,
     CARD_ID uuid,
-    MASTER_ASSIGNMENT_ID varchar(36),
+    MASTER_ASSIGNMENT_ID uuid,
     NAME varchar(255),
     DESCRIPTION varchar(1000),
     JBPM_PROCESS_ID varchar(255),
