@@ -1,0 +1,22 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.ActionsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <#assign width=200>
+    <layout>
+        <vbox spacing="true">
+            <label id="assignmentLab" value="msg://assignment"/>
+            <textField id="descrText" rows="2" visible="false" width="200px"/>
+            <label id="commentLab" value="msg://comment" visible="false"/>
+            <textField id="commentText" rows="5" visible="false" width="200px"/>
+
+            <button id="actionBtn0" visible="false" width="${width}"/>
+            <button id="actionBtn1" visible="false" width="${width}"/>
+            <button id="actionBtn2" visible="false" width="${width}"/>
+            <button id="actionBtn3" visible="false" width="${width}"/>
+            <button id="actionBtn4" visible="false" width="${width}"/>
+        </vbox>
+    </layout>
+
+</window>

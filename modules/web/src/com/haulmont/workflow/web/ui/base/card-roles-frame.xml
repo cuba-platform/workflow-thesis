@@ -1,0 +1,31 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.CardRolesFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext>
+        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="_local">
+            <query>
+                select pr from wf$ProcRole pr where pr.proc.id = :custom$procId order by pr.code
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true">
+        <vbox margin="true" expand="rolesTable" height="100%">
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <lookupField id="createRoleLookup"/>
+                <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
+                <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
+            </hbox>
+            <table id="rolesTable" editable="false">
+                <columns>
+                    <column id="procRole.name" caption="msg://role"/>
+                    <column id="user" caption="msg://user"/>
+                </columns>
+                <rows datasource="cardRolesDs"/>
+            </table>
+        </vbox>
+    </layout>
+
+</window>
