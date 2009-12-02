@@ -16,7 +16,7 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
-import com.haulmont.workflow.core.global.WfService;
+import com.haulmont.workflow.core.app.WfService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.ExecutionService;

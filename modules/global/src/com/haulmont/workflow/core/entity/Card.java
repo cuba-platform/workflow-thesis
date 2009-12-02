@@ -10,7 +10,6 @@
  */
 package com.haulmont.workflow.core.entity;
 
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -34,13 +33,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
     protected String updatedBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
     protected String deletedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)

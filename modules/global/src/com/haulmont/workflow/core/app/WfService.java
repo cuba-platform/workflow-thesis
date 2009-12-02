@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.core.global;
+package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.global.AssignmentInfo;
 
 import javax.ejb.Local;
-import java.util.List;
 import java.util.UUID;
 
 @Local

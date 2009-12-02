@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.core.global.WfService;
+import com.haulmont.workflow.core.app.WfService;
 
 public class ProcessAction extends AbstractAction {
 

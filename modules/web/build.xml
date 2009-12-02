@@ -15,15 +15,19 @@
         <include name="*.jar"/>
     </fileset>
 
-    <fileset id="cuba-jars" dir="${root.dir}/cuba/build">
-        <include name="*.jar"/>
+    <fileset id="cuba-jars-fs" dir="${root.dir}/cuba/build">
+        <include name="cuba-global.jar"/>
+        <include name="20cuba-core.jar"/>
+        <include name="22cuba-gui.jar"/>
+        <include name="23cuba-web.jar"/>
     </fileset>
 
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
-        <fileset refid="cuba-jars"/>
+        <fileset refid="cuba-jars-fs"/>
+        <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/core"/>
     </path>
 
@@ -31,7 +35,8 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
-        <fileset refid="cuba-jars"/>
+        <fileset refid="cuba-jars-fs"/>
+        <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/core"/>
     </path>
 

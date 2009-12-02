@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.core.global.WfService;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 
 import java.util.List;
