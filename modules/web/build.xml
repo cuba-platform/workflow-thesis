@@ -17,7 +17,6 @@
 
     <fileset id="cuba-jars-fs" dir="${root.dir}/cuba/build">
         <include name="cuba-global.jar"/>
-        <include name="20cuba-core.jar"/>
         <include name="22cuba-gui.jar"/>
         <include name="23cuba-web.jar"/>
     </fileset>
@@ -28,7 +27,6 @@
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars-fs"/>
         <pathelement location="${prod.out.dir}/global"/>
-        <pathelement location="${prod.out.dir}/core"/>
     </path>
 
     <path id="test-compile-cp">
@@ -37,7 +35,7 @@
         <fileset refid="chile-jars"/>
         <fileset refid="cuba-jars-fs"/>
         <pathelement location="${prod.out.dir}/global"/>
-        <pathelement location="${prod.out.dir}/core"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>
 
     <target name="build-module" depends="base-mod.build-module">
