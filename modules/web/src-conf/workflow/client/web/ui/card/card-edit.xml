@@ -48,7 +48,7 @@
                                             <row>
                                                 <label value="msg://state"/>
                                                 <textField id="state" datasource="cardDs" property="locState"
-                                                             width="${width}" editable="false"/>
+                                                           width="${width}" editable="false"/>
                                             </row>
                                         </rows>
                                     </grid>
@@ -83,5 +83,11 @@
                 <iframe id="actionsFrame" src="/com/haulmont/workflow/web/ui/base/actions-frame.xml"/>
             </vbox>
         </hbox>
+
+        <vbox id="resolutionsPane" expand="resolutionsFrame" height="250px">
+            <label value="msg://resolutions"/>
+            <iframe id="resolutionsFrame" src="/com/haulmont/workflow/web/ui/base/resolutions-frame.xml"/>
+        </vbox>
+
     </layout>
 </window>

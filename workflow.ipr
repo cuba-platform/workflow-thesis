@@ -523,7 +523,9 @@
         <root url="jar://$PROJECT_DIR$/../cuba/build/22cuba-gui.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/gui/src" />
+      </SOURCES>
     </library>
   </component>
 </project>

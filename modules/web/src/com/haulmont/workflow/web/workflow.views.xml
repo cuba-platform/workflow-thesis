@@ -29,4 +29,9 @@
         <property name="card" view="browse"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
+        <property name="card" view="browse"/>
+        <property name="user" view="_minimal"/>
+    </view>
+
 </views>

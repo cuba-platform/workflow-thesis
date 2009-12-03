@@ -127,11 +127,27 @@ public class Assignment extends StandardEntity {
     }
 
     @MetaProperty
+    public String getLocName() {
+        return getLocalizedAttribute(getName());
+    }
+
+    @MetaProperty
     public String getLocDescription() {
+        return getLocalizedAttribute(getDescription());
+    }
+
+    @MetaProperty
+    public String getLocOutcome() {
+        return getLocalizedAttribute(getName() + "." + getOutcome());
+    }
+
+    private String getLocalizedAttribute(String value) {
         if (getCard() != null && getCard().getProc() != null) {
             String messagesPack = getCard().getProc().getMessagesPack();
-            return MessageUtils.loadString(messagesPack, getDescription());
+            if (!value.startsWith(MessageUtils.MARK))
+                value = MessageUtils.MARK + value;
+            return MessageUtils.loadString(messagesPack, value);
         }
-        return getDescription() != null ? getDescription() : "";
+        return value != null ? value : "";
     }
 }

@@ -34,6 +34,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     protected Table attachmentsTable;
 
     protected CardRolesFrame cardRolesFrame;
+    protected ResolutionsFrame resolutionsFrame;
 
     public AbstractCardEditor(IFrame frame) {
         super(frame);
@@ -44,6 +45,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         cardRolesDs = getDsContext().get("cardRolesDs");
         attachmentsTable = getComponent("attachmentsTable");
         cardRolesFrame = getComponent("cardRolesFrame");
+        resolutionsFrame = getComponent("resolutionsFrame");
     }
 
     @Override
@@ -75,6 +77,9 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             cardRolesFrame.init();
         }
 
+        if (resolutionsFrame != null) {
+            resolutionsFrame.init();
+        }
     }
 
     @Override
@@ -85,6 +90,10 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (cardRolesFrame != null) {
             cardRolesFrame.setCard((Card) getItem());
+        }
+
+        if (resolutionsFrame != null) {
+            resolutionsFrame.setCard((Card) getItem());
         }
 
         final ActionsFrame actionsFrame = getComponent("actionsFrame");

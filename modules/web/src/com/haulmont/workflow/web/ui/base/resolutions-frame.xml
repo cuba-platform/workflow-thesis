@@ -1,0 +1,33 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.ResolutionsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext>
+        <collectionDatasource id="resolutionsDs"
+                              class="com.haulmont.workflow.core.entity.Assignment"
+                              view="resolutions">
+            <query>
+                select a from wf$Assignment a
+                where a.card.id = :custom$cardId and a.finished is not null and a.user is not null
+                order by a.finished
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true">
+        <vbox expand="resolutionsTable" height="100%">
+            <table id="resolutionsTable" editable="false">
+                <columns>
+                    <column id="finished" caption="msg://finishedDate"/>
+                    <column id="user" caption="msg://user"/>
+                    <column id="locName" caption="msg://cardState"/>
+                    <column id="locOutcome" caption="msg://outcome"/>
+                    <column id="comment" caption="msg://comment"/>
+                </columns>
+                <rows datasource="resolutionsDs"/>
+            </table>
+        </vbox>
+    </layout>
+
+</window>
