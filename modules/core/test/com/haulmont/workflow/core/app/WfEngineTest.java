@@ -10,10 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.workflow.core.WfTestCase;
 import org.jbpm.api.*;
 import org.jbpm.api.task.Task;
