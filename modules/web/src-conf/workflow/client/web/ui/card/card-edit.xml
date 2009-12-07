@@ -24,54 +24,58 @@
         <hbox id="mainPane" expand="tabsheet">
             <tabsheet id="tabsheet">
                 <tab id="mainTab" caption="msg://mainTab">
-                    <vbox margin="true" expand="attachmentsPane">
-                        <hbox spacing="true">
-                            <hbox stylename="edit-area">
-                                <vbox margin="true">
-                                    <grid spacing="true" width="100%">
-                                        <columns>
-                                            <column flex="1"/>
-                                            <column flex="1"/>
-                                            <column flex="1"/>
-                                        </columns>
-                                        <rows>
-                                            <row>
-                                                <label value="msg://description"/>
-                                                <textField id="description" datasource="cardDs" property="description"
-                                                           width="${width}"/>
-                                            </row>
-                                            <row>
-                                                <label value="msg://procName"/>
-                                                <lookupField id="proc" datasource="cardDs" property="proc"
-                                                             optionsDatasource="procDs" width="${width}"/>
-                                            </row>
-                                            <row>
-                                                <label value="msg://state"/>
-                                                <textField id="state" datasource="cardDs" property="locState"
-                                                           width="${width}" editable="false"/>
-                                            </row>
-                                        </rows>
-                                    </grid>
-                                </vbox>
-                            </hbox>
-                        </hbox>
+                    <accessControl data="workflow.client.web.ui.card.CardAccessData" param="accessData">
+                        <editable property="notStarted"/>
 
-                        <vbox id="attachmentsPane" expand="attachmentsTable">
-                            <label value="msg://attachments"/>
-                            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                                <button id="createRole" action="attachmentsTable.create" icon="icons/create.png"/>
-                                <button id="editRole" action="attachmentsTable.edit" icon="icons/edit.png"/>
-                                <button id="removeRole" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                        <vbox margin="true" expand="attachmentsPane">
+                            <hbox spacing="true">
+                                <hbox stylename="edit-area">
+                                    <vbox margin="true">
+                                        <grid spacing="true" width="100%">
+                                            <columns>
+                                                <column flex="1"/>
+                                                <column flex="1"/>
+                                                <column flex="1"/>
+                                            </columns>
+                                            <rows>
+                                                <row>
+                                                    <label value="msg://description"/>
+                                                    <textField id="description" datasource="cardDs" property="description"
+                                                               width="${width}"/>
+                                                </row>
+                                                <row>
+                                                    <label value="msg://procName"/>
+                                                    <lookupField id="proc" datasource="cardDs" property="proc"
+                                                                 optionsDatasource="procDs" width="${width}"/>
+                                                </row>
+                                                <row>
+                                                    <label value="msg://state"/>
+                                                    <textField id="state" datasource="cardDs" property="locState"
+                                                               width="${width}" editable="false"/>
+                                                </row>
+                                            </rows>
+                                        </grid>
+                                    </vbox>
+                                </hbox>
                             </hbox>
-                            <table id="attachmentsTable" editable="false">
-                                <columns>
-                                    <column id="name" caption="msg://attachName"/>
-                                    <column id="file.name" caption="msg://fileName"/>
-                                </columns>
-                                <rows datasource="attachmentsDs"/>
-                            </table>
+
+                            <vbox id="attachmentsPane" expand="attachmentsTable">
+                                <label value="msg://attachments"/>
+                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                    <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
+                                    <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                                    <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                                </hbox>
+                                <table id="attachmentsTable" editable="false" sortable="true">
+                                    <columns>
+                                        <column id="name" caption="msg://attachName"/>
+                                        <column id="file.name" caption="msg://fileName"/>
+                                    </columns>
+                                    <rows datasource="attachmentsDs"/>
+                                </table>
+                            </vbox>
                         </vbox>
-                    </vbox>
+                    </accessControl>
                 </tab>
 
                 <tab id="rolesTab" caption="msg://rolesTab">

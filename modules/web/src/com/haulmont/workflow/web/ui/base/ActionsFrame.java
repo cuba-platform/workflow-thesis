@@ -51,7 +51,11 @@ public class ActionsFrame extends AbstractFrame {
         commentText = getComponent("commentText");
 
         List<String> actions = new ArrayList<String>();
-        actions.add(WfConstants.ACTION_SAVE);
+
+        AbstractWfAccessData accessData = getContext().getParamValue("accessData");
+        if (accessData == null || accessData.getSaveEnabled()) {
+            actions.add(WfConstants.ACTION_SAVE);
+        }
 
         if (card.getJbpmProcessId() != null) {
             WfService wfs = ServiceLocator.lookup(WfService.JNDI_NAME);
