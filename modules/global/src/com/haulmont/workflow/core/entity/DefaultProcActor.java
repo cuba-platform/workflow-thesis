@@ -48,7 +48,7 @@ public class DefaultProcActor extends StandardEntity {
         this.procRole = procRole;
     }
 
-    public Boolean isNotifyByEmail() {
+    public Boolean getNotifyByEmail() {
         return notifyByEmail;
     }
 
