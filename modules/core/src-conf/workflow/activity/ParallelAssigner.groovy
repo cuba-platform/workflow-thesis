@@ -28,6 +28,7 @@ import org.jbpm.api.activity.ActivityExecution
 import java.util.HashMap
 import java.util.List
 import java.util.Map
+import com.haulmont.workflow.core.entity.CardRole
 
 public class ParallelAssigner extends Assigner {
 
@@ -44,13 +45,13 @@ public class ParallelAssigner extends Assigner {
     Card card = findCard(execution)
 
     Query q = em.createQuery('''
-          select cr.user from wf$CardRole cr
+          select cr from wf$CardRole cr
           where cr.card.id = ?1 and cr.procRole.code = ?2
         ''')
     q.setParameter(1, card.getId())
     q.setParameter(2, role)
-    List<User> users = q.getResultList()
-    if (users.isEmpty())
+    List<CardRole> cardRoles = q.getResultList()
+    if (cardRoles.isEmpty())
       throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
 
     Assignment master = new Assignment()
@@ -59,7 +60,7 @@ public class ParallelAssigner extends Assigner {
     master.setCard(card)
     em.persist(master)
 
-    for (User user: users) {
+    for (CardRole cr: cardRoles) {
       Assignment assignment = new Assignment()
       assignment.setName(execution.getActivityName())
 
@@ -70,9 +71,12 @@ public class ParallelAssigner extends Assigner {
 
       assignment.setJbpmProcessId(execution.getProcessInstance().getId())
       assignment.setCard(card)
-      assignment.setUser(user)
+      assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
       em.persist(assignment)
+
+      if (cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
+        sendEmail(assignment, cr.user)
     }
   }
 

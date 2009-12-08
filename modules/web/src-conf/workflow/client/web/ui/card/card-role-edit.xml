@@ -43,6 +43,11 @@
                             <lookupField id="userLookup" datasource="roleDs" property="user"
                                        optionsDatasource="usersDs" width="${width}"/>
                         </row>
+                        <row>
+                            <label value="msg://notifyByEmail"/>
+                            <checkBox id="notifyByEmailCb" datasource="roleDs" property="notifyByEmail"
+                                       width="${width}"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>

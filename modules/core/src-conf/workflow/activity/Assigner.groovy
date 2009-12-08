@@ -15,10 +15,16 @@ import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.app.EmailerAPI
+import com.haulmont.cuba.core.app.EmailerMBean
+import com.haulmont.cuba.core.global.ScriptingProvider
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.CardRole
 import org.apache.commons.lang.StringUtils
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 import workflow.activity.CardActivity
@@ -26,6 +32,8 @@ import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
+
+  private Log log = LogFactory.getLog(Assigner.class)
 
   String assignee
   String role
@@ -42,6 +50,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   protected void createAssignment(ActivityExecution execution) {
     EntityManager em = PersistenceProvider.getEntityManager()
 
+    CardRole cr
     User user
     Card card = findCard(execution)
 
@@ -51,16 +60,18 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       List<User> list = q.getResultList()
       if (list.isEmpty())
         throw new RuntimeException('User not found: ' + assignee)
+      cr = null
       user = list.get(0)
     } else {
-      Query q = em.createQuery('select cr.user from wf$CardRole cr ' +
+      Query q = em.createQuery('select cr from wf$CardRole cr ' +
               'where cr.card.id = ?1 and cr.procRole.code = ?2')
       q.setParameter(1, card.getId())
       q.setParameter(2, role)
-      List<User> list = q.getResultList()
+      List<CardRole> list = q.getResultList()
       if (list.isEmpty())
         throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
-      user = list.get(0)
+      cr = list.get(0)
+      user = cr.getUser()
     }
 
     Assignment assignment = new Assignment()
@@ -76,9 +87,36 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setCard(card)
 
     em.persist(assignment)
+
+    if ((cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
+      sendEmail(assignment, user)
   }
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     execution.take(signalName)
+  }
+
+  protected void sendEmail(Assignment assignment, User user) {
+    String subject
+    String body
+
+    try {
+      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/AssignmentNotification.groovy'
+      Binding binding = new Binding(['assignment': assignment, 'user': user])
+      ScriptingProvider.runGroovyScript(script, binding)
+      subject = binding.getVariable('subject')
+      body = binding.getVariable('body')
+    } catch (Exception e) {
+      log.warn("Unable to get email subject and body, using defaults", e)
+      subject = "New assignment: ${assignment.card.description} - ${assignment.card.locState}"
+      body = """
+You've got an assignment: ${assignment.card.description} - ${assignment.card.locState}
+"""
+    }
+
+    Thread.startDaemon('emailThread') {
+      EmailerAPI emailer = Locator.lookupMBean(EmailerMBean.class).getAPI()
+      emailer.sendEmail(user.email, subject, body)
+    }
   }
 }

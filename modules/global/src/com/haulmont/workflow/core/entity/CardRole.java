@@ -33,6 +33,9 @@ public class CardRole extends StandardEntity {
     @JoinColumn(name = "USER_ID")
     private User user;
 
+    @Column(name = "NOTIFY_BY_EMAIL")
+    private Boolean notifyByEmail = true;
+
     public Card getCard() {
         return card;
     }
@@ -55,5 +58,13 @@ public class CardRole extends StandardEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getNotifyByEmail() {
+        return notifyByEmail;
+    }
+
+    public void setNotifyByEmail(Boolean notifyByEmail) {
+        this.notifyByEmail = notifyByEmail;
     }
 }

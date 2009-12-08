@@ -29,6 +29,9 @@ public class DefaultProcActor extends StandardEntity {
     @JoinColumn(name = "PROC_ROLE_ID")
     private ProcRole procRole;
 
+    @Column(name = "NOTIFY_BY_EMAIL")
+    private Boolean notifyByEmail = true;
+
     public User getUser() {
         return user;
     }
@@ -43,5 +46,13 @@ public class DefaultProcActor extends StandardEntity {
 
     public void setProcRole(ProcRole procRole) {
         this.procRole = procRole;
+    }
+
+    public Boolean isNotifyByEmail() {
+        return notifyByEmail;
+    }
+
+    public void setNotifyByEmail(Boolean notifyByEmail) {
+        this.notifyByEmail = notifyByEmail;
     }
 }

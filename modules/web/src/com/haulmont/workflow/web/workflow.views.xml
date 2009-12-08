@@ -14,7 +14,7 @@
         <property name="attachments" view="card-edit"/>
     </view>
 
-    <view class="com.haulmont.workflow.core.entity.CardRole" name="card-edit">
+    <view class="com.haulmont.workflow.core.entity.CardRole" name="card-edit" extends="_local">
         <property name="card" view="_local"/>
         <property name="procRole" view="_minimal"/>
         <property name="user" view="_minimal"/>
