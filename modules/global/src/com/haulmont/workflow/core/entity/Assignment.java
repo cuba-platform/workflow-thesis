@@ -128,17 +128,17 @@ public class Assignment extends StandardEntity {
 
     @MetaProperty
     public String getLocName() {
-        return getLocalizedAttribute(getName());
+        return getLocalizedAttribute(name);
     }
 
     @MetaProperty
     public String getLocDescription() {
-        return getLocalizedAttribute(getDescription());
+        return getLocalizedAttribute(description);
     }
 
     @MetaProperty
     public String getLocOutcome() {
-        return getLocalizedAttribute(getName() + "." + getOutcome());
+        return outcome == null ? null : getLocalizedAttribute(name + "." + outcome);
     }
 
     private String getLocalizedAttribute(String value) {
