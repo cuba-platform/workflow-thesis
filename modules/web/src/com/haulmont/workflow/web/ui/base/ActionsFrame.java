@@ -53,7 +53,7 @@ public class ActionsFrame extends AbstractFrame {
         List<String> actions = new ArrayList<String>();
 
         AbstractWfAccessData accessData = getContext().getParamValue("accessData");
-        if (accessData == null && accessData.getSaveEnabled()) {
+        if (accessData == null || accessData.getSaveEnabled()) {
             actions.add(WfConstants.ACTION_SAVE);
         }
 
@@ -72,7 +72,7 @@ public class ActionsFrame extends AbstractFrame {
                 actions.addAll(info.getActions());
             }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
-                (accessData == null && accessData.getStartProcessEnabled())) {
+                (accessData == null || accessData.getStartProcessEnabled())) {
             actions.add(WfConstants.ACTION_START);
         }
 
