@@ -21,4 +21,6 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
     }
 
     public abstract boolean getSaveEnabled();
+
+    public abstract boolean getStartProcessEnabled();
 }

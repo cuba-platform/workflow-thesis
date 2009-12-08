@@ -86,7 +86,9 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
 
-        FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+        if (attachmentsTable != null) {
+            FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+        }
 
         if (cardRolesFrame != null) {
             cardRolesFrame.setCard((Card) getItem());
@@ -98,17 +100,19 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         final ActionsFrame actionsFrame = getComponent("actionsFrame");
 
-        if (PersistenceHelper.isNew(item)) {
-            cardDs.addListener(new DsListenerAdapter<Card>() {
-                @Override
-                public void valueChanged(Card source, String property, Object prevValue, Object value) {
-                    if ("proc".equals(property)) {
-                        actionsFrame.initActions(source);
+        if (actionsFrame != null) {
+            if (PersistenceHelper.isNew(item)) {
+                cardDs.addListener(new DsListenerAdapter<Card>() {
+                    @Override
+                    public void valueChanged(Card source, String property, Object prevValue, Object value) {
+                        if ("proc".equals(property)) {
+                            actionsFrame.initActions(source);
+                        }
                     }
-                }
-            });
-        } else {
-            actionsFrame.initActions((Card) getItem());
+                });
+            } else {
+                actionsFrame.initActions((Card) getItem());
+            }
         }
     }
 }

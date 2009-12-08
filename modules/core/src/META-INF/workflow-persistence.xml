@@ -30,6 +30,7 @@
         <class>com.haulmont.workflow.core.entity.CardRole</class>
         <class>com.haulmont.workflow.core.entity.Attachment</class>
         <class>com.haulmont.workflow.core.entity.Assignment</class>
+        <class>com.haulmont.workflow.core.entity.DefaultProcActor</class>
 
         <properties>
             <property name="openjpa.ManagedRuntime"

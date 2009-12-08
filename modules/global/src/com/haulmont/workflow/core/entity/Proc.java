@@ -14,10 +14,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity(name = "wf$Proc")
@@ -38,6 +35,7 @@ public class Proc extends StandardEntity {
 
     @OneToMany(mappedBy = "proc")
     @Aggregation
+    @OrderBy("code")
     private List<ProcRole> roles;
 
     public String getName() {

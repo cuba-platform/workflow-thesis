@@ -12,8 +12,10 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "wf$ProcRole")
 @Table(name = "WF_PROC_ROLE")
@@ -34,6 +36,17 @@ public class ProcRole extends StandardEntity {
 
     @Column(name = "IS_MULTI_USER")
     private Boolean multiUser;
+
+    @OneToMany(mappedBy = "procRole")
+    private List<DefaultProcActor> defaultProcActors;
+
+    public List<DefaultProcActor> getDefaultProcActors() {
+        return defaultProcActors;
+    }
+
+    public void setDefaultProcActors(List<DefaultProcActor> defaultProcActors) {
+        this.defaultProcActors = defaultProcActors;
+    }
 
     public Proc getProc() {
         return proc;

@@ -51,4 +51,10 @@ public class CardAccessData extends AbstractWfAccessData {
     }
     return saveEnabled
   }
+
+  public boolean getStartProcessEnabled() {
+    return true;
+  }
+
+
 }
