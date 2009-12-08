@@ -11,6 +11,8 @@
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.core.SecurityProvider
+import com.haulmont.cuba.core.global.ConfigProvider
+import com.haulmont.cuba.core.global.GlobalConfig
 
 Assignment a = assignment
 User u = user
@@ -38,5 +40,9 @@ You've got an assignment: ${a.card.description} - ${a.card.locState}
 }
 
 String makeLink(Assignment a) {
-  return "http://localhost:8080/workflow/open?screen=wf\$Card.edit&item=wf\$Card-${a.card.id}&params=item:wf\$Card-${a.card.id}"
+  GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class)
+  return "http://${c.webHostName}:${c.webPort}/${c.webContextName}/open?" +
+    "screen=wf\$Card.edit&" +
+    "item=wf\$Card-${a.card.id}&" +
+    "params=item:wf\$Card-${a.card.id}"
 }
