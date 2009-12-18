@@ -38,6 +38,7 @@ public class ProcRole extends StandardEntity {
     private Boolean multiUser;
 
     @OneToMany(mappedBy = "procRole")
+    @Aggregation
     private List<DefaultProcActor> defaultProcActors;
 
     public List<DefaultProcActor> getDefaultProcActors() {

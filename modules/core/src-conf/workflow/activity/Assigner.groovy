@@ -78,7 +78,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setName(execution.getActivityName())
 
     if (StringUtils.isBlank(description))
-      assignment.setDescription('msg://' + execution.getActivityName())
+      assignment.setDescription("msg://${execution.getActivityName()}.description")
     else
       assignment.setDescription(description)
 

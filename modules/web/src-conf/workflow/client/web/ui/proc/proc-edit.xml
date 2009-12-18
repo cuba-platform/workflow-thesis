@@ -11,12 +11,20 @@
                 id="procDs"
                 class="com.haulmont.workflow.core.entity.Proc"
                 view="edit">
-            <collectionDatasource id="rolesDs" property="roles"/>
+            <collectionDatasource id="rolesDs" property="roles">
+                <collectionDatasource id="dpaDs" property="defaultProcActors"/>
+            </collectionDatasource>
         </datasource>
+
+        <!--<collectionDatasource id="dpaDs" class="com.haulmont.workflow.core.entity.DefaultProcActor" view="browse">-->
+            <!--<query>-->
+                <!--select dpa from wf$DefaultProcActor dpa where dpa.procRole.id = :ds$rolesDs-->
+            <!--</query>-->
+        <!--</collectionDatasource>-->
     </dsContext>
 
     <#assign width = 400>
-    <layout expand="rolesPane">
+    <layout expand="rolesSplit">
         <hbox stylename="edit-area">
             <vbox margin="true">
                 <grid spacing="true" width="100%">
@@ -40,22 +48,42 @@
                 </grid>
             </vbox>
         </hbox>
-        <vbox id="rolesPane" expand="rolesTable">
-            <label value="msg://roles"/>
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="rolesTable.create" icon="icons/create.png"/>
-                <button action="rolesTable.edit" icon="icons/edit.png"/>
-                <button action="rolesTable.remove" icon="icons/remove.png"/>
-            </hbox>
-            <table id="rolesTable" editable="false">
-                <columns>
-                    <column id="code" caption="msg://code"/>
-                    <column id="name" caption="msg://name"/>
-                    <column id="multiUser" caption="msg://multiUser"/>
-                </columns>
-                <rows datasource="rolesDs"/>
-            </table>
-        </vbox>
+
+        <split id="rolesSplit" orientation="horizontal">
+            <vbox expand="rolesTable" margin="true">
+                <label value="msg://roles"/>
+                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                    <button action="rolesTable.create" icon="icons/create.png"/>
+                    <button action="rolesTable.edit" icon="icons/edit.png"/>
+                    <button action="rolesTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="rolesTable" editable="false">
+                    <columns>
+                        <column id="code" caption="msg://code"/>
+                        <column id="name" caption="msg://name"/>
+                        <column id="multiUser" caption="msg://multiUser"/>
+                    </columns>
+                    <rows datasource="rolesDs"/>
+                </table>
+            </vbox>
+
+            <vbox expand="dpaTable" margin="true">
+                <label value="msg://dpa"/>
+                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                    <button action="dpaTable.create" icon="icons/create.png"/>
+                    <button action="dpaTable.edit" icon="icons/edit.png"/>
+                    <button action="dpaTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="dpaTable" editable="false">
+                    <columns>
+                        <column id="user" caption="msg://user"/>
+                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                    </columns>
+                    <rows datasource="dpaDs"/>
+                </table>
+            </vbox>
+        </split>
+
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>

@@ -11,6 +11,8 @@
 package com.haulmont.workflow.core.app;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -21,10 +23,13 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.Proc;
+import com.haulmont.workflow.core.entity.ProcRole;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.jbpm.api.*;
 
 import javax.annotation.Nullable;
@@ -72,21 +77,26 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
             ProcessDefinition pd = pdq.uniqueResult();
 
+            Proc proc;
+
             EntityManager em = PersistenceProvider.getEntityManager();
             Query q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
             q.setParameter(1, pd.getKey());
             List<Proc> processes = q.getResultList();
             if (processes.isEmpty()) {
-                Proc proc = new Proc();
+                proc = new Proc();
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
                 proc.setMessagesPack("process." + pName);
+                proc.setRoles(new ArrayList());
                 em.persist(proc);
             } else {
-                Proc proc = processes.get(0);
+                proc = processes.get(0);
                 proc.setName(pd.getName());
                 proc.setMessagesPack("process." + pName);
             }
+
+            deployRoles(pd.getDeploymentId(), proc);
 
             tx.commit();
             return "Deployed: " + deployment;
@@ -95,6 +105,51 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         } finally {
             tx.end();
             logout();
+        }
+    }
+
+    private void deployRoles(String deploymentId, Proc proc) {
+        Set<String> roles = new HashSet<String>();
+
+        RepositoryService rs = getProcessEngine().getRepositoryService();
+        Set<String> resourceNames = rs.getResourceNames(deploymentId);
+        for (String resourceName : resourceNames) {
+            if (resourceName.endsWith(".jpdl.xml")) {
+                InputStream is = rs.getResourceAsStream(deploymentId, resourceName);
+                Document doc = Dom4j.readDocument(is);
+                Element root = doc.getRootElement();
+                for (Element stateElem : Dom4j.elements(root)) {
+                    for (Element element : Dom4j.elements(stateElem)) {
+                        if ("property".equals(element.getName()) && "role".equals(element.attributeValue("name"))) {
+                            Element valueElem = element.element("string");
+                            String role = valueElem.attributeValue("value");
+                            if (!StringUtils.isBlank(role)) {
+                                roles.add(role);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!roles.isEmpty()) {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            for (String role : roles) {
+                boolean exists = false;
+                for (ProcRole procRole : proc.getRoles()) {
+                    if (role.equals(procRole.getCode())) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    ProcRole procRole = new ProcRole();
+                    procRole.setProc(proc);
+                    procRole.setCode(role);
+                    procRole.setName(role);
+                    em.persist(procRole);
+                }
+            }
         }
     }
 

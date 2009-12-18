@@ -1,9 +1,22 @@
 <views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
 
     <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
-        <property name="roles" view="_local"/>
+        <property name="roles" view="edit"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.ProcRole" name="edit" extends="_local">
+        <property name="defaultProcActors" view="browse"/>
     </view>
     
+    <view class="com.haulmont.workflow.core.entity.DefaultProcActor" name="browse" extends="_local">
+        <property name="user" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.DefaultProcActor" name="edit" extends="_local">
+        <property name="procRole" view="_local"/>
+        <property name="user" view="_minimal"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.Card" name="browse" extends="_local">
         <property name="proc" view="_local"/>
     </view>

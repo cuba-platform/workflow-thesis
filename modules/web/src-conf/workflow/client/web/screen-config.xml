@@ -63,6 +63,9 @@
     <screen id="wf$ProcRole.edit"
             template="workflow/client/web/ui/proc/proc-role-edit.xml"/>
 
+    <screen id="wf$DefaultProcActor.edit"
+            template="workflow/client/web/ui/proc/defaultprocactor-edit.xml"/>
+
     <screen id="wf$Card.browse"
             template="workflow/client/web/ui/card/card-browse.xml"/>
 
