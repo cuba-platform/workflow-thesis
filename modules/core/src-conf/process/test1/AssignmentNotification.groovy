@@ -13,6 +13,7 @@ import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.core.SecurityProvider
 import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.cuba.core.global.GlobalConfig
+import com.haulmont.cuba.core.global.GlobalUtils
 
 Assignment a = assignment
 User u = user
@@ -41,7 +42,7 @@ You've got an assignment: ${a.card.description} - ${a.card.locState}
 
 String makeLink(Assignment a) {
   GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class)
-  return "http://${c.webHostName}:${c.webPort}/${c.webContextName}/open?" +
+  return "http://${c.webHostName}:${c.webPort}/${c.webContextName}/${GlobalUtils.generateWebWindowName()}/open?" +
     "screen=wf\$Card.edit&" +
     "item=wf\$Card-${a.card.id}&" +
     "params=item:wf\$Card-${a.card.id}"

@@ -34,6 +34,8 @@ public class CardEditor extends AbstractCardEditor {
       procLookup.addListener(
               { Object source, String property, Object prevValue, Object value ->
                 cardRolesFrame.procChanged(value)
+                if (value)
+                  cardRolesFrame.initDefaultActors(value)
               } as ValueListener
       )
       cardRolesDs.addListener(

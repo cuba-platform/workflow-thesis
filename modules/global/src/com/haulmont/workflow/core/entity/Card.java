@@ -56,7 +56,7 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     private String description;
     
     @OneToMany(mappedBy = "card")
-    @OrderBy("createTs")
+    @OrderBy("code")
     @Aggregation
     private List<CardRole> roles;
 

@@ -120,11 +120,17 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Element root = doc.getRootElement();
                 for (Element stateElem : Dom4j.elements(root)) {
                     for (Element element : Dom4j.elements(stateElem)) {
-                        if ("property".equals(element.getName()) && "role".equals(element.attributeValue("name"))) {
+                        String name = element.attributeValue("name");
+                        if (name != null && "property".equals(element.getName()) &&
+                                ("role".equals(name) || "observers".equals(name)))
+                        {
                             Element valueElem = element.element("string");
                             String role = valueElem.attributeValue("value");
                             if (!StringUtils.isBlank(role)) {
-                                roles.add(role);
+                                String[] strings = role.split(",");
+                                for (String string : strings) {
+                                    roles.add(string.trim());
+                                }
                             }
                         }
                     }

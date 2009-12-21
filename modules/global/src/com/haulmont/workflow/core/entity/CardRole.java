@@ -29,6 +29,9 @@ public class CardRole extends StandardEntity {
     @JoinColumn(name = "PROC_ROLE_ID")
     private ProcRole procRole;
 
+    @Column(name = "CODE")
+    private String code;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
@@ -50,6 +53,14 @@ public class CardRole extends StandardEntity {
 
     public void setProcRole(ProcRole procRole) {
         this.procRole = procRole;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public User getUser() {

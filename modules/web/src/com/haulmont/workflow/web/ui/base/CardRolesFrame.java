@@ -13,21 +13,23 @@ package com.haulmont.workflow.web.ui.base;
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
+
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardRole;
-import com.haulmont.workflow.core.entity.Proc;
-import com.haulmont.workflow.core.entity.ProcRole;
+import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
 import java.util.List;
 
 public class CardRolesFrame extends AbstractFrame {
+
+    private Card card;
 
     private CollectionDatasource<CardRole, UUID> cardRolesDs;
     private CollectionDatasource<ProcRole, UUID> procRolesDs;
@@ -60,6 +62,8 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void setCard(final Card card) {
         Preconditions.checkArgument(card != null, "Card is null");
+
+        this.card = card;
         for (Component component : rolesActions) {
             component.setEnabled(card.getProc() != null);
         }
@@ -75,6 +79,7 @@ public class CardRolesFrame extends AbstractFrame {
                           User user = (User) items.iterator().next();
                           CardRole cr = new CardRole();
                           cr.setProcRole((ProcRole) value);
+                          cr.setCode(((ProcRole) value).getCode());
                           cr.setUser(user);
                           cr.setCard(card);
                           cardRolesDs.addItem(cr);
@@ -101,6 +106,25 @@ public class CardRolesFrame extends AbstractFrame {
 
         for (Component component : rolesActions) {
             component.setEnabled(proc != null);
+        }
+    }
+
+    public void initDefaultActors(Proc proc) {
+        if (!cardRolesDs.getItemIds().isEmpty())
+            return;
+
+        LoadContext ctx = new LoadContext(DefaultProcActor.class);
+        ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId")
+            .addParameter("procId", proc.getId());
+        ctx.setView("edit");
+        List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
+        for (DefaultProcActor dpa : dpaList) {
+            CardRole cr = new CardRole();
+            cr.setProcRole(dpa.getProcRole());
+            cr.setCode(dpa.getProcRole().getCode());
+            cr.setUser(dpa.getUser());
+            cr.setCard(card);
+            cardRolesDs.addItem(cr);
         }
     }
 

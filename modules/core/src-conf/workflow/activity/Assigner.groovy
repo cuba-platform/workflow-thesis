@@ -63,14 +63,18 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       cr = null
       user = list.get(0)
     } else {
-      Query q = em.createQuery('select cr from wf$CardRole cr ' +
-              'where cr.card.id = ?1 and cr.procRole.code = ?2')
-      q.setParameter(1, card.getId())
-      q.setParameter(2, role)
-      List<CardRole> list = q.getResultList()
-      if (list.isEmpty())
+//      Query q = em.createQuery('select cr from wf$CardRole cr ' +
+//              'where cr.card.id = ?1 and cr.procRole.code = ?2')
+//      q.setParameter(1, card.getId())
+//      q.setParameter(2, role)
+//      List<CardRole> list = q.getResultList()
+//      if (list.isEmpty())
+//        throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
+//      cr = list.get(0)
+
+      cr = card.getRoles().find { CardRole it -> it.procRole.code == role }
+      if (!cr)
         throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
-      cr = list.get(0)
       user = cr.getUser()
     }
 

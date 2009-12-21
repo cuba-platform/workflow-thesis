@@ -114,6 +114,7 @@ create table WF_CARD_ROLE (
     DELETED_BY varchar(50),
     CARD_ID uuid,
     PROC_ROLE_ID uuid,
+    CODE varchar(50),
     USER_ID uuid,
     NOTIFY_BY_EMAIL boolean,
     primary key (ID)
