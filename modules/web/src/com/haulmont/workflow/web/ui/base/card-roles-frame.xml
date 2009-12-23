@@ -23,6 +23,7 @@
                 <columns>
                     <column id="procRole.name" caption="msg://role"/>
                     <column id="user" caption="msg://user"/>
+                    <column id="notifyByEmail" caption="msg://notifyByEmail"/>
                 </columns>
                 <rows datasource="cardRolesDs"/>
             </table>
