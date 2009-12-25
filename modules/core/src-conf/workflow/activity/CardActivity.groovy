@@ -69,6 +69,8 @@ public class CardActivity implements ActivityBehaviour {
     String subject
     String body
 
+    if (!user.email) return
+
     try {
       String script = card.proc.messagesPack.replace('.', '/') + '/ObserverNotification.groovy'
       Binding binding = new Binding(['card': card, 'user': user])
