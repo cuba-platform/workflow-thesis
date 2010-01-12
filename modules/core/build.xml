@@ -6,8 +6,7 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="core"/>
-	<property name="module.jar" value="30workflow-core.jar"/>
-    <property name="module.service.xml" value="31workflow-service.xml"/>
+	<property name="module.jar" value="workflow-core.jar"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -18,7 +17,7 @@
 
     <fileset id="cuba-jars-fs" dir="${root.dir}/cuba/build">
         <include name="cuba-global.jar"/>
-        <include name="20cuba-core.jar"/>
+        <include name="cuba-core.jar"/>
     </fileset>
 
     <fileset id="cuba-test-jars-fs" dir="${root.dir}/cuba/build">
@@ -50,19 +49,10 @@
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
             <include name="**/*"/>
         </jar>
-        <copy file="src-serv/${module.service.xml}" todir="${build.dir}"/>
         <mkdir dir="${build.dir}/conf"/>
         <copy todir="${build.dir}/conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
-    </target>
-
-    <target name="deploy-module" depends="base-mod.deploy-module">
-        <copy file="${build.dir}/${module.service.xml}" todir="${jboss.deploy.dir}"/>
-    </target>
-
-    <target name="undeploy-module" depends="base-mod.undeploy-module">
-        <delete file="${jboss.dir}/server/default/deploy/${module.service.xml}"/>
     </target>
 
 </project>

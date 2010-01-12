@@ -14,9 +14,4 @@ import com.haulmont.workflow.core.WfTestCase;
 import com.haulmont.cuba.core.PersistenceProvider;
 
 public class DfTestCase extends WfTestCase {
-
-    static {
-        System.setProperty(PersistenceProvider.PERSISTENCE_XML, "META-INF/docflow-persistence.xml");
-        System.setProperty(PersistenceProvider.PERSISTENCE_UNIT, "docflow");
-    }
 }

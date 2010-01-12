@@ -6,7 +6,6 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="web-war"/>
-	<property name="module.jar" value="36workflow.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -29,8 +28,6 @@
         <copy todir="${build.dir}/${module.name}" overwrite="true">
             <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
-        
-        <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
     </target>
 
     <!-- Commented out until custom module WidgetSet is needed -->
@@ -85,7 +82,5 @@
             <!--</classpath>-->
         <!--</java>-->
     <!--</target>-->
-
-    <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 
 </project>

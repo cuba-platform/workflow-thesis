@@ -16,11 +16,7 @@ public interface WfEngineMBean {
 
     String JBPM_CFG_NAME_PROP = "cuba.jbpmCfgName";
 
-    String DEF_JBPM_CFG_NAME = "META-INF/wf.jbpm.cfg.xml";
-
-    void create(); 
-
-    WfEngineAPI getAPI();
+    String DEF_JBPM_CFG_NAME = "wf.jbpm.cfg.xml";
 
     String getJbpmConfigName();
 

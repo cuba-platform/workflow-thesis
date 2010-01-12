@@ -56,7 +56,7 @@
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/modules/web/src-conf" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/workflow/web/ui/base" charset="UTF-8" />
   </component>
@@ -367,32 +367,35 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.1-patch1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-1.0-rc2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/mail.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jasperreports-3.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/iText-2.1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/asm-2.2.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.4-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/log4j.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.2-FINAL-20081019.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/javassist.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-lang-2.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jsr305-ri.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/dom4j-1.6.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-pool-1.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-codec-1.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/ejb3-persistence.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-jboss-logging.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-vfs-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/xercesImpl.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-javaee.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/serp-1.13.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/antlr-2.7.7.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections-3.2.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging-1.1.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/javaee-api-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/log4j-1.2.15.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/mail-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/xercesImpl-2.9.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.context-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.asm-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.aop-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.expression-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.core-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.beans-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aopalliance-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aspectjweaver-1.6.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aspectjrt-1.6.6.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -402,50 +405,53 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-lang-2.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-io-1.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-collections-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-logging-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/google-collect-1.0-rc2-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9.4-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.6.5-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-collections-3.2.1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-logging-1.1.1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.aop-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.core-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.expression-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.beans-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.context-3.0.0.RELEASE-src.zip!/" />
       </SOURCES>
     </library>
     <library name="server">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jcifs-1.3.10.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jbosssx.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-common-core.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/scheduler-plugin.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jespa-1.0.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-digester-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-remoting.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/hibernate-core.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3-ext-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/el-api.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/juel-2.1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jbpm-4.2-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/hibernate-core-3.3.1.GA.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-8.3-603.jdbc4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.orm-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.jdbc-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.transaction-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/hsqldb-1.8.0.9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/slf4j-log4j12-1.5.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/slf4j-api-1.5.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/javassist-3.4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.10-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/hibernate-core-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jbpm-4.2-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/hibernate-core-3.3.1.GA-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.transaction-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.orm-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
       </SOURCES>
     </library>
     <library name="chile">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../chile/build/11chile-jpa.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../chile/build/10chile-core.jar!/" />
         <root url="jar://$PROJECT_DIR$/../chile/build/bali.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-jpa.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -459,7 +465,7 @@
     </library>
     <library name="cuba-core">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/20cuba-core.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-core.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -487,8 +493,7 @@
     </library>
     <library name="cuba-web">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/24cuba.war!/" />
-        <root url="jar://$PROJECT_DIR$/../cuba/build/23cuba-web.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-web.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -505,7 +510,7 @@
     </library>
     <library name="cuba-gui">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/22cuba-gui.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-gui.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

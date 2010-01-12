@@ -13,7 +13,7 @@
     <property name="sql.dir" value="init/sql"/>
 
     <path id="run-cp">
-        <fileset refid="server-lib-fs"/>
+        <fileset refid="jdbc-lib-fs"/>
     </path>
 
     <target name="run-hsqldb">

@@ -10,8 +10,6 @@
  */
 package com.haulmont.workflow.core.app;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
@@ -19,11 +17,13 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
+import com.haulmont.workflow.core.exception.WorkflowException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,27 +32,56 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.jbpm.api.*;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+@ManagedBean(WfEngineAPI.NAME)
 public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
+
+    private Configuration jbpmConfiguration;
 
     private volatile ProcessEngine processEngine;
 
-    public void create() {
-        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
+    @Resource(name = "jbpmConfiguration")
+    public void setJbpmConfiguration(Configuration jbpmConfiguration) {
+        this.jbpmConfiguration = jbpmConfiguration;
+    }
+
+    public ProcessEngine getProcessEngine() {
+        if (processEngine == null) {
+            synchronized (this) {
+                if (processEngine == null) {
+                    Transaction tx = Locator.createTransaction();
+                    try {
+                        if (processEngine == null) {
+                            processEngine = jbpmConfiguration.buildProcessEngine();
+                        }
+                        tx.commit();
+                    } finally {
+                        tx.end();
+                    }
+                }
+            }
+        }
+        return processEngine;
+    }
+
+    @Inject
+    public void setConfigProvider(ConfigProvider configProvider) {
+        if (configProvider.doGetConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
             System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getGroovyClassLoader");
     }
 
-    public WfEngineAPI getAPI() {
-        return this;
-    }
-
     public String getJbpmConfigName() {
-        String name = System.getProperty(JBPM_CFG_NAME_PROP);
+        String name = AppContext.getProperty(JBPM_CFG_NAME_PROP);
         return name == null ? DEF_JBPM_CFG_NAME : name;
     }
 
@@ -60,6 +89,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         Transaction tx = Locator.createTransaction();
         try {
             login();
+
             RepositoryService rs = getProcessEngine().getRepositoryService();
 
             NewDeployment deployment = rs.createDeployment();
@@ -160,11 +190,13 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String printDeployments() {
+        Transaction tx = Locator.createTransaction();
         try {
+            String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
             List<Deployment> list = rs.createDeploymentQuery().orderAsc(DeploymentQuery.PROPERTY_TIMESTAMP).list();
             if (list.isEmpty())
-                return "No deployments found";
+                result = "No deployments found";
             else {
                 StringBuilder sb = new StringBuilder();
                 for (Deployment deployment : list) {
@@ -174,19 +206,25 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     sb.append("Timestamp=").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(deployment.getTimestamp()))).append("\n");
                     sb.append("\n");
                 }
-                return sb.toString();
+                result = sb.toString();
             }
+            tx.commit();
+            return result;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
         }
     }
 
     public String printDeploymentResource(String id) {
+        Transaction tx = Locator.createTransaction();
         try {
+            String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
             Set<String> resourceNames = rs.getResourceNames(id);
             if (resourceNames.isEmpty())
-                return "No resources found";
+                result = "No resources found";
             else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Resources in deployment id=").append(id).append("\n\n");
@@ -198,19 +236,25 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                         sb.append(StringEscapeUtils.escapeXml(str)).append("\n");
                     }
                 }
-                return sb.toString();
+                result = sb.toString();
             }
+            tx.commit();
+            return result;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
         }
     }
 
     public String printProcessDefinitions() {
+        Transaction tx = Locator.createTransaction();
         try {
+            String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
             List<ProcessDefinition> list = rs.createProcessDefinitionQuery().orderAsc(ProcessDefinitionQuery.PROPERTY_ID).list();
             if (list.isEmpty())
-                return "No deployments found";
+                result = "No deployments found";
             else {
                 StringBuilder sb = new StringBuilder();
                 for (ProcessDefinition pd : list) {
@@ -221,10 +265,14 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     sb.append("DeploymentId=").append(pd.getDeploymentId()).append("\n");
                     sb.append("\n");
                 }
-                return sb.toString();
+                result = sb.toString();
             }
+            tx.commit();
+            return result;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
         }
     }
 
@@ -234,33 +282,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String startProcessByKey(String key) {
+        Transaction tx = Locator.createTransaction();
         try {
             ProcessEngine pe = getProcessEngine();
             ExecutionService es = pe.getExecutionService();
             ProcessInstance pi = es.startProcessInstanceByKey(key);
+            tx.commit();
             return "ProcessInstance.id=" + pi.getId();
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
         }
-    }
-
-    public ProcessEngine getProcessEngine() {
-        if (processEngine == null) {
-            synchronized (this) {
-                Transaction tx = Locator.createTransaction();
-                try {
-                    if (processEngine == null) {
-                        processEngine = new Configuration()
-                                .setResource(getJbpmConfigName())
-                                .buildProcessEngine();
-                    }
-                    tx.commit();
-                } finally {
-                    tx.end();
-                }
-            }
-        }
-        return processEngine;
     }
 
     public List<Assignment> getUserAssignments(UUID userId) {
@@ -331,9 +364,12 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
             ExecutionService es = getProcessEngine().getExecutionService();
             ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());
+            //if process is over
+            if (pi == null)
+                throw new WorkflowException("No active execution in " + assignment.getName());
             Execution execution = pi.findActiveExecutionIn(assignment.getName());
             if (execution == null)
-                throw new RuntimeException("No active execution in " + assignment.getName());
+                throw new WorkflowException("No active execution in " + assignment.getName());
 
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("assignment", assignment);

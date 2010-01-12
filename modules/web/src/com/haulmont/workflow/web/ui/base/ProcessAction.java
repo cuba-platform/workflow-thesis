@@ -45,7 +45,7 @@ public class ProcessAction extends AbstractAction {
         if (window instanceof Window.Editor)
             ((Window.Editor) window).commit();
 
-        WfService wfs = ServiceLocator.lookup(WfService.JNDI_NAME);
+        WfService wfs = ServiceLocator.lookup(WfService.NAME);
         if (WfConstants.ACTION_SAVE.equals(actionName)) {
 
         } else if (WfConstants.ACTION_START.equals(actionName)) {

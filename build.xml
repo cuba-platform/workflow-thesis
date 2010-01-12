@@ -8,8 +8,13 @@
 	<property file="${root.dir}/build.properties"/>
 	<property file="lib.properties"/>
 
-    <property name="jboss.repo" value="${repository.dir}/appservers/jboss-${jboss.version}"/>
-    <property name="jbpm.repo" value="${repository.dir}/appservers/jbpm-${jbpm.version}"/>
+    <property name="chile.build.dir" location="${root.dir}/chile/build"/>
+    <property name="cuba.build.dir" location="${root.dir}/cuba/build"/>
+    <property name="build.dir" location="build"/>
+    <property name="target.dir" location="target"/>
+    <property name="deploy.dir" location="${root.dir}/tomcat/webapps"/>
+
+    <property name="app.name" value="workflow"/>
 
 	<target name="delegate">
 		<property name="target" value="noop" />
@@ -22,6 +27,7 @@
 	</target>
 
 	<target name="clean">
+        <delete dir="target"/>
         <delete dir="build"/>
         <delete dir="out"/>
 	</target>
@@ -29,11 +35,11 @@
 	<target name="install-lib">
         <ext:install-lib name="jbpm" version="${jbpm.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="juel" version="${juel.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="hibernate-core" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <!-- init local jboss with jbpm -->
-        <copy file="${lib.server.dir}/jbpm-${jbpm.version}.jar" todir="${jboss.dir}/common/lib"/>
-        <copy file="${lib.server.dir}/juel-${juel.version}.jar" todir="${jboss.dir}/common/lib"/>
+        <ext:install-lib name="hibernate-core" version="${hibernate-core.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="slf4j-api" version="${slf4j.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="slf4j-log4j12" version="${slf4j.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="javassist" version="${javassist.version}" toDir="${lib.server.dir}"/>
+        <!--<ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>-->
     </target>
     
 	<target name="compile">
@@ -48,35 +54,79 @@
 		</antcall>
 	</target>
 
-    <target name="deploy-conf">
-        <antcall target="delegate" inheritAll="false">
-            <param name="target" value="deploy-conf-module"/>
-        </antcall>
+    <target name="target" depends="build">
+        <property name="webapp.dir" value="${target.dir}/${app.name}"/>
+
+        <mkdir dir="${webapp.dir}"/>
+        <copy todir="${webapp.dir}">
+            <fileset dir="${build.dir}/web-war" includes="**/*"/>
+        </copy>
+
+        <mkdir dir="${webapp.dir}/WEB-INF/conf"/>
+        <copy todir="${webapp.dir}/WEB-INF/conf">
+            <fileset dir="${cuba.build.dir}/conf" includes="**/*"/>
+        </copy>
+        <copy todir="${webapp.dir}/WEB-INF/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
+
+        <property name="webapp.dir" value="${target.dir}/${app.name}/WEB-INF/lib"/>
+        <copy todir="${webapp.dir}/WEB-INF/lib">
+            <fileset dir="${chile.build.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${cuba.build.dir}">
+                <include name="*.jar"/>
+                <exclude name="cuba-test.jar"/>
+                <exclude name="web-toolkit.jar"/>
+            </fileset>
+            <fileset dir="${build.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib.common.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib.server.dir}">
+                <include name="*.jar"/>
+                <exclude name="servlet-api-1.0.jar"/>
+            </fileset>
+        </copy>
     </target>
 
-    <target name="deploy">
-        <antcall target="delegate" inheritAll="false">
-            <param name="target" value="deploy-module"/>
-        </antcall>
+    <target name="deploy" depends="target">
+        <copy todir="${deploy.dir}">
+            <fileset dir="${target.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <copy todir="${root.dir}/tomcat/lib">
+            <fileset dir="${lib.jdbc.dir}">
+                <include name="hsqldb-${hsqldb.version}.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="deploy-conf" depends="target">
+        <copy todir="${deploy.dir}/${app.name}/WEB-INF/conf">
+            <fileset dir="${target.dir}/${app.name}/WEB-INF/conf" includes="**/*"/>
+        </copy>
     </target>
 
     <target name="undeploy">
-        <antcall target="delegate" inheritAll="false">
-            <param name="target" value="undeploy-module"/>
-        </antcall>
+        <delete dir="${deploy.dir}/${app.name}"/>
     </target>
 
     <target name="start">
-        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
+        <exec dir="${root.dir}/tomcat/bin" executable="cmd.exe" spawn="true">
             <env key="NOPAUSE" value="true"/>
-            <arg line="/c start callAndExit.bat debug.bat -b0.0.0.0"/>
+            <arg line="/c start callAndExit.bat debug.bat"/>
         </exec>
     </target>
 
     <target name="stop">
-        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe">
+        <exec dir="${root.dir}/tomcat/bin" executable="cmd.exe">
             <env key="NOPAUSE" value="true"/>
-            <arg line="/c start callAndExit.bat shutdown.bat -S"/>
+            <arg line="/c start callAndExit.bat shutdown.bat"/>
         </exec>
     </target>
 
@@ -97,32 +147,32 @@
     </target>
 
     <target name="output">
-        <mkdir dir="${output.replace.dir}/deploy"/>
-        <mkdir dir="${output.replace.dir}/conf"/>
-        <mkdir dir="${output.merge.dir}/deploy"/>
-        <mkdir dir="${output.merge.dir}/conf"/>
+        <!--<mkdir dir="${output.replace.dir}/deploy"/>-->
+        <!--<mkdir dir="${output.replace.dir}/conf"/>-->
+        <!--<mkdir dir="${output.merge.dir}/deploy"/>-->
+        <!--<mkdir dir="${output.merge.dir}/conf"/>-->
 
-        <copy todir="${output.replace.dir}/deploy">
-            <fileset dir="build">
-                <include name="*.jar"/>
-                <include name="*.war"/>
-                <include name="31workflow-core-service.xml"/>
-            </fileset>
-        </copy>
+        <!--<copy todir="${output.replace.dir}/deploy">-->
+            <!--<fileset dir="build">-->
+                <!--<include name="*.jar"/>-->
+                <!--<include name="*.war"/>-->
+                <!--<include name="31workflow-core-service.xml"/>-->
+            <!--</fileset>-->
+        <!--</copy>-->
 
-        <delete file="${output.replace.dir}/deploy/24cuba.war"/>
+        <!--<delete file="${output.replace.dir}/deploy/24cuba.war"/>-->
 
-        <copy todir="${output.merge.dir}/deploy">
-            <fileset dir="build">
-                <include name="adbins-ds.xml"/>
-            </fileset>
-        </copy>
+        <!--<copy todir="${output.merge.dir}/deploy">-->
+            <!--<fileset dir="build">-->
+                <!--<include name="adbins-ds.xml"/>-->
+            <!--</fileset>-->
+        <!--</copy>-->
 
-        <copy todir="${output.replace.dir}/conf">
-            <fileset dir="build/conf">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
+        <!--<copy todir="${output.replace.dir}/conf">-->
+            <!--<fileset dir="build/conf">-->
+                <!--<include name="**/*"/>-->
+            <!--</fileset>-->
+        <!--</copy>-->
     </target>
 
 </project>

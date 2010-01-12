@@ -44,12 +44,14 @@ public class SimpleDocflow3Test extends WfTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
+        mBean.getProcessEngine();
+
         Transaction tx = Locator.createTransaction();
         try {
-            WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
             String curDir = System.getProperty("user.dir");
             String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow3.jpdl.xml");
-            assertTrue(res.startsWith("Deployed:"));
+            assertTrue(res, res.startsWith("Deployed:"));
 
             tx.commitRetaining();
 
@@ -201,8 +203,7 @@ public class SimpleDocflow3Test extends WfTestCase {
     }
 
     public void test() {
-        WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
-        WfEngineAPI wf = mBean.getAPI();
+        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 
@@ -284,5 +285,65 @@ public class SimpleDocflow3Test extends WfTestCase {
         } finally {
             tx.end();
         }
+    }
+
+    public void testWithException() {
+        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        ProcessEngine pe = wf.getProcessEngine();
+        ExecutionService es = pe.getExecutionService();
+
+        ProcessInstance pi = null;
+        List<Assignment> assignments = null;
+        Assignment assignment = null;
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            pi = es.startProcessInstanceByKey("SimpleDocflow3", card.getId().toString());
+            Assert.assertNotNull(pi);
+
+            EntityManager em = PersistenceProvider.getEntityManager();
+            card = em.merge(card);
+            card.setJbpmProcessId(pi.getId());
+
+            tx.commitRetaining();
+
+            // New
+
+            Execution inNew = pi.findActiveExecutionIn("New");
+            Assert.assertNotNull(inNew);
+
+            assignments = wf.getUserAssignments("admin");
+            assertEquals(1, assignments.size());
+            assignment = assignments.get(0);
+            assertEquals(card, assignment.getCard());
+            wf.finishAssignment(assignment.getId(), "ToAgreement", null);
+
+            throwException();
+            fail();
+
+            tx.commit();
+        } catch (RuntimeException e) {
+            assertEquals("test_ex", e.getMessage());
+        } finally {
+            tx.end();
+        }
+
+        tx = Locator.createTransaction();
+        try {
+            pi = es.findProcessInstanceById(pi.getId());
+            Execution inNew = pi.findActiveExecutionIn("New");
+            Assert.assertNotNull(inNew);
+
+            assignments = wf.getUserAssignments("admin");
+            assertEquals(1, assignments.size());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    private void throwException() {
+        throw new RuntimeException("test_ex");
     }
 }

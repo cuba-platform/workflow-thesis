@@ -119,7 +119,7 @@ You've got an assignment: ${assignment.card.description} - ${assignment.card.loc
     }
 
     Thread.startDaemon('emailThread') {
-      EmailerAPI emailer = Locator.lookupMBean(EmailerMBean.class).getAPI()
+      EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
       emailer.sendEmail(user.email, subject, body)
     }
   }

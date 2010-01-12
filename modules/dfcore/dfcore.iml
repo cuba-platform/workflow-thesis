@@ -14,6 +14,7 @@
     <orderEntry type="library" name="chile" level="project" />
     <orderEntry type="library" name="cuba-global" level="project" />
     <orderEntry type="library" name="cuba-core" level="project" />
+    <orderEntry type="library" name="cuba-test" level="project" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="dfglobal" />
   </component>

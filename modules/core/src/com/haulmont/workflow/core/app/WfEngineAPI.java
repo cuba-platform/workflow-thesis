@@ -21,6 +21,10 @@ import java.util.UUID;
 
 public interface WfEngineAPI {
 
+    String NAME = "workflow_WfEngine";
+
+    String deployJpdlXml(String fileName);
+
     ProcessEngine getProcessEngine();
 
     List<Assignment> getUserAssignments(UUID userId);

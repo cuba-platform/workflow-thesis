@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
-    <persistence-unit name="workflow" transaction-type="JTA">
+    <persistence-unit name="workflow" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <jta-data-source>java:/CubaDS</jta-data-source>
 
         <class>com.haulmont.cuba.core.entity.BaseUuidEntity</class>
         <class>com.haulmont.cuba.core.entity.StandardEntity</class>
@@ -37,9 +36,6 @@
         <class>com.haulmont.workflow.core.entity.DefaultProcActor</class>
 
         <properties>
-            <property name="openjpa.ManagedRuntime"
-                      value="org.apache.openjpa.ee.JNDIManagedRuntime"/>
-
             <property name="openjpa.Log"
                       value="log4j"/>
 

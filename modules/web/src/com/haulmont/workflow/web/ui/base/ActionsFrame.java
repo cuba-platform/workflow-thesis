@@ -58,7 +58,7 @@ public class ActionsFrame extends AbstractFrame {
         }
 
         if (card.getJbpmProcessId() != null) {
-            WfService wfs = ServiceLocator.lookup(WfService.JNDI_NAME);
+            WfService wfs = ServiceLocator.lookup(WfService.NAME);
             info = wfs.getAssignmentInfo(card);
             if (info != null) {
                 descrText.setVisible(true);

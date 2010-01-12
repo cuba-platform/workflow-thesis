@@ -11,19 +11,24 @@
 package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.testsupport.TestContext;
+import com.haulmont.cuba.testsupport.TestDataSource;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public abstract class WfTestCase extends CubaTestCase {
-
-    static {
-        System.setProperty(PersistenceProvider.PERSISTENCE_XML, "META-INF/workflow-persistence.xml");
-        System.setProperty(PersistenceProvider.PERSISTENCE_UNIT, "workflow");
-    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         System.out.println(Locator.isInTransaction());
+    }
+
+    @Override
+    protected void initAppContext() {
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(new String[]
+                {"cuba-spring.xml", "workflow-spring.xml", "test-spring.xml"});
+        AppContext.setApplicationContext(appContext);
     }
 }

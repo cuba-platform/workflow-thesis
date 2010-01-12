@@ -46,7 +46,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
         Transaction tx = Locator.createTransaction();
         try {
-            WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
+            WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
             String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow-groovy.jpdl.xml");
             assertTrue(res.startsWith("Deployed:"));
@@ -201,8 +201,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
     }
 
     public void test() {
-        WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
-        WfEngineAPI wf = mBean.getAPI();
+        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 

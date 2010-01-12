@@ -13,13 +13,11 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
-import javax.ejb.Local;
 import java.util.UUID;
 
-@Local
 public interface WfService {
 
-    String JNDI_NAME = "workflow/WfService";
+    String NAME = "workflow_WfService";
 
     AssignmentInfo getAssignmentInfo(Card card);
 

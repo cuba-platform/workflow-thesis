@@ -141,13 +141,21 @@ public class Assignment extends StandardEntity {
         return outcome == null ? null : getLocalizedAttribute(name + "." + outcome);
     }
 
+    @MetaProperty
+    public String getLocOutcomeResult() {
+        return outcome == null ? null : getLocalizedAttribute(name + "." + outcome + "Result");
+    }
+
     private String getLocalizedAttribute(String value) {
+        if (value == null)
+            return "";
+
         if (getCard() != null && getCard().getProc() != null) {
             String messagesPack = getCard().getProc().getMessagesPack();
             if (!value.startsWith(MessageUtils.MARK))
                 value = MessageUtils.MARK + value;
             return MessageUtils.loadString(messagesPack, value);
         }
-        return value != null ? value : "";
+        return value;
     }
 }

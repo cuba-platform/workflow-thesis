@@ -23,7 +23,7 @@
                     <column id="finished" caption="msg://finishedDate"/>
                     <column id="user" caption="msg://user"/>
                     <column id="locName" caption="msg://cardState"/>
-                    <column id="locOutcome" caption="msg://outcome"/>
+                    <column id="locOutcomeResult" caption="msg://outcome"/>
                     <column id="comment" caption="msg://comment"/>
                 </columns>
                 <rows datasource="resolutionsDs"/>

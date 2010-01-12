@@ -20,8 +20,8 @@ import org.jbpm.api.RepositoryService;
 public class WfHelper {
 
     public static WfEngineAPI getWfEngineAPI() {
-        WfEngineMBean mbean = Locator.lookupMBean(WfEngineMBean.class);
-        return mbean.getAPI();
+        WfEngineAPI mbean = Locator.lookup(WfEngineAPI.NAME);
+        return mbean;
     }
 
     public static ProcessEngine getProcessEngine() {

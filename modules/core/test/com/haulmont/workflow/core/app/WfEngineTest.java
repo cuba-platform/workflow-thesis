@@ -20,19 +20,18 @@ import java.util.List;
 public class WfEngineTest extends WfTestCase {
 
     public void testGetProcessEngine() {
-        WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
-        WfEngineAPI wfe = mBean.getAPI();
+        WfEngineAPI wfe = Locator.lookup(WfEngineAPI.NAME);
         ProcessEngine processEngine = wfe.getProcessEngine();
         assertNotNull(processEngine);
     }
 
     public void testProcess() {
-        WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
+        WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
         String curDir = System.getProperty("user.dir");
         String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/process1.jpdl.xml");
         assertTrue(res.startsWith("Deployed:"));
 
-        ProcessEngine pe = mBean.getAPI().getProcessEngine();
+        ProcessEngine pe = mBean.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
         ProcessInstance pi = es.startProcessInstanceByKey("New_Process_1");
         assertNotNull(pi);
@@ -40,12 +39,12 @@ public class WfEngineTest extends WfTestCase {
 
 
     public void testTask() {
-        WfEngineMBean mBean = Locator.lookupMBean(WfEngineMBean.class, WfEngineMBean.OBJECT_NAME);
+        WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
         String curDir = System.getProperty("user.dir");
         String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/process2.jpdl.xml");
         assertTrue(res.startsWith("Deployed:"));
 
-        ProcessEngine pe = mBean.getAPI().getProcessEngine();
+        ProcessEngine pe = mBean.getProcessEngine();
 
         ExecutionService es = pe.getExecutionService();
         ProcessInstance pi = es.startProcessInstanceByKey("New_Process_2");

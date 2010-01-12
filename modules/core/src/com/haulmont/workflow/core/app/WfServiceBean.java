@@ -11,12 +11,10 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
-import com.haulmont.workflow.core.app.WfService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.ExecutionService;
@@ -26,18 +24,12 @@ import org.jbpm.api.ProcessInstance;
 import org.jbpm.pvm.internal.client.ClientProcessDefinition;
 import org.jbpm.pvm.internal.model.Activity;
 import org.jbpm.pvm.internal.model.Transition;
+import org.springframework.stereotype.Service;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.interceptor.Interceptors;
 import java.util.List;
 import java.util.UUID;
 
-@Stateless(name = WfService.JNDI_NAME)
-@Interceptors(ServiceInterceptor.class)
-@TransactionManagement(TransactionManagementType.BEAN)
-
+@Service(WfService.NAME)
 public class WfServiceBean implements WfService {
 
     private Log log = LogFactory.getLog(WfServiceBean.class);

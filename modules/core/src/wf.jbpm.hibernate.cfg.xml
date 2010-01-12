@@ -8,11 +8,9 @@
 	<session-factory>
 
 		<property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
-		<property name="hibernate.connection.datasource">java:/CubaDS</property>
-		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
-		<property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
-        <property name="hibernate.show_sql">true</property>
-		<property name="jta.UserTransaction">UserTransaction</property>
+		<property name="hibernate.transaction.factory_class">org.springframework.orm.hibernate3.SpringTransactionFactory</property>
+        <property name="hibernate.current_session_context_class">org.springframework.orm.hibernate3.CubaSpringSessionContext</property>
+        <property name="hibernate.show_sql">false</property>
 
 		<mapping resource="jbpm.repository.hbm.xml" />
 		<mapping resource="jbpm.execution.hbm.xml" />

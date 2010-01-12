@@ -86,7 +86,7 @@ Card ${card.description} has become ${card.locState}
     }
 
     Thread.startDaemon('emailThread') {
-      EmailerAPI emailer = Locator.lookupMBean(EmailerMBean.class).getAPI()
+      EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
       emailer.sendEmail(user.email, subject, body)
     }
   }

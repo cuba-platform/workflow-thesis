@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jbpm-configuration>
+
+    <import resource="default.jbpm.cfg.xml"/>
+
+    <process-engine-context>
+
+        <hibernate-configuration>
+            <cfg resource="wf.jbpm.hibernate.cfg.xml"/>
+        </hibernate-configuration>
+
+    </process-engine-context>
+
+</jbpm-configuration>
