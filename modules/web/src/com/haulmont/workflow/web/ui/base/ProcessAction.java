@@ -42,20 +42,20 @@ public class ProcessAction extends AbstractAction {
 
     public void actionPerform(Component component) {
         Window window = ComponentsHelper.getWindow(frame);
-        if (window instanceof Window.Editor)
-            ((Window.Editor) window).commit();
+        if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
 
-        WfService wfs = ServiceLocator.lookup(WfService.NAME);
-        if (WfConstants.ACTION_SAVE.equals(actionName)) {
+            WfService wfs = ServiceLocator.lookup(WfService.NAME);
+            if (WfConstants.ACTION_SAVE.equals(actionName)) {
 
-        } else if (WfConstants.ACTION_START.equals(actionName)) {
-            wfs.startProcess(card);
+            } else if (WfConstants.ACTION_START.equals(actionName)) {
+                wfs.startProcess(card);
 
-        } else {
-            String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
-            wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, (String) frame.getCommentText().getValue());
+            } else {
+                String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
+                wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, (String) frame.getCommentText().getValue());
+            }
+
+            window.close(Window.COMMIT_ACTION_ID);
         }
-
-        window.close(Window.COMMIT_ACTION_ID);
     }
 }
