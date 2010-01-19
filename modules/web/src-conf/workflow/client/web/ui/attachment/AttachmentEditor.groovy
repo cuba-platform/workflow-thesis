@@ -74,7 +74,9 @@ public class AttachmentEditor extends AbstractEditor {
               uploadStarted: {Event event -> },
 
               uploadSucceeded: {Event event ->
-                fileNameText.setValue(uploadField.getFileName())
+                String fileName = uploadField.getFileName()
+                fileNameText.setValue(fileName)
+                nameText.setValue(fileName[0..fileName.lastIndexOf('.')-1])
 
                 if (StringUtils.isBlank(nameText.getValue().toString()))
                   nameText.setValue(uploadField.getFileName())
