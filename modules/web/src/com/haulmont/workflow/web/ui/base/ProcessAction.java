@@ -41,21 +41,48 @@ public class ProcessAction extends AbstractAction {
     }
 
     public void actionPerform(Component component) {
-        Window window = ComponentsHelper.getWindow(frame);
+        final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
 
-            WfService wfs = ServiceLocator.lookup(WfService.NAME);
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
+                window.close(Window.COMMIT_ACTION_ID);
 
             } else if (WfConstants.ACTION_START.equals(actionName)) {
+                WfService wfs = ServiceLocator.lookup(WfService.NAME);
                 wfs.startProcess(card);
+                window.close(Window.COMMIT_ACTION_ID);
 
             } else {
-                String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
-                wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, (String) frame.getCommentText().getValue());
+                FormManager formManager = FormManager.create(
+                        card,
+                        frame.getInfo(),
+                        (String) frame.getCommentText().getValue(),
+                        actionName
+                );
+                if (formManager != null) {
+                    final Window screen = formManager.show();
+                    screen.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                String comment = screen instanceof AbstractForm ?
+                                        ((AbstractForm) screen).getComment() :
+                                        (String) frame.getCommentText().getValue();
+                                finishAssignment(comment);
+                                window.close(Window.COMMIT_ACTION_ID);
+                            }
+                        }
+                    });
+                } else {
+                    finishAssignment((String) frame.getCommentText().getValue());
+                    window.close(Window.COMMIT_ACTION_ID);
+                }
             }
-
-            window.close(Window.COMMIT_ACTION_ID);
         }
+    }
+
+    private void finishAssignment(String comment) {
+        WfService wfs = ServiceLocator.lookup(WfService.NAME);
+        String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
+        wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment);
     }
 }

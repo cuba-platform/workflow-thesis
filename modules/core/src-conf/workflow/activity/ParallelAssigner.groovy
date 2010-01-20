@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.Locator
-import com.haulmont.cuba.security.entity.User
+
 import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
@@ -25,9 +25,6 @@ import org.apache.commons.logging.LogFactory
 import org.jbpm.api.ExecutionService
 import org.jbpm.api.activity.ActivityExecution
 
-import java.util.HashMap
-import java.util.List
-import java.util.Map
 import com.haulmont.workflow.core.entity.CardRole
 
 public class ParallelAssigner extends Assigner {
@@ -114,7 +111,7 @@ public class ParallelAssigner extends Assigner {
           resultTransition = sibling.getOutcome()
       }
 
-      ExecutionService es = WfHelper.getWfEngineAPI().getProcessEngine().getExecutionService()
+      ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
       Map<String, Object> params = new HashMap<String, Object>()
       params.put("assignment", assignment.getMasterAssignment())
 

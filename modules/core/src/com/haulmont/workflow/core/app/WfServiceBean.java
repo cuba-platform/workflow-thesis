@@ -40,7 +40,7 @@ public class WfServiceBean implements WfService {
         try {
             String processId = card.getJbpmProcessId();
             if (processId != null) {
-                List<Assignment> assignments = WfHelper.getWfEngineAPI().getUserAssignments(
+                List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(
                         SecurityProvider.currentOrSubstitutedUserId(), card);
                 if (!assignments.isEmpty()) {
                     Assignment assignment = assignments.get(0);
@@ -85,6 +85,6 @@ public class WfServiceBean implements WfService {
     }
 
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
-        WfHelper.getWfEngineAPI().finishAssignment(assignmentId, outcome, comment);
+        WfHelper.getEngine().finishAssignment(assignmentId, outcome, comment);
     }
 }

@@ -101,7 +101,7 @@ public class ParallelAssigner extends Assigner {
             }
 
             log.debug("All of parallel assignments have been finished successfully");
-            ExecutionService es = WfHelper.getWfEngineAPI().getProcessEngine().getExecutionService();
+            ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService();
 
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("assignment", assignment.getMasterAssignment());

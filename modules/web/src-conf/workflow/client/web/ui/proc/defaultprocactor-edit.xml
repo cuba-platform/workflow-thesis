@@ -35,7 +35,7 @@
                         <row>
                             <label value="msg://notifyByEmail"/>
                             <checkBox id="notifyByEmail" datasource="dpaDs" property="notifyByEmail"/>
-\                        </row>
+                        </row>
                     </rows>
                 </grid>
             </vbox>
