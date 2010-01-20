@@ -1,6 +1,6 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.gui.components.BasicEditor"
+        class="workflow.client.web.ui.card.CardRoleEditor"
         messagesPack="workflow.client.web.ui.card"
         datasource="roleDs"
         caption="msg://roleEditor.caption"

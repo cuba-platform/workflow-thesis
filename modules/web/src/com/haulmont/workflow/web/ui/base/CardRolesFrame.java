@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
@@ -70,23 +71,24 @@ public class CardRolesFrame extends AbstractFrame {
 
         createRoleLookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {
-                if (createRoleCaption.equals(value))
+                if ((value == null) || createRoleCaption.equals(value))
                     return;
 
-                Window.Lookup.Handler lookupHandler = new Window.Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        if (!items.isEmpty()) {
-                          User user = (User) items.iterator().next();
-                          CardRole cr = new CardRole();
-                          cr.setProcRole((ProcRole) value);
-                          cr.setCode(((ProcRole) value).getCode());
-                          cr.setUser(user);
-                          cr.setCard(card);
-                          cardRolesDs.addItem(cr);
+                CardRole cr = new CardRole();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("procRole", (ProcRole) value);
+                params.put("proc", card.getProc());
+                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params);
+                cardRoleEditor.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                            CardRole cardRole = (CardRole)cardRoleEditor.getItem();
+                            cardRole.setCode(cardRole.getProcRole().getCode());
+                            cardRolesDs.addItem(cardRole);
+                            cardRole.setCard(card);
                         }
                     }
-                };
-                openLookup("sec$User.browse", lookupHandler, OpenType.THIS_TAB);
+                });
 
                 createRoleLookup.setValue(null);
             }
@@ -124,6 +126,7 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setCode(dpa.getProcRole().getCode());
             cr.setUser(dpa.getUser());
             cr.setCard(card);
+            cr.setNotifyByEmail(dpa.getNotifyByEmail());
             cardRolesDs.addItem(cr);
         }
     }
