@@ -32,16 +32,14 @@ public class FormManager {
 
     private String screenId;
     private Card card;
-    private AssignmentInfo info;
     private String activity;
     private String transition;
-    private String comment;
 
     private static FormManager nullObject = new FormManager();
     
     private static Map<String, FormManager> cache = new ConcurrentHashMap<String, FormManager>();
 
-    public static FormManager create(Card card, AssignmentInfo info, String comment, String actionName) {
+    public static FormManager create(Card card, String actionName) {
         String resourceName = card.getProc().getMessagesPack().replace(".", "/") + "/forms.xml";
 
         String cacheKey = resourceName + "/" + actionName;
@@ -65,10 +63,10 @@ public class FormManager {
                             if (transition.equals(transitionElem.attributeValue("name"))) {
                                 Element screenElem = transitionElem.element("screen");
                                 if (screenElem != null && screenElem.attributeValue("id") != null) {
-                                    FormManager processScreenManager = new FormManager(card, info, activity, transition, comment,
+                                    FormManager formManager = new FormManager(card, activity, transition,
                                             screenElem.attributeValue("id"));
-                                    cache.put(cacheKey, processScreenManager);
-                                    return processScreenManager;
+                                    cache.put(cacheKey, formManager);
+                                    return formManager;
                                 }
                             }
                         }
@@ -83,17 +81,14 @@ public class FormManager {
     private FormManager() {
     }
 
-    private FormManager(Card card, AssignmentInfo info, String activity, String transition,
-                                 String comment, String screenId) {
+    private FormManager(Card card, String activity, String transition, String screenId) {
         this.card = card;
-        this.info = info;
-        this.comment = comment;
         this.activity = activity;
         this.transition = transition;
         this.screenId = screenId;
     }
 
-    public Window show() {
+    public Window show(String comment) {
         WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
         WebWindowManager windowManager = App.getInstance().getWindowManager();
 

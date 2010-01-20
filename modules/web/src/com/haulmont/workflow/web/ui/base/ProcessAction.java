@@ -53,14 +53,9 @@ public class ProcessAction extends AbstractAction {
                 window.close(Window.COMMIT_ACTION_ID);
 
             } else {
-                FormManager formManager = FormManager.create(
-                        card,
-                        frame.getInfo(),
-                        (String) frame.getCommentText().getValue(),
-                        actionName
-                );
+                FormManager formManager = FormManager.create(card, actionName);
                 if (formManager != null) {
-                    final Window screen = formManager.show();
+                    final Window screen = formManager.show((String) frame.getCommentText().getValue());
                     screen.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {
                             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
