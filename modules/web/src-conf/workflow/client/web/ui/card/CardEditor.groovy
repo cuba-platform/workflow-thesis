@@ -52,4 +52,10 @@ public class CardEditor extends AbstractCardEditor {
   public void setItem(Entity item) {
     super.setItem(item);
   }
+
+  @Override
+  protected boolean isCommentVisible() {
+    return true
+  }
+
 }

@@ -366,10 +366,10 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());
             //if process is over
             if (pi == null)
-                throw new WorkflowException("No active execution in " + assignment.getName());
+                throw new WorkflowException(WorkflowException.Type.NO_ACTIVE_EXECUTION, "No active execution in " + assignment.getName());
             Execution execution = pi.findActiveExecutionIn(assignment.getName());
             if (execution == null)
-                throw new WorkflowException("No active execution in " + assignment.getName());
+                throw new WorkflowException(WorkflowException.Type.NO_ACTIVE_EXECUTION, "No active execution in " + assignment.getName());
 
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("assignment", assignment);

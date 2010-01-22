@@ -63,7 +63,7 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @OneToMany(mappedBy = "card")
     @OrderBy("name")
     @Aggregation
-    private List<Attachment> attachments;
+    private List<CardAttachment> attachments;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -141,11 +141,11 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
         this.roles = roles;
     }
 
-    public List<Attachment> getAttachments() {
+    public List<CardAttachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
+    public void setAttachments(List<CardAttachment> attachments) {
         this.attachments = attachments;
     }
 

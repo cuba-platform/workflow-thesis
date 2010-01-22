@@ -1,5 +1,5 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.workflow.web.ui.base.ActionsFrame"
+        class="com.haulmont.workflow.web.ui.base.action.ActionsFrame"
         messagesPack="com.haulmont.workflow.web.ui.base"
         >
 
@@ -7,7 +7,7 @@
     <layout>
         <vbox spacing="true">
             <label id="assignmentLab" value="msg://assignment"/>
-            <textField id="descrText" rows="2" visible="false" width="200px"/>
+            <textField id="descrText" rows="3" visible="false" width="200px"/>
             <label id="commentLab" value="msg://comment" visible="false"/>
             <textField id="commentText" rows="5" visible="false" width="200px"/>
 

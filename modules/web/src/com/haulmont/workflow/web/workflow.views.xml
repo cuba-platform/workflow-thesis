@@ -33,11 +33,6 @@
         <property name="user" view="_minimal"/>
     </view>
 
-    <view class="com.haulmont.workflow.core.entity.Attachment" name="card-edit" extends="_local">
-        <property name="card" view="_local"/>
-        <property name="file" view="_local"/>
-    </view>
-
     <view class="com.haulmont.workflow.core.entity.Assignment" name="browse" extends="_local">
         <property name="card" view="browse"/>
     </view>
@@ -45,6 +40,23 @@
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
         <property name="card" view="browse"/>
         <property name="user" view="_minimal"/>
+        <property name="attachments" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.Assignment" name="resolution-edit" extends="_local">
+        <property name="card" view="browse"/>
+        <property name="user" view="_minimal"/>
+        <property name="attachments" view="assignment-edit"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.CardAttachment" name="card-edit" extends="_local">
+        <property name="card" view="_local"/>
+        <property name="file" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="assignment-edit" extends="_local">
+        <property name="assignment" view="_local"/>
+        <property name="file" view="_local"/>
     </view>
 
 </views>

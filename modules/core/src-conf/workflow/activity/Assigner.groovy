@@ -30,6 +30,7 @@ import org.jbpm.api.activity.ExternalActivityBehaviour
 import workflow.activity.CardActivity
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
+import com.haulmont.workflow.core.exception.WorkflowException
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -74,7 +75,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
       cr = card.getRoles().find { CardRole it -> it.procRole.code == role }
       if (!cr)
-        throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
+        throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
+                "User not found: cardId=${card.getId()}, procRole=$role", role)
       user = cr.getUser()
     }
 

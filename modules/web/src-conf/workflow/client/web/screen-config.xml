@@ -75,10 +75,19 @@
     <screen id="wf$CardRole.edit"
             template="workflow/client/web/ui/card/card-role-edit.xml"/>
 
-    <screen id="wf$Attachment.edit"
-            template="workflow/client/web/ui/attachment/attachment-edit.xml"/>
+    <screen id="wf$CardAttachment.edit"
+            template="workflow/client/web/ui/attachment/card-attachment-edit.xml"/>
+
+    <screen id="wf$AssignmentAttachment.edit"
+            template="workflow/client/web/ui/attachment/assignment-attachment-edit.xml"/>
 
     <screen id="wf$Assignment.browse"
             template="workflow/client/web/ui/assignment/assignment-browse.xml"/>
+
+    <screen id="wf$Assignment.edit"
+            template="/com/haulmont/workflow/web/ui/base/resolution-edit.xml"/>
+
+    <screen id="resolution.form"
+            template="/com/haulmont/workflow/web/ui/base/resolution-form.xml"/>
 
 </screen-config>

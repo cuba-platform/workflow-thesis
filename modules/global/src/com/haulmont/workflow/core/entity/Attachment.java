@@ -17,13 +17,12 @@ import javax.persistence.*;
 
 @Entity(name = "wf$Attachment")
 @Table(name = "WF_ATTACHMENT")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("-")
 public class Attachment extends StandardEntity {
 
     private static final long serialVersionUID = 8954537950047549199L;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CARD_ID")
-    private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FILE_ID")
@@ -31,14 +30,6 @@ public class Attachment extends StandardEntity {
 
     @Column(name = "NAME", length = 500)
     private String name; 
-
-    public Card getCard() {
-        return card;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
-    }
 
     public FileDescriptor getFile() {
         return file;

@@ -1,0 +1,74 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.ResolutionEditor"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        datasource="assignmentDs"
+        caption="msg://resolutionEditCaption">
+
+    <dsContext>
+        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
+            <collectionDatasource id="attachmentsDs" property="attachments"/>
+        </datasource>
+    </dsContext>
+
+    <#assign width = 400>
+    <layout expand="mainPane">
+        <vbox id="mainPane" margin="true" spacing="true" stylename="edit-area" expand="attachmentsPane">
+            <grid spacing="true" width="100%">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://createdDate"/>
+                        <textField id="createdDate" datasource="assignmentDs" property="createTs"
+                                   width="${width}" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://finishedDate"/>
+                        <textField id="finishedDate" datasource="assignmentDs" property="finished"
+                                     width="${width}" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://user"/>
+                        <textField id="user" datasource="assignmentDs" property="user"
+                                   width="${width}" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://cardState"/>
+                        <textField id="cardState" datasource="assignmentDs" property="locName"
+                                   width="${width}" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://outcome"/>
+                        <textField id="outcome" datasource="assignmentDs" property="locOutcomeResult"
+                                   width="${width}" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://comment"/>
+                        <textField id="comment" datasource="assignmentDs" property="comment"
+                                   width="${width}" rows="6"/>
+                    </row>
+                </rows>
+            </grid>
+            <vbox id="attachmentsPane" expand="attachmentsTable">
+                <label value="msg://attachments"/>
+                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                    <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
+                    <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                    <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="attachmentsTable" editable="false" sortable="true">
+                    <columns>
+                        <column id="name" caption="msg://attachName"/>
+                        <column id="file.name" caption="msg://fileName"/>
+                    </columns>
+                    <rows datasource="attachmentsDs"/>
+                </table>
+            </vbox>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

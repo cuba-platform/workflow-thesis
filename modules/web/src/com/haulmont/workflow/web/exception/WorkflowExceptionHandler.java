@@ -24,11 +24,21 @@ public class WorkflowExceptionHandler extends AbstractExceptionHandler<WorkflowE
 
     @Override
     protected void doHandle(WorkflowException e, App app) {
-        if (e.getMessage().contains("No active execution")) {
-            String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noExecution");
-            app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
-        } else {
-            throw e;
+        switch (e.getType()) {
+            case NO_ACTIVE_EXECUTION:
+                String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noExecution");
+                if (e.getParams().length > 0)
+                    msg = String.format(msg, e.getParams());
+                app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+                break;
+            case NO_CARD_ROLE:
+                msg = MessageProvider.getMessage(getClass(), "WorkflowException.noCardRole");
+                if (e.getParams().length > 0)
+                    msg = String.format(msg, e.getParams());
+                app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+                break;
+            default:
+                throw e;
         }
     }
 }

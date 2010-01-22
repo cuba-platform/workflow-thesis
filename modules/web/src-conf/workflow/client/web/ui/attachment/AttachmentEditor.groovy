@@ -50,12 +50,12 @@ public class AttachmentEditor extends AbstractEditor {
 
     okBtn = getComponent("windowActions.windowCommit")
 
-    uploadField = getComponent("uploadField")
-    fileNameText = getComponent("fileName")
-    nameText = getComponent("name")
-    extLabel = getComponent("extension")
-    sizeLab = getComponent("size")
-    createDateLab = getComponent("createDate")
+    uploadField = getComponent("frame.uploadField")
+    fileNameText = getComponent("frame.fileName")
+    nameText = getComponent("frame.name")
+    extLabel = getComponent("frame.extension")
+    sizeLab = getComponent("frame.size")
+    createDateLab = getComponent("frame.createDate")
   }
 
   @Override

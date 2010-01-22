@@ -35,27 +35,6 @@ alter table WF_CARD add constraint FK_WF_CARD_PROC foreign key (PROC_ID) referen
 
 ------------------------------------------------------------------------------------------------------------
 
-create table WF_ATTACHMENT (
-    ID varchar(36),
-    CREATE_TS timestamp,
-    CREATED_BY varchar(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar(50),
-    CARD_ID varchar(36),
-    FILE_ID varchar(36),
-    NAME varchar(500),
-    primary key (ID)
-);
-
-alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD_ID) references WF_CARD (ID);
-
-alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE_ID) references SYS_FILE (ID);
-
-------------------------------------------------------------------------------------------------------------
-
 create table WF_ASSIGNMENT (
     ID varchar(36),
     CREATE_TS timestamp,
@@ -80,6 +59,31 @@ create table WF_ASSIGNMENT (
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_USER foreign key (USER_ID) references SEC_USER (ID);
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD (ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_ATTACHMENT (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    TYPE char(1),
+    FILE_ID varchar(36),
+    NAME varchar(500),
+    CARD_ID varchar(36),
+    ASSIGNMENT_ID varchar(36),
+    primary key (ID)
+);
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE_ID) references SYS_FILE (ID);
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD_ID) references WF_CARD (ID);
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key (ASSIGNMENT_ID) references WF_ASSIGNMENT (ID);
 
 ------------------------------------------------------------------------------------------------------------
 

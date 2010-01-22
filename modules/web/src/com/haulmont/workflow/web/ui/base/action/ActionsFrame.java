@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.web.ui.base;
+package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -17,6 +17,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.web.ui.base.AbstractWfAccessData;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class ActionsFrame extends AbstractFrame {
         return info;
     }
 
-    public void initActions(Card card) {
+    public void initActions(Card card, boolean commentVisible) {
         List<Button> buttons = new ArrayList<Button>();
         for (int i = 0; i < 5; i++) {
             Button btn = getComponent("actionBtn" + i);
@@ -66,8 +67,8 @@ public class ActionsFrame extends AbstractFrame {
                     descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()));
                 descrText.setEditable(false);
 
-                commentLab.setVisible(true);
-                commentText.setVisible(true);
+                commentLab.setVisible(commentVisible);
+                commentText.setVisible(commentVisible);
 
                 actions.addAll(info.getActions());
             }

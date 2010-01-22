@@ -19,6 +19,8 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import static org.apache.commons.lang.StringUtils.isBlank;
+
+import com.haulmont.workflow.core.exception.WorkflowException;
 import org.jbpm.api.activity.ActivityExecution;
 import org.jbpm.api.activity.ExternalActivityBehaviour;
 
@@ -66,7 +68,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
             q.setParameter(2, role);
             List<User> list = q.getResultList();
             if (list.isEmpty())
-                throw new RuntimeException("User not found: cardId=" + card.getId() + ", procRole=" + role);
+                throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
+                        "User not found: cardId=" + card.getId() + ", procRole=" + role, role);
             user = list.get(0);
         }
 

@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -106,13 +107,15 @@ public abstract class AbstractCardEditor extends AbstractEditor {
                     @Override
                     public void valueChanged(Card source, String property, Object prevValue, Object value) {
                         if ("proc".equals(property)) {
-                            actionsFrame.initActions(source);
+                            actionsFrame.initActions(source, isCommentVisible());
                         }
                     }
                 });
             } else {
-                actionsFrame.initActions((Card) getItem());
+                actionsFrame.initActions((Card) getItem(), isCommentVisible());
             }
         }
     }
+
+    protected abstract boolean isCommentVisible();
 }

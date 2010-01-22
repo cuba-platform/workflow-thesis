@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
@@ -17,6 +18,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "wf$Assignment")
 @Table(name = "WF_ASSIGNMENT")
@@ -53,6 +55,11 @@ public class Assignment extends StandardEntity {
 
     @Column(name = "COMMENT", length = 2000)
     private String comment;
+
+    @OneToMany(mappedBy = "assignment")
+    @OrderBy("name")
+    @Aggregation
+    private List<AssignmentAttachment> attachments;
 
     public String getName() {
         return name;
@@ -124,6 +131,19 @@ public class Assignment extends StandardEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public List<AssignmentAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<AssignmentAttachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    @MetaProperty
+    public Boolean getHasAttachments() {
+        return attachments != null && !attachments.isEmpty();
     }
 
     @MetaProperty

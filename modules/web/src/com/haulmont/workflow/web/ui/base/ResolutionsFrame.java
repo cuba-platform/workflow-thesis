@@ -11,27 +11,61 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.google.common.base.Preconditions;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.vaadin.terminal.ThemeResource;
 
 import java.util.Collections;
 import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
+    private Table table;
 
     public ResolutionsFrame(IFrame frame) {
         super(frame);
     }
 
     public void init() {
-        Table table = getComponent("resolutionsTable");
+        table = getComponent("resolutionsTable");
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setAllowMultiStringCells(true);
+
+        MetaPropertyPath pp = table.getDatasource().getMetaClass().getPropertyEx("hasAttachments");
+        vTable.setColumnIcon(pp, new ThemeResource("icons/excel.png"));
+
+        table.addAction(new AbstractAction("openResolution") {
+            public void actionPerform(Component component) {
+                openResolution(table.getDatasource().getItem());
+            }
+        });
+
+        LinkColumnHelper.initColumn(table, "createTs", new LinkColumnHelper.Handler() {
+            public void onClick(Entity entity) {
+                openResolution(entity);
+            }
+        });
+    }
+
+    private void openResolution(Entity entity) {
+        final Window window = openEditor("wf$Assignment.edit", entity, WindowManager.OpenType.DIALOG);
+
+        window.addListener(new Window.CloseListener() {
+            public void windowClosed(String actionId) {
+                if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                    Object item = ((Window.Editor) window).getItem();
+                    if (item instanceof Entity) {
+                        table.getDatasource().updateItem((Entity) item);
+                    }
+                }
+            }
+        });
     }
 
     public void setCard(final Card card) {

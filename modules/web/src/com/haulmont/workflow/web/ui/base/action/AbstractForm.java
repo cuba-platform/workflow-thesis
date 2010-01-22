@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.web.ui.base;
+package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;

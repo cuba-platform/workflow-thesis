@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.haulmont.com/schema/cuba/workflow/forms.xsd">
+
+    <xs:element name="forms" type="formsType"/>
+
+    <xs:complexType name="formsType">
+        <xs:sequence>
+            <xs:element type="saveType" name="save" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="startType" name="start" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="activityType" name="activity" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="saveType">
+        <xs:sequence>
+            <xs:element type="confirmType" name="confirm" minOccurs="0"/>
+            <xs:element type="screenType" name="screen" minOccurs="0"/>
+            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="startType">
+        <xs:sequence>
+            <xs:element type="confirmType" name="confirm" minOccurs="0"/>
+            <xs:element type="screenType" name="screen" minOccurs="0"/>
+            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="transitionType">
+        <xs:sequence>
+            <xs:element type="confirmType" name="confirm" minOccurs="0"/>
+            <xs:element type="screenType" name="screen" minOccurs="0"/>
+            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="activityType">
+        <xs:sequence>
+            <xs:element type="transitionType" name="transition" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="screenType" mixed="true">
+        <xs:sequence>
+            <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:boolean" name="after" use="optional"/>
+        <xs:attribute type="xs:boolean" name="before" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="invokeType">
+        <xs:attribute type="xs:string" name="class" use="optional"/>
+        <xs:attribute type="xs:string" name="after" use="optional"/>
+        <xs:attribute type="xs:string" name="before" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="confirmType">
+    </xs:complexType>
+
+    <xs:complexType name="paramType">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="value" use="optional"/>
+    </xs:complexType>
+
+</xs:schema>
