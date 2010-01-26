@@ -10,13 +10,21 @@
  */
 package com.haulmont.workflow.web.ui.base.action;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 
@@ -69,6 +77,13 @@ public class ProcessAction extends AbstractAction {
                 }
 
             } else if (WfConstants.ACTION_START.equals(actionName)) {
+                LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView("_local");
+                Card loadedCard = ServiceLocator.getDataService().load(lc);
+                if (loadedCard.getJbpmProcessId() != null) {
+                    String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
+                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+                    return;
+                }
                 if (before != null) {
                     before.doBefore(card, assignmentId, (String) frame.getCommentText().getValue(),
                             new FormManager.Handler() {
@@ -82,6 +97,13 @@ public class ProcessAction extends AbstractAction {
                 }
 
             } else {
+                LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView("_local");
+                Assignment assignment = ServiceLocator.getDataService().load(lc);
+                if (assignment.getFinished() != null) {
+                    String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
+                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+                    return;
+                }
                 if (before != null) {
                     before.doBefore(card, assignmentId,(String) frame.getCommentText().getValue(),
                             new FormManager.Handler() {
