@@ -23,6 +23,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.vaadin.terminal.ThemeResource;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
@@ -38,7 +39,7 @@ public class ResolutionsFrame extends AbstractFrame {
         vTable.setAllowMultiStringCells(true);
 
         MetaPropertyPath pp = table.getDatasource().getMetaClass().getPropertyEx("hasAttachments");
-        vTable.setColumnIcon(pp, new ThemeResource("icons/excel.png"));
+        vTable.setColumnIcon(pp, new ThemeResource("icons/attachment-small.png"));
 
         table.addAction(new AbstractAction("openResolution") {
             public void actionPerform(Component component) {
@@ -62,6 +63,8 @@ public class ResolutionsFrame extends AbstractFrame {
                     Object item = ((Window.Editor) window).getItem();
                     if (item instanceof Entity) {
                         table.getDatasource().updateItem((Entity) item);
+//                        Map<String, Object> params = Collections.<String, Object>singletonMap("cardId", ((Assignment)item).getCard().getId());
+//                        table.getDatasource().refresh(params);
                     }
                 }
             }
