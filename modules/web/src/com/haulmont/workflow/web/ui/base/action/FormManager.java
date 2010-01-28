@@ -225,7 +225,6 @@ public abstract class FormManager {
                         String finalComment = window instanceof AbstractForm ?
                                 ((AbstractForm) window).getComment() : comment;
                         handler.commit(finalComment);
-                        window.close(Window.COMMIT_ACTION_ID);
                     }
                 }
             });

@@ -50,6 +50,7 @@ create table WF_ASSIGNMENT (
     NAME varchar(255),
     DESCRIPTION varchar(1000),
     JBPM_PROCESS_ID varchar(255),
+    DUE_DATE timestamp,
     FINISHED timestamp,
     OUTCOME varchar(255),
     COMMENT varchar(2000),
@@ -150,3 +151,20 @@ create table WF_DEFAULT_PROC_ACTOR (
 alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_PROC_ROLE foreign key (PROC_ROLE_ID) references WF_PROC_ROLE (ID)^
 
 alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_USER foreign key (USER_ID) references SEC_USER (ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_TIMER (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    DUE_DATE timestamp,
+    CARD_ID uuid,
+    JBPM_EXECUTION_ID varchar(255),
+    ACTIVITY varchar(255),
+    ACTION_CLASS varchar(200),
+    ACTION_PARAMS varchar(2000),
+    primary key (ID)
+)^
+
+alter table WF_TIMER add constraint FK_WF_TIMER_CARD foreign key (CARD_ID) references WF_CARD (ID)^

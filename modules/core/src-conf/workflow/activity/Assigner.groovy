@@ -10,27 +10,25 @@
  */
 package workflow.activity
 
-import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.app.EmailerAPI
-import com.haulmont.cuba.core.app.EmailerMBean
 import com.haulmont.cuba.core.global.ScriptingProvider
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
+import com.haulmont.workflow.core.exception.WorkflowException
+import com.haulmont.workflow.core.timer.AssignmentTimersFactory
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
-import workflow.activity.CardActivity
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
-import com.haulmont.workflow.core.exception.WorkflowException
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -39,6 +37,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   String assignee
   String role
   String description
+  AssignmentTimersFactory timersFactory
 
   public void execute(ActivityExecution execution) throws Exception {
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
@@ -64,15 +63,6 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       cr = null
       user = list.get(0)
     } else {
-//      Query q = em.createQuery('select cr from wf$CardRole cr ' +
-//              'where cr.card.id = ?1 and cr.procRole.code = ?2')
-//      q.setParameter(1, card.getId())
-//      q.setParameter(2, role)
-//      List<CardRole> list = q.getResultList()
-//      if (list.isEmpty())
-//        throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
-//      cr = list.get(0)
-
       cr = card.getRoles().find { CardRole it -> it.procRole.code == role }
       if (!cr)
         throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
@@ -92,6 +82,10 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setUser(user)
     assignment.setCard(card)
 
+    if (timersFactory) {
+      timersFactory.createTimers(execution, assignment)
+    }
+
     em.persist(assignment)
 
     if ((cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
@@ -100,6 +94,9 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     execution.take(signalName)
+    if (timersFactory) {
+      timersFactory.removeTimers(execution)
+    }
   }
 
   protected void sendEmail(Assignment assignment, User user) {

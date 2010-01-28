@@ -20,6 +20,7 @@
             <table id="resolutionsTable" editable="false" sortable="true">
                 <columns>
                     <column id="createTs" caption="msg://createdDate"/>
+                    <column id="dueDate" caption="msg://dueDate"/>
                     <column id="finished" caption="msg://finishedDate"/>
                     <column id="user" caption="msg://user"/>
                     <column id="locName" caption="msg://cardState"/>

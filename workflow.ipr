@@ -414,6 +414,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.expression-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.beans-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.context-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/dom4j-1.6.1-src.zip!/" />
       </SOURCES>
     </library>
     <library name="server">

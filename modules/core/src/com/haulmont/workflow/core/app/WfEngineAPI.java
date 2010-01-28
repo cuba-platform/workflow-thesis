@@ -13,7 +13,6 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import org.jbpm.api.ProcessEngine;
-import org.jbpm.api.Execution;
 
 import javax.annotation.Nullable;
 import java.util.List;

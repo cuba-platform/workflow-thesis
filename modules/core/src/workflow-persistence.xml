@@ -36,6 +36,7 @@
         <class>com.haulmont.workflow.core.entity.CardAttachment</class>
         <class>com.haulmont.workflow.core.entity.AssignmentAttachment</class>
         <class>com.haulmont.workflow.core.entity.DefaultProcActor</class>
+        <class>com.haulmont.workflow.core.entity.TimerEntity</class>
 
         <properties>
             <property name="openjpa.Log"

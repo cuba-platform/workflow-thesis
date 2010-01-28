@@ -47,6 +47,9 @@ public class Assignment extends StandardEntity {
     @Column(name = "JBPM_PROCESS_ID", length = 255)
     private String jbpmProcessId;
 
+    @Column(name = "DUE_DATE")
+    private Date dueDate;
+
     @Column(name = "FINISHED")
     private Date finished;
 
@@ -107,6 +110,14 @@ public class Assignment extends StandardEntity {
 
     public void setJbpmProcessId(String jbpmProcessId) {
         this.jbpmProcessId = jbpmProcessId;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Date getFinished() {

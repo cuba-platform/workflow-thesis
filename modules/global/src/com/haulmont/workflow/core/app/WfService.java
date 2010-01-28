@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface WfService {
@@ -24,4 +25,8 @@ public interface WfService {
     Card startProcess(Card card);
 
     void finishAssignment(UUID assignmentId, String outcome, String comment);
+
+    Map<String, Object> getProcessVariables(Card card);
+
+    void setProcessVariables(Card card, Map<String, Object> variables);
 }

@@ -26,8 +26,7 @@ import org.jbpm.pvm.internal.model.Activity;
 import org.jbpm.pvm.internal.model.Transition;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service(WfService.NAME)
 public class WfServiceBean implements WfService {
@@ -86,5 +85,32 @@ public class WfServiceBean implements WfService {
 
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
         WfHelper.getEngine().finishAssignment(assignmentId, outcome, comment);
+    }
+
+    public Map<String, Object> getProcessVariables(Card card) {
+        Map<String, Object> variables = new HashMap<String, Object>();
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            Set<String> names = WfHelper.getExecutionService().getVariableNames(card.getJbpmProcessId());
+            for (String name : names) {
+                variables.put(name, WfHelper.getExecutionService().getVariable(card.getJbpmProcessId(), name));
+            }
+            tx.commit();
+            return variables;
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void setProcessVariables(Card card, Map<String, Object> variables) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            WfHelper.getExecutionService().setVariables(card.getJbpmProcessId(), variables);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
     }
 }
