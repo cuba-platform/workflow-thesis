@@ -436,6 +436,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/slf4j-log4j12-1.5.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/slf4j-api-1.5.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/javassist-3.4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.context.support-3.0.0.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -446,6 +447,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.transaction-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.orm-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.context.support-3.0.0.RELEASE-src.zip!/" />
       </SOURCES>
     </library>
     <library name="chile">

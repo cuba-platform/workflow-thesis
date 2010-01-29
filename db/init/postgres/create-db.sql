@@ -168,3 +168,17 @@ create table WF_TIMER (
 )^
 
 alter table WF_TIMER add constraint FK_WF_TIMER_CARD foreign key (CARD_ID) references WF_CARD (ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_CALENDAR (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    WORK_DAY date,
+    WORK_START char(4),
+    WORK_END char(4),
+    primary key (ID)
+);

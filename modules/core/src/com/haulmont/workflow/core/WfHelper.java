@@ -10,9 +10,12 @@
  */
 package com.haulmont.workflow.core;
 
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.workflow.core.app.TimerManagerAPI;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.workflow.core.app.WorkCalendarAPI;
+import com.haulmont.workflow.core.global.TimeUnit;
 import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.ExecutionService;
 import org.jbpm.api.RepositoryService;
@@ -22,12 +25,12 @@ import java.util.Map;
 
 public class WfHelper {
 
-    private static Map<String, Long> timeUnits = new HashMap<String, Long>();
+    private static Map<String, TimeUnit> timeUnits = new HashMap<String, TimeUnit>();
 
     static {
-        timeUnits.put("minute", 60000L);
-        timeUnits.put("hour", 3600000L);
-        timeUnits.put("day", 86400000L);
+        timeUnits.put("minute", TimeUnit.MINUTE);
+        timeUnits.put("hour", TimeUnit.HOUR);
+        timeUnits.put("day", TimeUnit.DAY);
     }
 
     public static WfEngineAPI getEngine() {
@@ -54,12 +57,18 @@ public class WfHelper {
         String[] parts = expression.split("\\s+");
         Integer num = Integer.valueOf(parts[0]);
         String unit = parts.length == 2 ? parts[1] : parts[2];
-        Long millis = timeUnits.get(unit);
-        if (millis == null && unit.endsWith("s"))
-            millis = timeUnits.get(unit.substring(0, unit.length()-1));
-        if (millis == null)
+        TimeUnit tu = timeUnits.get(unit);
+        if (tu == null && unit.endsWith("s")) {
+            tu = timeUnits.get(unit.substring(0, unit.length()-1));
+        }
+        if (tu == null)
             throw new UnsupportedOperationException("Unsupported time unit: " + expression);
 
-        return num * millis;
+        if (parts.length > 2 && parts[1].equalsIgnoreCase("business")) {
+            WorkCalendarAPI wcal = Locator.lookup(WorkCalendarAPI.NAME);
+            return wcal.getAbsoluteMillis(TimeProvider.currentTimestamp(), num, tu);
+        } else {
+            return num * tu.getMillis();
+        }
     }
 }

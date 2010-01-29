@@ -29,6 +29,7 @@
             <map>
                 <entry key="${cuba.webContextName}.workflow:service=WfEngine" value-ref="workflow_WfEngine"/>
                 <entry key="${cuba.webContextName}.workflow:service=TimerManager" value-ref="workflow_TimerManager"/>
+                <entry key="${cuba.webContextName}.workflow:service=WorkCalendar" value-ref="workflow_WorkCalendar"/>
             </map>
         </property>
         <property name="assembler">
@@ -37,6 +38,7 @@
                     <map>
                         <entry key="workflow_WfEngine" value="com.haulmont.workflow.core.app.WfEngineMBean"/>
                         <entry key="workflow_TimerManager" value="com.haulmont.workflow.core.app.TimerManagerMBean"/>
+                        <entry key="workflow_WorkCalendar" value="com.haulmont.workflow.core.app.WorkCalendarMBean"/>
                     </map>
                 </property>
             </bean>
