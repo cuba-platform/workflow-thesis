@@ -131,6 +131,41 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
+    public void setProcActor(Proc proc, String roleCode, User user) {
+        CardRole cardRole = null;
+        List<CardRole> cardRoles = card.getRoles();
+
+        //If card role with given code exists, we'll find it
+        if (cardRoles != null) {
+           for (CardRole cr : cardRoles) {
+               if (roleCode.equals(cr.getCode())) {
+                   cardRole = cr;
+                   break;
+               }
+           }
+        }
+
+        //If card role with given code doesn't exist we'll create a new one
+        if (cardRole == null) {
+            cardRole = new CardRole();
+
+            ProcRole procRole = null;
+            for (ProcRole pr : proc.getRoles()) {
+                if (roleCode.equals(pr.getCode())) {
+                    procRole = pr;
+                }
+            }
+            if (procRole == null) return;
+
+            cardRole.setProcRole(procRole);
+            cardRole.setCode(roleCode);
+            cardRole.setCard(card);
+            cardRole.setNotifyByEmail(true);
+            cardRolesDs.addItem(cardRole);
+        }
+        cardRole.setUser(user);
+    }
+
     private void initCreateRoleLookup() {
         // add ProcRole if it has multiUser == true or not added yet
         List options = new ArrayList();

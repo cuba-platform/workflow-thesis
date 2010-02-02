@@ -10,8 +10,16 @@
  */
 package com.haulmont.workflow.web.ui.base;
 
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.AbstractAccessData;
+import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.global.AssignmentInfo;
+import com.haulmont.workflow.core.global.WfConstants;
+import org.omg.PortableServer.ServantLocator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractWfAccessData extends AbstractAccessData {
@@ -23,4 +31,16 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
     public abstract boolean getSaveEnabled();
 
     public abstract boolean getStartProcessEnabled();
+
+    public List<String> getVisibleActions(Card card) {
+        List<String> visibleActions = new ArrayList<String>();
+        visibleActions.add(WfConstants.ACTION_SAVE);
+        visibleActions.add(WfConstants.ACTION_START);
+        WfService wfs = ServiceLocator.lookup(WfService.NAME);
+        AssignmentInfo info = wfs.getAssignmentInfo(card);
+        if (info != null) {
+            visibleActions =  info.getActions();
+        }
+        return visibleActions;
+    };
 }

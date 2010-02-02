@@ -77,11 +77,14 @@ public class ActionsFrame extends AbstractFrame {
             actions.add(WfConstants.ACTION_START);
         }
 
+        List<String> visibleActions = accessData.getVisibleActions(card);
         for (int i = 0; i < buttons.size(); i++) {
             Button btn = buttons.get(i);
             if (i <= actions.size() - 1) {
-                btn.setVisible(true);
-                btn.setAction(new ProcessAction(card, actions.get(i), this));
+                if ((visibleActions != null) && (visibleActions.contains(actions.get(i)))) {
+                    btn.setVisible(true);
+                    btn.setAction(new ProcessAction(card, actions.get(i), this));
+                }
             }
         }
     }
