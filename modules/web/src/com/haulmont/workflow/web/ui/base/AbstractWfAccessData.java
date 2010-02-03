@@ -39,7 +39,7 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         AssignmentInfo info = wfs.getAssignmentInfo(card);
         if (info != null) {
-            visibleActions =  info.getActions();
+            visibleActions.addAll(info.getActions());
         }
         return visibleActions;
     };
