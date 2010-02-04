@@ -24,15 +24,10 @@ import java.util.ArrayList;
 
 public class ActionsFrame extends AbstractFrame {
 
-    private TextField commentText;
     private AssignmentInfo info;
 
     public ActionsFrame(IFrame frame) {
         super(frame);
-    }
-
-    public TextField getCommentText() {
-        return commentText;
     }
 
     public AssignmentInfo getInfo() {
@@ -48,8 +43,6 @@ public class ActionsFrame extends AbstractFrame {
         }
 
         TextField descrText = getComponent("descrText");
-        Label commentLab = getComponent("commentLab");
-        commentText = getComponent("commentText");
 
         List<String> actions = new ArrayList<String>();
 
@@ -67,9 +60,6 @@ public class ActionsFrame extends AbstractFrame {
                     descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()));
                 descrText.setEditable(false);
 
-                commentLab.setVisible(commentVisible);
-                commentText.setVisible(commentVisible);
-
                 actions.addAll(info.getActions());
             }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
@@ -77,14 +67,15 @@ public class ActionsFrame extends AbstractFrame {
             actions.add(WfConstants.ACTION_START);
         }
 
-        List<String> visibleActions = accessData.getVisibleActions(card);
+        List<String> visibleActions = (accessData == null) ? null : accessData.getVisibleActions(card);
+
+        if (visibleActions != null)
+            actions.retainAll(visibleActions);
         for (int i = 0; i < buttons.size(); i++) {
             Button btn = buttons.get(i);
             if (i <= actions.size() - 1) {
-                if ((visibleActions != null) && (visibleActions.contains(actions.get(i)))) {
-                    btn.setVisible(true);
-                    btn.setAction(new ProcessAction(card, actions.get(i), this));
-                }
+                btn.setVisible(true);
+                btn.setAction(new ProcessAction(card, actions.get(i), this));
             }
         }
     }

@@ -10,7 +10,6 @@
  */
 package com.haulmont.workflow.web.ui.base.action;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.View;
@@ -18,7 +17,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -57,26 +55,18 @@ public class ProcessAction extends AbstractAction {
 
             final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
 
-            final FormManager before = FormManager.getManagerBefore(card, actionName);
-            final FormManager after = FormManager.getManagerAfter(card, actionName);
+            final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
+            managerChain.setCard(card);
+            managerChain.setAssignmentId(assignmentId);
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
-                if (before != null) {
-                    before.doBefore(card, assignmentId, (String) frame.getCommentText().getValue(),
-                            new FormManager.Handler() {
-                                public void commit(String comment) {
-                                    window.close(Window.COMMIT_ACTION_ID);
-                                    if (after != null)
-                                        after.doAfter(card, assignmentId);
-                                }
-                            }
-                    );
-                } else {
-                    window.close(Window.COMMIT_ACTION_ID);
-                    if (after != null)
-                        after.doAfter(card, assignmentId);
-                }
-
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void doSuccess(String comment) {
+                        window.close(Window.COMMIT_ACTION_ID);
+                        managerChain.doManagerAfter(card, assignmentId);
+                    }
+                });
+                managerChain.doManagerBefore("");
             } else if (WfConstants.ACTION_START.equals(actionName)) {
                 LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
                 Card loadedCard = ServiceLocator.getDataService().load(lc);
@@ -85,17 +75,13 @@ public class ProcessAction extends AbstractAction {
                     App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
                     return;
                 }
-                if (before != null) {
-                    before.doBefore(card, assignmentId, (String) frame.getCommentText().getValue(),
-                            new FormManager.Handler() {
-                                public void commit(String comment) {
-                                    startProcess(window, after);
-                                }
-                            }
-                    );
-                } else {
-                    startProcess(window, after);
-                }
+
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void doSuccess(String comment) {
+                        startProcess(window, managerChain);
+                    }
+                });
+                managerChain.doManagerBefore("");
 
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
@@ -105,37 +91,31 @@ public class ProcessAction extends AbstractAction {
                     App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
                     return;
                 }
-                if (before != null) {
-                    before.doBefore(card, assignmentId,(String) frame.getCommentText().getValue(),
-                            new FormManager.Handler() {
-                                public void commit(String comment) {
-                                    finishAssignment(window, comment, after);
-                                }
-                            }
-                    );
-                } else {
-                    finishAssignment(window, (String) frame.getCommentText().getValue(), after);
-                }
+
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void doSuccess(String comment) {
+                        finishAssignment(window, comment, managerChain);
+                    }
+                });
+                managerChain.doManagerBefore("");
             }
         }
     }
 
-    private void startProcess(Window window, FormManager after) {
+    private void startProcess(Window window, FormManagerChain managerChain) {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         wfs.startProcess(card);
         window.close(Window.COMMIT_ACTION_ID);
 
-        if (after != null)
-            after.doAfter(card, null);
+        managerChain.doManagerAfter(card, null);
     }
 
-    private void finishAssignment(Window window, String comment, FormManager after) {
+    private void finishAssignment(Window window, String comment, FormManagerChain managerChain) {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
         wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment);
         window.close(Window.COMMIT_ACTION_ID);
 
-        if (after != null)
-            after.doAfter(card, frame.getInfo().getAssignmentId());
+        managerChain.doManagerAfter(card, frame.getInfo().getAssignmentId());
     }
 }
