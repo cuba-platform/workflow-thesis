@@ -13,7 +13,6 @@ package com.haulmont.workflow.web.ui.base.action;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -27,24 +26,17 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FormManager {
-
-    public interface Handler {
-        void commit(String comment);
-    }
 
     protected Element element;
     protected String activity;
@@ -52,12 +44,15 @@ public abstract class FormManager {
     protected boolean before;
     protected boolean after;
 
+    protected FormManagerChain chain;
+
     protected Log log = LogFactory.getLog(getClass());
 
-    protected FormManager(Element element, String activity, String transition) {
+    protected FormManager(Element element, String activity, String transition, FormManagerChain chain) {
         this.element = element;
         this.activity = activity;
         this.transition = transition;
+        this.chain = chain;
 
         before = Boolean.valueOf(element.attributeValue("before"));
         after = Boolean.valueOf(element.attributeValue("after"));
@@ -71,15 +66,6 @@ public abstract class FormManager {
 
     public boolean isBefore() {
         return before;
-    }
-
-    protected Map<String, Object> makeCommonParams(Card card, UUID assignmentId) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("card", card);
-        params.put("assignmentId", assignmentId);
-        params.put("activity", activity);
-        params.put("transition", transition);
-        return params;
     }
 
     protected Map<String, Object> getScreenParams(Element element) {
@@ -104,23 +90,23 @@ public abstract class FormManager {
         return entity;
     }
 
-    public abstract void doBefore(final FormManagerChain chain, Map<String, Object> params);
+    public abstract void doBefore(Map<String, Object> params);
 
-    public abstract void doAfter(Card card, UUID assignmentId);
+    public abstract void doAfter(Map<String, Object> params);
 
     public static class ScreenFormManager extends FormManager {
 
         private String screenId;
         private Map<String, Object> params;
 
-        public ScreenFormManager(Element element, String activity, String transition) {
-            super(element, activity, transition);
+        public ScreenFormManager(Element element, String activity, String transition, FormManagerChain chain) {
+            super(element, activity, transition, chain);
             screenId = element.attributeValue("id");
             params = getScreenParams(element);
         }
 
         @Override
-        public void doBefore(final FormManagerChain chain, Map<String, Object> params) {
+        public void doBefore(Map<String, Object> params) {
             params.put("before", true);
             params.putAll(this.params);
 
@@ -140,15 +126,21 @@ public abstract class FormManager {
         }
 
         @Override
-        public void doAfter(Card card, UUID assignmentId) {
-            Map<String, Object> params = makeCommonParams(card, assignmentId);
+        public void doAfter(Map<String, Object> params) {
             params.put("after", true);
             params.putAll(this.params);
 
             WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
             WebWindowManager windowManager = App.getInstance().getWindowManager();
 
-            windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final Window window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            window.addListener(new Window.CloseListener() {
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        chain.doManagerAfter();
+                    }
+                }
+            });
         }
     }
 
@@ -157,8 +149,8 @@ public abstract class FormManager {
         private String className;
         private Map<String, Object> params;
 
-        public ClassFormManager(Element element, String activity, String transition) {
-            super(element, activity, transition);
+        public ClassFormManager(Element element, String activity, String transition, FormManagerChain chain) {
+            super(element, activity, transition, chain);
             className = element.attributeValue("class");
             params = getScreenParams(element);
         }
@@ -181,7 +173,7 @@ public abstract class FormManager {
         }
 
         @Override
-        public void doBefore(final FormManagerChain chain, Map<String, Object> params) {
+        public void doBefore(Map<String, Object> params) {
             params.put("before", true);
             params.putAll(this.params);
 
@@ -197,14 +189,17 @@ public abstract class FormManager {
         }
 
         @Override
-        public void doAfter(Card card, UUID assignmentId) {
-            Map<String, Object> params = makeCommonParams(card, assignmentId);
+        public void doAfter(Map<String, Object> params) {
             params.put("after", true);
             params.putAll(this.params);
 
             Callable<Boolean> runnable = getCallable(params);
             try {
-                runnable.call();
+                Boolean result = runnable.call();
+                if (!BooleanUtils.isFalse(result)) {
+                    chain.doManagerAfter();
+                }
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -213,12 +208,12 @@ public abstract class FormManager {
 
     public static class ConfirmFormManager extends FormManager {
 
-        public ConfirmFormManager(Element element, String activity, String transition) {
-            super(element, activity, transition);
+        public ConfirmFormManager(Element element, String activity, String transition, FormManagerChain chain) {
+            super(element, activity, transition, chain);
         }
 
         @Override
-        public void doBefore(final FormManagerChain chain, Map<String, Object> params) {
+        public void doBefore(Map<String, Object> params) {
             WebWindowManager wm = App.getInstance().getWindowManager();
             Card card = (Card)chain.getCommonParams().get("card");
             wm.showOptionDialog(
@@ -249,7 +244,7 @@ public abstract class FormManager {
         }
 
         @Override
-        public void doAfter(Card card, UUID assignmentId) {
+        public void doAfter(Map<String, Object> params) {
             log.warn("Confirm form doesn't make sense 'after'");
         }
     }

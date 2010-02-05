@@ -22,13 +22,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FormManagerChain {
-    public Handler getHandler() {
-        return handler;
-    }
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
 
     public interface Handler {
         void doSuccess(String comment);
@@ -91,11 +84,11 @@ public class FormManagerChain {
                     for (Element elem : Dom4j.elements(element)) {
                         FormManager manager;
                         if (elem.getName().equals("screen")) {
-                            manager = new FormManager.ScreenFormManager(elem, activity, transition);
+                            manager = new FormManager.ScreenFormManager(elem, activity, transition, managerChain);
                         } else if (elem.getName().equals("confirm")) {
-                            manager = new FormManager.ConfirmFormManager(elem, activity, transition);
+                            manager = new FormManager.ConfirmFormManager(elem, activity, transition, managerChain);
                         } else if (elem.getName().equals("invoke")) {
-                            manager = new FormManager.ClassFormManager(elem, activity, transition);
+                            manager = new FormManager.ClassFormManager(elem, activity, transition, managerChain);
                         } else
                             throw new UnsupportedOperationException("Unknown form element: " + elem.getName());
 
@@ -146,7 +139,7 @@ public class FormManagerChain {
     public void doManagerBefore(String comment) {
         FormManager nextManager = getNextManagerBefore();
         if (nextManager != null)
-            nextManager.doBefore(this, commonParams);
+            nextManager.doBefore(commonParams);
         else {
             handler.doSuccess(comment);
         }
@@ -168,10 +161,10 @@ public class FormManagerChain {
         return !managersAfter.isEmpty();
     }
 
-    public void doManagerAfter(Card card, UUID assignmentId) {
+    public void doManagerAfter() {
         FormManager nextManager = getNextManagerAfter();
         if (nextManager != null)
-            nextManager.doAfter(card, assignmentId);
+            nextManager.doAfter(commonParams);
     }
 
     private void reset() {
@@ -194,4 +187,13 @@ public class FormManagerChain {
     public void setAssignmentId(UUID assignmentId) {
         this.commonParams.put("assignmentId", assignmentId);
     }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
 }

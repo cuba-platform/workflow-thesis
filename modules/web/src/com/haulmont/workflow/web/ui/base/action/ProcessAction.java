@@ -63,7 +63,7 @@ public class ProcessAction extends AbstractAction {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void doSuccess(String comment) {
                         window.close(Window.COMMIT_ACTION_ID);
-                        managerChain.doManagerAfter(card, assignmentId);
+                        managerChain.doManagerAfter();
                     }
                 });
                 managerChain.doManagerBefore("");
@@ -107,7 +107,7 @@ public class ProcessAction extends AbstractAction {
         wfs.startProcess(card);
         window.close(Window.COMMIT_ACTION_ID);
 
-        managerChain.doManagerAfter(card, null);
+        managerChain.doManagerAfter();
     }
 
     private void finishAssignment(Window window, String comment, FormManagerChain managerChain) {
@@ -116,6 +116,6 @@ public class ProcessAction extends AbstractAction {
         wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment);
         window.close(Window.COMMIT_ACTION_ID);
 
-        managerChain.doManagerAfter(card, frame.getInfo().getAssignmentId());
+        managerChain.doManagerAfter();
     }
 }
