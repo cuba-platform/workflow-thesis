@@ -63,7 +63,7 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
                 if (session != null && !sessionHolder.isSynchronizedWithTransaction()) {
                     log.debug("Registering Spring transaction synchronization for existing Hibernate Session");
                     TransactionSynchronizationManager.registerSynchronization(
-                            new SpringSessionSynchronization(sessionHolder, sessionFactory, null, false));
+                            new CubaSpringSessionSynchronization(sessionHolder, sessionFactory, null, false));
                     sessionHolder.setSynchronizedWithTransaction(true);
                     // Switch to FlushMode.AUTO, as we have to assume a thread-bound Session
                     // with FlushMode.MANUAL, which needs to allow flushing within the transaction.
@@ -105,7 +105,7 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
                 session.setFlushMode(FlushMode.MANUAL);
             }
             TransactionSynchronizationManager.registerSynchronization(
-                    new SpringSessionSynchronization(holderToUse, sessionFactory, null, true));
+                    new CubaSpringSessionSynchronization(holderToUse, sessionFactory, null, true));
             holderToUse.setSynchronizedWithTransaction(true);
             if (holderToUse != sessionHolder) {
                 TransactionSynchronizationManager.bindResource(sessionFactory, holderToUse);

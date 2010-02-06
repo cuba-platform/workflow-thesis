@@ -16,7 +16,6 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.omg.PortableServer.ServantLocator;
 
 import java.util.ArrayList;
 import java.util.List;

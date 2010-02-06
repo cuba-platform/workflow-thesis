@@ -31,10 +31,10 @@ public class WorkCalendar implements WorkCalendarAPI, WorkCalendarMBean {
 
         private CalendarItem(Date day, String start, String end) {
             this.day = day;
-            this.startH = Integer.valueOf(start.substring(0, 2));
-            this.startM = Integer.valueOf(start.substring(2));
-            this.endH = Integer.valueOf(end.substring(0, 2));
-            this.endM = Integer.valueOf(end.substring(2));
+            this.startH = start == null ? 0 : Integer.valueOf(start.substring(0, 2));
+            this.startM = start == null ? 0 : Integer.valueOf(start.substring(2));
+            this.endH = end == null ? 0 : Integer.valueOf(end.substring(0, 2));
+            this.endM = end == null ? 0 : Integer.valueOf(end.substring(2));
         }
 
         public Date getDay() {
@@ -58,7 +58,7 @@ public class WorkCalendar implements WorkCalendarAPI, WorkCalendarMBean {
         }
     }
 
-    private List<CalendarItem> cache;
+    private volatile List<CalendarItem> cache;
 
     private void loadCache() {
         if (cache == null) {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process name="Nested Tx Test" key="NestedTxTest" xmlns="http://jbpm.org/4.2/jpdl">
+
+    <start name="Start">
+        <transition to="New"/>
+    </start>
+
+    <custom name="New" class="com.haulmont.workflow.core.TestNestedTxActivity">
+        <transition name="ToEnd" to="End"/>
+    </custom>
+
+    <end name="End"/>
+
+</process>
