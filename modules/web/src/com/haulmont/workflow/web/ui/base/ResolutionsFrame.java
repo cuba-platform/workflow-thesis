@@ -63,8 +63,6 @@ public class ResolutionsFrame extends AbstractFrame {
                     Object item = ((Window.Editor) window).getItem();
                     if (item instanceof Entity) {
                         table.getDatasource().updateItem((Entity) item);
-//                        Map<String, Object> params = Collections.<String, Object>singletonMap("cardId", ((Assignment)item).getCard().getId());
-//                        table.getDatasource().refresh(params);
                     }
                 }
             }

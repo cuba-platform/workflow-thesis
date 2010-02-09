@@ -114,7 +114,7 @@ public class FormManagerChain {
 
     //activity and transitions params fills when reading FormManagerChain from xml
     //card and assignmentId fills before usage
-    private Map<String, Object> commonParams;
+    private Map<String, Object> commonParams = new HashMap<String, Object>();
 
     private List<FormManager> managersBefore = new ArrayList<FormManager>();
     private int positionBefore = 0;
