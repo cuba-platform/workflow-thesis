@@ -10,8 +10,13 @@
         <datasource
                 id="roleDs"
                 class="com.haulmont.workflow.core.entity.ProcRole"
-                view="_local">
+                view="edit">
         </datasource>
+        <collectionDatasource id="secRolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local">
+            <query>
+                <![CDATA[select r from sec$Role r order by r.name]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width = 400>
@@ -38,6 +43,11 @@
                         <row>
                             <label value="msg://multiUser"/>
                             <checkBox id="multiUser" datasource="roleDs" property="multiUser"
+                                      width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://role"/>
+                            <lookupField id="role" datasource="roleDs" property="role" optionsDatasource="secRolesDs"
                                       width="${width}"/>
                         </row>
                     </rows>

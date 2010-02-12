@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -75,8 +76,12 @@ public class CardRolesFrame extends AbstractFrame {
                     return;
 
                 CardRole cr = new CardRole();
+                ProcRole procRole = (ProcRole) value;
+                Role secRole = procRole.getRole();
+
                 Map<String, Object> params = new HashMap<String, Object>();
-                params.put("procRole", (ProcRole) value);
+                params.put("procRole", procRole);
+                params.put("secRole", secRole);
                 params.put("proc", card.getProc());
                 final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params);
                 cardRoleEditor.addListener(new Window.CloseListener() {
@@ -164,6 +169,14 @@ public class CardRolesFrame extends AbstractFrame {
             cardRolesDs.addItem(cardRole);
         }
         cardRole.setUser(user);
+    }
+
+    public void deleteAllActors() {
+        Collection<UUID> uuidCollection = cardRolesDs.getItemIds();
+        for (UUID itemId : uuidCollection) {
+            CardRole item = cardRolesDs.getItem(itemId);
+            cardRolesDs.removeItem(item);
+        }
     }
 
     private void initCreateRoleLookup() {

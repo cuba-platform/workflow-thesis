@@ -19,7 +19,17 @@
             </query>
         </collectionDatasource>
 
-        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local"/>
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local">
+            <query>
+                <![CDATA[
+                <#if param$secRole?has_content>
+                    select u from sec$User u join u.userRoles ur where ur.role.id = :param$secRole order by u.name
+                <#else>
+                    select u from sec$User u order by u.name
+                </#if>
+                ]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width = 400>

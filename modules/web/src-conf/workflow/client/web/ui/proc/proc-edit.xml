@@ -62,6 +62,7 @@
                         <column id="code" caption="msg://code"/>
                         <column id="name" caption="msg://name"/>
                         <column id="multiUser" caption="msg://multiUser"/>
+                        <column id="role" caption="msg://role"/>
                     </columns>
                     <rows datasource="rolesDs"/>
                 </table>

@@ -5,7 +5,7 @@
         >
 
     <dsContext>
-        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="_local">
+        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="browse">
             <query>
                 select pr from wf$ProcRole pr where pr.proc.id = :custom$procId order by pr.code
             </query>
@@ -13,7 +13,7 @@
     </dsContext>
 
     <layout expandLayout="true">
-        <vbox margin="true" expand="rolesTable" height="100%">
+        <vbox expand="rolesTable" height="100%">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                 <lookupField id="createRoleLookup"/>
                 <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>

@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.cuba.security.entity.Role;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,6 +37,10 @@ public class ProcRole extends StandardEntity {
 
     @Column(name = "IS_MULTI_USER")
     private Boolean multiUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROLE_ID")
+    private Role role;
 
     @OneToMany(mappedBy = "procRole")
     @Aggregation
@@ -79,5 +84,13 @@ public class ProcRole extends StandardEntity {
 
     public void setMultiUser(Boolean multiUser) {
         this.multiUser = multiUser;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

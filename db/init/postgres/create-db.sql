@@ -101,10 +101,12 @@ create table WF_PROC_ROLE (
     CODE varchar(50),
     NAME varchar(100),
     IS_MULTI_USER boolean,
+    ROLE_ID uuid,
     primary key (ID)
 )^
 
 alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
+alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
