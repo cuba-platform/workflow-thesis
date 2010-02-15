@@ -13,7 +13,7 @@
                 view="card-edit">
         </datasource>
 
-        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="_local">
+        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="browse">
             <query>
                 select r from wf$ProcRole r where r.proc.id = :param$proc
             </query>
@@ -21,16 +21,10 @@
 
         <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local">
             <query>
-                <![CDATA[
-                <#if param$secRole?has_content>
-                    select u from sec$User u join u.userRoles ur where ur.role.id = :param$secRole order by u.name
-                <#else>
-                    select u from sec$User u order by u.name
-                </#if>
-                ]]>
+                <![CDATA[select u from sec$User u order by u.name]]>
             </query>
-        </collectionDatasource>
-    </dsContext>
+    </collectionDatasource>
+</dsContext>
 
     <#assign width = 400>
     <layout expand="spring">
