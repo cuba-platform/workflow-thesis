@@ -12,17 +12,34 @@ package com.haulmont.workflow.core.global;
 
 public enum TimeUnit {
 
-    MINUTE(60000L),
-    HOUR(3600000L),
-    DAY(86400000L);
+    MINUTE(60000L, "M"),
+    HOUR(3600000L, "H"),
+    DAY(86400000L, "D");
 
     private final long millis;
+    private String id;
 
-    TimeUnit(long millis) {
+    TimeUnit(long millis, String id) {
         this.millis = millis;
+        this.id = id;
     }
 
     public long getMillis() {
         return millis;
+    }
+
+    public static TimeUnit fromId(String id) {
+        if ("M".equals(id))
+            return MINUTE;
+        else if ("H".equals(id))
+            return HOUR;
+        else if ("D".equals(id))
+            return DAY;
+        else
+            return null;
+    }
+
+    public String getId() {
+        return id;
     }
 }

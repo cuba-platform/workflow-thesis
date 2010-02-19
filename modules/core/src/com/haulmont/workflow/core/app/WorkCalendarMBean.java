@@ -15,4 +15,6 @@ public interface WorkCalendarMBean {
     int getCacheSize();
 
     void invalidateCache();
+
+    String fillWorkCalendar();
 }

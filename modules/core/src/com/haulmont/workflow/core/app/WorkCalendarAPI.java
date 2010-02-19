@@ -21,4 +21,6 @@ public interface WorkCalendarAPI {
     Long getAbsoluteMillis(Date startDate, int qty, TimeUnit unit);
 
     Date addInterval(Date startDate, int qty, TimeUnit unit);
+
+    Long getWorkDayLengthInMillis();
 }
