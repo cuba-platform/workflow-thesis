@@ -45,6 +45,14 @@
     <screen id="sec$Target.specificPermissions.lookup"
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/specific-permission-lookup.xml"/>
 
+    <screen id="wf$WorkCalendar.browse"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-browse.xml"/>
+    <screen id="wf$WorkCalendarWorkDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-workday-edit.xml"/>
+    <screen id="wf$WorkCalendarExceptionDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-exceptionday-edit.xml"/>
+
+
     <screen id="cuba$ExcelExport"
             template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
 

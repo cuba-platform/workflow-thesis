@@ -178,6 +178,7 @@ create table WF_CALENDAR (
     UPDATE_TS timestamp,
     UPDATED_BY varchar(50),
     WORK_DAY date,
+    WORK_DAY_OF_WEEK smallint,
     WORK_START char(4),
     WORK_END char(4),
     primary key (ID)

@@ -1,0 +1,63 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.workcalendar.WorkCalendarBrowser"
+        messagesPack="com.haulmont.workflow.web.ui.base.workcalendar"
+        caption="msg://workCalendarBrowseCaption">
+
+    <dsContext>
+        <collectionDatasource id="workDaysDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity"
+                              view="_local">
+            <query>
+                <![CDATA[select c from wf$Calendar c  where c.dayOfWeek is not null order by c.dayOfWeek, c.start]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="exceptionDaysDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity"
+                              view="_local">
+            <query>
+                <![CDATA[select c from wf$Calendar c where c.day is not null order by c.dayOfWeek, c.start ]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <#assign width=400>
+    <layout expand="split">
+        <split id="split" orientation="horizontal">
+
+            <vbox spacing="true" margin="true" expand="workDaysTable">
+                <label value="msg://timeTable"/>
+                <hbox align="MIDDLE_LEFT" spacing="true">
+                    <button id="createAttach" action="workDaysTable.create" icon="icons/create.png"/>
+                    <button id="editAttach" action="workDaysTable.edit" icon="icons/edit.png"/>
+                    <button id="removeAttach" action="workDaysTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="workDaysTable" height="100%" width="100%">
+                    <columns>
+                        <column id="dayOfWeek" caption="msg://WorkCalendar.dayOfWeek"/>
+                        <column id="start" caption="msg://WorkCalendar.start"/>
+                        <column id="end" caption="msg://WorkCalendar.end"/>
+                    </columns>
+                    <rows datasource="workDaysDs"/>
+                </table>
+            </vbox>
+
+            <vbox spacing="true" margin="true" expand="exceptionDaysTable">
+                <label value="msg://exceptionDays"/>
+                <hbox align="MIDDLE_LEFT" spacing="true">
+                    <button id="createAttach" action="exceptionDaysTable.create" icon="icons/create.png"/>
+                    <button id="editAttach" action="exceptionDaysTable.edit" icon="icons/edit.png"/>
+                    <button id="removeAttach" action="exceptionDaysTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="exceptionDaysTable">
+                    <columns>
+                        <column id="day" caption="msg://WorkCalendar.day">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="msg://dateFormat"/>
+                        </column>
+                        <column id="start" caption="msg://WorkCalendar.start"/>
+                        <column id="end" caption="msg://WorkCalendar.end"/>
+                    </columns>
+                    <rows datasource="exceptionDaysDs"/>
+                </table>
+            </vbox>
+        </split>
+    </layout>
+</window>

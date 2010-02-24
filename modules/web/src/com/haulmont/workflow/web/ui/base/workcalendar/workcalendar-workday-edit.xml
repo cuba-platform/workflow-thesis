@@ -1,0 +1,42 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.components.BasicEditor"
+        messagesPack="com.haulmont.workflow.web.ui.base.workcalendar"
+        datasource="calendarDs"
+        caption="msg://workDayEditCaption">
+
+    <dsContext>
+        <datasource id="calendarDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity" view="_local"/>
+    </dsContext>
+
+    <#assign width = 200>
+    <layout expand="mainPane">
+        <vbox id="mainPane" margin="true" spacing="true" stylename="edit-area">
+            <grid spacing="true" width="100%">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://WorkCalendar.dayOfWeek"/>
+                        <lookupField id="dayOfWeek" datasource="calendarDs" property="dayOfWeek"
+                                   width="${width}" required="true"/>
+                    </row>
+                    <row>
+                        <label value="msg://WorkCalendar.start"/>
+                        <textField id="start" datasource="calendarDs" property="start"
+                                     width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://WorkCalendar.end"/>
+                        <textField id="end" datasource="calendarDs" property="end"
+                                     width="${width}"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -40,6 +41,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         private final int startM;
         private final int endH;
         private final int endM;
+        private final Integer dayOfWeek;
 
         private CalendarItem(Date day, String start, String end) {
             this.day = day;
@@ -58,6 +60,27 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 this.endH = 0;
                 this.endM = 0;
             }
+            this.dayOfWeek = null;
+        }
+
+        private CalendarItem(Integer dayOfWeek, String start, String end) {
+            this.dayOfWeek = dayOfWeek;
+            if (start != null) {
+                this.startH = Integer.valueOf(start.substring(0, 2));
+                this.startM = Integer.valueOf(start.substring(2));
+            } else {
+                this.startH = 0;
+                this.startM = 0;
+            }
+
+            if (end != null) {
+                this.endH = Integer.valueOf(end.substring(0, 2));
+                this.endM = Integer.valueOf(end.substring(2));
+            } else {
+                this.endH = 0;
+                this.endM = 0;
+            }
+            this.day = null;
         }
 
         public Date getDay() {
@@ -100,10 +123,10 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             //we're interested only in hours and minutes
             startDay.clear(Calendar.YEAR);
             startDay.clear(Calendar.MONTH);
-            startDay.clear(Calendar.DAY_OF_MONTH);
+            startDay.set(Calendar.DAY_OF_YEAR, 1);
             endDay.clear(Calendar.YEAR);
             endDay.clear(Calendar.MONTH);
-            endDay.clear(Calendar.DAY_OF_MONTH);
+            endDay.set(Calendar.DAY_OF_YEAR, 1);
 
             return endDay.getTimeInMillis() - startDay.getTimeInMillis();
         }
@@ -125,10 +148,22 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             return false;
         }
 
+        public boolean isDateBeforeInterval(Date date) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minutes = calendar.get(Calendar.MINUTE);
+            if ((hour < startH) || ((hour == startH) && (minutes < startM))) {
+                return true;
+            }
+            return false;
+        }
+
 
     }
 
     private volatile Map<Date, List<CalendarItem>> cache;
+    private volatile Map<Integer, List<CalendarItem>> defaultDaysCache;
 
     private void loadCache() {
         if (cache == null) {
@@ -158,6 +193,29 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 }
             }
         }
+
+        if (defaultDaysCache == null) {
+            defaultDaysCache = new HashMap<Integer, List<CalendarItem>>();
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.day >= CURRENT_TIMESTAMP " +
+                        "or c.day is null order by c.day, c.start");
+                List<Object[]> list = q.getResultList();
+                for (Object[] row : list) {
+                    Integer dayOfWeek = (Integer)row[0];
+                    CalendarItem ci = new CalendarItem(dayOfWeek, (String) row[1], (String) row[2]);
+                    List<CalendarItem> mapValue = defaultDaysCache.get(dayOfWeek);
+                    if (mapValue == null)
+                        mapValue = new LinkedList<CalendarItem>();
+                    mapValue.add(ci);
+                    defaultDaysCache.put(dayOfWeek, mapValue);
+                }
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
     }
 
     public int getCacheSize() {
@@ -166,6 +224,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
     public void invalidateCache() {
         cache = null;
+        defaultDaysCache = null;
     }
 
     public Long getAbsoluteMillis(Date date, int qty, TimeUnit unit) {
@@ -193,7 +252,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         while (timeRemain > 0) {
             List<CalendarItem> currentDayItems = cache.get(currentDay.getTime());
             if (currentDayItems == null)
-                currentDayItems = cache.get(null);
+                currentDayItems = defaultDaysCache.get(currentDay.get(Calendar.DAY_OF_WEEK));
             if (currentDayItems != null) {
                 for (CalendarItem ci : currentDayItems) {
                     Long ciInterval;
@@ -203,8 +262,18 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                         isFirstDay = false;
                     }
                     if (isFirstDay) {
-                        if (!ci.isDateInInterval(date)) continue;
-                        ciInterval = ci.getIntervalInMillis(date);
+                        boolean dateNotInInterval = false;
+                        if (!ci.isDateInInterval(date)) {
+                            if (ci.isDateBeforeInterval(date)) {
+                                dateNotInInterval = true;
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (dateNotInInterval)
+                            ciInterval = ci.getIntervalInMillis();
+                        else
+                            ciInterval = ci.getIntervalInMillis(date);
                         isFirstDay = false;
                     } else
                         ciInterval = ci.getIntervalInMillis();
@@ -241,7 +310,10 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     public Long getWorkDayLengthInMillis() {
         loadCache();
         Long workDayLength = new Long(0);
-        List<CalendarItem> defaultItems = cache.get(null);
+        String defaultWorkDayProp = AppContext.getProperty("workflow.workCalendar.defaultWorkDay");
+        Integer defaultWorkDay = defaultWorkDayProp == null ? Calendar.MONDAY : Integer.parseInt(defaultWorkDayProp);
+
+        List<CalendarItem> defaultItems = defaultDaysCache.get(defaultWorkDay);
         if (defaultItems != null) {
             for (CalendarItem calendarItem : defaultItems) {
                 if (calendarItem.getDay() == null) {
@@ -261,8 +333,8 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             deleteWorkCalendar();
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            String calendarResourceName = AppContext.getProperty("workflow.WorkCalendar.path");
-            if (calendarResourceName == null) return "workflow.WorkCalendar.path property isn't set";
+            String calendarResourceName = AppContext.getProperty("workflow.workCalendar.path");
+            if (calendarResourceName == null) return "workflow.workCalendar.path property isn't set";
             ResourceRepositoryService rr = Locator.lookup(ResourceRepositoryService.NAME);
             if (rr.resourceExists(calendarResourceName)) {
                 String xml = rr.getResAsString(calendarResourceName);
@@ -274,35 +346,36 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
                 for (Element dayElement : Dom4j.elements(root)) {
                     if ("workDay".equals(dayElement.getName())) {
-                        em.persist(createWorkCalendarEntity(null, dayElement.attributeValue("start"), dayElement.attributeValue("end")));
+                        em.persist(createWorkCalendarEntity(null, dayElement.attributeValue("start"), dayElement.attributeValue("end"),
+                                Integer.parseInt(dayElement.attributeValue("dayOfWeek"))));
                     } else if ("dayOff".equals(dayElement.getName())) {
                         Date date = df.parse(dayElement.attributeValue("date"));
-                        em.persist(createWorkCalendarEntity(date, null, null));
+                        em.persist(createWorkCalendarEntity(date, null, null, null));
                         filledDays.add(date);
                     } else if ("exceptionDay".equals(dayElement.getName())) {
                         Date date = df.parse(dayElement.attributeValue("date"));
-                        em.persist(createWorkCalendarEntity(date, dayElement.attributeValue("start"), dayElement.attributeValue("end")));
+                        em.persist(createWorkCalendarEntity(date, dayElement.attributeValue("start"), dayElement.attributeValue("end"), null));
                         filledDays.add(date);
                     }
                 }
 
-                //fill weekends except days already added to filledDays
-                Calendar now = Calendar.getInstance();
-                int currentYear = now.get(Calendar.YEAR);
-                Calendar currentDay = GregorianCalendar.getInstance();
-                currentDay.set(Calendar.MONTH, Calendar.JANUARY);
-                currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-                if (currentDay.get(Calendar.DAY_OF_MONTH) == 7)
-                    currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-                currentDay.set(Calendar.WEEK_OF_MONTH, 1);
-                currentDay = DateUtils.truncate(currentDay, Calendar.DAY_OF_MONTH);
-                while (currentDay.get(Calendar.YEAR) == currentYear) {
-                    if (!filledDays.contains(currentDay.getTime()))
-                        em.persist(createWorkCalendarEntity(currentDay.getTime(), null, null));
-                    if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-                        currentDay.add(Calendar.DAY_OF_YEAR, 1);
-                    else currentDay.add(Calendar.DAY_OF_YEAR, 6); 
-                }
+//                //fill weekends except days already added to filledDays
+//                Calendar now = Calendar.getInstance();
+//                int currentYear = now.get(Calendar.YEAR);
+//                Calendar currentDay = GregorianCalendar.getInstance();
+//                currentDay.set(Calendar.MONTH, Calendar.JANUARY);
+//                currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+//                if (currentDay.get(Calendar.DAY_OF_MONTH) == 7)
+//                    currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+//                currentDay.set(Calendar.WEEK_OF_MONTH, 1);
+//                currentDay = DateUtils.truncate(currentDay, Calendar.DAY_OF_MONTH);
+//                while (currentDay.get(Calendar.YEAR) == currentYear) {
+//                    if (!filledDays.contains(currentDay.getTime()))
+//                        em.persist(createWorkCalendarEntity(currentDay.getTime(), null, null, null));
+//                    if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+//                        currentDay.add(Calendar.DAY_OF_YEAR, 1);
+//                    else currentDay.add(Calendar.DAY_OF_YEAR, 6);
+//                }
             }
 
 
@@ -353,11 +426,12 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
     }
 
-    private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end) {
+    private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end, Integer dayOfWeek) {
         WorkCalendarEntity calendarEntity = new WorkCalendarEntity();
         calendarEntity.setDay(day);
         calendarEntity.setStart(start);
         calendarEntity.setEnd(end);
+        calendarEntity.setDayOfWeek(DayOfWeek.fromId(dayOfWeek));
 
         return calendarEntity;
     }

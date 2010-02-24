@@ -33,6 +33,9 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     @Column(name = "WORK_DAY")
     private Date day;
 
+    @Column(name = "WORK_DAY_OF_WEEK")
+    private Integer dayOfWeek;
+
     @Column(name = "WORK_START")
     private String start;
 
@@ -76,5 +79,13 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
 
     public void setStart(String start) {
         this.start = start;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return DayOfWeek.fromId(this.dayOfWeek);
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek == null ? null : dayOfWeek.getId();
     }
 }
