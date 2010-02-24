@@ -3,7 +3,7 @@
         class="com.haulmont.cuba.gui.components.BasicEditor"
         messagesPack="com.haulmont.workflow.web.ui.base.workcalendar"
         datasource="calendarDs"
-        caption="msg://workDayEditCaption">
+        caption="msg://exceptionDayEditCaption">
 
     <dsContext>
         <datasource id="calendarDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity" view="_local"/>
