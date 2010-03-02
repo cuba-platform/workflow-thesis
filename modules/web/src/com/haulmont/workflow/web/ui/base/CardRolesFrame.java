@@ -136,7 +136,9 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    public void setProcActor(Proc proc, String roleCode, User user) {
+    //todo gorbunkov review and refactor next two methods
+    //setProcActor must delete other actors and set the user sent in param in case of multiUser role
+    public void setProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
         CardRole cardRole = null;
         List<CardRole> cardRoles = card.getRoles();
 
@@ -165,10 +167,43 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setProcRole(procRole);
             cardRole.setCode(roleCode);
             cardRole.setCard(card);
-            cardRole.setNotifyByEmail(true);
+            cardRole.setNotifyByEmail(notifyByEmail);
             cardRolesDs.addItem(cardRole);
         }
         cardRole.setUser(user);
+    }
+
+    public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
+        ProcRole procRole = null;
+        for (ProcRole pr : proc.getRoles()) {
+            if (roleCode.equals(pr.getCode())) {
+                procRole = pr;
+            }
+        }
+        if (procRole == null) return;
+        if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(roleCode, user)) {
+            CardRole cardRole = new CardRole();
+            cardRole.setProcRole(procRole);
+            cardRole.setCode(roleCode);
+            cardRole.setCard(card);
+            cardRole.setNotifyByEmail(notifyByEmail);
+            cardRole.setUser(user);
+            cardRolesDs.addItem(cardRole);
+        } else {
+            setProcActor(proc, roleCode, user, notifyByEmail);
+        }
+    }
+
+    private boolean procActorExists(String roleCode, User user) {
+        List<CardRole> cardRoles = card.getRoles();
+        if (cardRoles != null) {
+           for (CardRole cr : cardRoles) {
+               if (roleCode.equals(cr.getCode()) && cr.getUser().equals(user)) {
+                   return true;
+               }
+           }
+        }
+        return false;
     }
 
     public void deleteAllActors() {

@@ -75,4 +75,8 @@ public class ResolutionsFrame extends AbstractFrame {
         CollectionDatasource<Assignment, UUID> ds = getDsContext().get("resolutionsDs");
         ds.refresh(Collections.<String, Object>singletonMap("cardId", card.getId()));
     }
+
+    public void refreshDs() {
+        getDsContext().get("resolutionsDs").refresh();
+    }
 }
