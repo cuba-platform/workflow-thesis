@@ -84,7 +84,7 @@
             </tabsheet>
 
             <vbox id="actionsPane" width="250px" margin="true">
-                <iframe id="actionsFrame" src="/com/haulmont/workflow/web/ui/base/actions-frame.xml"/>
+                <iframe id="actionsFrame" src="/com/haulmont/workflow/web/ui/base/action/actions-frame.xml"/>
             </vbox>
         </hbox>
 

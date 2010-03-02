@@ -9,6 +9,7 @@
     <context-param>
         <param-name>appProperties</param-name>
         <param-value>
+            cuba.MetadataXml=workflow-metadata.xml
             cuba.WindowConfig.impl=com.haulmont.cuba.web.WebWindowConfig
             cuba.WindowConfig.xml=workflow/client/web/screen-config.xml
             cuba.MenuConfig.xml=workflow/client/web/menu-config.xml
@@ -21,6 +22,15 @@
     <context-param>
         <param-name>appPropertiesConfigName</param-name>
         <param-value>WEB-INF/app.properties</param-value>
+    </context-param>
+
+    <!-- Persitence config file names, relative to classpath root. Order is important for overriding. -->
+    <context-param>
+        <param-name>persistenceConfigName</param-name>
+        <param-value>
+            cuba-persistence.xml
+            workflow-persistence.xml
+        </param-value>
     </context-param>
 
     <!-- Application context config file names, relative to classpath root -->
