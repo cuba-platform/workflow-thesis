@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<server>
-    <mbean code="com.haulmont.docflow.core.app.DocflowDeployer"
-           name="haulmont.docflow:service=DocflowDeployer">
-        <depends>haulmont.workflow:service=WorkflowDeployer</depends>
-    </mbean>
-</server>

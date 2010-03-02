@@ -324,8 +324,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/_root.iml" filepath="$PROJECT_DIR$/_root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/modules/dfcore/dfcore.iml" filepath="$PROJECT_DIR$/modules/dfcore/dfcore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/modules/dfglobal/dfglobal.iml" filepath="$PROJECT_DIR$/modules/dfglobal/dfglobal.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/global/global.iml" filepath="$PROJECT_DIR$/modules/global/global.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
