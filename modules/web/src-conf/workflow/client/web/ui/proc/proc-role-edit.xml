@@ -46,6 +46,11 @@
                                       width="${width}"/>
                         </row>
                         <row>
+                            <label value="msg://assignToCreator"/>
+                            <checkBox id="assignToCreator" datasource="roleDs" property="assignToCreator"
+                                      width="${width}"/>
+                        </row>
+                        <row>
                             <label value="msg://role"/>
                             <lookupField id="role" datasource="roleDs" property="role" optionsDatasource="secRolesDs"
                                       width="${width}"/>

@@ -36,7 +36,7 @@ public class ProcRole extends StandardEntity {
     private String name;
 
     @Column(name = "IS_MULTI_USER")
-    private Boolean multiUser;
+    private Boolean multiUser = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID")
@@ -45,6 +45,9 @@ public class ProcRole extends StandardEntity {
     @OneToMany(mappedBy = "procRole")
     @Aggregation
     private List<DefaultProcActor> defaultProcActors;
+
+    @Column(name = "ASSIGN_TO_CREATOR")
+    private Boolean assignToCreator = false;
 
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;
@@ -92,5 +95,13 @@ public class ProcRole extends StandardEntity {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Boolean getAssignToCreator() {
+        return assignToCreator;
+    }
+
+    public void setAssignToCreator(Boolean assignToCreator) {
+        this.assignToCreator = assignToCreator;
     }
 }

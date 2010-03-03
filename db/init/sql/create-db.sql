@@ -102,6 +102,7 @@ create table WF_PROC_ROLE (
     NAME varchar(100),
     IS_MULTI_USER smallint,
     ROLE_ID varchar(36),
+    ASSIGN_TO_CREATOR smallint,
     primary key (ID)
 );
 

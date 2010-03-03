@@ -16,6 +16,7 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -133,6 +134,31 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setCard(card);
             cr.setNotifyByEmail(dpa.getNotifyByEmail());
             cardRolesDs.addItem(cr);
+        }
+
+        // if there is a role with AssignToCreator property set up, and this role is not assigned
+        // by DefaultProcActor list, assign this role to the current user
+        for (UUID procRoleId : procRolesDs.getItemIds()) {
+            ProcRole procRole = procRolesDs.getItem(procRoleId);
+            if (BooleanUtils.isTrue(procRole.getAssignToCreator())) {
+                boolean found = false;
+                for (UUID cardRoleId : cardRolesDs.getItemIds()) {
+                    CardRole cardRole = cardRolesDs.getItem(cardRoleId);
+                    if (procRole.equals(cardRole.getProcRole())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    CardRole cr = new CardRole();
+                    cr.setProcRole(procRole);
+                    cr.setCode(procRole.getCode());
+                    cr.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                    cr.setCard(card);
+                    cr.setNotifyByEmail(false);
+                    cardRolesDs.addItem(cr);
+                }
+            }
         }
     }
 
