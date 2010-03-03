@@ -26,7 +26,7 @@
     </collectionDatasource>
 </dsContext>
 
-    <#assign width = 400>
+    <#assign width = 300>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

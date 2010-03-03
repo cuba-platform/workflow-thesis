@@ -241,7 +241,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private void initCreateRoleLookup() {
-        // add ProcRole if it has multiUser == true or not added yet
+        // add ProcRole if it has multiUser == true or hasn't been added yet
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
             if (BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr)) {

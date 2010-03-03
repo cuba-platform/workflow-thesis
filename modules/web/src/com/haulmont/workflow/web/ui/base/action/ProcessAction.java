@@ -105,7 +105,7 @@ public class ProcessAction extends AbstractAction {
     private void startProcess(Window window, FormManagerChain managerChain) {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         wfs.startProcess(card);
-        window.close(Window.COMMIT_ACTION_ID);
+        window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
     }
