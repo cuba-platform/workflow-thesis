@@ -45,17 +45,17 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
         private CalendarItem(Date day, String start, String end) {
             this.day = day;
-            if (start != null) {
+            if ((start != null) && !("".equals(start))) {
                 this.startH = Integer.valueOf(start.substring(0, 2));
-                this.startM = Integer.valueOf(start.substring(2));
+                this.startM = Integer.valueOf(start.substring(3));
             } else {
                 this.startH = 0;
                 this.startM = 0;
             }
 
-            if (end != null) {
+            if ((end != null) && !("".equals(end))){
                 this.endH = Integer.valueOf(end.substring(0, 2));
-                this.endM = Integer.valueOf(end.substring(2));
+                this.endM = Integer.valueOf(end.substring(3));
             } else {
                 this.endH = 0;
                 this.endM = 0;
@@ -67,7 +67,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             this.dayOfWeek = dayOfWeek;
             if (start != null) {
                 this.startH = Integer.valueOf(start.substring(0, 2));
-                this.startM = Integer.valueOf(start.substring(2));
+                this.startM = Integer.valueOf(start.substring(3));
             } else {
                 this.startH = 0;
                 this.startM = 0;
@@ -75,7 +75,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
             if (end != null) {
                 this.endH = Integer.valueOf(end.substring(0, 2));
-                this.endM = Integer.valueOf(end.substring(2));
+                this.endM = Integer.valueOf(end.substring(3));
             } else {
                 this.endH = 0;
                 this.endM = 0;
@@ -174,7 +174,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                     try {
                         EntityManager em = PersistenceProvider.getEntityManager();
                         Query q = em.createQuery("select c.day, c.start, c.end from wf$Calendar c where c.day >= CURRENT_TIMESTAMP " +
-                                "or c.day is null order by c.day, c.start");
+                                "order by c.day, c.start");
                         List<Object[]> list = q.getResultList();
                         for (Object[] row : list) {
                             Date date = (Date) row[0];
@@ -199,8 +199,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
-                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.day >= CURRENT_TIMESTAMP " +
-                        "or c.day is null order by c.day, c.start");
+                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.dayOfWeek is not null");
                 List<Object[]> list = q.getResultList();
                 for (Object[] row : list) {
                     Integer dayOfWeek = (Integer)row[0];
