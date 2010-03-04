@@ -182,7 +182,7 @@ create table WF_CALENDAR (
     UPDATED_BY varchar(50),
     WORK_DAY date,
     WORK_DAY_OF_WEEK numeric(1),
-    WORK_START char(4),
-    WORK_END char(4),
+    WORK_START char(5),
+    WORK_END char(5),
     primary key (ID)
 );
