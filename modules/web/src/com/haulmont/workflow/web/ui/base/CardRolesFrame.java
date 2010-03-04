@@ -19,10 +19,13 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -57,10 +60,31 @@ public class CardRolesFrame extends AbstractFrame {
         rolesActions.add(getComponent("editRole"));
         rolesActions.add(getComponent("removeRole"));
 
-        Table rolesTable = getComponent("rolesTable");
+        final Table rolesTable = getComponent("rolesTable");
         TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
         rolesTH.createEditAction(OpenType.DIALOG);
         rolesTH.createRemoveAction(false);
+
+        final CollectionDatasource rolesTableDs = rolesTable.getDatasource();
+        rolesTable.getDatasource().addListener(new DsListenerAdapter() {
+            @Override
+            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                super.stateChanged(ds, prevState, state);
+                if (state.equals(Datasource.State.VALID)) {
+                    LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
+                        public void onClick(final Entity entity) {
+                            Window window = openEditor("wf$CardRole.edit", entity, OpenType.DIALOG, rolesTableDs);
+                            window.addListener(new Window.CloseListener() {
+                                public void windowClosed(String actionId) {
+                                    rolesTableDs.updateItem((Entity) entity);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
     }
 
     public void setCard(final Card card) {
