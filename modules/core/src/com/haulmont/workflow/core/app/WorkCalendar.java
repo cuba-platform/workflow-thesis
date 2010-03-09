@@ -199,7 +199,8 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
-                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.dayOfWeek is not null");
+                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.dayOfWeek is not null " +
+                        "order by c.dayOfWeek, c.start");
                 List<Object[]> list = q.getResultList();
                 for (Object[] row : list) {
                     Integer dayOfWeek = (Integer)row[0];
