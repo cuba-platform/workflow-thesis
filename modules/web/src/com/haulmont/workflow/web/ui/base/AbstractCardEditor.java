@@ -103,6 +103,9 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (actionsFrame != null) {
             if (PersistenceHelper.isNew(item)) {
+                if (((Card) item).getProc() != null) {
+                    actionsFrame.initActions((Card) getItem(), isCommentVisible());
+                }
                 cardDs.addListener(new DsListenerAdapter<Card>() {
                     @Override
                     public void valueChanged(Card source, String property, Object prevValue, Object value) {

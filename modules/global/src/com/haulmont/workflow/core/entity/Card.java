@@ -44,26 +44,26 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
-    private Proc proc;
+    protected Proc proc;
 
     @Column(name = "JBPM_PROCESS_ID", length = 255)
-    private String jbpmProcessId;
+    protected String jbpmProcessId;
 
     @Column(name = "STATE", length = 255)
-    private String state;
+    protected String state;
 
     @Column(name = "DESCRIPTION", length = 1000)
-    private String description;
+    protected String description;
     
     @OneToMany(mappedBy = "card")
     @OrderBy("code")
     @Aggregation
-    private List<CardRole> roles;
+    protected List<CardRole> roles;
 
     @OneToMany(mappedBy = "card")
     @OrderBy("createTs")
     @Aggregation
-    private List<CardAttachment> attachments;
+    protected List<CardAttachment> attachments;
 
     public Date getUpdateTs() {
         return updateTs;
