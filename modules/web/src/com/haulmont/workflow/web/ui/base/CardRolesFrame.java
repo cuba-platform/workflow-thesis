@@ -15,6 +15,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
@@ -62,10 +65,20 @@ public class CardRolesFrame extends AbstractFrame {
 
         final Table rolesTable = getComponent("rolesTable");
         TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
-        rolesTH.createEditAction(OpenType.DIALOG);
-        rolesTH.createRemoveAction(false);
 
         final CollectionDatasource rolesTableDs = rolesTable.getDatasource();
+        rolesTable.addAction(new AbstractAction("edit") {
+            public void actionPerform(Component component) {
+                Entity entity = rolesTableDs.getItem();
+                openEditor("wf$CardRole.edit", entity, OpenType.DIALOG, rolesTableDs);
+            }
+
+            @Override
+            public String getCaption() {
+                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Edit");
+            }
+        });
+
         rolesTableDs.addListener(new DsListenerAdapter() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
@@ -79,7 +92,8 @@ public class CardRolesFrame extends AbstractFrame {
                 }
             }
         });
-
+        
+        rolesTH.createRemoveAction(false);
     }
 
     public void setCard(final Card card) {
