@@ -14,6 +14,8 @@
             <button id="actionBtn2" visible="false" width="${width}"/>
             <button id="actionBtn3" visible="false" width="${width}"/>
             <button id="actionBtn4" visible="false" width="${width}"/>
+            <button id="actionBtn5" visible="false" width="${width}"/>
+            <button id="actionBtn6" visible="false" width="${width}"/>
         </vbox>
     </layout>
 

@@ -36,7 +36,7 @@ public class ActionsFrame extends AbstractFrame {
 
     public void initActions(Card card, boolean commentVisible) {
         List<Button> buttons = new ArrayList<Button>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 7; i++) {
             Button btn = getComponent("actionBtn" + i);
             btn.setVisible(false);
             buttons.add(btn);
