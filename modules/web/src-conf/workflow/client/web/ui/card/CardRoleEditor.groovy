@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.ServiceLocator
 class CardRoleEditor extends AbstractEditor{
   private ProcRole procRole
   private CollectionDatasource usersDs
+  private Set<UUID> users;
 
   CardRoleEditor(IFrame frame) {
     super(frame);
@@ -34,6 +35,7 @@ class CardRoleEditor extends AbstractEditor{
     super.init(params);
     
     procRole = params['param$procRole']
+    users = params['param$users']
     usersDs = getDsContext().get('usersDs')
     
     LookupField roleLookup = getComponent('roleLookup')
@@ -62,12 +64,18 @@ class CardRoleEditor extends AbstractEditor{
 
   private void initUserLookup(ProcRole procRole) {
     Role secRole = procRole.role
-    if (secRole) {
-      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole order by u.name')
-    } else {
-      usersDs.setQuery('select u from sec$User u order by u.name')
+    String usersExclStr = ''
+    if (users && !users.isEmpty()) {
+      usersExclStr = ' u.id not in (:custom$users) '
     }
-    usersDs.refresh(['secRole': secRole])
+    if (secRole) {
+      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole' +
+              (usersExclStr.isEmpty() ? ' ' : ' and' + usersExclStr) + 'order by u.name')
+    } else {
+      usersDs.setQuery('select u from sec$User u' +
+              (usersExclStr.isEmpty() ? ' ' : ' where' + usersExclStr) + 'order by u.name')
+    }
+    usersDs.refresh(['secRole': secRole, 'users': users])
   }
 
 }

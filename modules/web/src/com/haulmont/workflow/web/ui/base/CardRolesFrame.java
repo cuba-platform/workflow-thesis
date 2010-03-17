@@ -30,7 +30,6 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.workflow.core.entity.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
@@ -70,7 +69,9 @@ public class CardRolesFrame extends AbstractFrame {
         rolesTable.addAction(new AbstractAction("edit") {
             public void actionPerform(Component component) {
                 Entity entity = rolesTableDs.getItem();
-                openEditor("wf$CardRole.edit", entity, OpenType.DIALOG, rolesTableDs);
+                Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
+                openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
+                        Collections.singletonMap("users", users), rolesTableDs);
             }
 
             @Override
@@ -86,13 +87,15 @@ public class CardRolesFrame extends AbstractFrame {
                 if (state.equals(Datasource.State.VALID)) {
                     LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
                         public void onClick(final Entity entity) {
-                            openEditor("wf$CardRole.edit", entity, OpenType.DIALOG, rolesTableDs);
+                            Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
+                            openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
+                                    Collections.singletonMap("users", users), rolesTableDs);
                         }
                     });
                 }
             }
         });
-        
+
         rolesTH.createRemoveAction(false);
     }
 
@@ -117,6 +120,7 @@ public class CardRolesFrame extends AbstractFrame {
                 params.put("procRole", procRole);
                 params.put("secRole", secRole);
                 params.put("proc", card.getProc());
+                params.put("users", getUsersByProcRole(procRole));
                 final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params);
                 cardRoleEditor.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
@@ -300,6 +304,21 @@ public class CardRolesFrame extends AbstractFrame {
             items.add(ds.getItem(id));
         }
         return items;
+    }
+
+    private Set<UUID> getUsersByProcRole(ProcRole procRole) {
+        if (procRole == null) {
+            return null;
+        }
+        Set<UUID> res = new HashSet<UUID>();
+        Collection<UUID> crIds = cardRolesDs.getItemIds();
+        for (UUID crId : crIds) {
+            CardRole cr = cardRolesDs.getItem(crId);
+            if (procRole.equals(cr.getProcRole())) {
+                res.add(cr.getUser().getId());
+            }
+        }
+        return res;
     }
 
 }
