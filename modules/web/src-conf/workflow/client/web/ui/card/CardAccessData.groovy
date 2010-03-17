@@ -36,6 +36,10 @@ public class CardAccessData extends AbstractWfAccessData {
       return card.jbpmProcessId == null
   }
 
+  public boolean getSaveAndCloseEnabled() {
+    return false;
+  }
+
   public boolean getSaveEnabled() {
     if (saveEnabled == null) {
       if (card.jbpmProcessId == null)

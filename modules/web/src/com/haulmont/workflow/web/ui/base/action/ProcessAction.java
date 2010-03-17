@@ -62,6 +62,17 @@ public class ProcessAction extends AbstractAction {
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void doSuccess(String comment) {
+                        if (window instanceof Window.Editor)
+                            ((Window.Editor) window).commit();
+                        else
+                            throw new UnsupportedOperationException();
+                        managerChain.doManagerAfter();
+                    }
+                });
+                managerChain.doManagerBefore("");
+            } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void doSuccess(String comment) {
                         window.close(Window.COMMIT_ACTION_ID);
                         managerChain.doManagerAfter();
                     }

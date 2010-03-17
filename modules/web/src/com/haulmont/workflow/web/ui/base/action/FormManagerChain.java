@@ -48,7 +48,7 @@ public class FormManagerChain {
                 Element element = null;
                 String activity;
                 String transition;
-                if (WfConstants.ACTION_SAVE.equals(actionName)) {
+                if (WfConstants.ACTION_SAVE.equals(actionName) || (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName))) {
                     activity = actionName;
                     transition = null;
                     element = root.element("save");

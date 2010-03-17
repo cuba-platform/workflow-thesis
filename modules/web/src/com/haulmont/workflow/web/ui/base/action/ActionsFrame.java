@@ -51,6 +51,10 @@ public class ActionsFrame extends AbstractFrame {
             actions.add(WfConstants.ACTION_SAVE);
         }
 
+        if (accessData == null || accessData.getSaveAndCloseEnabled()) {
+            actions.add(WfConstants.ACTION_SAVE_AND_CLOSE);
+        }
+
         if (card.getJbpmProcessId() != null) {
             WfService wfs = ServiceLocator.lookup(WfService.NAME);
             info = wfs.getAssignmentInfo(card);

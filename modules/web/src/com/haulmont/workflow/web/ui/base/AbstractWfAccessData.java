@@ -29,11 +29,14 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
 
     public abstract boolean getSaveEnabled();
 
+    public abstract boolean getSaveAndCloseEnabled();
+
     public abstract boolean getStartProcessEnabled();
 
     public List<String> getVisibleActions(Card card) {
         List<String> visibleActions = new ArrayList<String>();
         visibleActions.add(WfConstants.ACTION_SAVE);
+        visibleActions.add(WfConstants.ACTION_SAVE_AND_CLOSE);
         visibleActions.add(WfConstants.ACTION_START);
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         AssignmentInfo info = wfs.getAssignmentInfo(card);

@@ -14,5 +14,7 @@ public class WfConstants {
 
     public static final String ACTION_SAVE = "SAVE_ACTION";
 
+    public static final String ACTION_SAVE_AND_CLOSE = "SAVE_AND_CLOSE_ACTION";
+
     public static final String ACTION_START = "START_PROCESS_ACTION";
 }
