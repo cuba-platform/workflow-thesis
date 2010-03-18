@@ -314,7 +314,7 @@ public class CardRolesFrame extends AbstractFrame {
         Collection<UUID> crIds = cardRolesDs.getItemIds();
         for (UUID crId : crIds) {
             CardRole cr = cardRolesDs.getItem(crId);
-            if (procRole.equals(cr.getProcRole())) {
+            if (procRole.equals(cr.getProcRole()) && cr.getUser() != null) {
                 res.add(cr.getUser().getId());
             }
         }
