@@ -62,7 +62,7 @@ public class AttachmentEditor extends AbstractEditor {
   public void setItem(Entity item) {
     super.setItem(item)
 
-    boolean isNew = PersistenceHelper.isNew(attachmentDs.getItem())
+    boolean isNew = PersistenceHelper.isNew(item)
 
     if (isNew) {
       okBtn.setEnabled(false)
@@ -92,6 +92,7 @@ public class AttachmentEditor extends AbstractEditor {
       ] as Listener)
     } else {
       uploadField.setEnabled(false)
+      fileNameText.setEditable(false)
     }
   }
 
