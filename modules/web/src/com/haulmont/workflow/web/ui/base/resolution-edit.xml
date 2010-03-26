@@ -11,7 +11,7 @@
         </datasource>
     </dsContext>
 
-    <#assign width = 400>
+    <#assign width = 300>
     <layout expand="mainPane">
         <vbox id="mainPane" margin="true" spacing="true" stylename="edit-area" expand="attachmentsPane">
             <grid spacing="true" width="100%">
@@ -25,6 +25,7 @@
                         <label value="msg://createdDate"/>
                         <textField id="createdDate" datasource="assignmentDs" property="createTs"
                                    width="${width}" editable="false"/>
+
                     </row>
                     <row>
                         <label value="msg://finishedDate"/>
@@ -38,8 +39,14 @@
                     </row>
                     <row>
                         <label value="msg://cardState"/>
-                        <textField id="cardState" datasource="assignmentDs" property="locName"
-                                   width="${width}" editable="false"/>
+                        <hbox spacing="true">
+                            <textField id="cardState" datasource="assignmentDs" property="locName"
+                                       width="${width}" editable="false"/>
+
+                            <label value="msg://iteration"/>
+                            <textField id="iteration" datasource="assignmentDs" property="iteration"
+                                       width="30" editable="false"/>
+                        </hbox>
                     </row>
                     <row>
                         <label value="msg://outcome"/>
@@ -49,7 +56,7 @@
                     <row>
                         <label value="msg://comment"/>
                         <textField id="comment" datasource="assignmentDs" property="comment"
-                                   width="${width}" rows="6"/>
+                                   width="400" rows="6"/>
                     </row>
                 </rows>
             </grid>

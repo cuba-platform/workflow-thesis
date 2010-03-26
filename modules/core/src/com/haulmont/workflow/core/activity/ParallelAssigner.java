@@ -29,6 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Out of date. Use Groovy alternative instead.
+ */
+@Deprecated
 public class ParallelAssigner extends Assigner {
 
     private Log log = LogFactory.getLog(ParallelAssigner.class);

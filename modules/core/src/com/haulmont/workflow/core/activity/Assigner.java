@@ -27,6 +27,10 @@ import org.jbpm.api.activity.ExternalActivityBehaviour;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Out of date. Use Groovy alternative instead.
+ */
+@Deprecated
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
     protected String assignee;

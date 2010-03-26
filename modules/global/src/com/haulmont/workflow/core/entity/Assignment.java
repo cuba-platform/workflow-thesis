@@ -64,6 +64,9 @@ public class Assignment extends StandardEntity {
     @Aggregation
     private List<AssignmentAttachment> attachments;
 
+    @Column(name = "ITERATION")
+    private Integer iteration;
+
     public String getName() {
         return name;
     }
@@ -150,6 +153,14 @@ public class Assignment extends StandardEntity {
 
     public void setAttachments(List<AssignmentAttachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public Integer getIteration() {
+        return iteration;
+    }
+
+    public void setIteration(Integer iteration) {
+        this.iteration = iteration;
     }
 
     @MetaProperty

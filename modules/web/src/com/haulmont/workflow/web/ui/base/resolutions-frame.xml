@@ -24,6 +24,7 @@
                     <column id="finished" caption="msg://finishedDate"/>
                     <column id="user" caption="msg://user"/>
                     <column id="locName" caption="msg://cardState"/>
+                    <column id="iteration" caption="msg://iteration"/>
                     <column id="locOutcomeResult" caption="msg://outcome"/>
                     <column id="hasAttachments" caption=" "/>
                     <column id="comment" caption="msg://comment"/>

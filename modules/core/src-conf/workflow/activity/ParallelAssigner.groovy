@@ -70,6 +70,7 @@ public class ParallelAssigner extends Assigner {
       assignment.setCard(card)
       assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
+      assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
       em.persist(assignment)
 
       if (cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))

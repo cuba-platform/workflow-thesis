@@ -54,6 +54,7 @@ create table WF_ASSIGNMENT (
     FINISHED timestamp,
     OUTCOME varchar(255),
     COMMENT varchar(2000),
+    ITERATION integer,
     primary key (ID)
 )^
 

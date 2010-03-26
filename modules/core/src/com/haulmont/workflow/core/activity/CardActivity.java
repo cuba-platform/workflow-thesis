@@ -18,6 +18,10 @@ import com.haulmont.cuba.core.PersistenceProvider;
 
 import java.util.UUID;
 
+/**
+ * Out of date. Use Groovy alternative instead.
+ */
+@Deprecated
 public class CardActivity implements ActivityBehaviour {
 
     public void execute(ActivityExecution execution) throws Exception {

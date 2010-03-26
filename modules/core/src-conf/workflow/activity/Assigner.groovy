@@ -81,6 +81,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setJbpmProcessId(execution.getProcessInstance().getId())
     assignment.setUser(user)
     assignment.setCard(card)
+    assignment.setIteration(calcIteration(card, user, execution.getActivityName()))
 
     if (timersFactory) {
       timersFactory.createTimers(execution, assignment)
@@ -97,6 +98,20 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     if (timersFactory) {
       timersFactory.removeTimers(execution)
     }
+  }
+
+  protected Integer calcIteration(Card card, User user, String activityName) {
+    EntityManager em = PersistenceProvider.getEntityManager()
+    Query q = em.createQuery(
+            'select max(a.iteration) from wf$Assignment a where a.card.id = ?1 and a.user.id = ?2 and a.name = ?3')
+    q.setParameter(1, card.id)
+    q.setParameter(2, user.id)
+    q.setParameter(3, activityName)
+    Object result = q.getSingleResult()
+    if (result)
+      return result + 1
+    else
+      return 1
   }
 
   protected void sendEmail(Assignment assignment, User user) {
