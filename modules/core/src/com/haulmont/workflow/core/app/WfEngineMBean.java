@@ -22,6 +22,8 @@ public interface WfEngineMBean {
 
     String deployJpdlXml(String fileName);
 
+    String deployProcess(String name);
+
     String printDeployments();
 
     String printDeploymentResource(String id);

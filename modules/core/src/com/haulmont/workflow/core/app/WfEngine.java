@@ -138,6 +138,12 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         }
     }
 
+    public String deployProcess(String name) {
+        String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
+        String fileName = confDir + "/process/" + name + "/" + name + ".jpdl.xml";
+        return deployJpdlXml(fileName);
+    }
+
     private void deployRoles(String deploymentId, Proc proc) {
         Set<String> roles = new HashSet<String>();
 
