@@ -26,6 +26,7 @@ import org.jbpm.api.ExecutionService
 import org.jbpm.api.activity.ActivityExecution
 
 import com.haulmont.workflow.core.entity.CardRole
+import com.haulmont.workflow.core.exception.WorkflowException
 
 public class ParallelAssigner extends Assigner {
 
@@ -49,7 +50,8 @@ public class ParallelAssigner extends Assigner {
     q.setParameter(2, role)
     List<CardRole> cardRoles = q.getResultList()
     if (cardRoles.isEmpty())
-      throw new RuntimeException("User not found: cardId=${card.getId()}, procRole=$role")
+      throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
+              "User not found: cardId=${card.getId()}, procRole=$role", role)
 
     Assignment master = new Assignment()
     master.setName(execution.getActivityName())
