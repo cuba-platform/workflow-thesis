@@ -66,6 +66,9 @@ public class ActionsFrame extends AbstractFrame {
 
                 actions.addAll(info.getActions());
             }
+            if (!WfConstants.CARD_STATE_CANCELED.equals(card.getState()) && (accessData == null || accessData.getCancelProcessEnabled())) {
+                actions.add(WfConstants.ACTION_CANCEL);
+            }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
                 (accessData == null || accessData.getStartProcessEnabled())) {
             actions.add(WfConstants.ACTION_START);

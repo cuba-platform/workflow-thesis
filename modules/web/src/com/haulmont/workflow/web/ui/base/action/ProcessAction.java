@@ -93,7 +93,13 @@ public class ProcessAction extends AbstractAction {
                     }
                 });
                 managerChain.doManagerBefore("");
-
+            } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void doSuccess(String comment) {
+                        cancelProcess(window, managerChain);
+                    }
+                });
+                managerChain.doManagerBefore("");
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
                 Assignment assignment = ServiceLocator.getDataService().load(lc);
@@ -129,4 +135,12 @@ public class ProcessAction extends AbstractAction {
 
         managerChain.doManagerAfter();
     }
+
+    private void cancelProcess(Window window, FormManagerChain managerChain) {
+        WfService wfs = ServiceLocator.lookup(WfService.NAME);
+        wfs.cancelProcess(card);
+        window.close(Window.COMMIT_ACTION_ID, true);
+        managerChain.doManagerAfter();
+    }
+    
 }

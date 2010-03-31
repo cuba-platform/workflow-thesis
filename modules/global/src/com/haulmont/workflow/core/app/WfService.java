@@ -24,6 +24,8 @@ public interface WfService {
 
     Card startProcess(Card card);
 
+    void cancelProcess(Card card);
+
     void finishAssignment(UUID assignmentId, String outcome, String comment);
 
     Map<String, Object> getProcessVariables(Card card);

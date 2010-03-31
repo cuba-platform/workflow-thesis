@@ -17,4 +17,8 @@ public class WfConstants {
     public static final String ACTION_SAVE_AND_CLOSE = "SAVE_AND_CLOSE_ACTION";
 
     public static final String ACTION_START = "START_PROCESS_ACTION";
+
+    public static final String ACTION_CANCEL = "CANCEL_PROCESS_ACTION";
+
+    public static final String CARD_STATE_CANCELED = "Canceled";
 }
