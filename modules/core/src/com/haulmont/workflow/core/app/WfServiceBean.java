@@ -140,18 +140,7 @@ public class WfServiceBean implements WfService {
 
     public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
         User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
-        CardRole appropCardRole = null;
-        if (card.getRoles() != null) {
-            for (CardRole cardRole : card.getRoles()) {
-                if (cardRole.getCode().equals(procRoleCode)) {
-                    appropCardRole = cardRole;
-                }
-            }
-            if ((appropCardRole != null) && (appropCardRole.getUser() != null)) {
-                return appropCardRole.getUser().equals(currentUser);
-            }
-        }
-        return false;
+        return isUserInProcRole(card, currentUser, procRoleCode);
     }
     
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
