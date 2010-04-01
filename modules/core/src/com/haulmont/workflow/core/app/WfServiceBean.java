@@ -13,9 +13,11 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.logging.Log;
@@ -135,4 +137,36 @@ public class WfServiceBean implements WfService {
             tx.end();
         }
     }
+
+    public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
+        User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+        CardRole appropCardRole = null;
+        if (card.getRoles() != null) {
+            for (CardRole cardRole : card.getRoles()) {
+                if (cardRole.getCode().equals(procRoleCode)) {
+                    appropCardRole = cardRole;
+                }
+            }
+            if ((appropCardRole != null) && (appropCardRole.getUser() != null)) {
+                return appropCardRole.getUser().equals(currentUser);
+            }
+        }
+        return false;
+    }
+    
+    public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
+        CardRole appropCardRole = null;
+        if (card.getRoles() != null) {
+            for (CardRole cardRole : card.getRoles()) {
+                if (cardRole.getCode().equals(procRoleCode)) {
+                    appropCardRole = cardRole;
+                }
+            }
+            if ((appropCardRole != null) && (appropCardRole.getUser() != null)) {
+                return appropCardRole.getUser().equals(user);
+            }
+        }
+        return false;
+    }
+
 }
