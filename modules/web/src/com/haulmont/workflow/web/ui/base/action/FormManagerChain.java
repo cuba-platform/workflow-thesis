@@ -56,6 +56,10 @@ public class FormManagerChain {
                     activity = actionName;
                     transition = null;
                     element = root.element("start");
+                } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
+                    activity = actionName;
+                    transition = null;
+                    element = root.element("cancel");
                 } else {
                     int dot = actionName.lastIndexOf('.');
                     activity = actionName.substring(0, dot);
