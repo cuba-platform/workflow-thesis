@@ -38,10 +38,12 @@ import java.util.List;
 public class CardRolesFrame extends AbstractFrame {
 
     private Card card;
+    private boolean enabled = true;
 
     private CollectionDatasource<CardRole, UUID> cardRolesDs;
     private CollectionDatasource<ProcRole, UUID> procRolesDs;
     private LookupField createRoleLookup;
+    private Table rolesTable;
     protected List<Component> rolesActions = new ArrayList<Component>();
 
     private String createRoleCaption;
@@ -62,7 +64,7 @@ public class CardRolesFrame extends AbstractFrame {
         rolesActions.add(getComponent("editRole"));
         rolesActions.add(getComponent("removeRole"));
 
-        final Table rolesTable = getComponent("rolesTable");
+        rolesTable = getComponent("rolesTable");
         TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
 
         final CollectionDatasource rolesTableDs = rolesTable.getDatasource();
@@ -84,7 +86,7 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 super.stateChanged(ds, prevState, state);
-                if (state.equals(Datasource.State.VALID)) {
+                if (state.equals(Datasource.State.VALID) && isEnabled()) {
                     LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
                         public void onClick(final Entity entity) {
                             Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
@@ -150,7 +152,7 @@ public class CardRolesFrame extends AbstractFrame {
         initCreateRoleLookup();
 
         for (Component component : rolesActions) {
-            component.setEnabled(proc != null);
+            component.setEnabled(proc != null && isEnabled());
         }
     }
 
@@ -321,4 +323,38 @@ public class CardRolesFrame extends AbstractFrame {
         return res;
     }
 
+//    public void disable() {
+//        if (rolesTable.getActions() != null) {
+//            for (Action action : rolesTable.getActions()) {
+//                action.setEnabled(false);
+//            }
+//        }
+//        createRoleLookup.setEditable(false);
+//        LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
+//
+//    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+//        super.setEnabled(enabled);
+        this.enabled = enabled;
+
+        if (rolesTable.getActions() != null) {
+            for (Action action : rolesTable.getActions()) {
+                action.setEnabled(enabled);
+            }
+        }
+        for (Component action : rolesActions) {
+            action.setEnabled(enabled);
+        }
+        if (!enabled) {
+            LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
+        }
+    }
 }

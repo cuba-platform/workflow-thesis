@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,6 +94,12 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (cardRolesFrame != null) {
             cardRolesFrame.setCard((Card) getItem());
+            AbstractAccessData accessData = getContext().getParamValue("accessData");
+            if (accessData != null) {
+                boolean disabled = (accessData.getDisabledComponents() != null)
+                        && accessData.getDisabledComponents().contains(cardRolesFrame.getId());
+                cardRolesFrame.setEnabled(cardRolesFrame.isEnabled() && !disabled);
+            }
         }
 
         if (resolutionsFrame != null) {
