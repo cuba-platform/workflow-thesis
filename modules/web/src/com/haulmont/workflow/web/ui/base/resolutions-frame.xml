@@ -22,7 +22,7 @@
                     <column id="createTs" caption="msg://createdDate"/>
                     <column id="dueDate" caption="msg://dueDate" visible="false"/>
                     <column id="finished" caption="msg://finishedDate"/>
-                    <column id="user" caption="msg://user"/>
+                    <column id="user.name" caption="msg://user"/>
                     <column id="locName" caption="msg://cardState"/>
                     <column id="iteration" caption="msg://iteration"/>
                     <column id="locOutcomeResult" caption="msg://outcome"/>

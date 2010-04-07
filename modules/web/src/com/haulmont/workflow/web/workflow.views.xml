@@ -44,7 +44,9 @@
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
         <property name="card" view="browse"/>
-        <property name="user" view="_minimal"/>
+        <property name="user">
+            <property name="name"/>
+        </property>
         <property name="attachments" view="_minimal"/>
     </view>
 
