@@ -71,6 +71,7 @@ public class CardRolesFrame extends AbstractFrame {
         rolesTable.addAction(new AbstractAction("edit") {
             public void actionPerform(Component component) {
                 Entity entity = rolesTableDs.getItem();
+                if (entity == null) return;
                 Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
                 openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
                         Collections.singletonMap("users", users), rolesTableDs);
@@ -194,7 +195,7 @@ public class CardRolesFrame extends AbstractFrame {
                     cr.setCode(procRole.getCode());
                     cr.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                     cr.setCard(card);
-                    cr.setNotifyByEmail(false);
+                    cr.setNotifyByEmail(true);
                     cardRolesDs.addItem(cr);
                 }
             }
