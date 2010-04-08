@@ -222,6 +222,10 @@ public class CardRolesFrame extends AbstractFrame {
         if (cardRole == null) {
             cardRole = new CardRole();
 
+            if (proc.getRoles() == null) {
+                proc = getDsContext().getDataService().reload(proc, "edit");
+            }
+
             ProcRole procRole = null;
             for (ProcRole pr : proc.getRoles()) {
                 if (roleCode.equals(pr.getCode())) {
