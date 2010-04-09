@@ -365,6 +365,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
             assignment.setFinished(TimeProvider.currentTimestamp());
+            assignment.setFinishedByUser(SecurityProvider.currentUserSession().getUser());
             assignment.setOutcome(outcome);
             assignment.setComment(comment);
 

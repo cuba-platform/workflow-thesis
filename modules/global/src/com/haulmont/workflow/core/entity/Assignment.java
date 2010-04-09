@@ -12,9 +12,11 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -52,6 +54,10 @@ public class Assignment extends StandardEntity {
 
     @Column(name = "FINISHED")
     private Date finished;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FINISHED_BY")
+    private User finishedByUser;
 
     @Column(name = "OUTCOME", length = 255)
     private String outcome;
@@ -131,6 +137,14 @@ public class Assignment extends StandardEntity {
         this.finished = finished;
     }
 
+    public User getFinishedByUser() {
+        return finishedByUser;
+    }
+
+    public void setFinishedByUser(User finishedByUser) {
+        this.finishedByUser = finishedByUser;
+    }
+
     public String getOutcome() {
         return outcome;
     }
@@ -161,6 +175,15 @@ public class Assignment extends StandardEntity {
 
     public void setIteration(Integer iteration) {
         this.iteration = iteration;
+    }
+
+    @MetaProperty
+    public String getDisplayUser() {
+        if (finishedByUser == null || ObjectUtils.equals(user, finishedByUser)) {
+            return user.getName();
+        }
+        return MessageProvider.formatMessage(getClass(), "assignmentDisplayUserFormat",
+                finishedByUser.getName(), user.getName());
     }
 
     @MetaProperty

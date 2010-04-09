@@ -52,6 +52,7 @@ create table WF_ASSIGNMENT (
     JBPM_PROCESS_ID varchar(255),
     DUE_DATE timestamp,
     FINISHED timestamp,
+    FINISHED_BY uuid,
     OUTCOME varchar(255),
     COMMENT varchar(2000),
     ITERATION integer,
@@ -59,6 +60,8 @@ create table WF_ASSIGNMENT (
 )^
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
+
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_FINISHED_BY foreign key (FINISHED_BY) references SEC_USER (ID)^
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 

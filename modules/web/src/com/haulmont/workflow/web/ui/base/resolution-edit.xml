@@ -34,7 +34,7 @@
                     </row>
                     <row>
                         <label value="msg://user"/>
-                        <textField id="user" datasource="assignmentDs" property="user"
+                        <textField id="user" datasource="assignmentDs" property="displayUser"
                                    width="${width}" editable="false"/>
                     </row>
                     <row>

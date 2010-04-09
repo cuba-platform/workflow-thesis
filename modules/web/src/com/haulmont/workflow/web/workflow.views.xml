@@ -47,12 +47,20 @@
         <property name="user">
             <property name="name"/>
         </property>
+        <property name="finishedByUser">
+            <property name="name"/>
+        </property>
         <property name="attachments" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolution-edit" extends="_local">
         <property name="card" view="browse"/>
-        <property name="user" view="_minimal"/>
+        <property name="user">
+            <property name="name"/>
+        </property>
+        <property name="finishedByUser">
+            <property name="name"/>
+        </property>
         <property name="attachments" view="assignment-edit"/>
     </view>
 
