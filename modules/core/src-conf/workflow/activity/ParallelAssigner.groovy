@@ -27,12 +27,14 @@ import org.jbpm.api.activity.ActivityExecution
 
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
+import com.haulmont.workflow.core.timer.AssignmentTimersFactory
 
 public class ParallelAssigner extends Assigner {
 
   private Log log = LogFactory.getLog(ParallelAssigner.class)
 
   String successTransition
+  AssignmentTimersFactory timersFactory
 
   @Override
   protected void createAssignment(ActivityExecution execution) {
@@ -73,6 +75,10 @@ public class ParallelAssigner extends Assigner {
       assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
+
+      if (timersFactory) {
+        timersFactory.createTimers(execution, assignment)
+      }
       em.persist(assignment)
 
       if (cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
@@ -91,6 +97,9 @@ public class ParallelAssigner extends Assigner {
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
       execution.take(signalName)
+      if (timersFactory) {
+        timersFactory.removeTimers(execution)
+      }
     } else {
       log.debug("Trying to finish assignment with success outcome")
 

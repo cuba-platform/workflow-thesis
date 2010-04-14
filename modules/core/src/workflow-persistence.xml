@@ -14,6 +14,7 @@
         <class>com.haulmont.workflow.core.entity.DefaultProcActor</class>
         <class>com.haulmont.workflow.core.entity.TimerEntity</class>
         <class>com.haulmont.workflow.core.entity.WorkCalendarEntity</class>
+        <class>com.haulmont.workflow.core.entity.CardInfo</class>
 
         <properties>
             <property name="openjpa.Log"
