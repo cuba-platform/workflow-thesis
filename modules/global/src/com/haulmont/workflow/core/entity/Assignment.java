@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -180,10 +181,14 @@ public class Assignment extends StandardEntity {
     @MetaProperty
     public String getDisplayUser() {
         if (finishedByUser == null || ObjectUtils.equals(user, finishedByUser)) {
-            return user.getName();
+            return userNameOrLogin(user);
         }
         return MessageProvider.formatMessage(getClass(), "assignmentDisplayUserFormat",
-                finishedByUser.getName(), user.getName());
+                userNameOrLogin(finishedByUser), userNameOrLogin(user));
+    }
+
+    private String userNameOrLogin(User user) {
+        return StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName();
     }
 
     @MetaProperty
