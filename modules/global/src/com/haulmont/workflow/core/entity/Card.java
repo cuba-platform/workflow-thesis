@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.MetaProperty;
 
@@ -64,6 +65,10 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @OrderBy("createTs")
     @Aggregation
     protected List<CardAttachment> attachments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CREATOR_ID")
+    protected User creator;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -147,6 +152,14 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setAttachments(List<CardAttachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     @MetaProperty
