@@ -47,6 +47,7 @@
             driver="${db.driver}"
             url="${db.url}"
             userid="${db.user}" password="${db.password}"
+            encoding="UTF-8"
             autocommit="true"/>
     </target>
 
@@ -57,6 +58,7 @@
             driver="${db.driver}"
             url="${db.url}"
             userid="${db.user}" password="${db.password}"
+            encoding="UTF-8"
             autocommit="true"/>
     </target>
 

@@ -1,0 +1,76 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.TransitionForm"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        caption="msg://confirmationForm.title">
+
+    <dsContext>
+        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
+            <collectionDatasource id="attachmentsDs" property="attachments"/>
+        </datasource>
+        <datasource id="varsDs">
+            <datasourceClass>com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource</datasourceClass>
+        </datasource>
+        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
+            <query>
+                <![CDATA[select cr from wf$CardRole cr where cr.card.id = :param$card order by cr.code]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <#assign width=400>
+    <#assign labelWidth=90>
+    <layout expand="mainPane">
+        <vbox id="mainPane" margin="true" stylename="edit-area" expand="attachmentsPane" spacing="true">
+            <hbox>
+                <label value="msg://transition" width="${labelWidth}"/>
+                <textField id="outcomeText" width="${width}"/>
+            </hbox>
+
+            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="cardRolesVisible"/>
+                <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
+            </accessControl>
+            
+            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="commentVisible"/>
+                <hbox id="commentTextPane">
+                    <label value="msg://comment" width="${labelWidth}"/>
+                    <textField id="commentText" datasource="assignmentDs" property="comment"
+                               width="${width}" rows="6"/>
+                </hbox>
+            </accessControl>
+
+            <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="dueDateVisible"/>
+                <hbox id="dueDatePane">
+                    <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
+                    <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="DAY"
+                               dateFormat="msg://dateFormat"/>
+                </hbox>
+            </accessControl>
+
+            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="attachmentsVisible"/>
+                <vbox id="attachmentsPane" expand="attachmentsTable">
+                    <label value="msg://attachments"/>
+                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                        <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
+                        <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                        <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                    </hbox>
+                    <table id="attachmentsTable" editable="false" sortable="true">
+                        <columns>
+                            <column id="name" caption="msg://attachName"/>
+                            <column id="file.name" caption="msg://fileName"/>
+                        </columns>
+                        <rows datasource="attachmentsDs"/>
+                    </table>
+                </vbox>
+            </accessControl>
+        </vbox>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>
