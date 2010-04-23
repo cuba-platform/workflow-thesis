@@ -162,9 +162,10 @@ public class TransitionForm extends AbstractForm {
             if (!emptyRolesNames.isEmpty()) {
                 String message = "";
                 for (String emptyRoleName : emptyRolesNames) {
-                    message += MessageProvider.formatMessage(getClass(), "actorNotDefined.msg", emptyRoleName) + "<br/>";
-                    showNotification(message, NotificationType.WARNING);
+                    message += MessageProvider.formatMessage(TransitionForm.class, "actorNotDefined.msg", emptyRoleName) + "<br/>";
                 }
+                showNotification(message, NotificationType.WARNING);
+                return;
             }
         }
 //                getDsContext().commit();
