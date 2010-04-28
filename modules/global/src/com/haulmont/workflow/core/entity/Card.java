@@ -21,6 +21,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "wf$Card")
 @Table(name = "WF_CARD")
@@ -69,6 +70,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATOR_ID")
     protected User creator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_CARD_ID")
+    protected Card parentCard;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCard")
+    protected Set<Card> subCards; 
 
     public Date getUpdateTs() {
         return updateTs;
@@ -160,6 +168,22 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public Card getParentCard() {
+        return parentCard;
+    }
+
+    public void setParentCard(Card parentCard) {
+        this.parentCard = parentCard;
+    }
+
+    public Set<Card> getSubCards() {
+        return subCards;
+    }
+
+    public void setSubCards(Set<Card> subCards) {
+        this.subCards = subCards;
     }
 
     @MetaProperty
