@@ -44,6 +44,11 @@
                             <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
                                        width="${width}" editable="false"/>
                         </row>
+                        <row>
+                            <label value="msg://cardTypes"/>
+                            <textField id="cardTypes" datasource="procDs" property="cardTypes"
+                                       width="${width}"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>

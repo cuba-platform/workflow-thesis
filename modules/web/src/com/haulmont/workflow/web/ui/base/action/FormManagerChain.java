@@ -24,13 +24,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FormManagerChain {
 
     public interface Handler {
-        void doSuccess(String comment);
+        void onSuccess(String comment);
+
+        void onFail();
     }
 
     private static FormManagerChain nullObject = new FormManagerChain();
     private static Map<String, FormManagerChain> cache = new ConcurrentHashMap<String, FormManagerChain>();
 
     public static FormManagerChain getManagerChain(Card card, String actionName) {
+        if (card.getProc() == null)
+            return nullObject;
+
         String resourceName = card.getProc().getMessagesPack().replace(".", "/") + "/forms.xml";
 
         String cacheKey = resourceName + "/" + actionName;
@@ -145,7 +150,7 @@ public class FormManagerChain {
         if (nextManager != null)
             nextManager.doBefore(commonParams);
         else {
-            handler.doSuccess(comment);
+            handler.onSuccess(comment);
         }
     }
 
@@ -169,6 +174,10 @@ public class FormManagerChain {
         FormManager nextManager = getNextManagerAfter();
         if (nextManager != null)
             nextManager.doAfter(commonParams);
+    }
+
+    public void fail() {
+        handler.onFail();
     }
 
     private void reset() {

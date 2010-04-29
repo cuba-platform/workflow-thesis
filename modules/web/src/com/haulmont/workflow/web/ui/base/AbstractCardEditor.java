@@ -35,6 +35,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
     protected Table attachmentsTable;
 
+    protected CardProcFrame cardProcFrame;
     protected CardRolesFrame cardRolesFrame;
     protected ResolutionsFrame resolutionsFrame;
 
@@ -46,6 +47,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         cardDs = getDsContext().get("cardDs");
         cardRolesDs = getDsContext().get("cardRolesDs");
         attachmentsTable = getComponent("attachmentsTable");
+        cardProcFrame = getComponent("cardProcFrame");
         cardRolesFrame = getComponent("cardRolesFrame");
         resolutionsFrame = getComponent("resolutionsFrame");
     }
@@ -75,6 +77,10 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             attachmentsTH.createRemoveAction(false);
         }
 
+        if (cardProcFrame != null) {
+            cardProcFrame.init();
+        }
+
         if (cardRolesFrame != null) {
             cardRolesFrame.init();
         }
@@ -90,6 +96,16 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (attachmentsTable != null) {
             FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+        }
+
+        if (cardProcFrame != null) {
+            cardProcFrame.setCard((Card) getItem());
+            AbstractAccessData accessData = getContext().getParamValue("accessData");
+            if (accessData != null) {
+                boolean disabled = (accessData.getDisabledComponents() != null)
+                        && accessData.getDisabledComponents().contains(cardProcFrame.getId());
+                cardProcFrame.setEnabled(cardProcFrame.isEnabled() && !disabled);
+            }
         }
 
         if (cardRolesFrame != null) {
@@ -109,21 +125,25 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         final ActionsFrame actionsFrame = getComponent("actionsFrame");
 
         if (actionsFrame != null) {
-            if (PersistenceHelper.isNew(item)) {
-                if (((Card) item).getProc() != null) {
-                    actionsFrame.initActions((Card) getItem(), isCommentVisible());
-                }
-                cardDs.addListener(new DsListenerAdapter<Card>() {
-                    @Override
-                    public void valueChanged(Card source, String property, Object prevValue, Object value) {
-                        if ("proc".equals(property)) {
-                            actionsFrame.initActions(source, isCommentVisible());
-                        }
-                    }
-                });
-            } else {
-                actionsFrame.initActions((Card) getItem(), isCommentVisible());
+            initActionsFrame((Card) getItem(), actionsFrame);
+        }
+    }
+
+    protected void initActionsFrame(Card card, final ActionsFrame actionsFrame) {
+        if (PersistenceHelper.isNew(card)) {
+            if (card.getProc() != null) {
+                actionsFrame.initActions(card, isCommentVisible());
             }
+            cardDs.addListener(new DsListenerAdapter<Card>() {
+                @Override
+                public void valueChanged(Card source, String property, Object prevValue, Object value) {
+                    if ("proc".equals(property)) {
+                        actionsFrame.initActions(source, isCommentVisible());
+                    }
+                }
+            });
+        } else {
+            actionsFrame.initActions(card, isCommentVisible());
         }
     }
 

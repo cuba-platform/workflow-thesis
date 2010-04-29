@@ -19,10 +19,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.Proc;
-import com.haulmont.workflow.core.entity.ProcRole;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -381,7 +378,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("assignment", assignment);
 
-            es.signalExecutionById(execution.getId(), outcome, params);
+            pi = es.signalExecutionById(execution.getId(), outcome, params);
+
+            if (Execution.STATE_ENDED.equals(pi.getState())) {
+                Proc proc = assignment.getCard().getProc();
+                for (CardProc cp : assignment.getCard().getProcs()) {
+                    if (cp.getProc().equals(proc)) {
+                        cp.setActive(false);
+                    }
+                }
+                assignment.getCard().setJbpmProcessId(null);
+            }
+
             tx.commit();
         } finally {
             tx.end();

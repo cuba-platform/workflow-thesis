@@ -20,6 +20,9 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
 import com.haulmont.cuba.gui.WindowManager.OpenType
 import com.haulmont.workflow.core.entity.DefaultProcActor
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
+import com.haulmont.cuba.gui.data.DsContext.CommitListener
+import com.haulmont.cuba.core.global.CommitContext
+import com.haulmont.cuba.core.entity.Entity
 
 public class ProcEditor extends AbstractEditor {
 
@@ -87,6 +90,22 @@ public class ProcEditor extends AbstractEditor {
             [
                     collectionChanged: { ds, operation -> enableDpaActions() }
             ] as CollectionDsListenerAdapter
+    )
+
+    getDsContext().addListener(
+            [
+                    beforeCommit: { CommitContext<Entity> context ->
+                      Proc p = context.getCommitInstances().find { it == procDs.getItem() }
+                      if (p) {
+                        if (!p.cardTypes.startsWith(','))
+                          p.cardTypes = ',' + p.cardTypes
+                        if (!p.cardTypes.endsWith(','))
+                          p.cardTypes = p.cardTypes + ','
+                      }
+                    },
+                    afterCommit: { CommitContext<Entity> context, Map<Entity, Entity> result ->
+                    }
+            ] as CommitListener
     )
   }
 

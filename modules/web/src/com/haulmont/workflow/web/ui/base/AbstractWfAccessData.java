@@ -31,7 +31,17 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
 
     public abstract boolean getSaveAndCloseEnabled();
 
+    /**
+     * Affects Start Process action inside ActionsFrame
+     */
     public abstract boolean getStartProcessEnabled();
+
+    /**
+     * Affects Start Process action inside CardProcFrame
+     */
+    public boolean getStartCardProcessEnabled() {
+        return true;
+    }
 
     public boolean getCancelProcessEnabled() {
         return false;

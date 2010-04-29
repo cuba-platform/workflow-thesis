@@ -13,7 +13,9 @@
         </datasource>
         <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
             <query>
-                <![CDATA[select cr from wf$CardRole cr where cr.card.id = :param$card order by cr.code]]>
+                <![CDATA[select cr from wf$CardRole cr
+                where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
+                order by cr.code]]>
             </query>
         </collectionDatasource>
     </dsContext>

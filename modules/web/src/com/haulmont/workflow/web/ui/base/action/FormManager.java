@@ -120,6 +120,8 @@ public abstract class FormManager {
                         String comment = window instanceof AbstractForm ?
                                 ((AbstractForm) window).getComment() : "";
                         chain.doManagerBefore(comment);
+                    } else {
+                        chain.fail();
                     }
                 }
             });
@@ -182,6 +184,8 @@ public abstract class FormManager {
                 Boolean result = runnable.call();
                 if (!BooleanUtils.isFalse(result)) {
                     chain.doManagerBefore("");
+                } else {
+                    chain.fail();
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -234,6 +238,11 @@ public abstract class FormManager {
                                 }
                             },
                             new DialogAction(DialogAction.Type.NO) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    chain.fail();
+                                }
+
                                 @Override
                                 public String getIcon() {
                                     return "icons/cancel.png";

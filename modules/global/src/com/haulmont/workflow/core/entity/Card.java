@@ -57,12 +57,17 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @Column(name = "DESCRIPTION", length = 1000)
     protected String description;
     
-    @OneToMany(mappedBy = "card")
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    @OrderBy("sortOrder")
+    @Aggregation
+    protected List<CardProc> procs;
+
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("code")
     @Aggregation
     protected List<CardRole> roles;
 
-    @OneToMany(mappedBy = "card")
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("createTs")
     @Aggregation
     protected List<CardAttachment> attachments;
@@ -144,6 +149,14 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<CardProc> getProcs() {
+        return procs;
+    }
+
+    public void setProcs(List<CardProc> procs) {
+        this.procs = procs;
     }
 
     public List<CardRole> getRoles() {

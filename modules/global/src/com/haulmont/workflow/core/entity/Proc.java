@@ -38,6 +38,9 @@ public class Proc extends StandardEntity {
     @OrderBy("code")
     private List<ProcRole> roles;
 
+    @Column(name = "CARD_TYPES")
+    private String cardTypes;
+
     public String getName() {
         return name;
     }
@@ -68,5 +71,13 @@ public class Proc extends StandardEntity {
 
     public void setMessagesPack(String messagesPack) {
         this.messagesPack = messagesPack;
+    }
+
+    public String getCardTypes() {
+        return cardTypes;
+    }
+
+    public void setCardTypes(String cardTypes) {
+        this.cardTypes = cardTypes;
     }
 }

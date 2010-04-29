@@ -81,6 +81,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setJbpmProcessId(execution.getProcessInstance().getId())
     assignment.setUser(user)
     assignment.setCard(card)
+    assignment.setProc(card.getProc())
     assignment.setIteration(calcIteration(card, user, execution.getActivityName()))
 
     if (timersFactory) {

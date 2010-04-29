@@ -46,7 +46,7 @@ public class ProcessAction extends AbstractAction {
         if (card.getProc() != null)
             return MessageProvider.getMessage(card.getProc().getMessagesPack(), getId());
         else
-            return "";
+            return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), getId());
     }
 
     public void actionPerform(Component component) {
@@ -61,23 +61,31 @@ public class ProcessAction extends AbstractAction {
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void doSuccess(String comment) {
+                    public void onSuccess(String comment) {
                         if (window instanceof Window.Editor)
                             ((Window.Editor) window).commit();
                         else
                             throw new UnsupportedOperationException();
                         managerChain.doManagerAfter();
                     }
-                });
-                managerChain.doManagerBefore("");
-            } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void doSuccess(String comment) {
-                        window.close(Window.COMMIT_ACTION_ID);
-                        managerChain.doManagerAfter();
+
+                    public void onFail() {
                     }
                 });
                 managerChain.doManagerBefore("");
+
+            } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void onSuccess(String comment) {
+                        window.close(Window.COMMIT_ACTION_ID);
+                        managerChain.doManagerAfter();
+                    }
+
+                    public void onFail() {
+                    }
+                });
+                managerChain.doManagerBefore("");
+
             } else if (WfConstants.ACTION_START.equals(actionName)) {
                 LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
                 Card loadedCard = ServiceLocator.getDataService().load(lc);
@@ -88,18 +96,26 @@ public class ProcessAction extends AbstractAction {
                 }
 
                 managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void doSuccess(String comment) {
+                    public void onSuccess(String comment) {
                         startProcess(window, managerChain);
                     }
-                });
-                managerChain.doManagerBefore("");
-            } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void doSuccess(String comment) {
-                        cancelProcess(window, managerChain);
+
+                    public void onFail() {
                     }
                 });
                 managerChain.doManagerBefore("");
+
+            } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
+                managerChain.setHandler(new FormManagerChain.Handler() {
+                    public void onSuccess(String comment) {
+                        cancelProcess(window, managerChain);
+                    }
+
+                    public void onFail() {
+                    }
+                });
+                managerChain.doManagerBefore("");
+
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
                 Assignment assignment = ServiceLocator.getDataService().load(lc);
@@ -110,8 +126,11 @@ public class ProcessAction extends AbstractAction {
                 }
 
                 managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void doSuccess(String comment) {
+                    public void onSuccess(String comment) {
                         finishAssignment(window, comment, managerChain);
+                    }
+
+                    public void onFail() {
                     }
                 });
                 managerChain.doManagerBefore("");

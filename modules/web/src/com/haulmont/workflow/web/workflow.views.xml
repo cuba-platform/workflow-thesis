@@ -10,7 +10,12 @@
     </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="browse" extends="_local">
+        <property name="proc" view="_minimal"/>
         <property name="role" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.ProcRole" name="card-edit" extends="_local">
+        <property name="proc" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.DefaultProcActor" name="browse" extends="_local">
@@ -18,7 +23,7 @@
     </view>
 
     <view class="com.haulmont.workflow.core.entity.DefaultProcActor" name="edit" extends="_local">
-        <property name="procRole" view="_local"/>
+        <property name="procRole" view="card-edit"/>
         <property name="user" view="_minimal"/>
     </view>
 
@@ -34,8 +39,12 @@
 
     <view class="com.haulmont.workflow.core.entity.CardRole" name="card-edit" extends="_local">
         <!--<property name="card" view="_local"/>-->
-        <property name="procRole" view="_local"/>
+        <property name="procRole" view="card-edit"/>
         <property name="user" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.CardProc" name="card-edit" extends="_local">
+        <property name="proc" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="browse" extends="_local">
@@ -43,6 +52,7 @@
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
+        <property name="proc" view="_local"/>
         <property name="card" view="browse"/>
         <property name="user">
             <property name="name"/>
@@ -54,6 +64,7 @@
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolution-edit" extends="_local">
+        <property name="proc" view="_local"/>
         <property name="card" view="browse"/>
         <property name="user">
             <property name="name"/>

@@ -1,0 +1,60 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.CardProcFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext>
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local">
+            <query>
+                select p from wf$Proc p
+                where p.cardTypes is null or p.cardTypes = '' or p.cardTypes like :custom$cardType
+                order by p.name
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="browse">
+            <query>
+                select pr from wf$ProcRole pr where pr.proc.id = :ds$cardProcDs.proc order by pr.code
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource id="tmpCardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
+            <datasourceClass>com.haulmont.workflow.web.ui.base.CardProcFrame$CardProcRolesDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true" expand="procRolesSplit">
+        <split id="procRolesSplit" orientation="vertical">
+            <vbox spacing="true" expand="cardProcTable">
+                <hbox align="MIDDLE_LEFT" spacing="true">
+                    <lookupField id="createProcLookup"/>
+                    <button id="removeProc" action="cardProcTable.remove" icon="icons/remove.png"/>
+                    <button id="startProc" visible="false"/>
+                </hbox>
+                <table id="cardProcTable">
+                    <columns>
+                        <column id="proc.name" caption="msg://process"/>
+                        <column id="active" caption="msg://active"/>
+                    </columns>
+                    <rows datasource="cardProcDs"/>
+                </table>
+            </vbox>
+            <vbox spacing="true" expand="rolesTable">
+                <hbox align="MIDDLE_LEFT" spacing="true">
+                    <lookupField id="createRoleLookup"/>
+                    <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
+                    <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
+                </hbox>
+                <table id="rolesTable" editable="false">
+                    <columns>
+                        <column id="procRole.name" caption="msg://role"/>
+                        <column id="user" caption="msg://user"/>
+                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                    </columns>
+                    <rows datasource="tmpCardRolesDs"/>
+                </table>
+            </vbox>
+        </split>
+    </layout>
+
+</window>

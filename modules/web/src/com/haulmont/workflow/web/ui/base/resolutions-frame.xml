@@ -4,7 +4,7 @@
         >
 
     <dsContext>
-        <collectionDatasource id="resolutionsDs"
+        <groupDatasource id="resolutionsDs"
                               class="com.haulmont.workflow.core.entity.Assignment"
                               view="resolutions">
             <query>
@@ -12,13 +12,14 @@
                 where a.card.id = :custom$cardId and a.user is not null
                 order by a.createTs
             </query>
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
 
     <layout expandLayout="true">
         <vbox expand="resolutionsTable" height="100%">
-            <table id="resolutionsTable" editable="false" sortable="true">
+            <groupTable id="resolutionsTable" editable="false" sortable="true">
                 <columns>
+                    <column id="proc" caption="msg://process"/>
                     <column id="createTs" caption="msg://createdDate"/>
                     <column id="dueDate" caption="msg://dueDate" visible="true"/>
                     <column id="finished" caption="msg://finishedDate"/>
@@ -30,7 +31,7 @@
                     <column id="comment" caption="msg://comment"/>
                 </columns>
                 <rows datasource="resolutionsDs"/>
-            </table>
+            </groupTable>
         </vbox>
     </layout>
 

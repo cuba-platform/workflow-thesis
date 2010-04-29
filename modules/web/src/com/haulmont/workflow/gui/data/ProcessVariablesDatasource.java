@@ -69,6 +69,10 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
         state = State.INVALID;
     }
 
+    public void valid() {
+        state = State.VALID;
+    }
+
     public void commited(Map<Entity, Entity> map) {
     }
 

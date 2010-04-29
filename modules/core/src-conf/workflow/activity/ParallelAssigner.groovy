@@ -72,6 +72,7 @@ public class ParallelAssigner extends Assigner {
 
       assignment.setJbpmProcessId(execution.getProcessInstance().getId())
       assignment.setCard(card)
+      assignment.setProc(card.getProc())
       assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))

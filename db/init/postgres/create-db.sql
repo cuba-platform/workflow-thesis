@@ -10,6 +10,7 @@ create table WF_PROC (
     NAME varchar(255),
     JBPM_PROCESS_KEY varchar(255),
     MESSAGES_PACK varchar(200),
+    CARD_TYPES varchar(500),
     primary key (ID)
 )^
 
@@ -67,6 +68,7 @@ create table WF_ASSIGNMENT (
     DELETED_BY varchar(50),
     USER_ID uuid,
     CARD_ID uuid,
+    PROC_ID uuid,
     MASTER_ASSIGNMENT_ID uuid,
     NAME varchar(255),
     DESCRIPTION varchar(1000),
@@ -85,6 +87,8 @@ alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_USER foreign key (USER
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_FINISHED_BY foreign key (FINISHED_BY) references SEC_USER (ID)^
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
+
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -158,6 +162,28 @@ alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_CARD foreign key (CARD_I
 alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_ROLE foreign key (PROC_ROLE_ID) references WF_PROC_ROLE (ID)^
 
 alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_USER foreign key (USER_ID) references SEC_USER (ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_CARD_PROC (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    CARD_ID uuid,
+    PROC_ID uuid,
+    IS_ACTIVE boolean,
+    SORT_ORDER integer,
+    primary key (ID)
+)^
+
+alter table WF_CARD_PROC add constraint FK_WF_CARD_PROC_CARD foreign key (CARD_ID) references WF_CARD (ID)^
+
+alter table WF_CARD_PROC add constraint FK_WF_CARD_PROC_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

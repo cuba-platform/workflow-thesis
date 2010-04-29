@@ -38,6 +38,10 @@ public class Assignment extends StandardEntity {
     private Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_ID")
+    private Proc proc;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MASTER_ASSIGNMENT_ID")
     private Assignment masterAssignment;
 
@@ -104,6 +108,14 @@ public class Assignment extends StandardEntity {
 
     public void setCard(Card card) {
         this.card = card;
+    }
+
+    public Proc getProc() {
+        return proc;
+    }
+
+    public void setProc(Proc proc) {
+        this.proc = proc;
     }
 
     public Assignment getMasterAssignment() {
@@ -220,8 +232,8 @@ public class Assignment extends StandardEntity {
         if (value == null)
             return "";
 
-        if (getCard() != null && getCard().getProc() != null) {
-            String messagesPack = getCard().getProc().getMessagesPack();
+        if (proc != null) {
+            String messagesPack = proc.getMessagesPack();
             if (!value.startsWith(MessageUtils.MARK))
                 value = MessageUtils.MARK + value;
             return MessageUtils.loadString(messagesPack, value);
