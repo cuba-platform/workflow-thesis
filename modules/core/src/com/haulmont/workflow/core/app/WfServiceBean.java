@@ -15,9 +15,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.logging.Log;
@@ -123,15 +121,26 @@ public class WfServiceBean implements WfService {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
+
+            Card c = em.merge(card);
+
             Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
-            query.setParameter("1", card);
+            query.setParameter("1", c);
             List<Assignment> assignments = query.getResultList();
             for (Assignment assignment : assignments) {
-                assignment.setComment(MessageProvider.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
+                assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
                 assignment.setFinished(TimeProvider.currentTimestamp());
             }
-            card.setState(WfConstants.CARD_STATE_CANCELED);
-            em.merge(card);
+
+            Proc proc = c.getProc();
+            for (CardProc cp : c.getProcs()) {
+                if (cp.getProc().equals(proc)) {
+                    cp.setActive(false);
+                }
+            }
+            c.setJbpmProcessId(null);
+            c.setState(WfConstants.CARD_STATE_CANCELED);
+
             tx.commit();
         } finally {
             tx.end();
