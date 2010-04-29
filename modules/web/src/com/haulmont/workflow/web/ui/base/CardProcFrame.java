@@ -47,6 +47,10 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class CardProcFrame extends AbstractFrame {
 
+    public interface Listener {
+        void afterInitDefaultActors(Proc proc, CollectionDatasource currentCardRolesDs);
+    }
+
     private Card card;
     private boolean enabled = true;
 
@@ -65,8 +69,18 @@ public class CardProcFrame extends AbstractFrame {
     private String createProcCaption;
     private String createRoleCaption;
 
+    private Set<Listener> listeners = new HashSet<Listener>();
+
     public CardProcFrame(IFrame frame) {
         super(frame);
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
     }
 
     public void init() {
@@ -413,22 +427,20 @@ public class CardProcFrame extends AbstractFrame {
                 }
             }
         }
+
+        for (Listener listener : listeners) {
+            listener.afterInitDefaultActors(proc, tmpCardRolesDs);
+        }
     }
 
-    //todo gorbunkov review and refactor next two methods
-    //setProcActor must delete other actors and set the user sent in param in case of multiUser role
     public void setProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
         CardRole cardRole = null;
-        List<CardRole> cardRoles = card.getRoles();
 
-        //If card role with given code exists, we'll find it
-        if (cardRoles != null) {
-           for (CardRole cr : cardRoles) {
-               if (roleCode.equals(cr.getCode())) {
-                   cardRole = cr;
-                   break;
-               }
-           }
+        for (CardRole cr : getDsItems(tmpCardRolesDs)) {
+            if (roleCode.equals(cr.getCode())) {
+                cardRole = cr;
+                break;
+            }
         }
 
         //If card role with given code doesn't exist we'll create a new one
@@ -445,56 +457,16 @@ public class CardProcFrame extends AbstractFrame {
                     procRole = pr;
                 }
             }
-            if (procRole == null) return;
+            if (procRole == null)
+                return;
 
             cardRole.setProcRole(procRole);
             cardRole.setCode(roleCode);
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
-            cardRolesDs.addItem(cardRole);
+            tmpCardRolesDs.addItem(cardRole);
         }
         cardRole.setUser(user);
-    }
-
-    public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
-        ProcRole procRole = null;
-        for (ProcRole pr : proc.getRoles()) {
-            if (roleCode.equals(pr.getCode())) {
-                procRole = pr;
-            }
-        }
-        if (procRole == null) return;
-        if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(roleCode, user)) {
-            CardRole cardRole = new CardRole();
-            cardRole.setProcRole(procRole);
-            cardRole.setCode(roleCode);
-            cardRole.setCard(card);
-            cardRole.setNotifyByEmail(notifyByEmail);
-            cardRole.setUser(user);
-            cardRolesDs.addItem(cardRole);
-        } else {
-            setProcActor(proc, roleCode, user, notifyByEmail);
-        }
-    }
-
-    private boolean procActorExists(String roleCode, User user) {
-        List<CardRole> cardRoles = card.getRoles();
-        if (cardRoles != null) {
-           for (CardRole cr : cardRoles) {
-               if (roleCode.equals(cr.getCode()) && cr.getUser().equals(user)) {
-                   return true;
-               }
-           }
-        }
-        return false;
-    }
-
-    public void deleteAllActors() {
-        Collection<UUID> uuidCollection = new ArrayList<UUID>(cardRolesDs.getItemIds());
-        for (UUID itemId : uuidCollection) {
-            CardRole item = cardRolesDs.getItem(itemId);
-            cardRolesDs.removeItem(item);
-        }
     }
 
     private void initCreateProcLookup() {
