@@ -80,8 +80,8 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @JoinColumn(name = "PARENT_CARD_ID")
     protected Card parentCard;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCard")
-    protected Set<Card> subCards; 
+    @OneToMany(mappedBy = "parentCard")
+    protected Set<Card> subCards;
 
     public Date getUpdateTs() {
         return updateTs;

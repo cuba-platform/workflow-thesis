@@ -29,10 +29,49 @@ create table WF_CARD (
     JBPM_PROCESS_ID varchar(255),
     STATE varchar(255),
     DESCRIPTION varchar(1000),
+    CREATOR_ID varchar(36),
+    PARENT_CARD_ID varchar(36),
     primary key (ID)
 );
 
 alter table WF_CARD add constraint FK_WF_CARD_PROC foreign key (PROC_ID) references WF_PROC (ID);
+alter table WF_CARD add constraint FK_WF_CARD_USER foreign key (CREATOR_ID) references SEC_USER (ID);
+alter table WF_CARD add constraint FK_WF_CARD_CARD foreign key (PARENT_CARD_ID) references WF_CARD (ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_CARD_RELATION (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    CARD_ID varchar(36),
+    RELATED_CARD_ID varchar(36),
+    primary key (ID)
+);
+
+alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD foreign key (CARD_ID) references WF_CARD (ID);
+alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD_RELATED foreign key (RELATED_CARD_ID) references WF_CARD (ID);
+
+------------------------------------------------------------------------------------------------------------
+create table WF_CARD_INFO (
+    ID varchar(36),
+    NAME varchar(50),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    CARD_ID varchar(36),
+    TYPE integer,
+    USER_ID varchar(36),
+    JBPM_EXECUTION_ID varchar(255),
+    ACTIVITY varchar(255),
+    primary key (ID)
+);
+
+alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_CARD foreign key (CARD_ID) references WF_CARD(ID);
+alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_USER foreign key (USER_ID) references SEC_USER(ID);
 
 ------------------------------------------------------------------------------------------------------------
 
