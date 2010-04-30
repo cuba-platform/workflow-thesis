@@ -34,6 +34,11 @@
                         <textField id="end" datasource="calendarDs" property="end"
                                      width="${width}"/>
                     </row>
+                    <row>
+                        <label value="msg://WorkCalendar.comment"/>
+                        <textField id="comment" datasource="calendarDs" property="comment" 
+                                     width="${width}"/>
+                    </row>
                 </rows>
             </grid>
         </vbox>

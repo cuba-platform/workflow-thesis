@@ -42,6 +42,9 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     @Column(name = "WORK_END")
     private String end;
 
+    @Column(name = "COMMENT")
+    private String comment;
+
     public String getUpdatedBy() {
         return updatedBy;
     }
@@ -87,5 +90,13 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek == null ? null : dayOfWeek.getId();
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
