@@ -246,6 +246,9 @@ public class CardProcFrame extends AbstractFrame {
 
                 window.close("cancel", true);
             }
+        } else {
+            card.setProc(prevProc);
+            cp.setActive(false);
         }
     }
 
