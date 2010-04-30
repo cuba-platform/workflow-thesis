@@ -13,10 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -31,7 +28,6 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
-import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
 import com.haulmont.workflow.core.app.WfService;
@@ -204,21 +200,29 @@ public class CardProcFrame extends AbstractFrame {
         card.setProc(proc);
         cp.setProc(proc);
         cp.setActive(true);
+        final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
+        cp.setStartCount(prevStartCount + 1);
+
+        if (!PersistenceHelper.isNew(card)) {
+            LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
+                    new View(Card.class).addProperty("jbpmProcessId")
+            );
+            Card loadedCard = ds.load(lc);
+            if (loadedCard.getJbpmProcessId() != null) {
+                // already started in another transaction
+                String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
+                App.getInstance().getWindowManager().showNotification(msg, NotificationType.ERROR);
+                resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount);
+                return;
+            }
+        }
+
         final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
+            // starting
             try {
                 final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, WfConstants.ACTION_START);
                 managerChain.setCard(card);
-
-                LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
-                        new View(Card.class).addProperty("jbpmProcessId")
-                );
-                Card loadedCard = ds.load(lc);
-                if (loadedCard.getJbpmProcessId() != null) {
-                    String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
-                    App.getInstance().getWindowManager().showNotification(msg, NotificationType.ERROR);
-                    return;
-                }
 
                 managerChain.setHandler(
                         new FormManagerChain.Handler() {
@@ -230,7 +234,7 @@ public class CardProcFrame extends AbstractFrame {
                             }
 
                             public void onFail() {
-                                rollbackStartProcess(prevProc, cp);
+                                rollbackStartProcess(prevProc, prevStartCount, cp);
                                 window.close("cancel", true);
                             }
                         }
@@ -238,7 +242,7 @@ public class CardProcFrame extends AbstractFrame {
                 managerChain.doManagerBefore("");
 
             } catch (RuntimeException e) {
-                rollbackStartProcess(prevProc, cp);
+                rollbackStartProcess(prevProc, prevStartCount, cp);
 
                 String msg = getMessage("runProcessFailed");
                 App.getInstance().getAppLog().log(new LogItem(LogLevel.ERROR, msg, e));
@@ -246,13 +250,19 @@ public class CardProcFrame extends AbstractFrame {
 
                 window.close("cancel", true);
             }
+
         } else {
-            card.setProc(prevProc);
-            cp.setActive(false);
+            resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount);
         }
     }
 
-    private void rollbackStartProcess(Proc prevProc, CardProc cp) {
+    private void resetAfterUnsuccessfulStart(CardProc cp, Proc prevProc, int prevStartCount) {
+        card.setProc(prevProc);
+        cp.setActive(false);
+        cp.setStartCount(prevStartCount);
+    }
+
+    private void rollbackStartProcess(Proc prevProc, int prevStartCount, CardProc cp) {
         DataService ds = getDsContext().getDataService();
 
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
@@ -262,10 +272,11 @@ public class CardProcFrame extends AbstractFrame {
         loadedCard.setProc(prevProc);
 
         lc = new LoadContext(CardProc.class).setId(cp.getId()).setView(
-                new View(CardProc.class).addProperty("active")
+                new View(CardProc.class).addProperty("active").addProperty("startCount")
         );
         CardProc loadedCardProc = ds.load(lc);
         loadedCardProc.setActive(false);
+        loadedCardProc.setStartCount(prevStartCount);
 
         Set toCommit = new HashSet();
         toCommit.add(loadedCard);

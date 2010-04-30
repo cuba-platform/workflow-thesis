@@ -195,6 +195,8 @@ create table WF_CARD_PROC (
     CARD_ID varchar(36),
     PROC_ID varchar(36),
     IS_ACTIVE smallint,
+    START_COUNT integer,
+    STATE varchar(255),
     SORT_ORDER integer,
     primary key (ID)
 );

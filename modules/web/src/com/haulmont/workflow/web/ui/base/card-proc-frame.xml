@@ -35,6 +35,8 @@
                     <columns>
                         <column id="proc.name" caption="msg://process"/>
                         <column id="active" caption="msg://active"/>
+                        <column id="startCount" caption="msg://startCount"/>
+                        <column id="locState" caption="msg://state"/>
                     </columns>
                     <rows datasource="cardProcDs"/>
                 </table>

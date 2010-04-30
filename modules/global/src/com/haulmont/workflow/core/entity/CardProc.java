@@ -10,7 +10,9 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.MessageUtils;
 
 import javax.persistence.*;
 
@@ -30,6 +32,12 @@ public class CardProc extends StandardEntity {
 
     @Column(name = "IS_ACTIVE")
     private Boolean active;
+
+    @Column(name = "START_COUNT")
+    private Integer startCount = 0;
+
+    @Column(name = "STATE", length = 255)
+    private String state;
 
     @Column(name = "SORT_ORDER")
     private Integer sortOrder;
@@ -58,11 +66,38 @@ public class CardProc extends StandardEntity {
         this.active = active;
     }
 
+    public Integer getStartCount() {
+        return startCount;
+    }
+
+    public void setStartCount(Integer startCount) {
+        this.startCount = startCount;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public Integer getSortOrder() {
         return sortOrder;
     }
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    @MetaProperty
+    public String getLocState() {
+        if (getState() == null)
+            return "";
+        if (getProc() != null) {
+            String messagesPack = getProc().getMessagesPack();
+            return MessageUtils.loadString(messagesPack, "msg://" + getState());
+        }
+        return getState();
     }
 }

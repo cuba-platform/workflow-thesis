@@ -24,6 +24,8 @@ import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.app.EmailerMBean
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import com.haulmont.workflow.core.entity.CardProc
+import com.haulmont.workflow.core.entity.Proc
 
 public class CardActivity implements ActivityBehaviour {
 
@@ -33,7 +35,12 @@ public class CardActivity implements ActivityBehaviour {
 
   public void execute(ActivityExecution execution) throws Exception {
     Card card = findCard(execution)
+
     card.setState(execution.getActivityName())
+
+    CardProc cp = card.procs.find { it.proc == card.proc }
+    cp?.setState(card.state)
+
     notifyObservers(card)
   }
 
