@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.global.LoginException;
@@ -79,6 +80,9 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
     }
 
     public void processTimers() {
+        if (!AppContext.isStarted())
+            return;
+
         log.info("Start processing timers");
         try {
             if (securityContext != null)
