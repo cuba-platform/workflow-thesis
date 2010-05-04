@@ -1,1 +1,4 @@
+-- $Id$
+-- Description: Add field WF_CALENDAR.COMMENT
+
 ALTER TABLE WF_CALENDAR ADD COMMENT varchar(500);
