@@ -255,6 +255,5 @@ create table WF_CALENDAR (
     WORK_DAY_OF_WEEK smallint,
     WORK_START char(5),
     WORK_END char(5),
-    COMMENT varchar(500),
     primary key (ID)
 );
