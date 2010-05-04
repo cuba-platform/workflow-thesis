@@ -25,8 +25,8 @@
 
     <layout expandLayout="true" expand="procRolesSplit">
         <split id="procRolesSplit" orientation="vertical">
-            <vbox spacing="true" expand="cardProcTable">
-                <hbox align="MIDDLE_LEFT" spacing="true">
+            <vbox spacing="true" expand="cardProcTable" width="100%">
+                <hbox spacing="true" width="360px">
                     <lookupField id="createProcLookup"/>
                     <button id="removeProc" action="cardProcTable.remove" icon="icons/remove.png"/>
                     <button id="startProc" visible="false"/>
@@ -41,8 +41,8 @@
                     <rows datasource="cardProcDs"/>
                 </table>
             </vbox>
-            <vbox spacing="true" expand="rolesTable">
-                <hbox align="MIDDLE_LEFT" spacing="true">
+            <vbox spacing="true" expand="rolesTable" width="100%">
+                <hbox spacing="true" width="360px">
                     <lookupField id="createRoleLookup"/>
                     <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
                     <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
