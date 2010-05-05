@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -154,6 +155,17 @@ public class WfServiceBean implements WfService {
     
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
         CardRole appropCardRole = null;
+        if (card.getRoles() == null) {
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                em.setView(MetadataProvider.getViewRepository().getView(Card.class, "with-roles"));
+                card = em.find(Card.class, card.getId());
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
         if (card.getRoles() != null) {
             for (CardRole cardRole : card.getRoles()) {
                 if (cardRole.getCode().equals(procRoleCode)) {

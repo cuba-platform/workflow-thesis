@@ -150,7 +150,7 @@ public class ProcessAction extends AbstractAction {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
         wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment);
-        window.close(Window.COMMIT_ACTION_ID);
+        window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
     }

@@ -97,9 +97,9 @@ public class ProcEditor extends AbstractEditor {
                     beforeCommit: { CommitContext<Entity> context ->
                       Proc p = context.getCommitInstances().find { it == procDs.getItem() }
                       if (p) {
-                        if (!p.cardTypes.startsWith(','))
+                        if (p.cardTypes && !p.cardTypes.startsWith(','))
                           p.cardTypes = ',' + p.cardTypes
-                        if (!p.cardTypes.endsWith(','))
+                        if (p.cardTypes && !p.cardTypes.endsWith(','))
                           p.cardTypes = p.cardTypes + ','
                       }
                     },

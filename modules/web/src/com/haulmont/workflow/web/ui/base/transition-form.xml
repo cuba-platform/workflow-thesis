@@ -34,21 +34,21 @@
                 <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
             </accessControl>
             
-            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                <visible property="commentVisible"/>
-                <hbox id="commentTextPane">
-                    <label value="msg://comment" width="${labelWidth}"/>
-                    <textField id="commentText" datasource="assignmentDs" property="comment"
-                               width="${width}" rows="6"/>
-                </hbox>
-            </accessControl>
-
             <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
                 <visible property="dueDateVisible"/>
                 <hbox id="dueDatePane">
                     <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
                     <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="DAY"
                                dateFormat="msg://dateFormat"/>
+                </hbox>
+            </accessControl>
+
+            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="commentVisible"/>
+                <hbox id="commentTextPane">
+                    <label value="msg://comment" width="${labelWidth}"/>
+                    <textField id="commentText" datasource="assignmentDs" property="comment"
+                               width="${width}" rows="4"/>
                 </hbox>
             </accessControl>
 

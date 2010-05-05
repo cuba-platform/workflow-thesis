@@ -26,7 +26,6 @@ import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.ProcRole;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -42,6 +41,7 @@ public class TransitionForm extends AbstractForm {
     private TextField outcomeText;
     protected boolean defaultNotifyByEmail = true;
 
+    private String requiredRolesCodes;
     
     public TransitionForm(IFrame frame) {
         super(frame);
@@ -53,6 +53,7 @@ public class TransitionForm extends AbstractForm {
 
         String dueDateRequired = (String)params.get("dueDateRequired");
         String commentRequired = (String) params.get("param$commentRequired");
+        requiredRolesCodes = (String) params.get("param$requiredRoles");
 
         commentText = getComponent("commentText");
         attachmentsTable = getComponent("attachmentsTable");
@@ -122,6 +123,9 @@ public class TransitionForm extends AbstractForm {
             outcomeText.setValue(MessageProvider.getMessage(messagesPack, WfConstants.ACTION_START));
         }
         outcomeText.setEditable(false);
+
+        String formCaption = (String) params.get("param$formCaption");
+        setCaption(MessageProvider.getMessage(messagesPack, formCaption));
 
         addAction(new AbstractAction("windowCommit") {
 
@@ -212,6 +216,10 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected Set<String> getRequiredRolesCodes() {
+        if (requiredRolesCodes != null) {
+            String[] s = requiredRolesCodes.split("\\s*,\\s*");
+            return new HashSet<String>(Arrays.asList(s));
+        }
         return Collections.emptySet();
     }
     
