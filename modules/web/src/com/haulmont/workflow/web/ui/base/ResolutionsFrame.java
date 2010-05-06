@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -22,6 +23,7 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.vaadin.terminal.ThemeResource;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;

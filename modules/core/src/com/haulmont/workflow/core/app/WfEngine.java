@@ -16,11 +16,13 @@ import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
+import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +48,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     private Configuration jbpmConfiguration;
 
     private volatile ProcessEngine processEngine;
+
+    private Set<Listener> listeners = new LinkedHashSet<Listener>();
 
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {
@@ -395,4 +399,35 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             tx.end();
         }
     }
+
+    public void cancelProcess(Card card) {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            Card c = em.merge(card);
+
+            Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
+            query.setParameter("1", c);
+            List<Assignment> assignments = query.getResultList();
+            for (Assignment assignment : assignments) {
+                assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
+                assignment.setFinished(TimeProvider.currentTimestamp());
+            }
+
+            Proc proc = c.getProc();
+            for (CardProc cp : c.getProcs()) {
+                if (cp.getProc().equals(proc)) {
+                    cp.setActive(false);
+                }
+            }
+            c.setJbpmProcessId(null);
+            c.setState(WfConstants.CARD_STATE_CANCELED);
+            for (Listener listener : listeners) {
+                listener.onProcessCancel(card);
+            }
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
 }

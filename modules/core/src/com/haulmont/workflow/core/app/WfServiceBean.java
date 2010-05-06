@@ -30,10 +30,14 @@ import org.jbpm.pvm.internal.model.Activity;
 import org.jbpm.pvm.internal.model.Transition;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.*;
 
 @Service(WfService.NAME)
 public class WfServiceBean implements WfService {
+
+    @Inject
+    private WfEngineAPI wfEngine;
 
     private Log log = LogFactory.getLog(WfServiceBean.class);
 
@@ -121,27 +125,7 @@ public class WfServiceBean implements WfService {
     public void cancelProcess(Card card) {
         Transaction tx = Locator.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            Card c = em.merge(card);
-
-            Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
-            query.setParameter("1", c);
-            List<Assignment> assignments = query.getResultList();
-            for (Assignment assignment : assignments) {
-                assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
-                assignment.setFinished(TimeProvider.currentTimestamp());
-            }
-
-            Proc proc = c.getProc();
-            for (CardProc cp : c.getProcs()) {
-                if (cp.getProc().equals(proc)) {
-                    cp.setActive(false);
-                }
-            }
-            c.setJbpmProcessId(null);
-            c.setState(WfConstants.CARD_STATE_CANCELED);
-
+            wfEngine.cancelProcess(card);
             tx.commit();
         } finally {
             tx.end();

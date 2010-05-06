@@ -22,6 +22,10 @@ public interface WfEngineAPI {
 
     String NAME = "workflow_WfEngine";
 
+    public interface Listener {
+        void onProcessCancel(Card card);
+    }
+
     String deployJpdlXml(String fileName);
 
     ProcessEngine getProcessEngine();
@@ -35,4 +39,8 @@ public interface WfEngineAPI {
     void finishAssignment(UUID assignmentId);
 
     void finishAssignment(UUID assignmentId, String outcome, String comment);
+
+    void cancelProcess(Card card);
+    
+    void addListener(Listener listener);
 }
