@@ -13,12 +13,22 @@
     </dsContext>
 
     <layout expandLayout="true">
-        <vbox expand="rolesTable" height="100%">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <lookupField id="createRoleLookup"/>
-                <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
-                <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
-            </hbox>
+        <vbox expand="rolesTable" height="100%" spacing="true">
+            <grid width="100%" spacing="true">
+                <columns>
+                    <column />
+                    <column />
+                    <column />
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <lookupField id="createRoleLookup"/>
+                        <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
+                        <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
+                    </row>
+                </rows>
+            </grid>
             <table id="rolesTable" editable="false">
                 <columns>
                     <column id="procRole.name" caption="msg://role"/>
