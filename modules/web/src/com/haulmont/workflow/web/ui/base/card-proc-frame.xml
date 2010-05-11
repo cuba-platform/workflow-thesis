@@ -23,19 +23,21 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign lookupWidth=150>
-    <#assign btnWidth=110>
-
     <layout expandLayout="true" expand="procRolesSplit">
         <split id="procRolesSplit" orientation="vertical">
             <vbox spacing="true" expand="cardProcTable">
-                <grid spacing="true">
-                    <columns count="3"/>
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column/>
+                        <column/>
+                        <column/>
+                        <column flex="1"/>
+                    </columns>
                     <rows>
                         <row>
-                            <lookupField id="createProcLookup" width="${lookupWidth}"/>
-                            <button id="removeProc" action="cardProcTable.remove" icon="icons/remove.png" width="${btnWidth}"/>
-                            <button id="startProc" visible="false" width="${btnWidth}"/>
+                            <lookupField id="createProcLookup" width="150"/>
+                            <button id="removeProc" action="cardProcTable.remove" icon="icons/remove.png"/>
+                            <button id="startProc" visible="false"/>
                         </row>
                     </rows>
                 </grid>
@@ -50,13 +52,18 @@
                 </table>
             </vbox>
             <vbox spacing="true" expand="rolesTable">
-                <grid spacing="true">
-                    <columns count="3"/>
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column/>
+                        <column/>
+                        <column/>
+                        <column flex="1"/>
+                    </columns>
                     <rows>
                         <row>
-                            <lookupField id="createRoleLookup" width="${lookupWidth}"/>
-                            <button id="editRole" action="rolesTable.edit" icon="icons/edit.png" width="${btnWidth}"/>
-                            <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png" width="${btnWidth}"/>
+                            <lookupField id="createRoleLookup" width="150"/>
+                            <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
+                            <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
                         </row>
                     </rows>
                 </grid>
