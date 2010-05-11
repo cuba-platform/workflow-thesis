@@ -18,7 +18,6 @@
                 <columns>
                     <column />
                     <column />
-                    <column />
                     <column flex="1"/>
                 </columns>
                 <rows>
