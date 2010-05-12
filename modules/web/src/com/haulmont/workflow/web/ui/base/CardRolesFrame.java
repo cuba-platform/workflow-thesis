@@ -205,6 +205,9 @@ public class CardRolesFrame extends AbstractFrame {
     //todo gorbunkov review and refactor next two methods
     //setProcActor must delete other actors and set the user sent in param in case of multiUser role
     public void setProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
+        if (proc == null)
+            throw new IllegalArgumentException("Proc is null, check all required processes are deployed");
+
         CardRole cardRole = null;
         List<CardRole> cardRoles = card.getRoles();
 
