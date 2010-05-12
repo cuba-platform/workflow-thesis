@@ -119,7 +119,12 @@ public abstract class FormManager {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String comment = window instanceof AbstractForm ?
                                 ((AbstractForm) window).getComment() : "";
-                        chain.doManagerBefore(comment);
+                        try {
+                            chain.doManagerBefore(comment);
+                        } catch (RuntimeException e) {
+                            chain.fail();
+                            throw e;
+                        }
                     } else {
                         chain.fail();
                     }
