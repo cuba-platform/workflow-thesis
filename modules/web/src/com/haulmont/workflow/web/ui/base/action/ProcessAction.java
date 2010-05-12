@@ -17,10 +17,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -106,16 +103,28 @@ public class ProcessAction extends AbstractAction {
                 managerChain.doManagerBefore("");
 
             } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void onSuccess(String comment) {
-                        cancelProcess(window, managerChain);
-                    }
+                App.getInstance().getWindowManager().showOptionDialog(
+                        MessageProvider.getMessage(getClass(), "cancelProcess.title"),
+                        MessageProvider.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
+                        IFrame.MessageType.CONFIRMATION,
+                        new Action[] {
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        managerChain.setHandler(new FormManagerChain.Handler() {
+                                            public void onSuccess(String comment) {
+                                                cancelProcess(window, managerChain);
+                                            }
 
-                    public void onFail() {
-                    }
-                });
-                managerChain.doManagerBefore("");
-
+                                            public void onFail() {
+                                            }
+                                        });
+                                        managerChain.doManagerBefore("");
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO)
+                        }
+                );
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
                 Assignment assignment = ServiceLocator.getDataService().load(lc);
