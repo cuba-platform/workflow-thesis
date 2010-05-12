@@ -125,7 +125,8 @@ public class TransitionForm extends AbstractForm {
         outcomeText.setEditable(false);
 
         String formCaption = (String) params.get("param$formCaption");
-        setCaption(MessageProvider.getMessage(messagesPack, formCaption));
+        if (StringUtils.isNotBlank(formCaption))
+            setCaption(MessageProvider.getMessage(messagesPack, formCaption));
 
         addAction(new AbstractAction("windowCommit") {
 
