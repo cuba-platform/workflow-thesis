@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -52,6 +53,7 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     protected String jbpmProcessId;
 
     @Column(name = "STATE", length = 255)
+    @LocalizedValue(messagePackExpr = "proc.messagesPack")
     protected String state;
 
     @Column(name = "DESCRIPTION", length = 1000)
