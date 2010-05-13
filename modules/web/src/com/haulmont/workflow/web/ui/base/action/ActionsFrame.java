@@ -26,6 +26,8 @@ public class ActionsFrame extends AbstractFrame {
 
     private AssignmentInfo info;
 
+    private BoxLayout buttonContainer;
+
     public ActionsFrame(IFrame frame) {
         super(frame);
     }
@@ -35,11 +37,13 @@ public class ActionsFrame extends AbstractFrame {
     }
 
     public void initActions(Card card, boolean commentVisible) {
+        buttonContainer =  getComponent("buttonContainer");
         List<Button> buttons = new ArrayList<Button>();
         for (int i = 0; i < 7; i++) {
             Button btn = getComponent("actionBtn" + i);
             btn.setVisible(false);
             buttons.add(btn);
+            buttonContainer.remove(btn);
         }
 
         TextField descrText = getComponent("descrText");
@@ -83,7 +87,24 @@ public class ActionsFrame extends AbstractFrame {
             if (i <= actions.size() - 1) {
                 btn.setVisible(true);
                 btn.setAction(new ProcessAction(card, actions.get(i), this));
+                buttonContainer.add(btn);
             }
         }
+    }
+
+    public void addButton(Button button) {
+        if (button == null) {
+            return;
+        }
+
+        buttonContainer.add(button);
+    }
+
+    public void removeButton(Button button) {
+        if (button == null) {
+            return;
+        }
+
+        buttonContainer.remove(button);
     }
 }

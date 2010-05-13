@@ -5,7 +5,7 @@
 
     <#assign width=200>
     <layout>
-        <vbox spacing="true">
+        <vbox id="buttonContainer" spacing="true">
             <label id="assignmentLab" value="msg://assignment"/>
             <textField id="descrText" rows="3" visible="false" width="200px"/>
 
