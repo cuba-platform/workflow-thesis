@@ -83,7 +83,7 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
         if (!AppContext.isStarted())
             return;
 
-        log.info("Start processing timers");
+        log.info("Processing timers");
         try {
             if (securityContext != null)
                 ServerSecurityUtils.setSecurityAssociation(securityContext.getUser(), securityContext.getSessionId());
@@ -130,7 +130,6 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
                 log.error("Error firing timer " + timer, e);
             }
         }
-        log.info("End processing timers");
     }
 
     private Map<String, String> getTimerActionParams(String actionParams) {
