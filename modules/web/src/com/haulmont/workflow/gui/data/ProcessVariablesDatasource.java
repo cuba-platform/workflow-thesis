@@ -85,9 +85,18 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
     }
 
     public void commit() {
-        if (!item.getChanged().isEmpty()) {
-            WfService service = ServiceLocator.lookup(WfService.NAME);
-            service.setProcessVariables(getCard(), item.getChanged());
+        Card c = getCard();
+        Map<String, Object> vars = item.getChanged();
+        if (!vars.isEmpty()) {
+            if (c.getJbpmProcessId() == null) {
+                if (c.getInitialProcessVariables() == null)
+                    c.setInitialProcessVariables(new HashMap<String, Object>(vars));
+                else
+                    c.getInitialProcessVariables().putAll(vars);
+            } else {
+                WfService service = ServiceLocator.lookup(WfService.NAME);
+                service.setProcessVariables(c, vars);
+            }
         }
         modified = false;
     }
@@ -112,9 +121,12 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
 
     public void refresh() {
         Map<String, Object> variables = new HashMap<String, Object>();
-        WfService service = ServiceLocator.lookup(WfService.NAME);
-        Map<String, Object> map = service.getProcessVariables(getCard());
-        variables.putAll(map);
+
+        if (getCard().getJbpmProcessId() != null) {
+            WfService service = ServiceLocator.lookup(WfService.NAME);
+            Map<String, Object> map = service.getProcessVariables(getCard());
+            variables.putAll(map);
+        }
 
         item = new ProcessVariablesEntity(getMetaClass(), variables);
         item.addListener(new ValueListener() {

@@ -22,6 +22,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Entity(name = "wf$Card")
@@ -88,6 +89,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     @OneToMany(mappedBy = "parentCard")
     protected Set<Card> subCards;
+
+    @Transient
+    protected Map<String, Object> initialProcessVariables;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -222,5 +226,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setSubstitutedCreator(User substitutedCreator) {
         this.substitutedCreator = substitutedCreator;
+    }
+
+    public Map<String, Object> getInitialProcessVariables() {
+        return initialProcessVariables;
+    }
+
+    public void setInitialProcessVariables(Map<String, Object> initialProcessVariables) {
+        this.initialProcessVariables = initialProcessVariables;
     }
 }

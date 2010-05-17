@@ -37,12 +37,13 @@ public class TransitionForm extends AbstractForm {
     protected Card card;
     private CardRolesFrame cardRolesFrame;
     private CollectionDatasource cardRolesDs;
+    protected Datasource assignmentDs;
     private DateField dueDate;
     private TextField outcomeText;
     protected boolean defaultNotifyByEmail = true;
 
     private String requiredRolesCodes;
-    
+
     public TransitionForm(IFrame frame) {
         super(frame);
     }
@@ -60,6 +61,8 @@ public class TransitionForm extends AbstractForm {
         cardRolesFrame = getComponent("cardRolesFrame");
         dueDate = getComponent("dueDate");
         outcomeText = getComponent("outcomeText");
+
+        assignmentDs = getDsContext().get("assignmentDs");
 
         card = (Card) params.get("param$card");
         if (cardRolesFrame != null) {
@@ -92,7 +95,7 @@ public class TransitionForm extends AbstractForm {
                     new ValueProvider() {
                         public Map<String, Object> getValues() {
                             Map<String, Object> values = new HashMap<String, Object>();
-                            values.put("assignment", getDsContext().get("assignmentDs").getItem());
+                            values.put("assignment", assignmentDs.getItem());
                             values.put("file", new FileDescriptor());
                             return values;
                         }
@@ -117,8 +120,9 @@ public class TransitionForm extends AbstractForm {
             ctx.setId(assignmentId);
             ctx.setView("resolution-edit");
             Assignment assignment = ServiceLocator.getDataService().load(ctx);
-            getDsContext().get("assignmentDs").setItem(assignment);
+            assignmentDs.setItem(assignment);
             outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + "." + transition));
+            commentText.setDatasource(assignmentDs, "comment");
         } else {
             outcomeText.setValue(MessageProvider.getMessage(messagesPack, WfConstants.ACTION_START));
         }
@@ -174,8 +178,16 @@ public class TransitionForm extends AbstractForm {
             }
         }
 //                getDsContext().commit();
-        if (commentText != null)
-            getDsContext().get("assignmentDs").commit();
+        if (commentText != null) {
+            if (Datasource.State.VALID.equals(assignmentDs.getState()))
+                assignmentDs.commit();
+            else {
+                if (card.getInitialProcessVariables() == null) {
+                    card.setInitialProcessVariables(new HashMap<String, Object>(1));
+                }
+                card.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
+            }
+        }
 
         if (cardRolesFrame != null)
             cardRolesDs.commit();
