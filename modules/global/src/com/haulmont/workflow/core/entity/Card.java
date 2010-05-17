@@ -79,6 +79,10 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     protected User creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTED_CREATOR_ID")
+    protected User substitutedCreator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CARD_ID")
     protected Card parentCard;
 
@@ -210,5 +214,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
             return MessageUtils.loadString(messagesPack, "msg://" + getState());
         }
         return getState();
+    }
+
+    public User getSubstitutedCreator() {
+        return substitutedCreator;
+    }
+
+    public void setSubstitutedCreator(User substitutedCreator) {
+        this.substitutedCreator = substitutedCreator;
     }
 }
