@@ -14,13 +14,11 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
-import com.haulmont.cuba.core.entity.AppFolder;
-import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.dom4j.Document;
@@ -45,7 +43,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
         private CalendarItem(Date day, String start, String end) {
             this.day = day;
-            if ((start != null) && !("".equals(start))) {
+            if (StringUtils.isNotBlank(start)) {
                 this.startH = Integer.valueOf(start.substring(0, 2));
                 this.startM = Integer.valueOf(start.substring(3));
             } else {
@@ -53,7 +51,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 this.startM = 0;
             }
 
-            if ((end != null) && !("".equals(end))){
+            if (StringUtils.isNotBlank(end)) {
                 this.endH = Integer.valueOf(end.substring(0, 2));
                 this.endM = Integer.valueOf(end.substring(3));
             } else {
@@ -65,7 +63,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
         private CalendarItem(Integer dayOfWeek, String start, String end) {
             this.dayOfWeek = dayOfWeek;
-            if (start != null) {
+            if (StringUtils.isNotBlank(start)) {
                 this.startH = Integer.valueOf(start.substring(0, 2));
                 this.startM = Integer.valueOf(start.substring(3));
             } else {
@@ -73,7 +71,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 this.startM = 0;
             }
 
-            if (end != null) {
+            if (StringUtils.isNotBlank(end)) {
                 this.endH = Integer.valueOf(end.substring(0, 2));
                 this.endM = Integer.valueOf(end.substring(3));
             } else {
@@ -103,32 +101,24 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             return startM;
         }
 
-        public Long getIntervalInMillis() {
+        public Long getDurationFromStart(Date timeTo) {
+            long timeToFragment = DateUtils.getFragmentInMilliseconds(timeTo, Calendar.DAY_OF_YEAR);
             Calendar startTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
+            startTime.clear();
             startTime.set(Calendar.HOUR_OF_DAY, startH);
             startTime.set(Calendar.MINUTE, startM);
-            endTime.set(Calendar.HOUR_OF_DAY, endH);
-            endTime.set(Calendar.MINUTE, endM);
-            return endTime.getTimeInMillis() - startTime.getTimeInMillis();
+            long startTimeFragment = DateUtils.getFragmentInMilliseconds(startTime, Calendar.DAY_OF_YEAR);
+            return timeToFragment - startTimeFragment;
         }
 
-        public Long getIntervalInMillis(Date fromDate) {
-            Calendar startDay = Calendar.getInstance();
-            startDay.setTime(fromDate);
-            Calendar endDay = Calendar.getInstance();
-            endDay.set(Calendar.HOUR_OF_DAY, endH);
-            endDay.set(Calendar.MINUTE, endM);
-
-            //we're interested only in hours and minutes
-            startDay.clear(Calendar.YEAR);
-            startDay.clear(Calendar.MONTH);
-            startDay.set(Calendar.DAY_OF_YEAR, 1);
-            endDay.clear(Calendar.YEAR);
-            endDay.clear(Calendar.MONTH);
-            endDay.set(Calendar.DAY_OF_YEAR, 1);
-
-            return endDay.getTimeInMillis() - startDay.getTimeInMillis();
+        public Long getDurationToEnd(Date timeFrom) {
+            long timeFromFragment = DateUtils.getFragmentInMilliseconds(timeFrom, Calendar.DAY_OF_YEAR);
+            Calendar endTime = Calendar.getInstance();
+            endTime.clear();
+            endTime.set(Calendar.HOUR_OF_DAY, endH);
+            endTime.set(Calendar.MINUTE, endM);
+            long endTimeFragment = DateUtils.getFragmentInMilliseconds(endTime, Calendar.DAY_OF_YEAR);
+            return endTimeFragment - timeFromFragment;
         }
 
         public boolean isDateInInterval(Date date) {
@@ -148,6 +138,17 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             return false;
         }
 
+        public Long getDuration() {
+            Calendar startTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            startTime.set(Calendar.HOUR_OF_DAY, startH);
+            startTime.set(Calendar.MINUTE, startM);
+            endTime.set(Calendar.HOUR_OF_DAY, endH);
+            endTime.set(Calendar.MINUTE, endM);
+            return endTime.getTimeInMillis() - startTime.getTimeInMillis();
+        }
+
+
         public boolean isDateBeforeInterval(Date date) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
@@ -159,31 +160,46 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             return false;
         }
 
+        public boolean isDateAfterInterval(Date date) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minutes = calendar.get(Calendar.MINUTE);
+            if ((hour > endH) || ((hour == endH) && (minutes > endM))) {
+                return true;
+            }
+            return false;
+        }
 
     }
 
-    private volatile Map<Date, List<CalendarItem>> cache;
-    private volatile Map<Integer, List<CalendarItem>> defaultDaysCache;
+    private volatile Map<Date, List<CalendarItem>> exceptionDays;
+    private volatile Map<Integer, List<CalendarItem>> defaultDays;
 
-    private void loadCache() {
-        if (cache == null) {
+    private Calendar currentDay;
+    private boolean moveForward = true;
+    private Date startTime;
+    private ListIterator<CalendarItem> ciIterator;
+
+    private void loadCaches() {
+        if (exceptionDays == null) {
             synchronized (this) {
-                if (cache == null) {
-                    cache = new HashMap<Date, List<CalendarItem>>();
+                if (exceptionDays == null) {
+                    exceptionDays = new HashMap<Date, List<CalendarItem>>();
                     Transaction tx = Locator.createTransaction();
                     try {
                         EntityManager em = PersistenceProvider.getEntityManager();
-                        Query q = em.createQuery("select c.day, c.start, c.end from wf$Calendar c where c.day >= CURRENT_TIMESTAMP " +
+                        Query q = em.createQuery("select c.day, c.start, c.end from wf$Calendar c where c.day is not null " +
                                 "order by c.day, c.start");
                         List<Object[]> list = q.getResultList();
                         for (Object[] row : list) {
                             Date date = (Date) row[0];
                             CalendarItem ci = new CalendarItem(date, (String) row[1], (String) row[2]);
-                            List<CalendarItem> mapValue = cache.get(date);
+                            List<CalendarItem> mapValue = exceptionDays.get(date);
                             if (mapValue == null)
                                 mapValue = new LinkedList<CalendarItem>();
                             mapValue.add(ci);
-                            cache.put(date, mapValue);
+                            exceptionDays.put(date, mapValue);
                         }
 
                         tx.commit();
@@ -194,8 +210,8 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             }
         }
 
-        if (defaultDaysCache == null) {
-            defaultDaysCache = new HashMap<Integer, List<CalendarItem>>();
+        if (defaultDays == null) {
+            defaultDays = new HashMap<Integer, List<CalendarItem>>();
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
@@ -203,13 +219,13 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                         "order by c.dayOfWeek, c.start");
                 List<Object[]> list = q.getResultList();
                 for (Object[] row : list) {
-                    Integer dayOfWeek = (Integer)row[0];
+                    Integer dayOfWeek = (Integer) row[0];
                     CalendarItem ci = new CalendarItem(dayOfWeek, (String) row[1], (String) row[2]);
-                    List<CalendarItem> mapValue = defaultDaysCache.get(dayOfWeek);
+                    List<CalendarItem> mapValue = defaultDays.get(dayOfWeek);
                     if (mapValue == null)
                         mapValue = new LinkedList<CalendarItem>();
                     mapValue.add(ci);
-                    defaultDaysCache.put(dayOfWeek, mapValue);
+                    defaultDays.put(dayOfWeek, mapValue);
                 }
                 tx.commit();
             } finally {
@@ -219,105 +235,31 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     }
 
     public int getCacheSize() {
-        return cache == null ? 0 : cache.size();
+        return exceptionDays == null ? 0 : exceptionDays.size();
     }
 
     public void invalidateCache() {
-        cache = null;
-        defaultDaysCache = null;
+        exceptionDays = null;
+        defaultDays = null;
     }
 
     public Long getAbsoluteMillis(Date date, int qty, TimeUnit unit) {
-        loadCache();
+        loadCaches();
         Date endDate = addInterval(date, qty, unit);
         return endDate.getTime() - date.getTime();
     }
 
-    public Date addInterval(Date date, int qty, TimeUnit unit) {
-        loadCache();
-        Long timeRemain;
-        //Work day is not astronomic day
-        if (unit.equals(TimeUnit.DAY))
-            timeRemain = qty * getWorkDayLengthInMillis();
-        else
-            timeRemain = qty * unit.getMillis();
-
-        Calendar currentDay = Calendar.getInstance();
-        currentDay.setTime(date);
-        currentDay = DateUtils.truncate(currentDay, Calendar.DAY_OF_MONTH);
-
-        boolean isFirstDay = true;
-
-        //walk through days beginning from current day and check whether our work time is expired
-        while (timeRemain > 0) {
-            List<CalendarItem> currentDayItems = cache.get(currentDay.getTime());
-            if (currentDayItems == null)
-                currentDayItems = defaultDaysCache.get(currentDay.get(Calendar.DAY_OF_WEEK));
-            if (currentDayItems != null) {
-                for (CalendarItem ci : currentDayItems) {
-                    Long ciInterval;
-                    //execution can start not in date when task is stated
-                    //in such a case we consider first day of execution as usual day, NOT first
-                    if (isFirstDay && !DateUtils.isSameDay(currentDay.getTime(), date)) {
-                        isFirstDay = false;
-                    }
-                    if (isFirstDay) {
-                        boolean dateNotInInterval = false;
-                        if (!ci.isDateInInterval(date)) {
-                            if (ci.isDateBeforeInterval(date)) {
-                                dateNotInInterval = true;
-                            } else {
-                                continue;
-                            }
-                        }
-                        if (dateNotInInterval)
-                            ciInterval = ci.getIntervalInMillis();
-                        else
-                            ciInterval = ci.getIntervalInMillis(date);
-                        isFirstDay = false;
-                    } else
-                        ciInterval = ci.getIntervalInMillis();
-                    if (timeRemain > ciInterval)  {
-                        timeRemain -= ciInterval;
-                    } else {
-                        Calendar finishDate = Calendar.getInstance();
-                        finishDate.set(Calendar.YEAR, currentDay.get(Calendar.YEAR));
-                        finishDate.set(Calendar.MONTH, currentDay.get(Calendar.MONTH));
-                        finishDate.set(Calendar.DAY_OF_MONTH, currentDay.get(Calendar.DAY_OF_MONTH));
-                        //if date is in first interval, we'll calculate finishDate from currentDate, not interval start
-                        if (ci.isDateInInterval(date) && DateUtils.isSameDay(currentDay.getTime(), date)) {
-                            currentDay.setTime(date);
-                            finishDate.set(Calendar.HOUR_OF_DAY, currentDay.get(Calendar.HOUR_OF_DAY));
-                            finishDate.set(Calendar.MINUTE, currentDay.get(Calendar.MINUTE));    
-                        } else {
-                            finishDate.set(Calendar.HOUR_OF_DAY, ci.getStartH());
-                            finishDate.set(Calendar.MINUTE, ci.getStartM());    
-                        }
-                        finishDate.add(Calendar.MILLISECOND, timeRemain.intValue());
-
-                        return finishDate.getTime();
-                    }
-                }
-            } else {
-                String msg = "Business calendar isn't defined correctly";
-                throw new RuntimeException(msg);
-            }
-            currentDay.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        return null;
-    }
-
     public Long getWorkDayLengthInMillis() {
-        loadCache();
+        loadCaches();
         Long workDayLength = new Long(0);
         String defaultWorkDayProp = AppContext.getProperty("workflow.workCalendar.defaultWorkDay");
         Integer defaultWorkDay = defaultWorkDayProp == null ? Calendar.MONDAY : Integer.parseInt(defaultWorkDayProp);
 
-        List<CalendarItem> defaultItems = defaultDaysCache.get(defaultWorkDay);
+        List<CalendarItem> defaultItems = defaultDays.get(defaultWorkDay);
         if (defaultItems != null) {
             for (CalendarItem calendarItem : defaultItems) {
                 if (calendarItem.getDay() == null) {
-                    workDayLength += calendarItem.getIntervalInMillis();
+                    workDayLength += calendarItem.getDuration();
                 }
             }
         }
@@ -359,43 +301,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                     }
                 }
 
-//                //fill weekends except days already added to filledDays
-//                Calendar now = Calendar.getInstance();
-//                int currentYear = now.get(Calendar.YEAR);
-//                Calendar currentDay = GregorianCalendar.getInstance();
-//                currentDay.set(Calendar.MONTH, Calendar.JANUARY);
-//                currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-//                if (currentDay.get(Calendar.DAY_OF_MONTH) == 7)
-//                    currentDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-//                currentDay.set(Calendar.WEEK_OF_MONTH, 1);
-//                currentDay = DateUtils.truncate(currentDay, Calendar.DAY_OF_MONTH);
-//                while (currentDay.get(Calendar.YEAR) == currentYear) {
-//                    if (!filledDays.contains(currentDay.getTime()))
-//                        em.persist(createWorkCalendarEntity(currentDay.getTime(), null, null, null));
-//                    if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-//                        currentDay.add(Calendar.DAY_OF_YEAR, 1);
-//                    else currentDay.add(Calendar.DAY_OF_YEAR, 6);
-//                }
             }
-
-
-/*
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            em.persist(createWorkCalendarEntity(null, "0900", "1300"));
-            em.persist(createWorkCalendarEntity(null, "1400", "1800"));
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(2010, 01, 05);
-            em.persist(createWorkCalendarEntity(calendar.getTime(), "0900", "1300"));
-            em.persist(createWorkCalendarEntity(calendar.getTime(), "1400", "1700"));
-
-            calendar.set(2010, 01, 06);
-            em.persist(createWorkCalendarEntity(calendar.getTime(), null, null));
-
-            calendar.set(2010, 01, 07);
-            em.persist(createWorkCalendarEntity(calendar.getTime(), null, null));
-*/
 
             tx.commit();
         } catch (Exception e) {
@@ -407,7 +313,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         return "Work calendar records created successfuly";
     }
 
-    private void deleteWorkCalendar() throws Exception{
+    private void deleteWorkCalendar() throws Exception {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -436,4 +342,119 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         return calendarEntity;
     }
 
+    private long getFirstIntervalDuration() {
+        int i = 0;
+        while (i++ < 365) {
+            currentDay = Calendar.getInstance();
+            currentDay.setTime(startTime);
+            currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
+            if (currentDayCalendarItems == null)
+                currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+            ciIterator = currentDayCalendarItems.listIterator();
+            while (ciIterator.hasNext()) {
+                CalendarItem ci = ciIterator.next();
+
+                if ((moveForward && ci.isDateBeforeInterval(startTime)) || (!moveForward && ci.isDateAfterInterval(startTime)))
+                    return ci.getDuration();
+
+                if (ci.isDateInInterval(startTime)) {
+                    if (moveForward)
+                        return ci.getDurationToEnd(startTime);
+                    else
+                        return ci.getDurationFromStart(startTime);
+                }
+            }
+
+            if (moveForward)
+                currentDay.add(Calendar.DAY_OF_YEAR, 1);
+            else
+                currentDay.add(Calendar.DAY_OF_YEAR, -1);
+        }
+        return 0;
+    }
+
+    private CalendarItem nextInterval() {
+        if (ciIterator.hasNext())
+            return ciIterator.next();
+
+        if (moveForward)
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+        else
+            currentDay.add(Calendar.DAY_OF_YEAR, -1);
+
+        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+        ciIterator = currentDayCalendarItems.listIterator();
+        return ciIterator.next();
+    }
+
+    private void reverseCaches() {
+        for (int i = 1; i <= 7; i++) {
+            List<CalendarItem> ciList = defaultDays.get(i);
+            Collections.reverse(ciList);
+        }
+        for (Date date : exceptionDays.keySet()) {
+            List<CalendarItem> ciList = exceptionDays.get(date);
+            Collections.reverse(ciList);
+        }
+    }
+
+    public Date addInterval(Date date, int qty, TimeUnit unit) {
+        this.startTime = date;
+        Calendar startTimeCalendar = Calendar.getInstance();
+        startTimeCalendar.setTime(startTime);
+
+        loadCaches();
+        boolean prevMoveForward = moveForward;
+        moveForward = (qty >= 0);
+        if (moveForward != prevMoveForward)
+            reverseCaches();
+        long remainingTime;
+        //Work day is not astronomic day
+        if (unit.equals(TimeUnit.DAY))
+            remainingTime = Math.abs(qty) * getWorkDayLengthInMillis();
+        else
+            remainingTime = Math.abs(qty) * unit.getMillis();
+
+        long currentIntervalDuration = getFirstIntervalDuration();
+        while (remainingTime > 0) {
+            if (remainingTime <= currentIntervalDuration) {
+                CalendarItem currentItem = ciIterator.previous();
+
+                int finishDateBasicH;
+                int finishDateBasicM;
+
+                if (DateUtils.isSameDay(startTimeCalendar, currentDay) && currentItem.isDateInInterval(startTime)) {
+                    finishDateBasicH = startTimeCalendar.get(Calendar.HOUR_OF_DAY);
+                    finishDateBasicM = startTimeCalendar.get(Calendar.MINUTE);
+                } else {
+                    if (moveForward) {
+                        finishDateBasicH = currentItem.getStartH();
+                        finishDateBasicM = currentItem.getStartM();
+                    } else {
+                        finishDateBasicH = currentItem.getEndH();
+                        finishDateBasicM = currentItem.getEndM();
+                    }
+                }
+
+                currentDay.set(Calendar.HOUR_OF_DAY, finishDateBasicH);
+                currentDay.set(Calendar.MINUTE, finishDateBasicM);
+
+                if (moveForward) {
+                    currentDay.add(Calendar.MILLISECOND, (int) remainingTime);
+                } else {
+                    currentDay.add(Calendar.MILLISECOND, -(int) remainingTime);
+                }
+                return currentDay.getTime();
+            } else {
+                remainingTime -= currentIntervalDuration;
+                currentIntervalDuration = nextInterval().getDuration();
+            }
+        }
+        return null;
+    }
 }
