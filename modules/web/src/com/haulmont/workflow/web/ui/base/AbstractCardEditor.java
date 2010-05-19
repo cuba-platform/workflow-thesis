@@ -13,12 +13,15 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
@@ -145,6 +148,11 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         } else {
             actionsFrame.initActions(card, isCommentVisible());
         }
+    }
+
+    protected void deleteNotifications(Card card) {
+        WfService service = ServiceLocator.lookup(WfService.NAME);
+        service.deleteNotifications(card, UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
     }
 
     protected abstract boolean isCommentVisible();

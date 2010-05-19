@@ -84,6 +84,9 @@ public class ParallelAssigner extends Assigner {
 
       if (cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
         sendEmail(assignment, cr.user)
+
+      if (cr.notifyByCardInfo)
+        createNotificationCardInfo(card, cr.user, execution)
     }
   }
 

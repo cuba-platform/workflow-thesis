@@ -64,11 +64,14 @@ create table WF_CARD_INFO (
     NAME varchar(50),
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
     CARD_ID uuid,
     TYPE integer,
     USER_ID uuid,
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
+    DESCRIPTION varchar(500),
     primary key (ID)
 )^
 
@@ -174,6 +177,7 @@ create table WF_CARD_ROLE (
     CODE varchar(50),
     USER_ID uuid,
     NOTIFY_BY_EMAIL boolean,
+    NOTIFY_BY_CARD_INFO boolean,
     primary key (ID)
 )^
 

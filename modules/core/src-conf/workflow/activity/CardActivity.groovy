@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import com.haulmont.workflow.core.entity.CardProc
 import com.haulmont.workflow.core.entity.Proc
+import com.haulmont.workflow.core.entity.CardInfo
 
 public class CardActivity implements ActivityBehaviour {
 
@@ -41,7 +42,7 @@ public class CardActivity implements ActivityBehaviour {
     CardProc cp = card.procs.find { it.proc == card.proc }
     cp?.setState(card.state)
 
-    notifyObservers(card)
+    notifyObservers(card, execution)
   }
 
   protected Card findCard(ActivityExecution execution) {
@@ -59,7 +60,7 @@ public class CardActivity implements ActivityBehaviour {
     return card
   }
 
-  protected void notifyObservers(Card card) {
+  protected void notifyObservers(Card card, ActivityExecution execution) {
     if (StringUtils.isBlank(observers))
       return
 
@@ -68,6 +69,9 @@ public class CardActivity implements ActivityBehaviour {
     cardRoles.each { CardRole cr ->
       if (cr.notifyByEmail) {
         sendEmail(card, cr.user)
+      }
+      if (cr.notifyByCardInfo) {
+        createNotificationCardInfo(card, cr.user, execution)
       }
     }
   }
@@ -96,5 +100,34 @@ Card ${card.description} has become ${card.locState}
       EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
       emailer.sendEmail(user.email, subject, body)
     }
+  }
+
+  protected void createNotificationCardInfo(Card card, User user, ActivityExecution execution) {
+    CardInfo ci = new CardInfo()
+    ci.setType(CardInfo.TYPE_NOTIFICATION)
+    ci.setCard(card)
+    ci.setUser(user)
+    ci.setActivity(execution.activityName)
+    ci.setJbpmExecutionId(execution.id)
+
+    String subject = getNotificationSubject(card, user)
+    ci.setDescription(subject)
+
+    EntityManager em = PersistenceProvider.getEntityManager()
+    em.persist(ci)
+  }
+
+  protected String getNotificationSubject(Card card, User user) {
+    String subject
+    try {
+      String script = card.proc.messagesPack.replace('.', '/') + '/ObserverNotification.groovy'
+      Binding binding = new Binding(['card': card, 'user': user])
+      ScriptingProvider.runGroovyScript(script, binding)
+      subject = binding.getVariable('subject')
+    } catch (Exception e) {
+      log.warn("Unable to get notification text, using defaults", e)
+      subject = "Notification: ${card.description} - ${card.locState}"
+    }
+    return subject
   }
 }

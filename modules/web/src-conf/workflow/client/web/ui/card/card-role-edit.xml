@@ -52,6 +52,11 @@
                             <checkBox id="notifyByEmailCb" datasource="roleDs" property="notifyByEmail"
                                        width="${width}"/>
                         </row>
+                        <row>
+                            <label value="msg://notifyByCardInfo"/>
+                            <checkBox id="notifyByCardInfoCb" datasource="roleDs" property="notifyByCardInfo"
+                                       width="${width}"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>

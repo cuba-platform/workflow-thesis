@@ -39,6 +39,9 @@ public class CardRole extends StandardEntity {
     @Column(name = "NOTIFY_BY_EMAIL")
     private Boolean notifyByEmail = true;
 
+    @Column(name = "NOTIFY_BY_CARD_INFO")
+    private Boolean notifyByCardInfo = true;
+
     public Card getCard() {
         return card;
     }
@@ -77,5 +80,13 @@ public class CardRole extends StandardEntity {
 
     public void setNotifyByEmail(Boolean notifyByEmail) {
         this.notifyByEmail = notifyByEmail;
+    }
+
+    public Boolean getNotifyByCardInfo() {
+        return notifyByCardInfo;
+    }
+
+    public void setNotifyByCardInfo(Boolean notifyByCardInfo) {
+        this.notifyByCardInfo = notifyByCardInfo;
     }
 }

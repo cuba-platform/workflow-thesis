@@ -36,4 +36,6 @@ public interface WfService {
     boolean isCurrentUserInProcRole(Card card, String procRoleCode);
 
     boolean isUserInProcRole(Card card, User user, String procRoleCode);
+
+    void deleteNotifications(Card card, User user);
 }

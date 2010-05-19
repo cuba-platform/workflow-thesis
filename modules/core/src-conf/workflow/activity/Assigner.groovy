@@ -29,6 +29,7 @@ import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
+import com.haulmont.workflow.core.entity.CardInfo
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -92,6 +93,9 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     if ((cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
       sendEmail(assignment, user)
+
+    if (cr == null || cr.notifyByCardInfo)
+      createNotificationCardInfo(assignment, user, execution)
   }
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
@@ -137,5 +141,34 @@ You've got an assignment: ${assignment.card.description} - ${assignment.card.loc
       EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
       emailer.sendEmail(user.email, subject, body)
     }
+  }
+
+  protected void createNotificationCardInfo(Assignment assignment, User user, ActivityExecution execution) {
+    CardInfo ci = new CardInfo()
+    ci.setType(CardInfo.TYPE_NOTIFICATION)
+    ci.setCard(assignment.card)
+    ci.setUser(user)
+    ci.setActivity(execution.activityName)
+    ci.setJbpmExecutionId(execution.id)
+
+    String subject = getNotificationSubject(assignment, user)
+    ci.setDescription(subject)
+
+    EntityManager em = PersistenceProvider.getEntityManager()
+    em.persist(ci)
+  }
+
+  protected String getNotificationSubject(Assignment assignment, User user) {
+    String subject
+    try {
+      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/AssignmentNotification.groovy'
+      Binding binding = new Binding(['assignment': assignment, 'user': user])
+      ScriptingProvider.runGroovyScript(script, binding)
+      subject = binding.getVariable('subject')
+    } catch (Exception e) {
+      log.warn("Unable to get notification text, using defaults", e)
+      subject = "New assignment: ${assignment.card.description} - ${assignment.card.locState}"
+    }
+    return subject
   }
 }
