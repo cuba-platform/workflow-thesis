@@ -30,6 +30,7 @@ create table WF_CARD (
     STATE varchar(255),
     DESCRIPTION varchar(1000),
     CREATOR_ID uuid,
+    SUBSTITUTED_CREATOR_ID uuid,
     PARENT_CARD_ID uuid,
     primary key (ID)
 )^
@@ -37,6 +38,7 @@ create table WF_CARD (
 alter table WF_CARD add constraint FK_WF_CARD_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 alter table WF_CARD add constraint FK_WF_CARD_USER foreign key (CREATOR_ID) references SEC_USER (ID)^
 alter table WF_CARD add constraint FK_WF_CARD_CARD foreign key (PARENT_CARD_ID) references WF_CARD (ID)^
+alter table WF_CARD add constraint FK_WF_CARD_SUBSTITUTED_CREATOR foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
