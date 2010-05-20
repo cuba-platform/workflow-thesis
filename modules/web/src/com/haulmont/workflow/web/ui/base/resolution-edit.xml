@@ -29,13 +29,13 @@
                     </row>
                     <row>
                         <label value="msg://createdDate"/>
-                        <textField id="createdDate" datasource="assignmentDs" property="createTs"
+                        <dateField id="createdDate" datasource="assignmentDs" property="createTs"
                                    width="${width}" editable="false"/>
 
                     </row>
                     <row>
                         <label value="msg://finishedDate"/>
-                        <textField id="finishedDate" datasource="assignmentDs" property="finished"
+                        <dateField id="finishedDate" datasource="assignmentDs" property="finished"
                                      width="${width}" editable="false"/>
                     </row>
                     <row>
