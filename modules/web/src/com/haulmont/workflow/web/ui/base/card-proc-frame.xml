@@ -72,7 +72,7 @@
                         <column id="procRole.name" caption="msg://role"/>
                         <column id="user" caption="msg://user"/>
                         <column id="notifyByEmail" caption="msg://notifyByEmail"/>
-                        <column id="notifyByCardInfo" caption="msg://notifyByCardInfo"/>
+                        <!--<column id="notifyByCardInfo" caption="msg://notifyByCardInfo"/>-->
                     </columns>
                     <rows datasource="tmpCardRolesDs"/>
                 </table>
