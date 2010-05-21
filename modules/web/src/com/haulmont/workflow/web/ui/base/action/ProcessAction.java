@@ -49,7 +49,8 @@ public class ProcessAction extends AbstractAction {
     public void actionPerform(Component component) {
         final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
-
+            card = (Card) ((Window.Editor) window).getItem();
+            
             final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
 
             final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
