@@ -17,6 +17,10 @@
                                    width="200px"/>
                     </row>
                     <row>
+                        <label value="msg://name"/>
+                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                    </row>
+                    <row>
                         <label value="msg://extension"/>
                         <label id="extension" datasource="fileDs" property="extension"/>
                     </row>
@@ -32,8 +36,8 @@
                         </label>
                     </row>
                     <row>
-                        <label value="msg://name"/>
-                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                        <label value="msg://comment"/>
+                        <textField id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
                     </row>
                 </rows>
             </grid>

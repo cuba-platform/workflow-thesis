@@ -31,6 +31,9 @@ public class Attachment extends StandardEntity {
     @Column(name = "NAME", length = 500)
     private String name; 
 
+    @Column(name = "COMMENT", length = 1000)
+    private String comment;
+
     public FileDescriptor getFile() {
         return file;
     }
@@ -45,5 +48,13 @@ public class Attachment extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

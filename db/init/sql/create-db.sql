@@ -128,6 +128,7 @@ create table WF_ATTACHMENT (
     NAME varchar(500),
     CARD_ID varchar(36),
     ASSIGNMENT_ID varchar(36),
+    COMMENT varchar(1000),    
     primary key (ID)
 );
 
