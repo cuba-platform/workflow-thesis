@@ -37,16 +37,16 @@ import java.util.List;
 
 public class CardRolesFrame extends AbstractFrame {
 
-    private Card card;
+    protected Card card;
     private boolean enabled = true;
 
-    private CollectionDatasource<CardRole, UUID> cardRolesDs;
-    private CollectionDatasource<ProcRole, UUID> procRolesDs;
-    private LookupField createRoleLookup;
-    private Table rolesTable;
+    protected CollectionDatasource<CardRole, UUID> cardRolesDs;
+    protected CollectionDatasource<ProcRole, UUID> procRolesDs;
+    protected LookupField createRoleLookup;
+    protected Table rolesTable;
     protected List<Component> rolesActions = new ArrayList<Component>();
 
-    private String createRoleCaption;
+    protected String createRoleCaption;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -248,6 +248,11 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
         ProcRole procRole = null;
+
+        if (proc.getRoles() == null) {
+            proc = getDsContext().getDataService().reload(proc, "edit");
+        }
+        
         for (ProcRole pr : proc.getRoles()) {
             if (roleCode.equals(pr.getCode())) {
                 procRole = pr;
@@ -287,7 +292,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private void initCreateRoleLookup() {
+    protected void initCreateRoleLookup() {
         // add ProcRole if it has multiUser == true or hasn't been added yet
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
@@ -300,7 +305,7 @@ public class CardRolesFrame extends AbstractFrame {
         createRoleLookup.setNullOption(createRoleCaption);
     }
 
-    private boolean alreadyAdded(ProcRole pr) {
+    protected boolean alreadyAdded(ProcRole pr) {
         for (CardRole cr : getDsItems(cardRolesDs)) {
             if (cr.getProcRole().equals(pr))
                 return true;
@@ -308,7 +313,7 @@ public class CardRolesFrame extends AbstractFrame {
         return false;
     }
 
-    private <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
+    protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
         List<T> items = new ArrayList<T>();
         for (UUID id : ds.getItemIds()) {
             items.add(ds.getItem(id));

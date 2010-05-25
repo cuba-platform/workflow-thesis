@@ -29,6 +29,7 @@ import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.List;
 
 public class TransitionForm extends AbstractForm {
     private TextField commentText;
@@ -202,9 +203,7 @@ public class TransitionForm extends AbstractForm {
         Set<String> requiredRolesCodes = getRequiredRolesCodes();
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
-            if (requiredRolesCodes.contains(cardRole.getCode())) {
-                requiredRolesCodes.remove(cardRole.getCode());
-            }
+            requiredRolesCodes.remove(cardRole.getCode());
         }
 
         for (String roleCode : requiredRolesCodes) {
@@ -215,7 +214,14 @@ public class TransitionForm extends AbstractForm {
     private Set<String> getEmptyRolesNames() {
         Set<String> emptyRolesNames = new HashSet<String>();
         Map<String, String> procRolesNames = new HashMap<String, String>();
-        for (ProcRole procRole : card.getProc().getRoles()) {
+        List<ProcRole> procRoles = card.getProc().getRoles();
+        if (procRoles == null) {
+            LoadContext ctx = new LoadContext(ProcRole.class);
+            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
+            query.addParameter("proc", card.getProc());
+            procRoles = ServiceLocator.getDataService().loadList(ctx);
+        }
+        for (ProcRole procRole : procRoles) {
             procRolesNames.put(procRole.getCode(), procRole.getName());
         }
 

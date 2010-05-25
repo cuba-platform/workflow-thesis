@@ -29,7 +29,7 @@
                 <textField id="outcomeText" width="${width}"/>
             </hbox>
 
-            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+            <accessControl id="cardRolesFrameAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
                 <visible property="cardRolesVisible"/>
                 <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
             </accessControl>
