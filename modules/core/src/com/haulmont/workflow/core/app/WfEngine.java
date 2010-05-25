@@ -124,7 +124,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 em.persist(proc);
             } else {
                 proc = processes.get(0);
-                proc.setName(pd.getName());
+                if (StringUtils.isEmpty(pd.getName()))
+                    proc.setName(pd.getName());
                 proc.setMessagesPack("process." + pName);
             }
 
