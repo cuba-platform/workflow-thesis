@@ -127,6 +127,7 @@ create table WF_ATTACHMENT (
     TYPE char(1),
     FILE_ID uuid,
     NAME varchar(500),
+    COMMENT varchar(1000),
     CARD_ID uuid,
     ASSIGNMENT_ID uuid,
     primary key (ID)
