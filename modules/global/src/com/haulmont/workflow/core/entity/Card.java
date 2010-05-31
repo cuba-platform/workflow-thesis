@@ -11,6 +11,9 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -85,6 +88,7 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CARD_ID")
+    @OnDeleteInverse(DeletePolicy.DENY)    
     protected Card parentCard;
 
     @OneToMany(mappedBy = "parentCard")
