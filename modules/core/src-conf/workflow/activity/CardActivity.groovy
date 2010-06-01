@@ -67,7 +67,7 @@ public class CardActivity implements ActivityBehaviour {
     List roleNames = observers.tokenize(',').collect { it.trim() }
     List<CardRole> cardRoles = card.getRoles().findAll { CardRole cr -> roleNames.contains(cr.procRole.code) }
     cardRoles.each { CardRole cr ->
-      if (cr.notifyByEmail) {
+      if (cr.notifyByEmail && cr.procRole.proc.equals(card.proc)) {
         sendEmail(card, cr.user)
       }
       if (cr.notifyByCardInfo) {
