@@ -29,7 +29,9 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
+import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
@@ -47,6 +49,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected List<Component> rolesActions = new ArrayList<Component>();
 
     protected String createRoleCaption;
+    protected ProcRolePermissionsService procRolePermissionsService;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -100,6 +103,8 @@ public class CardRolesFrame extends AbstractFrame {
         });
 
         rolesTH.createRemoveAction(false);
+
+        procRolePermissionsService = getProcRolePermissionsService();
     }
 
     public void setCard(final Card card) {
@@ -144,6 +149,16 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
                 initCreateRoleLookup();
+            }
+
+            Action editAction = rolesTable.getAction("edit");
+            Action removeAction = rolesTable.getAction("remove");
+
+            @Override
+            public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
+                if (item == null) return;
+                editAction.setEnabled(procRolePermissionsService.isPermitted(item, card.getState(), ProcRolePermissionType.MODIFY));
+                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, card.getState(), ProcRolePermissionType.REMOVE));
             }
         });
     }
@@ -296,7 +311,8 @@ public class CardRolesFrame extends AbstractFrame {
         // add ProcRole if it has multiUser == true or hasn't been added yet
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
-            if (BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr)) {
+            if ((BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr))
+                && procRolePermissionsService.isPermitted(card, pr, card.getState(), ProcRolePermissionType.ADD)){
                 options.add(pr);
             }
         }
@@ -369,5 +385,9 @@ public class CardRolesFrame extends AbstractFrame {
         if (!enabled) {
             LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
         }
+    }
+
+    protected ProcRolePermissionsService getProcRolePermissionsService() {
+        return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
     }
 }

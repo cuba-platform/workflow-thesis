@@ -30,8 +30,11 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
+import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.global.ProcRolePermissionType;
+import com.haulmont.workflow.core.global.ProcRolePermissionValue;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
 import org.apache.commons.lang.BooleanUtils;
@@ -47,25 +50,26 @@ public class CardProcFrame extends AbstractFrame {
         void afterInitDefaultActors(Proc proc, CollectionDatasource currentCardRolesDs);
     }
 
-    private Card card;
+    protected Card card;
     private boolean enabled = true;
 
     private CollectionDatasource<CardRole, UUID> cardRolesDs;
-    private CollectionDatasource<ProcRole, UUID> procRolesDs;
+    protected CollectionDatasource<ProcRole, UUID> procRolesDs;
     private CollectionDatasource<Proc, UUID> procDs;
-    private CollectionDatasource<CardProc, UUID> cardProcDs;
-    private CardProcRolesDatasource tmpCardRolesDs;
+    protected CollectionDatasource<CardProc, UUID> cardProcDs;
+    protected CardProcRolesDatasource tmpCardRolesDs;
     private LookupField createProcLookup;
-    private LookupField createRoleLookup;
+    protected LookupField createRoleLookup;
     private Table cardProcTable;
-    private Table rolesTable;
+    protected Table rolesTable;
     protected List<Component> rolesActions = new ArrayList<Component>();
     protected AbstractAction startProcessAction;
 
     private String createProcCaption;
-    private String createRoleCaption;
+    protected String createRoleCaption;
 
     private Set<Listener> listeners = new HashSet<Listener>();
+    protected ProcRolePermissionsService procRolePermissionsService;
 
     public CardProcFrame(IFrame frame) {
         super(frame);
@@ -88,6 +92,8 @@ public class CardProcFrame extends AbstractFrame {
 
         initProc();
         initRoles();
+
+        procRolePermissionsService = getProcRolePermissionsService();
     }
 
     private void initProc() {
@@ -134,7 +140,7 @@ public class CardProcFrame extends AbstractFrame {
         }
 
         cardProcDs.addListener(
-                new DsListenerAdapter<CardProc>() {
+                new CollectionDsListenerAdapter<CardProc>() {
                     @Override
                     public void itemChanged(Datasource<CardProc> ds, CardProc prevItem, CardProc item) {
                         tmpCardRolesDs.fillForProc(item);
@@ -155,6 +161,12 @@ public class CardProcFrame extends AbstractFrame {
                             startProcessAction.setEnabled(enabled);
                         }
                     }
+
+                    @Override
+                    public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation) {
+                        initCreateProcLookup();
+                    }
+
                 }
         );
 
@@ -175,14 +187,6 @@ public class CardProcFrame extends AbstractFrame {
                 initDefaultActors((Proc) value);
             }
         });
-
-        cardProcDs.addListener(new CollectionDsListenerAdapter<CardProc>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                initCreateProcLookup();
-            }
-        });
-
     }
 
     private int calculateSortOrder() {
@@ -285,16 +289,9 @@ public class CardProcFrame extends AbstractFrame {
         ServiceLocator.getDataService().commit(cc);
     }
 
-    private void initRoles() {
+    protected void initRoles() {
         tmpCardRolesDs = getDsContext().get("tmpCardRolesDs");
         tmpCardRolesDs.valid();
-
-        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                initCreateRoleLookup();
-            }
-        });
 
         procRolesDs = getDsContext().get("procRolesDs");
         createRoleCaption = getMessage("createRoleCaption");
@@ -341,6 +338,22 @@ public class CardProcFrame extends AbstractFrame {
 
         rolesTH.createRemoveAction(false);
 
+        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                initCreateRoleLookup();
+            }
+
+            Action editAction = rolesTable.getAction("edit");
+            Action removeAction = rolesTable.getAction("remove");
+
+            @Override
+            public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
+                if (item == null) return;
+                editAction.setEnabled(procRolePermissionsService.isPermitted(item, cardProcDs.getItem().getState(), ProcRolePermissionType.MODIFY));
+                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, cardProcDs.getItem().getState(), ProcRolePermissionType.REMOVE));            }
+        });        
+
         createRoleLookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {
                 if ((value == null) || createRoleCaption.equals(value))
@@ -355,7 +368,7 @@ public class CardProcFrame extends AbstractFrame {
                 params.put("secRole", secRole);
                 params.put("proc", cardProcDs.getItem().getProc());
                 params.put("users", getUsersByProcRole(procRole));
-                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params);
+                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params, cardRolesDs);
                 cardRoleEditor.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
@@ -495,11 +508,12 @@ public class CardProcFrame extends AbstractFrame {
         createProcLookup.setNullOption(createProcCaption);
     }
 
-    private void initCreateRoleLookup() {
+    protected void initCreateRoleLookup() {
         // add ProcRole if it has multiUser == true or hasn't been added yet
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
-            if (BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr)) {
+            if ((BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr))
+                && procRolePermissionsService.isPermitted(card, pr, cardProcDs.getItem().getState(), ProcRolePermissionType.ADD)){
                 options.add(pr);
             }
         }
@@ -516,7 +530,7 @@ public class CardProcFrame extends AbstractFrame {
         return false;
     }
 
-    private boolean alreadyAdded(ProcRole pr) {
+    protected boolean alreadyAdded(ProcRole pr) {
         for (CardRole cr : getDsItems(tmpCardRolesDs)) {
             if (cr.getProcRole().equals(pr))
                 return true;
@@ -524,7 +538,7 @@ public class CardProcFrame extends AbstractFrame {
         return false;
     }
 
-    private <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
+    protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
         List<T> items = new ArrayList<T>();
         for (UUID id : ds.getItemIds()) {
             items.add(ds.getItem(id));
@@ -658,5 +672,9 @@ public class CardProcFrame extends AbstractFrame {
                     }
             );
         }
+    }
+    
+    protected ProcRolePermissionsService getProcRolePermissionsService() {
+        return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
     }
 }

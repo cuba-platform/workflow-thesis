@@ -23,6 +23,11 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.cuba.gui.data.DsContext.CommitListener
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.entity.Entity
+import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.workflow.core.app.ProcRolePermissionsService
+import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.components.TableActionsHelper;
 
 public class ProcEditor extends AbstractEditor {
 
@@ -107,6 +112,45 @@ public class ProcEditor extends AbstractEditor {
                     }
             ] as CommitListener
     )
+
+    GroupTable permissionsTable = getComponent("permissionsTable")
+    TableActionsHelper permissionsTableHelper = new TableActionsHelper(this, permissionsTable)
+    permissionsTableHelper.createCreateAction(new ValueProvider() {
+
+      Map<String, Object> getValues() {
+        return ['procRoleFrom' : rolesDs.getItem()]
+        return null
+      }
+
+      Map<String, Object> getParameters() {
+        return ['proc' : procDs.getItem()]
+      }
+    }, WindowManager.OpenType.DIALOG)
+
+    permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc' : params['param$item']])
+    permissionsTableHelper.createRemoveAction(false)
+
+//    permissionsTableHelper.addListener(new TableActionsHelper.Listener() {
+//
+//      ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
+//
+//      void entityCreated(Entity entity) {procRolePermissionsService.clearPermissionsCahche()}
+//
+//      void entityEdited(Entity entity) {procRolePermissionsService.clearPermissionsCahche()}
+//
+//      void entityRemoved(Set<Entity> entity) {procRolePermissionsService.clearPermissionsCahche()}
+//
+//    });
   }
+
+  def void commitAndClose() {
+    CollectionDatasource permissionsDs = getDsContext().get("permissionsDs");
+    if (permissionsDs.isModified()) {
+      ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
+      procRolePermissionsService.clearPermissionsCahche();
+    }
+    super.commitAndClose();
+  }
+
 
 }

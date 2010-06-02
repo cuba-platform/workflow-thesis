@@ -49,6 +49,10 @@ public class ProcRole extends StandardEntity {
     @Column(name = "ASSIGN_TO_CREATOR")
     private Boolean assignToCreator = false;
 
+    @OneToMany(mappedBy = "procRoleFrom")
+    @Aggregation
+    private List<ProcRolePermission> permissions;
+
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;
     }
@@ -103,5 +107,13 @@ public class ProcRole extends StandardEntity {
 
     public void setAssignToCreator(Boolean assignToCreator) {
         this.assignToCreator = assignToCreator;
+    }
+
+    public List<ProcRolePermission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<ProcRolePermission> permissions) {
+        this.permissions = permissions;
     }
 }

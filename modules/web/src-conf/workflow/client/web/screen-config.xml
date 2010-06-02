@@ -22,6 +22,9 @@
     <screen id="wf$DefaultProcActor.edit"
             template="workflow/client/web/ui/proc/defaultprocactor-edit.xml"/>
 
+    <screen id="wf$ProcRolePermission.edit"
+            template="workflow/client/web/ui/proc/proc-role-permission-edit.xml"/>
+
     <screen id="wf$Card.browse"
             template="workflow/client/web/ui/card/card-browse.xml"/>
 

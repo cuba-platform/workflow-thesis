@@ -13,14 +13,9 @@
                 view="edit">
             <collectionDatasource id="rolesDs" property="roles">
                 <collectionDatasource id="dpaDs" property="defaultProcActors"/>
+                <collectionDatasource id="permissionsDs" property="permissions"/>
             </collectionDatasource>
         </datasource>
-
-        <!--<collectionDatasource id="dpaDs" class="com.haulmont.workflow.core.entity.DefaultProcActor" view="browse">-->
-            <!--<query>-->
-                <!--select dpa from wf$DefaultProcActor dpa where dpa.procRole.id = :ds$rolesDs-->
-            <!--</query>-->
-        <!--</collectionDatasource>-->
     </dsContext>
 
     <#assign width = 400>
@@ -49,15 +44,24 @@
                             <textField id="cardTypes" datasource="procDs" property="cardTypes"
                                        width="${width}"/>
                         </row>
+                        <row>
+                            <label value="msg://states"/>
+                            <textField id="states" datasource="procDs" property="states"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://permissionsEnabled"/>
+                            <checkBox id="permissionsEnabled" datasource="procDs" property="permissionsEnabled"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>
         </hbox>
 
         <split id="rolesSplit" orientation="horizontal">
-            <vbox expand="rolesTable" margin="true">
+            <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true">
                 <label value="msg://roles"/>
-                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <hbox align="MIDDLE_LEFT" spacing="true">
                     <button action="rolesTable.create" icon="icons/create.png"/>
                     <button action="rolesTable.edit" icon="icons/edit.png"/>
                     <button action="rolesTable.remove" icon="icons/remove.png"/>
@@ -71,23 +75,44 @@
                         <column id="role" caption="msg://role"/>
                     </columns>
                     <rows datasource="rolesDs"/>
-                </table>
+                </table>                                  
             </vbox>
 
-            <vbox expand="dpaTable" margin="true">
-                <label value="msg://dpa"/>
-                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                    <button action="dpaTable.create" icon="icons/create.png"/>
-                    <button action="dpaTable.edit" icon="icons/edit.png"/>
-                    <button action="dpaTable.remove" icon="icons/remove.png"/>
-                </hbox>
-                <table id="dpaTable" editable="false">
-                    <columns>
-                        <column id="user" caption="msg://user"/>
-                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
-                    </columns>
-                    <rows datasource="dpaDs"/>
-                </table>
+            <vbox margin="false;false;false;true;">
+                <split orientation="vertical">
+                    <vbox expand="dpaTable">
+                        <label value="msg://dpa"/>
+                        <hbox align="MIDDLE_LEFT" spacing="true">
+                            <button action="dpaTable.create" icon="icons/create.png"/>
+                            <button action="dpaTable.edit" icon="icons/edit.png"/>
+                            <button action="dpaTable.remove" icon="icons/remove.png"/>
+                        </hbox>
+                        <table id="dpaTable" editable="false">
+                            <columns>
+                                <column id="user" caption="msg://user"/>
+                                <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                            </columns>
+                            <rows datasource="dpaDs"/>
+                        </table>
+                    </vbox>
+                    <vbox expand="permissionsTable">
+                        <label value="msg://permissions"/>
+                        <groupTable id="permissionsTable" editable="false">
+                            <buttonsPanel>
+                                <button action="permissionsTable.create" icon="icons/create.png"/>
+                                <button action="permissionsTable.edit" icon="icons/edit.png"/>
+                                <button action="permissionsTable.remove" icon="icons/remove.png"/>
+                            </buttonsPanel>
+                            <columns>
+                                <column id="procRoleTo" caption="msg://procRoleTo"/>
+                                <column id="locState" caption="msg://state"/>
+                                <column id="type" caption="msg://type"/>
+                                <column id="value" caption="msg://value"/>
+                            </columns>
+                            <rows datasource="permissionsDs"/>
+                        </groupTable>
+                    </vbox>
+                </split>
             </vbox>
         </split>
 

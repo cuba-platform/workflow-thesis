@@ -41,6 +41,12 @@ public class Proc extends StandardEntity {
     @Column(name = "CARD_TYPES")
     private String cardTypes;
 
+    @Column(name = "PERMISSIONS_ENABLED")
+    private Boolean permissionsEnabled = false;
+
+    @Column(name = "STATES", length = 500)
+    private String states;
+
     public String getName() {
         return name;
     }
@@ -79,5 +85,21 @@ public class Proc extends StandardEntity {
 
     public void setCardTypes(String cardTypes) {
         this.cardTypes = cardTypes;
+    }
+
+    public Boolean getPermissionsEnabled() {
+        return permissionsEnabled;
+    }
+
+    public void setPermissionsEnabled(Boolean permissionsEnabled) {
+        this.permissionsEnabled = permissionsEnabled;
+    }
+
+    public String getStates() {
+        return states;
+    }
+
+    public void setStates(String states) {
+        this.states = states;
     }
 }

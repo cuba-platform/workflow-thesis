@@ -6,11 +6,12 @@
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="edit" extends="_local">
         <property name="defaultProcActors" view="browse"/>
+        <property name="permissions" view="browse"/>
         <property name="role" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="browse" extends="_local">
-        <property name="proc" view="_minimal"/>
+        <property name="proc" view="_local"/>
         <property name="role" view="_local"/>
     </view>
 
@@ -45,6 +46,17 @@
         <!--<property name="card" view="_local"/>-->
         <property name="procRole" view="card-edit"/>
         <property name="user" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.CardRole" name="transition-form" extends="_local">
+        <property name="card" view="transition-form"/>
+        <property name="procRole" view="card-edit"/>
+        <property name="user" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.Card" name="transition-form" extends="_local">
+        <property name="procs" view="card-edit"/>
+        <property name="roles" view="card-edit"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.CardProc" name="card-edit" extends="_local">
@@ -88,6 +100,15 @@
 
     <view class="com.haulmont.workflow.core.entity.CardInfo" name="card-browse" extends="_local">
         <property name="card" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.ProcRolePermission" name="browse" extends="_local">
+        <property name="procRoleTo" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.ProcRolePermission" name="edit" extends="_local">
+        <property name="procRoleFrom" view="_minimal"/>
+        <property name="procRoleTo" view="_minimal"/>
     </view>
 
 </views>

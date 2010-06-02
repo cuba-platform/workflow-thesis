@@ -51,7 +51,7 @@
                     <rows datasource="cardProcDs"/>
                 </table>
             </vbox>
-            <vbox spacing="true" expand="rolesTable">
+            <vbox id="rolesTablePanel" spacing="true" expand="rolesTable">
                 <grid spacing="true" width="100%">
                     <columns>
                         <column/>

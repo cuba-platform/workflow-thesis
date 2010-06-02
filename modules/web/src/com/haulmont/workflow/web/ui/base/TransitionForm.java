@@ -36,8 +36,8 @@ public class TransitionForm extends AbstractForm {
     private Table attachmentsTable;
 
     protected Card card;
-    private CardRolesFrame cardRolesFrame;
-    private CollectionDatasource cardRolesDs;
+    protected CardRolesFrame cardRolesFrame;
+    protected CollectionDatasource cardRolesDs;
     protected Datasource assignmentDs;
     private DateField dueDate;
     private TextField outcomeText;

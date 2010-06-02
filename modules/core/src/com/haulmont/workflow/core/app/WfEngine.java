@@ -149,6 +149,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     private void deployRoles(String deploymentId, Proc proc) {
         Set<String> roles = new HashSet<String>();
+        String states = "";
 
         RepositoryService rs = getProcessEngine().getRepositoryService();
         Set<String> resourceNames = rs.getResourceNames(deploymentId);
@@ -158,6 +159,11 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Document doc = Dom4j.readDocument(is);
                 Element root = doc.getRootElement();
                 for (Element stateElem : Dom4j.elements(root)) {
+                    if ("custom".equals(stateElem.getName())) {
+                        String state = stateElem.attributeValue("name");
+                        if (StringUtils.isNotBlank(state))
+                        states += state + ",";
+                    }
                     for (Element element : Dom4j.elements(stateElem)) {
                         String name = element.attributeValue("name");
                         if (name != null && "property".equals(element.getName()) &&
@@ -195,6 +201,10 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     em.persist(procRole);
                 }
             }
+        }
+
+        if (StringUtils.isNotBlank(states)) {
+            proc.setStates(states);
         }
     }
 

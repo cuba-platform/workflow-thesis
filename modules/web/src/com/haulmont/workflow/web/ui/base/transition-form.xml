@@ -11,7 +11,7 @@
         <datasource id="varsDs">
             <datasourceClass>com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource</datasourceClass>
         </datasource>
-        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
+        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="transition-form">
             <query>
                 <![CDATA[select cr from wf$CardRole cr
                 where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
