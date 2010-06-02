@@ -80,7 +80,7 @@
 
             <vbox margin="false;false;false;true;">
                 <split orientation="vertical">
-                    <vbox expand="dpaTable">
+                    <vbox expand="dpaTable" spacing="true">
                         <label value="msg://dpa"/>
                         <hbox align="MIDDLE_LEFT" spacing="true">
                             <button action="dpaTable.create" icon="icons/create.png"/>
