@@ -31,12 +31,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public abstract class FormManager {
+public abstract class FormManager implements Serializable {
 
     protected Element element;
     protected String activity;
@@ -46,7 +49,7 @@ public abstract class FormManager {
 
     protected FormManagerChain chain;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected transient Log log = LogFactory.getLog(getClass());
 
     protected FormManager(Element element, String activity, String transition, FormManagerChain chain) {
         this.element = element;
@@ -58,6 +61,11 @@ public abstract class FormManager {
         after = Boolean.valueOf(element.attributeValue("after"));
         if (!before && !after)
             before = true;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        log = LogFactory.getLog(getClass());
     }
 
     public boolean isAfter() {
