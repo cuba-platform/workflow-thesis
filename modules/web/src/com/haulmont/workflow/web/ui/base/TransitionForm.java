@@ -56,6 +56,11 @@ public class TransitionForm extends AbstractForm {
         String dueDateRequired = (String)params.get("dueDateRequired");
         String commentRequired = (String) params.get("param$commentRequired");
         requiredRolesCodes = (String) params.get("param$requiredRoles");
+        
+        String additionalRolesCodes = (String) params.get("param$additionalRoles");
+        if (!StringUtils.isEmpty(additionalRolesCodes)) {
+            requiredRolesCodes += "," + additionalRolesCodes;
+        }
 
         commentText = getComponent("commentText");
         attachmentsTable = getComponent("attachmentsTable");
