@@ -86,21 +86,23 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        rolesTableDs.addListener(new DsListenerAdapter() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                super.stateChanged(ds, prevState, state);
-                if (state.equals(Datasource.State.VALID) && isEnabled()) {
-                    LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
-                        public void onClick(final Entity entity) {
-                            Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
-                            openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
-                                    Collections.singletonMap("users", users), rolesTableDs);
-                        }
-                    });
-                }
-            }
-        });
+//        We decided not to show link in this frame
+//
+//        rolesTableDs.addListener(new DsListenerAdapter() {
+//            @Override
+//            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+//                super.stateChanged(ds, prevState, state);
+//                if (state.equals(Datasource.State.VALID) && isEnabled()) {
+//                    LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
+//                        public void onClick(final Entity entity) {
+//                            Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
+//                            openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
+//                                    Collections.singletonMap("users", users), rolesTableDs);
+//                        }
+//                    });
+//                }
+//            }
+//        });
 
         rolesTH.createRemoveAction(false);
 
@@ -382,9 +384,9 @@ public class CardRolesFrame extends AbstractFrame {
         for (Component action : rolesActions) {
             action.setEnabled(enabled);
         }
-        if (!enabled) {
-            LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
-        }
+//        if (!enabled) {
+//            LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
+//        }
     }
 
     protected ProcRolePermissionsService getProcRolePermissionsService() {
