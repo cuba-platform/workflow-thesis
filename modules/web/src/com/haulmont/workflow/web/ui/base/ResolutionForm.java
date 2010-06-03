@@ -16,9 +16,12 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
 
@@ -48,7 +51,7 @@ public class ResolutionForm extends AbstractForm {
         String transition = (String) params.get("param$transition");
 
         TextField outcomeText = getComponent("outcomeText");
-        outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + "." + transition));
+        outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
         outcomeText.setEditable(false);
 
         String commentRequired = (String) params.get("param$commentRequired");
@@ -75,11 +78,25 @@ public class ResolutionForm extends AbstractForm {
         attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
         attachmentsTH.createRemoveAction(false);
 
-        LoadContext ctx = new LoadContext(Assignment.class);
-        Object assignmentId = params.get("param$assignmentId");
-        ctx.setId(assignmentId);
-        ctx.setView("resolution-edit");
-        Assignment assignment = ServiceLocator.getDataService().load(ctx);
+        Assignment assignment;
+
+        if (activity.equals(WfConstants.ACTION_CANCEL)) {
+            assignment = new Assignment();
+            assignment.setName(WfConstants.CARD_STATE_CANCELED);
+            assignment.setOutcome("Ok");
+            UserSession userSession = UserSessionClient.getUserSession();
+            assignment.setUser(userSession.getCurrentOrSubstitutedUser());
+            assignment.setFinishedByUser(userSession.getUser());
+            assignment.setCard(card);
+            assignment.setProc(card.getProc());
+        } else {
+            LoadContext ctx = new LoadContext(Assignment.class);
+            Object assignmentId = params.get("param$assignmentId");
+            ctx.setId(assignmentId);
+            ctx.setView("resolution-edit");
+            assignment = ServiceLocator.getDataService().load(ctx);
+        }
+
         getDsContext().get("assignmentDs").setItem(assignment);
 
         addAction(new AbstractAction("windowCommit") {

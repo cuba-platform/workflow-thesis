@@ -421,8 +421,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         query.setParameter("1", c);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
-            assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
-            assignment.setFinished(TimeProvider.currentTimestamp());
+            if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
+                assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
+            assignment.setFinished(TimeProvider.currentTimestamp());            
         }
 
         WfHelper.getExecutionService().endProcessInstance(c.getJbpmProcessId(), WfConstants.CARD_STATE_CANCELED);

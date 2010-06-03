@@ -25,8 +25,11 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 
 import java.util.UUID;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ProcessAction extends AbstractAction {
+    public static String SEND_PREFIX = "send_";
 
     private Card card;
     private String actionName;
@@ -56,6 +59,14 @@ public class ProcessAction extends AbstractAction {
             final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
             managerChain.setCard(card);
             managerChain.setAssignmentId(assignmentId);
+
+            for (Object o : window.getContext().getParams().entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                String key = (String) entry.getKey();
+                if (key.startsWith(SEND_PREFIX)) {
+                    managerChain.getCommonParams().put(key.substring(5), entry.getValue());
+                }
+            }
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
