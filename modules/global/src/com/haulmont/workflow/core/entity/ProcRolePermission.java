@@ -44,8 +44,8 @@ public class ProcRolePermission extends StandardEntity {
     public String getLocState() {
         if (getState() == null)
             return "";
-        if (procRoleTo.getProc() != null) {
-            String messagesPack = procRoleTo.getProc().getMessagesPack();
+        if (procRoleFrom.getProc() != null) {
+            String messagesPack = procRoleFrom.getProc().getMessagesPack();
             return MessageUtils.loadString(messagesPack, "msg://" + getState());
         }
         return getState();
@@ -53,7 +53,7 @@ public class ProcRolePermission extends StandardEntity {
 
 
     public String getState() {
-        return state;
+        return state;                          
     }
 
     public void setState(String state) {

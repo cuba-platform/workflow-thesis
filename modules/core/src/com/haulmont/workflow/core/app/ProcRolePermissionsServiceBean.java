@@ -11,9 +11,8 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
@@ -60,7 +59,7 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
     public boolean isPermitted(Card card, ProcRole procRoleTo, String state, ProcRolePermissionType type) {
         if (BooleanUtils.isNotTrue(procRoleTo.getProc().getPermissionsEnabled())) return true;
 
-        //for not-active processes we'll allow everything by now
+//        for not-active processes we'll allow everything by now
         if (card.getProcs() == null) {
             Transaction tx = Locator.createTransaction();
             try {
@@ -74,7 +73,10 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
         }
         for (CardProc cp : card.getProcs()) {
             if (cp.getProc().equals(procRoleTo.getProc())) {
-                if (BooleanUtils.isNotTrue(cp.getActive())) return true;
+//              BooleanUtils.isNotTrue(cp.getActive() - not-active process in case of cardProcFrame in Card Editor
+//              BooleanUtils.isTrue(cp.getActive()) && StringUtils.isBlank(cp.getState()) - not-active process in case of cardRolesFrame in TransitionForm 
+                if (BooleanUtils.isNotTrue(cp.getActive()) ||
+                        (BooleanUtils.isTrue(cp.getActive()) && StringUtils.isBlank(cp.getState()))) return true;
                 break;
             }
         }

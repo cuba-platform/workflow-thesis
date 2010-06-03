@@ -129,18 +129,6 @@ public class ProcEditor extends AbstractEditor {
 
     permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc' : params['param$item']])
     permissionsTableHelper.createRemoveAction(false)
-
-//    permissionsTableHelper.addListener(new TableActionsHelper.Listener() {
-//
-//      ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
-//
-//      void entityCreated(Entity entity) {procRolePermissionsService.clearPermissionsCahche()}
-//
-//      void entityEdited(Entity entity) {procRolePermissionsService.clearPermissionsCahche()}
-//
-//      void entityRemoved(Set<Entity> entity) {procRolePermissionsService.clearPermissionsCahche()}
-//
-//    });
   }
 
   def void commitAndClose() {

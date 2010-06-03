@@ -201,9 +201,11 @@ public class CardProcFrame extends AbstractFrame {
         final Proc prevProc = card.getProc();
         DataService ds = getDsContext().getDataService();
         final Proc proc = ds.reload(cp.getProc(), "edit");
+        final String prevCardProcState = cp.getState();
         card.setProc(proc);
         cp.setProc(proc);
         cp.setActive(true);
+        cp.setState(null);
         final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
         cp.setStartCount(prevStartCount + 1);
 
@@ -216,7 +218,7 @@ public class CardProcFrame extends AbstractFrame {
                 // already started in another transaction
                 String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
                 App.getInstance().getWindowManager().showNotification(msg, NotificationType.ERROR);
-                resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount);
+                resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount, prevCardProcState);
                 return;
             }
         }
@@ -238,7 +240,7 @@ public class CardProcFrame extends AbstractFrame {
                             }
 
                             public void onFail() {
-                                rollbackStartProcess(prevProc, prevStartCount, cp);
+                                rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
                                 window.close("cancel", true);
                             }
                         }
@@ -246,7 +248,7 @@ public class CardProcFrame extends AbstractFrame {
                 managerChain.doManagerBefore("");
 
             } catch (RuntimeException e) {
-                rollbackStartProcess(prevProc, prevStartCount, cp);
+                rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
 
                 String msg = getMessage("runProcessFailed");
                 App.getInstance().getAppLog().log(new LogItem(LogLevel.ERROR, msg, e));
@@ -256,17 +258,18 @@ public class CardProcFrame extends AbstractFrame {
             }
 
         } else {
-            resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount);
+            resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount, prevCardProcState);
         }
     }
 
-    private void resetAfterUnsuccessfulStart(CardProc cp, Proc prevProc, int prevStartCount) {
+    private void resetAfterUnsuccessfulStart(CardProc cp, Proc prevProc, int prevStartCount, String prevCardProcState) {
         card.setProc(prevProc);
         cp.setActive(false);
         cp.setStartCount(prevStartCount);
+        cp.setState(prevCardProcState);
     }
 
-    private void rollbackStartProcess(Proc prevProc, int prevStartCount, CardProc cp) {
+    private void rollbackStartProcess(Proc prevProc, int prevStartCount, CardProc cp, String prevCardProcState) {
         DataService ds = getDsContext().getDataService();
 
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
@@ -276,11 +279,12 @@ public class CardProcFrame extends AbstractFrame {
         loadedCard.setProc(prevProc);
 
         lc = new LoadContext(CardProc.class).setId(cp.getId()).setView(
-                new View(CardProc.class).addProperty("active").addProperty("startCount")
+                new View(CardProc.class).addProperty("active").addProperty("startCount").addProperty("state")
         );
         CardProc loadedCardProc = ds.load(lc);
         loadedCardProc.setActive(false);
         loadedCardProc.setStartCount(prevStartCount);
+        loadedCardProc.setState(prevCardProcState);
 
         Set toCommit = new HashSet();
         toCommit.add(loadedCard);
