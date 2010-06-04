@@ -56,7 +56,7 @@
                         <row>
                             <label value="msg://procRoleFrom"/>
                             <lookupField id="procRoleFrom" datasource="permissionDs" property="procRoleFrom" optionsDatasource="procRolesFromDs"
-                                      width="${width}" required="true"/>
+                                      width="${width}" editable="false" required="true"/>
                         </row>
                     </rows>
                 </grid>

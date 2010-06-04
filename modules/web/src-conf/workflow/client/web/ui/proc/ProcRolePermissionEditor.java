@@ -55,7 +55,7 @@ public class ProcRolePermissionEditor extends AbstractEditor {
         Map<String, Object> statesMap = new HashMap<String, Object>();
         String states = proc.getStates();
         if (StringUtils.isNotBlank(states)) {
-            for (String state : states.split(",")) {
+            for (String state : states.split("\\s*,\\s*")) {
                 String locState = MessageProvider.getMessage(proc.getMessagesPack(), state);
                 statesMap.put(locState, state);
             }

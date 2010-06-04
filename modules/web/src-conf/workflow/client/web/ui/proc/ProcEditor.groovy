@@ -84,13 +84,6 @@ public class ProcEditor extends AbstractEditor {
               (item.getMultiUser() || dpaDs.getItemIds().isEmpty()))
     }
 
-    rolesDs.addListener(
-            [
-                    itemChanged: { ds, prevItem, item -> enableDpaActions() } ,
-                    valueChanged: { source, property, prevValue, value -> enableDpaActions() }
-            ] as DsListenerAdapter
-    )
-
     dpaDs.addListener(
             [
                     collectionChanged: { ds, operation -> enableDpaActions() }
@@ -113,9 +106,10 @@ public class ProcEditor extends AbstractEditor {
             ] as CommitListener
     )
 
+    List permissionsActions = []
     GroupTable permissionsTable = getComponent("permissionsTable")
     TableActionsHelper permissionsTableHelper = new TableActionsHelper(this, permissionsTable)
-    permissionsTableHelper.createCreateAction(new ValueProvider() {
+    Action createPermissionsAction = permissionsTableHelper.createCreateAction(new ValueProvider() {
 
       Map<String, Object> getValues() {
         return ['procRoleFrom' : rolesDs.getItem()]
@@ -127,8 +121,26 @@ public class ProcEditor extends AbstractEditor {
       }
     }, WindowManager.OpenType.DIALOG)
 
-    permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc' : params['param$item']])
-    permissionsTableHelper.createRemoveAction(false)
+    Action editPermissionsAction = permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc' : params['param$item']])
+    permissionsActions.add(createPermissionsAction)
+    permissionsActions.add(editPermissionsAction)
+    permissionsActions.add(permissionsTableHelper.createRemoveAction(false))
+
+    permissionsActions.each {
+      it.enabled = false
+    }
+
+    def enablePermissionsActions = {
+      ProcRole item = rolesDs.getItem()
+      permissionsActions.each { it.setEnabled(item != null) }
+    }
+
+    rolesDs.addListener(
+            [
+                    itemChanged: { ds, prevItem, item -> enableDpaActions(); enablePermissionsActions() } ,
+                    valueChanged: { source, property, prevValue, value -> enableDpaActions() }
+            ] as DsListenerAdapter
+    )
   }
 
   def void commitAndClose() {

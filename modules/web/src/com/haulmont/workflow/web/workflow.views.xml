@@ -107,7 +107,9 @@
     </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcRolePermission" name="edit" extends="_local">
-        <property name="procRoleFrom" view="_minimal"/>
+        <property name="procRoleFrom" view="_local">
+            <property name="proc" view="_minimal"/>
+        </property>
         <property name="procRoleTo" view="_minimal"/>
     </view>
 
