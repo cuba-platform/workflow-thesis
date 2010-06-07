@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
@@ -31,6 +32,7 @@ import org.jbpm.api.activity.ActivityExecution;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +46,13 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
     private SecurityContext securityContext;
 
     private Log log = LogFactory.getLog(TimerManager.class);
+
+    private ClusterManagerAPI clusterManager;
+
+    @Inject
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+    }
 
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
                          Class<? extends TimerAction> taskClass, Map<String, String> taskParams) {
@@ -81,6 +90,9 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
 
     public void processTimers() {
         if (!AppContext.isStarted())
+            return;
+
+        if (!clusterManager.isMaster())
             return;
 
         log.info("Processing timers");
