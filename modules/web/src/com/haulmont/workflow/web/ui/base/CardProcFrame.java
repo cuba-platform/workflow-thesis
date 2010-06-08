@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
@@ -242,6 +244,9 @@ public class CardProcFrame extends AbstractFrame {
                             public void onFail() {
                                 rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
                                 window.close("cancel", true);
+                                
+                                WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(window.getId());
+                                App.getInstance().getWindowManager().openEditor(windowInfo, card, OpenType.THIS_TAB, Collections.<String, Object>singletonMap("cancelProc", true));
                             }
                         }
                 );
