@@ -40,9 +40,6 @@ public class ResolutionsFrame extends AbstractFrame {
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setAllowMultiStringCells(true);
 
-        MetaPropertyPath pp = table.getDatasource().getMetaClass().getPropertyEx("hasAttachments");
-        vTable.setColumnIcon(pp, new ThemeResource("icons/attachment-small.png"));
-
         table.addAction(new AbstractAction("openResolution") {
             public void actionPerform(Component component) {
                 openResolution(table.getDatasource().getItem());
