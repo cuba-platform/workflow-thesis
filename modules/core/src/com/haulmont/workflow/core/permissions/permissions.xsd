@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.haulmont.com/schema/cuba/workflow/permissions.xsd"
+        xmlns="http://www.haulmont.com/schema/cuba/workflow/permissions.xsd"
+        elementFormDefault="qualified">
+
+    <xs:element name="permissions" type="permissionsType"/>
+
+    <xs:complexType name="permissionsType">
+        <xs:sequence>
+            <xs:element type="whoChangesType" name="whoChanges" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="whoChangesType">
+        <xs:sequence>
+            <xs:element type="permissionType" name="permission" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="permissionType">
+        <xs:attribute name="whomChanges" type="xs:string" use="required"/>
+        <xs:attribute name="state" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="valuePermissionValue" fixed="ALLOW"/>
+        <xs:attribute name="type" type="valuePermissionType" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="valuePermissionValue">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ALLOW"/>
+            <xs:enumeration value="DENY"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="valuePermissionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ADD"/>
+            <xs:enumeration value="MODIFY"/>
+            <xs:enumeration value="REMOVE"/>
+            <xs:enumeration value="ALL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

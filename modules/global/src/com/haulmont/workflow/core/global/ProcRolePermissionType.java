@@ -36,4 +36,14 @@ public enum ProcRolePermissionType implements EnumClass<Integer> {
         }
         return null;
     }
+
+    public static ProcRolePermissionType fromString(String string) {
+        if (string == null) return null;
+        
+        if ("ADD".equals(string)) return ADD;
+        else if ("REMOVE".equals(string)) return REMOVE;
+        else if ("MODIFY".equals(string)) return MODIFY;
+
+        return null;
+    }
 }

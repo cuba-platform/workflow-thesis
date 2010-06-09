@@ -12,6 +12,8 @@ package workflow.client.web.ui.proc;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -19,6 +21,7 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRolePermission;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.ProcRolePermissionValue;
+import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
@@ -60,6 +63,7 @@ public class ProcRolePermissionEditor extends AbstractEditor {
                 statesMap.put(locState, state);
             }
         }
+        statesMap.put(MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), WfConstants.PROC_NOT_ACTIVE), WfConstants.PROC_NOT_ACTIVE);
         stateLookup.setOptionsMap(statesMap);
         stateLookup.setValue(permission.getState());
     }

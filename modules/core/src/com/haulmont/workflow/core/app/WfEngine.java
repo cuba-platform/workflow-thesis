@@ -183,6 +183,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             }
         }
 
+        roles.add(WfConstants.CARD_CREATOR);
+
         if (!roles.isEmpty()) {
             EntityManager em = PersistenceProvider.getEntityManager();
             for (String role : roles) {

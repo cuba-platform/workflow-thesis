@@ -21,4 +21,8 @@ public class WfConstants {
     public static final String ACTION_CANCEL = "CANCEL_PROCESS_ACTION";
 
     public static final String CARD_STATE_CANCELED = "Canceled";
+
+    public static final String CARD_CREATOR = "CARD_CREATOR";
+
+    public static final String PROC_NOT_ACTIVE = "PROC_NOT_ACTIVE";
 }

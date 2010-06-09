@@ -14,14 +14,17 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.ProcRolePermissionValue;
+import com.haulmont.workflow.core.global.WfConstants;
 
 import javax.persistence.*;
 
 @Entity(name = "wf$ProcRolePermission")
 @Table(name = "WF_PROC_ROLE_PERMISSION")
 public class ProcRolePermission extends StandardEntity {
+    private static final long serialVersionUID = -7951136164637586925L;
 
     @Column(name = "STATE", length = 255)
     protected String state;
@@ -45,7 +48,11 @@ public class ProcRolePermission extends StandardEntity {
         if (getState() == null)
             return "";
         if (procRoleFrom.getProc() != null) {
-            String messagesPack = procRoleFrom.getProc().getMessagesPack();
+            String messagesPack = null;
+            if (WfConstants.PROC_NOT_ACTIVE.equals(getState()))
+                messagesPack = MessageUtils.getMessagePack();
+            else
+                messagesPack = procRoleFrom.getProc().getMessagesPack();
             return MessageUtils.loadString(messagesPack, "msg://" + getState());
         }
         return getState();

@@ -10,7 +10,7 @@
         <datasource
                 id="procDs"
                 class="com.haulmont.workflow.core.entity.Proc"
-                view="edit">
+                view="proc-edit">
             <collectionDatasource id="rolesDs" property="roles">
                 <collectionDatasource id="dpaDs" property="defaultProcActors"/>
                 <collectionDatasource id="permissionsDs" property="permissions"/>
@@ -97,7 +97,7 @@
                     </vbox>
                     <vbox expand="permissionsTable">
                         <label value="msg://permissions"/>
-                        <groupTable id="permissionsTable" editable="false">
+                        <table id="permissionsTable" editable="false">
                             <buttonsPanel>
                                 <button action="permissionsTable.create" icon="icons/create.png"/>
                                 <button action="permissionsTable.edit" icon="icons/edit.png"/>
@@ -110,7 +110,7 @@
                                 <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="permissionsDs"/>
-                        </groupTable>
+                        </table>
                     </vbox>
                 </split>
             </vbox>

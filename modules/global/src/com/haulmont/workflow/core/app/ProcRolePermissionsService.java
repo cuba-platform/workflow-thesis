@@ -22,5 +22,5 @@ public interface ProcRolePermissionsService {
 
     boolean isPermitted(Card card, ProcRole procRoleTo, String state, ProcRolePermissionType type);
 
-    void clearPermissionsCahche();
+    void clearPermissionsCache();
 }

@@ -27,9 +27,16 @@ import com.haulmont.cuba.gui.WindowManager
 import com.haulmont.workflow.core.app.ProcRolePermissionsService
 import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.gui.components.TableActionsHelper;
-import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.components.TableActionsHelper
+import com.haulmont.cuba.gui.data.DataService
+import com.haulmont.cuba.core.global.LoadContext
+import com.haulmont.workflow.core.entity.ProcRolePermission;
 
 public class ProcEditor extends AbstractEditor {
+
+  private Table rolesTable;
+  private Table permissionsTable;
+  private Datasource<Proc> procDs;
 
   public ProcEditor(IFrame frame) {
     super(frame);
@@ -38,11 +45,11 @@ public class ProcEditor extends AbstractEditor {
   @Override
   protected void init(Map<String, Object> params) {
     super.init(params)
-    final Datasource<Proc> procDs = getDsContext().get("procDs")
+    procDs = getDsContext().get("procDs")
     final CollectionDatasource<ProcRole, UUID> rolesDs = getDsContext().get("rolesDs")
     final CollectionDatasource<DefaultProcActor, UUID> dpaDs = getDsContext().get("dpaDs")
 
-    Table rolesTable = getComponent("rolesTable")
+    rolesTable = getComponent("rolesTable")
     TableActionsHelper rolesHelper = new TableActionsHelper(this, rolesTable)
     rolesHelper.createCreateAction([
             getParameters: { null },
@@ -107,7 +114,7 @@ public class ProcEditor extends AbstractEditor {
     )
 
     List permissionsActions = []
-    GroupTable permissionsTable = getComponent("permissionsTable")
+    permissionsTable = getComponent("permissionsTable")
     TableActionsHelper permissionsTableHelper = new TableActionsHelper(this, permissionsTable)
     Action createPermissionsAction = permissionsTableHelper.createCreateAction(new ValueProvider() {
 
@@ -147,9 +154,19 @@ public class ProcEditor extends AbstractEditor {
     CollectionDatasource permissionsDs = getDsContext().get("permissionsDs");
     if (permissionsDs.isModified()) {
       ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
-      procRolePermissionsService.clearPermissionsCahche();
+      procRolePermissionsService.clearPermissionsCache();
     }
     super.commitAndClose();
+  }
+
+  def void setItem(Entity item) {
+    super.setItem(item);
+    Proc proc = (Proc)getItem()
+    CollectionDatasource rolesDs = rolesTable.getDatasource()
+    DataService dataService = rolesDs.getDataService()
+    List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
+    proc.roles = roles
+    procDs.setItem(proc)
   }
 
 
