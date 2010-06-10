@@ -32,21 +32,20 @@
                     <rows>
                         <row>
                             <label value="msg://state"/>
-                            <!--<textField id="state" datasource="permissionDs" property="state" width="${width}" required="true"/>-->
                             <lookupField id="state" width="${width}" required="true"/>
                         </row>
                         <row>
-                            <label value="msg://value"/>
-                            <lookupField id="value" datasource="permissionDs" property="value" width="${width}" required="true"/>
+                            <label value="msg://procRoleTo"/>
+                            <lookupField id="procRoleTo" datasource="permissionDs" property="procRoleTo" optionsDatasource="procRolesDs"
+                                      width="${width}" required="true"/>
                         </row>
                         <row>
                             <label value="msg://type"/>
                             <lookupField id="type" datasource="permissionDs" property="type" width="${width}" required="true"/>
                         </row>
                         <row>
-                            <label value="msg://procRoleTo"/>
-                            <lookupField id="procRoleTo" datasource="permissionDs" property="procRoleTo" optionsDatasource="procRolesDs"
-                                      width="${width}" required="true"/>
+                            <label value="msg://value"/>
+                            <lookupField id="value" datasource="permissionDs" property="value" width="${width}" required="true"/>
                         </row>
                         <row>
                             <label value="msg://procRoleFrom"/>
