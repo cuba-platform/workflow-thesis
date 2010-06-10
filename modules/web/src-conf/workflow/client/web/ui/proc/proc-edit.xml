@@ -105,8 +105,8 @@
                                 <button action="permissionsTable.remove" icon="icons/remove.png"/>
                             </buttonsPanel>
                             <columns>
-                                <column id="procRoleTo" caption="msg://procRoleTo"/>
                                 <column id="locState" caption="msg://state"/>
+                                <column id="procRoleTo" caption="msg://procRoleTo"/>
                                 <column id="type" caption="msg://type"/>
                                 <column id="value" caption="msg://value"/>
                             </columns>
