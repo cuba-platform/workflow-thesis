@@ -141,6 +141,8 @@ public class CardProcFrame extends AbstractFrame {
             startProcBtn.setVisible(true);
         }
 
+        final boolean removeActionEnabled = accessData == null || accessData.getRemoveCardProcessEnabled();
+
         cardProcDs.addListener(
                 new CollectionDsListenerAdapter<CardProc>() {
                     @Override
@@ -149,7 +151,7 @@ public class CardProcFrame extends AbstractFrame {
                         procChanged(item == null ? null : item.getProc());
 
                         boolean enabled = item != null && !BooleanUtils.isTrue(item.getActive());
-                        removeAction.setEnabled(enabled);
+                        removeAction.setEnabled(enabled && removeActionEnabled);
 
                         if (startProcessAction != null) {
                             if (enabled) {

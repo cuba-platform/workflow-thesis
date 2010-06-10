@@ -43,6 +43,13 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         return true;
     }
 
+    /**
+     * Affects Remove Process action inside CardProcFrame
+     */
+    public boolean getRemoveCardProcessEnabled() {
+        return true;
+    }
+
     public boolean getCancelProcessEnabled() {
         return false;
     }
