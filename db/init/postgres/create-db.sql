@@ -156,6 +156,7 @@ create table WF_PROC_ROLE (
     CODE varchar(50),
     NAME varchar(100),
     IS_MULTI_USER boolean,
+    INVISIBLE boolean,
     ROLE_ID uuid,
     ASSIGN_TO_CREATOR boolean,
     primary key (ID)

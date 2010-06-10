@@ -21,10 +21,10 @@
     </xs:complexType>
 
     <xs:complexType name="permissionType">
-        <xs:attribute name="whomChanges" type="xs:string" use="required"/>
         <xs:attribute name="state" type="xs:string" use="required"/>
+        <xs:attribute name="whomChanges" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="valuePermissionType" use="required" default="ALL"/>
         <xs:attribute name="value" type="valuePermissionValue" fixed="ALLOW"/>
-        <xs:attribute name="type" type="valuePermissionType" use="required"/>
     </xs:complexType>
 
     <xs:simpleType name="valuePermissionValue">

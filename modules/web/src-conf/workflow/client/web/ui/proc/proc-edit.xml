@@ -72,6 +72,7 @@
                         <column id="name" caption="msg://name"/>
                         <column id="multiUser" caption="msg://multiUser"/>
                         <column id="assignToCreator" caption="msg://assignToCreator"/>
+                        <column id="invisible" caption="msg://invisible"/>
                         <column id="role" caption="msg://role"/>
                     </columns>
                     <rows datasource="rolesDs"/>

@@ -14,7 +14,7 @@
 
         <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="browse">
             <query>
-                select pr from wf$ProcRole pr where pr.proc.id = :ds$cardProcDs.proc order by pr.code
+                <![CDATA[select pr from wf$ProcRole pr where pr.proc.id = :ds$cardProcDs.proc and (pr.invisible is null or pr.invisible = false) order by pr.code]]>
             </query>
         </collectionDatasource>
 

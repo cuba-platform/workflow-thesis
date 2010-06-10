@@ -38,6 +38,9 @@ public class ProcRole extends StandardEntity {
     @Column(name = "IS_MULTI_USER")
     private Boolean multiUser = false;
 
+    @Column(name = "INVISIBLE")
+    private Boolean invisible = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID")
     private Role role;
@@ -115,5 +118,13 @@ public class ProcRole extends StandardEntity {
 
     public void setPermissions(List<ProcRolePermission> permissions) {
         this.permissions = permissions;
+    }
+
+    public Boolean getInvisible() {
+        return invisible;
+    }
+
+    public void setInvisible(Boolean invisible) {
+        this.invisible = invisible;
     }
 }

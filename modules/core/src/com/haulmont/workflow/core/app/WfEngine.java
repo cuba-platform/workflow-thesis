@@ -200,6 +200,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     procRole.setProc(proc);
                     procRole.setCode(role);
                     procRole.setName(role);
+                    if (WfConstants.CARD_CREATOR.equals(role)) procRole.setInvisible(true);
                     em.persist(procRole);
                 }
             }
