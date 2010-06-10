@@ -230,11 +230,18 @@ public class TransitionForm extends AbstractForm {
             procRolesNames.put(procRole.getCode(), procRole.getName());
         }
 
+        //if we removed required role from datasource
+        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes();
+
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
             if (cardRole.getUser() == null) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
+            emptyRequiredRolesCodes.remove(cardRole.getCode());
+        }
+        for (String roleCode : emptyRequiredRolesCodes) {
+            emptyRolesNames.add(procRolesNames.get(roleCode));
         }
         return emptyRolesNames;
     }
