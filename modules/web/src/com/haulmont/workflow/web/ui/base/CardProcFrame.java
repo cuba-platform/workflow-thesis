@@ -248,7 +248,7 @@ public class CardProcFrame extends AbstractFrame {
                                 window.close("cancel", true);
                                 
                                 WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(window.getId());
-                                App.getInstance().getWindowManager().openEditor(windowInfo, card, OpenType.THIS_TAB, Collections.<String, Object>singletonMap("cancelProc", true));
+                                App.getInstance().getWindowManager().openEditor(windowInfo, card, OpenType.THIS_TAB, Collections.<String, Object>singletonMap("tabName", "processTab"));
                             }
                         }
                 );
