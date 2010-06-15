@@ -49,6 +49,9 @@
 
             <property name="openjpa.RemoteCommitProvider"
                       value="sjvm"/>
+
+            <property name="openjpa.jdbc.SubclassFetchMode"
+                      value="none"/>
         </properties>
 
     </persistence-unit>

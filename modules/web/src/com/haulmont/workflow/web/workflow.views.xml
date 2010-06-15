@@ -78,7 +78,6 @@
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
         <property name="proc" view="_local"/>
-        <property name="card" view="browse"/>
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
         <property name="attachments" view="_minimal"/>
@@ -86,7 +85,6 @@
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolution-edit" extends="_local">
         <property name="proc" view="_local"/>
-        <property name="card" view="browse"/>
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
         <property name="attachments" view="assignment-edit"/>
