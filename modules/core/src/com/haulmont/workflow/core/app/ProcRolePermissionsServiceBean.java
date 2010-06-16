@@ -142,9 +142,11 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
         }
 
         //find procRoles which curent user has for current card
-        for(CardRole cr : card.getRoles()) {
-            if (cr.getUser().equals(currentUser)) {
-                usersProcRolesFrom.add(cr.getProcRole());
+        if (card.getRoles() != null) {
+            for (CardRole cr : card.getRoles()) {
+                if (cr.getUser().equals(currentUser)) {
+                    usersProcRolesFrom.add(cr.getProcRole());
+                }
             }
         }
 
