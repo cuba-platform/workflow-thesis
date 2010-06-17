@@ -17,6 +17,9 @@ import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.io.InputStream;
+import java.util.List;
+
 public abstract class WfTestCase extends CubaTestCase {
 
     @Override
@@ -30,5 +33,17 @@ public abstract class WfTestCase extends CubaTestCase {
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(new String[]
                 {"cuba-spring.xml", "workflow-spring.xml", "test-spring.xml"});
         AppContext.setApplicationContext(appContext);
+    }
+
+    @Override
+    protected List<String> getPersistenceSourceFiles() {
+        List<String> list = super.getPersistenceSourceFiles();
+        list.add("workflow-persistence.xml");
+        return list;
+    }
+
+    @Override
+    protected InputStream getTestAppProperties() {
+        return WfTestCase.class.getResourceAsStream("/wf-test-app.properties");
     }
 }

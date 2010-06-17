@@ -11,34 +11,31 @@
 package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.app.WfEngineAPI;
-import com.haulmont.workflow.core.app.WfEngineMBean;
 import com.haulmont.workflow.core.entity.*;
 import junit.framework.Assert;
 import org.jbpm.api.Execution;
 import org.jbpm.api.ExecutionService;
 import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.ProcessInstance;
+import org.jbpm.api.model.OpenExecution;
 
 import java.util.List;
 import java.util.UUID;
 
-public class SimpleDocflowGroovyTest extends WfTestCase {
+public class SequentialAssignerTest extends WfTestCase {
 
     private User adminUser;
     private User agreementUser1;
     private User agreementUser2;
-    private User approvalUser;
     private ProcRole initiatorRole;
     private ProcRole agreementRole;
-    private ProcRole approvalRole;
     private Card card;
     private CardRole initiator;
     private CardRole agreementMember1;
     private CardRole agreementMember2;
-    private CardRole approver;
 
     @Override
     protected void setUp() throws Exception {
@@ -48,7 +45,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
         try {
             WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
-            String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow-groovy.jpdl.xml");
+            String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/sequential-assigner-test.jpdl.xml");
             assertTrue(res, res.startsWith("Deployed:"));
 
             tx.commitRetaining();
@@ -89,18 +86,6 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
                 em.persist(agreementUser2);
             }
 
-            q.setParameter(1, "approvaluser");
-            users = q.getResultList();
-            if (!users.isEmpty())
-                approvalUser = users.get(0);
-            else {
-                approvalUser = new User();
-                approvalUser.setGroup(group);
-                approvalUser.setLogin("approvalUser");
-                approvalUser.setName("Approval User");
-                em.persist(approvalUser);
-            }
-
             tx.commitRetaining();
 
             // Create ProcRoles
@@ -108,7 +93,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             em = PersistenceProvider.getEntityManager();
 
             q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
-            q.setParameter(1, "SimpleDocflowGroovy");
+            q.setParameter(1, "SequentialAssignerTest");
             List<Proc> processes = q.getResultList();
             if (processes.isEmpty())
                 throw new RuntimeException();
@@ -142,18 +127,6 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
                 em.persist(agreementRole);
             }
 
-            q.setParameter(1, "Approval");
-            roles = q.getResultList();
-            if (!roles.isEmpty())
-                approvalRole = roles.get(0);
-            else {
-                approvalRole = new ProcRole();
-                approvalRole.setProc(proc);
-                approvalRole.setCode("Approval");
-                approvalRole.setName("Approval");
-                em.persist(approvalRole);
-            }
-
             tx.commitRetaining();
 
             // Create Card
@@ -180,19 +153,15 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             agreementMember1.setProcRole(agreementRole);
             agreementMember1.setUser(agreementUser1);
             agreementMember1.setCard(card);
+            agreementMember1.setSortOrder(10);
             em.persist(agreementMember1);
 
             agreementMember2 = new CardRole();
             agreementMember2.setProcRole(agreementRole);
             agreementMember2.setUser(agreementUser2);
             agreementMember2.setCard(card);
+            agreementMember2.setSortOrder(20);
             em.persist(agreementMember2);
-
-            approver = new CardRole();
-            approver.setProcRole(approvalRole);
-            approver.setUser(approvalUser);
-            approver.setCard(card);
-            em.persist(approver);
 
             tx.commit();
         } finally {
@@ -209,7 +178,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
         Transaction tx = Locator.createTransaction();
         try {
-            pi = es.startProcessInstanceByKey("SimpleDocflowGroovy", card.getId().toString());
+            pi = es.startProcessInstanceByKey("SequentialAssignerTest", card.getId().toString());
             Assert.assertNotNull(pi);
 
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -260,24 +229,73 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
             tx.commitRetaining();
 
-            // Approval
-
-            pi = es.findProcessInstanceById(pi.getId());
-
-            Execution inApproval = pi.findActiveExecutionIn("Approval");
-            Assert.assertNotNull(inApproval);
-
-            assignments = wf.getUserAssignments("approvalUser");
-            assertEquals(1, assignments.size());
-            assignment = assignments.get(0);
-            wf.finishAssignment(assignment.getId(), "Ok", null);
-
-            tx.commitRetaining();
-
             // End
 
             pi = es.findProcessInstanceById(pi.getId());
             assertNull(pi);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testNotSuccess() {
+        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        ProcessEngine pe = wf.getProcessEngine();
+        ExecutionService es = pe.getExecutionService();
+
+        ProcessInstance pi;
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            pi = es.startProcessInstanceByKey("SequentialAssignerTest", card.getId().toString());
+            Assert.assertNotNull(pi);
+
+            EntityManager em = PersistenceProvider.getEntityManager();
+            card = em.merge(card);
+            card.setJbpmProcessId(pi.getId());
+
+            tx.commitRetaining();
+
+            List<Assignment> assignments;
+            Assignment assignment;
+
+            // New
+
+            Execution inNew = pi.findActiveExecutionIn("New");
+            Assert.assertNotNull(inNew);
+
+            assignments = wf.getUserAssignments("admin");
+            assertEquals(1, assignments.size());
+            assignment = assignments.get(0);
+            assertEquals(card, assignment.getCard());
+            wf.finishAssignment(assignment.getId(), "ToAgreement", null);
+
+            tx.commitRetaining();
+
+            // Agreement
+
+            pi = es.findProcessInstanceById(pi.getId());
+
+            Execution inAgreement = pi.findActiveExecutionIn("Agreement");
+            Assert.assertNotNull(inAgreement);
+
+            assignments = wf.getUserAssignments("agreementUser1");
+            Assert.assertEquals(1, assignments.size());
+            assignment = assignments.get(0);
+            wf.finishAssignment(assignment.getId(), "NotOk", null);
+
+            tx.commitRetaining();
+
+            pi = es.findProcessInstanceById(pi.getId());
+
+            inNew = pi.findActiveExecutionIn("New");
+            Assert.assertNotNull(inNew);
+
+            tx.commitRetaining();
+
+            wf.cancelProcess(card);
 
             tx.commit();
         } finally {
@@ -294,7 +312,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
         Transaction tx = Locator.createTransaction();
         try {
-            pi = es.startProcessInstanceByKey("SimpleDocflowGroovy", card.getId().toString());
+            pi = es.startProcessInstanceByKey("SequentialAssignerTest", card.getId().toString());
             Assert.assertNotNull(pi);
 
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -317,6 +335,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assertEquals(1, assignments.size());
             assignment = assignments.get(0);
             assertEquals(card, assignment.getCard());
+
             wf.finishAssignment(assignment.getId(), "ToAgreement", null);
 
             tx.commitRetaining();
@@ -326,6 +345,36 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             pi = es.findProcessInstanceById(pi.getId());
 
             Execution inAgreement = pi.findActiveExecutionIn("Agreement");
+            Assert.assertNotNull(inAgreement);
+
+            assignments = wf.getUserAssignments("agreementUser1");
+            Assert.assertEquals(1, assignments.size());
+            assignment = assignments.get(0);
+            wf.finishAssignment(assignment.getId(), "NotOk", null);
+
+            tx.commitRetaining();
+
+            // New 2
+
+            pi = es.findProcessInstanceById(pi.getId());
+
+            inNew = pi.findActiveExecutionIn("New");
+            Assert.assertNotNull(inNew);
+
+            assignments = wf.getUserAssignments("admin");
+            assertEquals(1, assignments.size());
+            assignment = assignments.get(0);
+            assertEquals(card, assignment.getCard());
+
+            wf.finishAssignment(assignment.getId(), "ToAgreement", null);
+
+            tx.commitRetaining();
+
+            // Agreement 2
+
+            pi = es.findProcessInstanceById(pi.getId());
+
+            inAgreement = pi.findActiveExecutionIn("Agreement");
             Assert.assertNotNull(inAgreement);
 
             assignments = wf.getUserAssignments("agreementUser1");
@@ -347,7 +396,9 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
             tx.commitRetaining();
 
-            // New 2
+            // New 3
+
+            pi = es.findProcessInstanceById(pi.getId());
 
             inNew = pi.findActiveExecutionIn("New");
             Assert.assertNotNull(inNew);
@@ -356,36 +407,24 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
             assertEquals(1, assignments.size());
             assignment = assignments.get(0);
             assertEquals(card, assignment.getCard());
+
             wf.finishAssignment(assignment.getId(), "ToAgreement", null);
 
             tx.commitRetaining();
 
-            // Agreement 2
+            // Agreement 3
 
             pi = es.findProcessInstanceById(pi.getId());
 
             inAgreement = pi.findActiveExecutionIn("Agreement");
             Assert.assertNotNull(inAgreement);
 
+            // no assignments on agreementUser1 as he has agreed previously
             assignments = wf.getUserAssignments("agreementUser1");
             Assert.assertEquals(0, assignments.size());
 
             assignments = wf.getUserAssignments("agreementUser2");
             Assert.assertEquals(1, assignments.size());
-            assignment = assignments.get(0);
-            wf.finishAssignment(assignment.getId(), "Ok", null);
-
-            tx.commitRetaining();
-
-            // Approval
-
-            pi = es.findProcessInstanceById(pi.getId());
-
-            Execution inApproval = pi.findActiveExecutionIn("Approval");
-            Assert.assertNotNull(inApproval);
-
-            assignments = wf.getUserAssignments("approvalUser");
-            assertEquals(1, assignments.size());
             assignment = assignments.get(0);
             wf.finishAssignment(assignment.getId(), "Ok", null);
 

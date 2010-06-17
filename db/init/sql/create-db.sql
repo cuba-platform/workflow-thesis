@@ -11,6 +11,8 @@ create table WF_PROC (
     JBPM_PROCESS_KEY varchar(255),
     MESSAGES_PACK varchar(200),
     CARD_TYPES varchar(500),
+    STATES varchar(500),
+    PERMISSIONS_ENABLED boolean,
     primary key (ID)
 );
 
@@ -31,7 +33,7 @@ create table WF_CARD (
     DESCRIPTION varchar(1000),
     CREATOR_ID varchar(36),
     PARENT_CARD_ID varchar(36),
-    SUBSTITUTED_CREATOR_ID uuid,
+    SUBSTITUTED_CREATOR_ID varchar(36),
     primary key (ID)
 );
 
@@ -153,6 +155,7 @@ create table WF_PROC_ROLE (
     CODE varchar(50),
     NAME varchar(100),
     IS_MULTI_USER smallint,
+    INVISIBLE smallint,
     ROLE_ID varchar(36),
     ASSIGN_TO_CREATOR smallint,
     primary key (ID)
@@ -178,6 +181,7 @@ create table WF_CARD_ROLE (
     USER_ID varchar(36),
     NOTIFY_BY_EMAIL smallint,
     NOTIFY_BY_CARD_INFO smallint,
+    SORT_ORDER integer,
     primary key (ID)
 );
 
@@ -263,3 +267,26 @@ create table WF_CALENDAR (
     WORK_END char(5),
     primary key (ID)
 );
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_PROC_ROLE_PERMISSION (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    PROC_ROLE_FROM_ID varchar(36),
+    PROC_ROLE_TO_ID varchar(36),
+    STATE varchar(255),
+    value numeric(2),
+    type numeric(2),
+    primary key (ID)
+);
+
+alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_TO_PROC_ROLE foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID);
+alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_FROM_PROC_ROLE foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID);
+

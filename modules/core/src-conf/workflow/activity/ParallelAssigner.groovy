@@ -27,14 +27,12 @@ import org.jbpm.api.activity.ActivityExecution
 
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
-import com.haulmont.workflow.core.timer.AssignmentTimersFactory
 
-public class ParallelAssigner extends Assigner {
+public class ParallelAssigner extends MultiAssigner {
 
   private Log log = LogFactory.getLog(ParallelAssigner.class)
 
   String successTransition
-  AssignmentTimersFactory timersFactory
 
   @Override
   protected void createAssignment(ActivityExecution execution) {
@@ -44,14 +42,7 @@ public class ParallelAssigner extends Assigner {
 
     Card card = findCard(execution)
 
-    Query q = em.createQuery('''
-          select cr from wf$CardRole cr
-          where cr.card.id = ?1 and cr.procRole.code = ?2 and cr.procRole.proc.id = ?3
-        ''')
-    q.setParameter(1, card.getId())
-    q.setParameter(2, role)
-    q.setParameter(3, card.proc)
-    List<CardRole> cardRoles = q.getResultList()
+    List<CardRole> cardRoles = getCardRoles(execution, card)
     if (cardRoles.isEmpty())
       throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
               "User not found: cardId=${card.getId()}, procRole=$role", role)

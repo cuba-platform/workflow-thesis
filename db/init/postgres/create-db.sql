@@ -182,6 +182,7 @@ create table WF_CARD_ROLE (
     USER_ID uuid,
     NOTIFY_BY_EMAIL boolean,
     NOTIFY_BY_CARD_INFO boolean,
+    SORT_ORDER integer,
     primary key (ID)
 )^
 

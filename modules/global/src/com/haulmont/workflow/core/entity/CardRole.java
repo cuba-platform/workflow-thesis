@@ -42,6 +42,9 @@ public class CardRole extends StandardEntity {
     @Column(name = "NOTIFY_BY_CARD_INFO")
     private Boolean notifyByCardInfo = true;
 
+    @Column(name = "SORT_ORDER")
+    private Integer sortOrder;
+
     public Card getCard() {
         return card;
     }
@@ -88,5 +91,13 @@ public class CardRole extends StandardEntity {
 
     public void setNotifyByCardInfo(Boolean notifyByCardInfo) {
         this.notifyByCardInfo = notifyByCardInfo;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }
