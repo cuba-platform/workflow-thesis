@@ -11,28 +11,43 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
+import com.haulmont.cuba.web.gui.components.WebCheckBox;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.List;
@@ -41,11 +56,14 @@ public class CardRolesFrame extends AbstractFrame {
 
     protected Card card;
     private boolean enabled = true;
+    protected CardProc cardProc;
 
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
     protected CollectionDatasource<ProcRole, UUID> procRolesDs;
+    protected CardProcRolesDatasource tmpCardRolesDs;
     protected LookupField createRoleLookup;
     protected Table rolesTable;
+    protected CollectionDatasource rolesTableDs;
     protected List<Component> rolesActions = new ArrayList<Component>();
 
     protected String createRoleCaption;
@@ -57,6 +75,9 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void init() {
         cardRolesDs = getDsContext().get("cardRolesDs");
+        tmpCardRolesDs = getDsContext().get("tmpCardRolesDs");
+        tmpCardRolesDs.valid();
+
         Preconditions.checkState(cardRolesDs != null, "Enclosing window must declare declare 'cardRolesDs' datasource");
 
         procRolesDs = getDsContext().get("procRolesDs");
@@ -70,7 +91,7 @@ public class CardRolesFrame extends AbstractFrame {
         rolesTable = getComponent("rolesTable");
         TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
 
-        final CollectionDatasource rolesTableDs = rolesTable.getDatasource();
+        rolesTableDs = rolesTable.getDatasource();
         rolesTable.addAction(new AbstractAction("edit") {
             public void actionPerform(Component component) {
                 Entity entity = rolesTableDs.getItem();
@@ -86,36 +107,28 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-//        We decided not to show link in this frame
-//
-//        rolesTableDs.addListener(new DsListenerAdapter() {
-//            @Override
-//            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-//                super.stateChanged(ds, prevState, state);
-//                if (state.equals(Datasource.State.VALID) && isEnabled()) {
-//                    LinkColumnHelper.initColumn(rolesTable, "procRole.name", new LinkColumnHelper.Handler() {
-//                        public void onClick(final Entity entity) {
-//                            Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
-//                            openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
-//                                    Collections.singletonMap("users", users), rolesTableDs);
-//                        }
-//                    });
-//                }
-//            }
-//        });
+        initRolesTable();
+
 
         rolesTH.createRemoveAction(false);
 
         procRolePermissionsService = getProcRolePermissionsService();
-    }
 
-    public void setCard(final Card card) {
-        Preconditions.checkArgument(card != null, "Card is null");
+        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                initCreateRoleLookup();
+            }
 
-        this.card = card;
-        for (Component component : rolesActions) {
-            component.setEnabled(card.getProc() != null);
-        }
+            Action editAction = rolesTable.getAction("edit");
+            Action removeAction = rolesTable.getAction("remove");
+
+            @Override
+            public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
+                if (item == null) return;
+                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
+                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));            }
+        });
 
         createRoleLookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {
@@ -129,15 +142,15 @@ public class CardRolesFrame extends AbstractFrame {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("procRole", procRole);
                 params.put("secRole", secRole);
-                params.put("proc", card.getProc());
+                params.put("proc", getProc());
                 params.put("users", getUsersByProcRole(procRole));
-                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params);
+                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params, cardRolesDs);
                 cardRoleEditor.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             CardRole cardRole = (CardRole)cardRoleEditor.getItem();
                             cardRole.setCode(cardRole.getProcRole().getCode());
-                            cardRolesDs.addItem(cardRole);
+                            tmpCardRolesDs.addItem(cardRole);
                             cardRole.setCard(card);
                         }
                     }
@@ -147,27 +160,93 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        cardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                initCreateRoleLookup();
-            }
+    }
 
-            Action editAction = rolesTable.getAction("edit");
-            Action removeAction = rolesTable.getAction("remove");
+    private void initRolesTable() {
+        final ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
+        com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+        MetaPropertyPath userProperty = rolesTableDs.getMetaClass().getPropertyEx("user");
+        vRolesTable.addGeneratedColumn(userProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                Item item = source.getItem(itemId);
+                final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+                Property property = item.getItemProperty(columnId);
+                final User value = (User)property.getValue();
 
-            @Override
-            public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
-                if (item == null) return;
-                editAction.setEnabled(procRolePermissionsService.isPermitted(item, card.getState(), ProcRolePermissionType.MODIFY));
-                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, card.getState(), ProcRolePermissionType.REMOVE));
+                MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
+                final CollectionDatasource usersDs = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(), "usersDs", metaClass, "_minimal");
+                String query = "";
+                Role secRole =  cardRole.getProcRole().getRole();
+                Set<UUID> users = getUsersByProcRole(cardRole.getProcRole());
+                if (value != null)
+                    users.remove(value.getId());
+                if (secRole == null) {
+                    query = "select u from sec$User u";
+                } else {
+                    String usersExclStr = " u.id not in (:custom$users)";
+                    query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
+                        (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
+                }
+                usersDs.setQuery(query);
+                Map<String, Object> userDsParams = new HashMap<String, Object>();
+                userDsParams.put("users", users);
+                userDsParams.put("secRole", secRole);
+                usersDs.refresh(userDsParams);
+                WebLookupField usersLookup = new WebLookupField();
+                usersLookup.setOptionsDatasource(usersDs);
+                usersLookup.setValue(value);
+                usersLookup.setWidth("100%");
+                com.vaadin.ui.Select usersSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
+                usersSelect.addListener(new Property.ValueChangeListener() {
+                    public void valueChange(Property.ValueChangeEvent event) {
+                        Property property = event.getProperty();
+                        User selectedUser = (User) usersDs.getItem(property.getValue());
+                        cardRole.setUser(selectedUser);
+                    }
+                });
+                boolean editable = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
+                usersLookup.setEditable(editable);
+                return usersSelect;
             }
         });
+
+        MetaPropertyPath notifyByEmailProperty = rolesTableDs.getMetaClass().getPropertyEx("notifyByEmail");
+        vRolesTable.removeGeneratedColumn(notifyByEmailProperty);
+        vRolesTable.addGeneratedColumn(notifyByEmailProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+                Property property = source.getItem(itemId).getItemProperty(columnId);
+                boolean value = (Boolean)property.getValue();
+                com.vaadin.ui.CheckBox nbeCheckBox = new com.vaadin.ui.CheckBox();
+                nbeCheckBox.setValue(value);
+                boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
+                nbeCheckBox.setEnabled(enabled);
+//                com.vaadin.ui.CheckBox vaadinNbeCheckBox = (com.vaadin.ui.CheckBox)WebComponentsHelper.unwrap(nbeCheckBox);
+                nbeCheckBox.addListener(new Property.ValueChangeListener() {
+                    public void valueChange(Property.ValueChangeEvent event) {
+                        Property property = event.getProperty();
+                        Boolean notifyByEmailValue = (Boolean)property.getValue();
+                        cardRole.setNotifyByEmail(notifyByEmailValue);
+                    }
+                });
+                return nbeCheckBox;
+            }
+        });
+    }
+
+    public void setCard(final Card card) {
+        Preconditions.checkArgument(card != null, "Card is null");
+
+        this.card = card;
+//        for (Component component : rolesActions) {
+//            component.setEnabled(card.getProc() != null);
+//        }
     }
 
     public void procChanged(Proc proc) {
         procRolesDs.refresh(Collections.<String, Object>singletonMap("procId", proc));
         initCreateRoleLookup();
+        ((CardProcRolesDatasource)tmpCardRolesDs).fillForProc(proc);
 
         for (Component component : rolesActions) {
             component.setEnabled(proc != null && isEnabled());
@@ -175,7 +254,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void initDefaultActors(Proc proc) {
-        if (!cardRolesDs.getItemIds().isEmpty())
+        if (!tmpCardRolesDs.getItemIds().isEmpty())
             return;
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
@@ -190,7 +269,7 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setUser(dpa.getUser());
             cr.setCard(card);
             cr.setNotifyByEmail(dpa.getNotifyByEmail());
-            cardRolesDs.addItem(cr);
+            tmpCardRolesDs.addItem(cr);
         }
 
         // if there is a role with AssignToCreator property set up, and this role is not assigned
@@ -199,8 +278,8 @@ public class CardRolesFrame extends AbstractFrame {
             ProcRole procRole = procRolesDs.getItem(procRoleId);
             if (BooleanUtils.isTrue(procRole.getAssignToCreator())) {
                 boolean found = false;
-                for (UUID cardRoleId : cardRolesDs.getItemIds()) {
-                    CardRole cardRole = cardRolesDs.getItem(cardRoleId);
+                for (UUID cardRoleId : tmpCardRolesDs.getItemIds()) {
+                    CardRole cardRole = tmpCardRolesDs.getItem(cardRoleId);
                     if (procRole.equals(cardRole.getProcRole())) {
                         found = true;
                         break;
@@ -213,25 +292,26 @@ public class CardRolesFrame extends AbstractFrame {
                     cr.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                     cr.setCard(card);
                     cr.setNotifyByEmail(true);
-                    cardRolesDs.addItem(cr);
+                    tmpCardRolesDs.addItem(cr);
                 }
             }
         }
+
     }
 
     //todo gorbunkov review and refactor next two methods
     //setProcActor must delete other actors and set the user sent in param in case of multiUser role
-    public void setProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
+    public void setProcActor(Proc proc, ProcRole procRole, User user, boolean notifyByEmail) {
         if (proc == null)
             throw new IllegalArgumentException("Proc is null, check all required processes are deployed");
 
         CardRole cardRole = null;
         List<CardRole> cardRoles = card.getRoles();
 
-        //If card role with given code exists, we'll find it
+        //If card role assiciated with procRole exists, we'll find it
         if (cardRoles != null) {
            for (CardRole cr : cardRoles) {
-               if (roleCode.equals(cr.getCode())) {
+               if (procRole.equals(cr.getProcRole())) {
                    cardRole = cr;
                    break;
                }
@@ -246,19 +326,11 @@ public class CardRolesFrame extends AbstractFrame {
                 proc = getDsContext().getDataService().reload(proc, "edit");
             }
 
-            ProcRole procRole = null;
-            for (ProcRole pr : proc.getRoles()) {
-                if (roleCode.equals(pr.getCode())) {
-                    procRole = pr;
-                }
-            }
-            if (procRole == null) return;
-
             cardRole.setProcRole(procRole);
-            cardRole.setCode(roleCode);
+            cardRole.setCode(procRole.getCode());
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
-            cardRolesDs.addItem(cardRole);
+            tmpCardRolesDs.addItem(cardRole);
         }
         cardRole.setUser(user);
     }
@@ -276,24 +348,24 @@ public class CardRolesFrame extends AbstractFrame {
             }
         }
         if (procRole == null) return;
-        if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(roleCode, user)) {
+        if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(procRole, user)) {
             CardRole cardRole = new CardRole();
             cardRole.setProcRole(procRole);
             cardRole.setCode(roleCode);
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setUser(user);
-            cardRolesDs.addItem(cardRole);
+            tmpCardRolesDs.addItem(cardRole);
         } else {
-            setProcActor(proc, roleCode, user, notifyByEmail);
+            setProcActor(proc, procRole, user, notifyByEmail);
         }
     }
 
-    private boolean procActorExists(String roleCode, User user) {
+    private boolean procActorExists(ProcRole procRole, User user) {
         List<CardRole> cardRoles = card.getRoles();
         if (cardRoles != null) {
            for (CardRole cr : cardRoles) {
-               if (roleCode.equals(cr.getCode()) && cr.getUser().equals(user)) {
+               if (procRole.equals(cr.getProcRole()) && cr.getUser().equals(user)) {
                    return true;
                }
            }
@@ -314,7 +386,7 @@ public class CardRolesFrame extends AbstractFrame {
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
             if ((BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr))
-                && procRolePermissionsService.isPermitted(card, pr, card.getState(), ProcRolePermissionType.ADD)){
+                && procRolePermissionsService.isPermitted(card, pr, getState(), ProcRolePermissionType.ADD)){
                 options.add(pr);
             }
         }
@@ -324,7 +396,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected boolean alreadyAdded(ProcRole pr) {
-        for (CardRole cr : getDsItems(cardRolesDs)) {
+        for (CardRole cr : getDsItems(tmpCardRolesDs)) {
             if (cr.getProcRole().equals(pr))
                 return true;
         }
@@ -354,18 +426,6 @@ public class CardRolesFrame extends AbstractFrame {
         return res;
     }
 
-//    public void disable() {
-//        if (rolesTable.getActions() != null) {
-//            for (Action action : rolesTable.getActions()) {
-//                action.setEnabled(false);
-//            }
-//        }
-//        createRoleLookup.setEditable(false);
-//        LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
-//
-//    }
-
-
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -373,7 +433,6 @@ public class CardRolesFrame extends AbstractFrame {
 
     @Override
     public void setEnabled(boolean enabled) {
-//        super.setEnabled(enabled);
         this.enabled = enabled;
 
         if (rolesTable.getActions() != null) {
@@ -384,12 +443,67 @@ public class CardRolesFrame extends AbstractFrame {
         for (Component action : rolesActions) {
             action.setEnabled(enabled);
         }
-//        if (!enabled) {
-//            LinkColumnHelper.removeColumn(rolesTable, "procRole.name");
-//        }
     }
 
     protected ProcRolePermissionsService getProcRolePermissionsService() {
         return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
     }
+
+    public void setCardProc(CardProc cardProc) {
+        this.cardProc = cardProc;
+    }
+
+    private Proc getProc() {
+        return ((cardProc == null) || (cardProc.getProc() == null)) ? card.getProc() : cardProc.getProc();
+    }
+
+    private String getState() {
+        return (cardProc == null) ? card.getState() : cardProc.getState();
+    }
+
+    public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
+
+        private CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
+        private boolean fill;
+
+        public CardProcRolesDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+            super(context, dataservice, id, metaClass, viewName);
+            cardRolesDs = getDsContext().get("cardRolesDs");
+        }
+
+        @Override
+        public void addItem(CardRole item) throws UnsupportedOperationException {
+            super.addItem(item);
+            if (!fill)
+                cardRolesDs.addItem(item);
+        }
+
+        @Override
+        public void removeItem(CardRole item) throws UnsupportedOperationException {
+            super.removeItem(item);
+            if (!fill)
+                cardRolesDs.removeItem(item);
+        }
+
+        public void fillForProc(Proc proc) {
+            fill = true;
+            try {
+                for (UUID id : new ArrayList<UUID>(getItemIds())) {
+                    removeItem(getItem(id));
+                }
+                if (proc != null) {
+                    for (UUID id : cardRolesDs.getItemIds()) {
+                        CardRole cardRole = cardRolesDs.getItem(id);
+                        if (cardRole.getProcRole().getProc().equals(proc)) {
+                            addItem(cardRole);
+                        }
+                    }
+                }
+                setModified(false);
+            } finally {
+                fill = false;
+            }
+        }
+    }
+    
 }

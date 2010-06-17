@@ -11,16 +11,6 @@
                 order by p.name
             </query>
         </collectionDatasource>
-
-        <collectionDatasource id="procRolesDs" class="com.haulmont.workflow.core.entity.ProcRole" view="browse">
-            <query>
-                <![CDATA[select pr from wf$ProcRole pr where pr.proc.id = :ds$cardProcDs.proc and (pr.invisible is null or pr.invisible = false) order by pr.code]]>
-            </query>
-        </collectionDatasource>
-
-        <collectionDatasource id="tmpCardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
-            <datasourceClass>com.haulmont.workflow.web.ui.base.CardProcFrame$CardProcRolesDatasource</datasourceClass>
-        </collectionDatasource>
     </dsContext>
 
     <layout expandLayout="true" expand="procRolesSplit">
@@ -51,32 +41,7 @@
                     <rows datasource="cardProcDs"/>
                 </table>
             </vbox>
-            <vbox id="rolesTablePanel" spacing="true" expand="rolesTable">
-                <grid spacing="true" width="100%">
-                    <columns>
-                        <column/>
-                        <column/>
-                        <column/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <lookupField id="createRoleLookup" width="150"/>
-                            <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
-                            <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
-                        </row>
-                    </rows>
-                </grid>
-                <table id="rolesTable" editable="false">
-                    <columns>
-                        <column id="procRole.name" caption="msg://role"/>
-                        <column id="user" caption="msg://user"/>
-                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
-                        <!--<column id="notifyByCardInfo" caption="msg://notifyByCardInfo"/>-->
-                    </columns>
-                    <rows datasource="tmpCardRolesDs"/>
-                </table>
-            </vbox>
+            <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
         </split>
     </layout>
 

@@ -84,6 +84,7 @@ public class TransitionForm extends AbstractForm {
                     }
                 }
             });
+            cardRolesDs.refresh();
         }
 
         if (dueDate != null) {
