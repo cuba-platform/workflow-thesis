@@ -64,7 +64,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       cr = null
       user = list.get(0)
     } else {
-      cr = card.getRoles().find { CardRole it -> it.procRole.code == role }
+      cr = card.getRoles().find { CardRole it -> it.procRole.code == role && card.proc == it.procRole.proc}
       if (!cr)
         throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
                 "User not found: cardId=${card.getId()}, procRole=$role", role)

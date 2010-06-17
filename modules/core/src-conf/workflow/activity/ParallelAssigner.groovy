@@ -46,10 +46,11 @@ public class ParallelAssigner extends Assigner {
 
     Query q = em.createQuery('''
           select cr from wf$CardRole cr
-          where cr.card.id = ?1 and cr.procRole.code = ?2
+          where cr.card.id = ?1 and cr.procRole.code = ?2 and cr.procRole.proc.id = ?3
         ''')
     q.setParameter(1, card.getId())
     q.setParameter(2, role)
+    q.setParameter(3, card.proc)
     List<CardRole> cardRoles = q.getResultList()
     if (cardRoles.isEmpty())
       throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
