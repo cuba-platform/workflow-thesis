@@ -69,7 +69,7 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     protected List<CardProc> procs;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
-    @OrderBy("code")
+    @OrderBy("code, sortOrder")
     @Aggregation
     protected List<CardRole> roles;
 

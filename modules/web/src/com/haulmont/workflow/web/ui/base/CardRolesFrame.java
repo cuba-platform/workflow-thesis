@@ -112,6 +112,46 @@ public class CardRolesFrame extends AbstractFrame {
 
         rolesTH.createRemoveAction(false);
 
+        rolesTable.addAction(new AbstractAction("moveUp") {
+            public void actionPerform(Component component) {
+                Set selected = rolesTable.getSelected();
+                if (selected.isEmpty())
+                    return;
+
+                CardRole curCr = (CardRole) selected.iterator().next();
+                UUID prevId = tmpCardRolesDs.prevItemId(curCr.getId());
+                if (prevId == null)
+                    return;
+
+                Integer tmp = curCr.getSortOrder();
+                CardRole prevCr = tmpCardRolesDs.getItem(prevId);
+                curCr.setSortOrder(prevCr.getSortOrder());
+                prevCr.setSortOrder(tmp);
+
+                tmpCardRolesDs.doSort();
+            }
+        });
+
+        rolesTable.addAction(new AbstractAction("moveDown") {
+            public void actionPerform(Component component) {
+                Set selected = rolesTable.getSelected();
+                if (selected.isEmpty())
+                    return;
+
+                CardRole curCr = (CardRole) selected.iterator().next();
+                UUID nextId = tmpCardRolesDs.nextItemId(curCr.getId());
+                if (nextId == null)
+                    return;
+
+                Integer tmp = curCr.getSortOrder();
+                CardRole nextCr = tmpCardRolesDs.getItem(nextId);
+                curCr.setSortOrder(nextCr.getSortOrder());
+                nextCr.setSortOrder(tmp);
+
+                tmpCardRolesDs.doSort();
+            }
+        });
+
         procRolePermissionsService = getProcRolePermissionsService();
 
         tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
@@ -150,6 +190,13 @@ public class CardRolesFrame extends AbstractFrame {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             CardRole cardRole = (CardRole)cardRoleEditor.getItem();
                             cardRole.setCode(cardRole.getProcRole().getCode());
+
+                            UUID lastId = tmpCardRolesDs.lastItemId();
+                            if (lastId == null)
+                                cardRole.setSortOrder(1);
+                            else
+                                cardRole.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
+
                             tmpCardRolesDs.addItem(cardRole);
                             cardRole.setCard(card);
                         }
@@ -210,26 +257,33 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        MetaPropertyPath notifyByEmailProperty = rolesTableDs.getMetaClass().getPropertyEx("notifyByEmail");
-        vRolesTable.removeGeneratedColumn(notifyByEmailProperty);
-        vRolesTable.addGeneratedColumn(notifyByEmailProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+        initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
+        initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+    }
+
+    private void initRolesTableBooleanColumn(final String propertyName,
+                                             final ProcRolePermissionsService procRolePermissionsService,
+                                             com.vaadin.ui.Table vRolesTable)
+    {
+        MetaPropertyPath propertyPath = rolesTableDs.getMetaClass().getPropertyEx(propertyName);
+        vRolesTable.removeGeneratedColumn(propertyPath);
+        vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
             public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
                 Property property = source.getItem(itemId).getItemProperty(columnId);
                 boolean value = (Boolean)property.getValue();
-                com.vaadin.ui.CheckBox nbeCheckBox = new com.vaadin.ui.CheckBox();
-                nbeCheckBox.setValue(value);
+                com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
+                checkBox.setValue(value);
                 boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
-                nbeCheckBox.setEnabled(enabled);
-//                com.vaadin.ui.CheckBox vaadinNbeCheckBox = (com.vaadin.ui.CheckBox)WebComponentsHelper.unwrap(nbeCheckBox);
-                nbeCheckBox.addListener(new Property.ValueChangeListener() {
+                checkBox.setEnabled(enabled);
+                checkBox.addListener(new Property.ValueChangeListener() {
                     public void valueChange(Property.ValueChangeEvent event) {
                         Property property = event.getProperty();
-                        Boolean notifyByEmailValue = (Boolean)property.getValue();
-                        cardRole.setNotifyByEmail(notifyByEmailValue);
+                        Boolean value = (Boolean)property.getValue();
+                        cardRole.setValue(propertyName, value);
                     }
                 });
-                return nbeCheckBox;
+                return checkBox;
             }
         });
     }
@@ -347,7 +401,9 @@ public class CardRolesFrame extends AbstractFrame {
                 procRole = pr;
             }
         }
-        if (procRole == null) return;
+        if (procRole == null)
+            return;
+        
         if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(procRole, user)) {
             CardRole cardRole = new CardRole();
             cardRole.setProcRole(procRole);
@@ -355,6 +411,13 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setUser(user);
+
+            UUID lastId = tmpCardRolesDs.lastItemId();
+            if (lastId == null)
+                cardRole.setSortOrder(1);
+            else
+                cardRole.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
+
             tmpCardRolesDs.addItem(cardRole);
         } else {
             setProcActor(proc, procRole, user, notifyByEmail);
@@ -473,6 +536,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         @Override
         public void addItem(CardRole item) throws UnsupportedOperationException {
+
             super.addItem(item);
             if (!fill)
                 cardRolesDs.addItem(item);
@@ -483,6 +547,23 @@ public class CardRolesFrame extends AbstractFrame {
             super.removeItem(item);
             if (!fill)
                 cardRolesDs.removeItem(item);
+        }
+
+        @Override
+        protected Comparator<CardRole> createEntityComparator() {
+            return new Comparator<CardRole>() {
+                public int compare(CardRole cr1, CardRole cr2) {
+                    int s1 = cr1.getSortOrder() == null ? 0 : cr1.getSortOrder();
+                    int s2 = cr2.getSortOrder() == null ? 0 : cr2.getSortOrder();
+                    return s1 - s2;
+                }
+            };
+        }
+
+        @Override
+        public void doSort() {
+            super.doSort();
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
 
         public void fillForProc(Proc proc) {
@@ -499,6 +580,7 @@ public class CardRolesFrame extends AbstractFrame {
                         }
                     }
                 }
+                doSort();
                 setModified(false);
             } finally {
                 fill = false;
