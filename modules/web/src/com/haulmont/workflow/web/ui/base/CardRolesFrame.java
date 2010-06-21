@@ -190,13 +190,7 @@ public class CardRolesFrame extends AbstractFrame {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             CardRole cardRole = (CardRole)cardRoleEditor.getItem();
                             cardRole.setCode(cardRole.getProcRole().getCode());
-
-                            UUID lastId = tmpCardRolesDs.lastItemId();
-                            if (lastId == null)
-                                cardRole.setSortOrder(1);
-                            else
-                                cardRole.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
-
+                            assignNextSortOrder(cardRole);
                             tmpCardRolesDs.addItem(cardRole);
                             cardRole.setCard(card);
                         }
@@ -323,6 +317,7 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setUser(dpa.getUser());
             cr.setCard(card);
             cr.setNotifyByEmail(dpa.getNotifyByEmail());
+            assignNextSortOrder(cr);
             tmpCardRolesDs.addItem(cr);
         }
 
@@ -346,11 +341,20 @@ public class CardRolesFrame extends AbstractFrame {
                     cr.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                     cr.setCard(card);
                     cr.setNotifyByEmail(true);
+                    assignNextSortOrder(cr);
                     tmpCardRolesDs.addItem(cr);
                 }
             }
         }
 
+    }
+
+    private void assignNextSortOrder(CardRole cr) {
+        UUID lastId = tmpCardRolesDs.lastItemId();
+        if (lastId == null)
+            cr.setSortOrder(1);
+        else
+            cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
     }
 
     //todo gorbunkov review and refactor next two methods
@@ -384,6 +388,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setCode(procRole.getCode());
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
+            assignNextSortOrder(cardRole);
             tmpCardRolesDs.addItem(cardRole);
         }
         cardRole.setUser(user);
@@ -411,13 +416,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setUser(user);
-
-            UUID lastId = tmpCardRolesDs.lastItemId();
-            if (lastId == null)
-                cardRole.setSortOrder(1);
-            else
-                cardRole.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
-
+            assignNextSortOrder(cardRole);
             tmpCardRolesDs.addItem(cardRole);
         } else {
             setProcActor(proc, procRole, user, notifyByEmail);
