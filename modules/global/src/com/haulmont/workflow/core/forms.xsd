@@ -9,6 +9,7 @@
         <xs:sequence>
             <xs:element type="saveType" name="save" minOccurs="0" maxOccurs="1"/>
             <xs:element type="startType" name="start" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="cancelType" name="cancel" minOccurs="0" maxOccurs="1"/>
             <xs:element type="activityType" name="activity" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
@@ -22,6 +23,14 @@
     </xs:complexType>
 
     <xs:complexType name="startType">
+        <xs:sequence>
+            <xs:element type="confirmType" name="confirm" minOccurs="0"/>
+            <xs:element type="screenType" name="screen" minOccurs="0"/>
+            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="cancelType">
         <xs:sequence>
             <xs:element type="confirmType" name="confirm" minOccurs="0"/>
             <xs:element type="screenType" name="screen" minOccurs="0"/>
