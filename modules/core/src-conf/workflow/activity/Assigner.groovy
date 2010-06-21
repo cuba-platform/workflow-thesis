@@ -44,11 +44,11 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
     checkState(Locator.isInTransaction(), 'An active transaction required')
     super.execute(execution)
-    createAssignment(execution)
-    execution.waitForSignal()
+    if (createAssignment(execution))
+      execution.waitForSignal()
   }
 
-  protected void createAssignment(ActivityExecution execution) {
+  protected boolean createAssignment(ActivityExecution execution) {
     EntityManager em = PersistenceProvider.getEntityManager()
 
     CardRole cr
@@ -96,6 +96,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     if (cr == null || cr.notifyByCardInfo)
       createNotificationCardInfo(assignment, user, execution)
+
+    return true
   }
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {

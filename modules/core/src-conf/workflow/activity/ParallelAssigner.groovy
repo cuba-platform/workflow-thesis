@@ -35,7 +35,7 @@ public class ParallelAssigner extends MultiAssigner {
   String successTransition
 
   @Override
-  protected void createAssignment(ActivityExecution execution) {
+  protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
     EntityManager em = PersistenceProvider.getEntityManager()
@@ -43,9 +43,14 @@ public class ParallelAssigner extends MultiAssigner {
     Card card = findCard(execution)
 
     List<CardRole> cardRoles = getCardRoles(execution, card)
-    if (cardRoles.isEmpty())
-      throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
-              "User not found: cardId=${card.getId()}, procRole=$role", role)
+    if (cardRoles.isEmpty()) {
+      if (forRefusedOnly(execution)) {
+        log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")
+        return false
+      } else
+        throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
+                "User not found: cardId=${card.getId()}, procRole=$role", role)
+    }
 
     Assignment master = new Assignment()
     master.setName(execution.getActivityName())
@@ -80,6 +85,7 @@ public class ParallelAssigner extends MultiAssigner {
       if (cr.notifyByCardInfo)
         createNotificationCardInfo(card, cr.user, execution)
     }
+    return true
   }
 
   @Override

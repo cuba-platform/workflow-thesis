@@ -34,6 +34,11 @@
                 <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
             </accessControl>
             
+            <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                <visible property="refusedOnlyVisible"/>
+                <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly" caption="msg://refusedOnly"/>
+            </accessControl>
+
             <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
                 <visible property="dueDateVisible"/>
                 <hbox id="dueDatePane">

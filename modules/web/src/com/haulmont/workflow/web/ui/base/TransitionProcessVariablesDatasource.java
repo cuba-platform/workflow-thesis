@@ -28,7 +28,7 @@ public class TransitionProcessVariablesDatasource extends ProcessVariablesDataso
     protected Map<String, Class> getVariableTypes() {
         Map<String, Class> map = new HashMap<String, Class>();
         map.put("dueDate", Date.class);
+        map.put("refusedOnly", Boolean.class);
         return map;
-
     }
 }
