@@ -147,6 +147,8 @@ public class CardProcFrame extends AbstractFrame {
                 }
         );
 
+        createProcLookup.setEditable(accessData == null || accessData.getAddCardProcessEnabled());
+
         createProcLookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {
                 if ((value == null) || createProcCaption.equals(value))
