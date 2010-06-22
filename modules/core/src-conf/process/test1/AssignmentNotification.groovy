@@ -42,7 +42,7 @@ You've got an assignment: ${a.card.description} - ${a.card.locState}
 
 String makeLink(Assignment a) {
   GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class)
-  return "http://${c.webHostName}:${c.webPort}/${c.webContextName}/${GlobalUtils.generateWebWindowName()}/open?" +
+  return "http://${c.webHostName}:${c.webPort}/${c.webContextName}/open?" +
     "screen=wf\$Card.edit&" +
     "item=wf\$Card-${a.card.id}&" +
     "params=item:wf\$Card-${a.card.id}"
