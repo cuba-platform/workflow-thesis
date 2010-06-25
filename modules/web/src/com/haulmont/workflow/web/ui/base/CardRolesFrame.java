@@ -54,6 +54,12 @@ import java.util.List;
 
 public class CardRolesFrame extends AbstractFrame {
 
+    public interface Listener {
+        void afterInitDefaultActors(Proc proc);
+    }
+
+    private Set<Listener> listeners = new HashSet<Listener>();
+
     protected Card card;
     private boolean enabled = true;
     protected CardProc cardProc;
@@ -71,6 +77,14 @@ public class CardRolesFrame extends AbstractFrame {
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
     }
 
     public void init() {
@@ -345,6 +359,10 @@ public class CardRolesFrame extends AbstractFrame {
                     tmpCardRolesDs.addItem(cr);
                 }
             }
+        }
+
+        for (Listener listener : listeners) {
+            listener.afterInitDefaultActors(proc);
         }
 
     }
