@@ -19,6 +19,7 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -300,6 +301,28 @@ public class CardRolesFrame extends AbstractFrame {
         Preconditions.checkArgument(card != null, "Card is null");
 
         this.card = card;
+        if (PersistenceHelper.isNew(card)) {
+            if (card.getRoles() != null) {
+                ArrayList<CardRole> list = (ArrayList<CardRole>) card.getRoles();
+                ((CardProcRolesDatasource)tmpCardRolesDs).fill = true;
+                for (int i = 0; i < list.size(); i++) {
+                    if (!tmpCardRolesDs.containsItem(list.get(i).getUuid())) {
+                        assignNextSortOrder(list.get(i));
+                        tmpCardRolesDs.addItem(list.get(i));
+                    }
+                }
+                ((CardProcRolesDatasource)tmpCardRolesDs).fill = false;
+            }
+            if (card.getProc() != null) {
+                ArrayList<ProcRole> list = (ArrayList<ProcRole>) card.getProc().getRoles();
+                for (int i = 0; i < list.size(); i++) {
+                    if (!procRolesDs.containsItem(list.get(i).getUuid())&&!list.get(i).getInvisible()) {
+                        procRolesDs.addItem(list.get(i));
+                    }
+                }
+                initCreateRoleLookup();
+            }
+        }
 //        for (Component component : rolesActions) {
 //            component.setEnabled(card.getProc() != null);
 //        }
@@ -544,7 +567,7 @@ public class CardRolesFrame extends AbstractFrame {
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
 
         private CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
-        private boolean fill;
+        public boolean fill;
 
         public CardProcRolesDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
             super(context, dataservice, id, metaClass, viewName);
