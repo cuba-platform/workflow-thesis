@@ -304,20 +304,23 @@ public class CardRolesFrame extends AbstractFrame {
         if (PersistenceHelper.isNew(card)) {
             if (card.getRoles() != null) {
                 ArrayList<CardRole> list = (ArrayList<CardRole>) card.getRoles();
-                ((CardProcRolesDatasource)tmpCardRolesDs).fill = true;
-                for (int i = 0; i < list.size(); i++) {
-                    if (!tmpCardRolesDs.containsItem(list.get(i).getUuid())) {
-                        assignNextSortOrder(list.get(i));
-                        tmpCardRolesDs.addItem(list.get(i));
-                    }
-                }
+                ((CardProcRolesDatasource) tmpCardRolesDs).fill = true;
+                if (list != null)
+                    for (CardRole cardRole : list) {
+                        if (!tmpCardRolesDs.containsItem(cardRole.getUuid())) {
+                            assignNextSortOrder(cardRole);
+                            tmpCardRolesDs.addItem(cardRole);
+                        }
+                    };
                 ((CardProcRolesDatasource)tmpCardRolesDs).fill = false;
             }
             if (card.getProc() != null) {
-                ArrayList<ProcRole> list = (ArrayList<ProcRole>) card.getProc().getRoles();
-                for (int i = 0; i < list.size(); i++) {
-                    if (!procRolesDs.containsItem(list.get(i).getUuid())&&!list.get(i).getInvisible()) {
-                        procRolesDs.addItem(list.get(i));
+                List<ProcRole> roleList = card.getProc().getRoles();
+                if (roleList != null) {
+                    for (ProcRole procRole : roleList) {
+                        if (!procRolesDs.containsItem(procRole.getUuid())&& (procRole.getInvisible()!=null?!procRole.getInvisible():true)) {
+                            procRolesDs.addItem(procRole);
+                        }
                     }
                 }
                 initCreateRoleLookup();
