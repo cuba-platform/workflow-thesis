@@ -12,11 +12,19 @@ package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 public abstract class AbstractForm extends AbstractWindow {
 
     public AbstractForm(IFrame frame) {
         super(frame);
+    }
+
+    @Override
+    public void applySettings(Settings settings) {
+        super.applySettings(settings);
+        WebComponentsHelper.unwrap(frame).getWindow().setClosable(false);
     }
 
     public abstract String getComment();
