@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.ui.Window;
 
 public abstract class AbstractForm extends AbstractWindow {
 
@@ -24,7 +25,11 @@ public abstract class AbstractForm extends AbstractWindow {
     @Override
     public void applySettings(Settings settings) {
         super.applySettings(settings);
-        WebComponentsHelper.unwrap(frame).getWindow().setClosable(false);
+        Window window = WebComponentsHelper.unwrap(frame).getWindow();
+        if (window.isModal()) {
+            window.setClosable(false);
+            window.setResizable(false);
+        }
     }
 
     public abstract String getComment();
