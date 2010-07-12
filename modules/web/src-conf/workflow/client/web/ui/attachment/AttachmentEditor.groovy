@@ -62,7 +62,7 @@ public class AttachmentEditor extends AbstractEditor {
   public void setItem(Entity item) {
     super.setItem(item)
 
-    boolean isNew = PersistenceHelper.isNew(item)
+    boolean isNew = PersistenceHelper.isNew(fileDs.getItem())
 
     if (isNew) {
       okBtn.setEnabled(false)
@@ -85,8 +85,6 @@ public class AttachmentEditor extends AbstractEditor {
                 sizeLab.setValue(uploadField.getBytes().length)
                 createDateLab.setValue(TimeProvider.currentTimestamp())
 
-                saveFile()
-
                 okBtn.setEnabled(true)
               }
       ] as Listener)
@@ -94,6 +92,11 @@ public class AttachmentEditor extends AbstractEditor {
       uploadField.setEnabled(false)
       fileNameText.setEditable(false)
     }
+  }
+
+  def void commitAndClose() {
+    saveFile()
+    super.commitAndClose();
   }
 
   private void saveFile() {
