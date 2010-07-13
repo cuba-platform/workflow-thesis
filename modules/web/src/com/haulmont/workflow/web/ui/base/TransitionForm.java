@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -138,6 +139,20 @@ public class TransitionForm extends AbstractForm {
         String formCaption = (String) params.get("param$formCaption");
         if (StringUtils.isNotBlank(formCaption))
             setCaption(MessageProvider.getMessage(messagesPack, formCaption));
+
+        String dueDateLabelParam = (String) params.get("param$dueDateLabel");
+        if (StringUtils.isNotBlank(dueDateLabelParam)) {
+            Label dueDateLabel = getComponent("dueDateLabel");
+            if (dueDateLabel != null) dueDateLabel.setValue(MessageProvider.getMessage(messagesPack, dueDateLabelParam));
+        }
+
+        String dueDateFormatParam = (String) params.get("param$dueDateFormat");
+        if (StringUtils.isNotBlank(dueDateFormatParam)) {
+            if ("dateTimeFormat".equals(dueDateFormatParam)) {
+                dueDate.setResolution(DateField.Resolution.MIN);
+                dueDate.setDateFormat(MessageUtils.getDateTimeFormat());
+            }
+        }
 
         addAction(new AbstractAction("windowCommit") {
 

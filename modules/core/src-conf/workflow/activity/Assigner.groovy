@@ -97,8 +97,12 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     if (cr == null || cr.notifyByCardInfo)
       createNotificationCardInfo(assignment, user, execution)
 
+    afterCreateAssignment(assignment)
+
     return true
   }
+
+  protected void afterCreateAssignment(Assignment assignment) {}
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     execution.take(signalName)

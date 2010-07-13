@@ -32,6 +32,11 @@
         <pathelement location="${prod.out.dir}/global"/>
     </path>
 
+    <path id="compile-groovy-cp">
+        <path refid="compile-cp"/>
+        <pathelement location="${build.dir}/${module.jar}"/>
+    </path>
+
     <path id="test-compile-cp">
         <fileset refid="test-lib-fs"/>
         <fileset refid="common-lib-fs"/>
@@ -53,6 +58,11 @@
         <copy todir="${build.dir}/conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
+
+        <echo>==> compilling groovy classes ${project.dir} ${module.name}</echo>        
+        <mkdir dir="${build.dir}/conf-classes"/>
+        <groovyc srcdir="src-conf" destdir="${build.dir}/conf-classes"
+                 includes="**/*.groovy" classpathref="compile-groovy-cp"/>
     </target>
 
 </project>

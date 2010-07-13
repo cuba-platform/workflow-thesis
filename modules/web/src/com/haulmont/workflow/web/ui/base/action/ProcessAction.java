@@ -154,7 +154,7 @@ public class ProcessAction extends AbstractAction {
                     public void onFail() {
                     }
                 });
-                managerChain.doManagerBefore("");
+                managerChain.doManagerBefore(assignment.getComment());
             }
         }
     }
