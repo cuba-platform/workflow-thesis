@@ -27,7 +27,7 @@
                         <row>
                             <lookupField id="createProcLookup" width="150"/>
                             <button id="removeProc" action="cardProcTable.remove" icon="icons/remove.png"/>
-                            <button id="startProc" visible="false"/>
+                            <button id="startProc" visible="false" icon="icons/run.png" caption=""/>
                         </row>
                     </rows>
                 </grid>
