@@ -37,6 +37,8 @@ public class AttachmentEditor extends AbstractEditor {
   private Label createDateLab
   private FileUploadField uploadField
 
+  private boolean needSave
+
   public AttachmentEditor(IFrame frame) {
     super(frame)
   }
@@ -86,6 +88,8 @@ public class AttachmentEditor extends AbstractEditor {
                 createDateLab.setValue(TimeProvider.currentTimestamp())
 
                 okBtn.setEnabled(true)
+
+                needSave = true
               }
       ] as Listener)
     } else {
@@ -95,7 +99,9 @@ public class AttachmentEditor extends AbstractEditor {
   }
 
   def void commitAndClose() {
-    saveFile()
+    if (needSave) {
+      saveFile()
+    }
     super.commitAndClose();
   }
 
