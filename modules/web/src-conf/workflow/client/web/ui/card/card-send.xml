@@ -1,0 +1,49 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.card.CardSend"
+        messagesPack="workflow.client.web.ui.card"
+        caption="msg://cardSend.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="userDs" class="com.haulmont.cuba.security.entity.User" view="_local">
+            <query>
+                <![CDATA[ select u from sec$User u ]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="tmpUserDs" class="com.haulmont.cuba.security.entity.User" view="_local"/>
+    </dsContext>
+    <layout expandLayout="true">
+        <vbox expand="usersTable" height="100%" spacing="true">
+            <grid width="100%" spacing="true">
+                <columns>
+                    <column />
+                    <column />
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <lookupField id="createUserLookup" width="180"/>
+                        <button id="removeUser" icon="icons/remove.png"/>
+                    </row>
+                </rows>
+            </grid>
+            <table id="usersTable" sortable="false">
+                <columns>
+                    <column id="login" caption="msg://cardSend.login"/>
+                    <column id="name" caption="msg://cardSend.user"/>
+                    <column id="email" caption="msg://cardSend.email"/>
+                </columns>
+                <rows datasource="tmpUserDs"/>
+            </table>
+            <hbox id="commentTextPane">
+                <label value="msg://cardSend.comment" width="100"/>
+                <textField id="commentText" width="400" rows="4" required="true"/>
+            </hbox>
+            <vbox margin="true">
+                <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            </vbox>
+        </vbox>
+    </layout>
+    
+</window>

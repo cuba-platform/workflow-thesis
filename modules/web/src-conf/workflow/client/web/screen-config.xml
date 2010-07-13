@@ -50,6 +50,9 @@
             template="/com/haulmont/workflow/web/ui/base/resolution-form.xml"/>
 
     <screen id="transition.form"
-            template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>    
+            template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>
+    
+    <screen id="wf$Card.send"
+            template="workflow/client/web/ui/card/card-send.xml"/>
 
 </screen-config>
