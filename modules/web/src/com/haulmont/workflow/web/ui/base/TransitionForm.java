@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -182,6 +183,10 @@ public class TransitionForm extends AbstractForm {
     protected void doCommit() {
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
+            return;
+        }
+        if ((dueDate != null) && (dueDate.getValue() != null) && (((Date)dueDate.getValue()).compareTo(TimeProvider.currentTimestamp()) < 0)) {
+            showNotification(getMessage("dueDateIsLessThanNow"), NotificationType.WARNING);
             return;
         }
         if ((dueDate != null) && dueDate.isRequired() && (dueDate.getValue() == null)) {
