@@ -38,6 +38,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   String assignee
   String role
   String description
+  String notify
+  String notificationScript
   AssignmentTimersFactory timersFactory
 
   public void execute(ActivityExecution execution) throws Exception {
@@ -91,8 +93,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    if ((cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
-      sendEmail(assignment, user)
+    if (!'false'.equals(notify) && (cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
+      sendEmail(assignment, user, notificationScript)
 
     if (cr == null || cr.notifyByCardInfo)
       createNotificationCardInfo(assignment, user, execution)
@@ -125,12 +127,13 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       return 1
   }
 
-  protected void sendEmail(Assignment assignment, User user) {
+  protected void sendEmail(Assignment assignment, User user, String notificationScript) {
     String subject
     String body
 
+    if (StringUtils.isEmpty(notificationScript)) notificationScript = 'AssignmentNotification'
     try {
-      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/AssignmentNotification.groovy'
+      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/' + notificationScript + '.groovy'
       Binding binding = new Binding(['assignment': assignment, 'user': user])
       ScriptingProvider.runGroovyScript(script, binding)
       subject = binding.getVariable('subject')
@@ -147,6 +150,10 @@ You've got an assignment: ${assignment.card.description} - ${assignment.card.loc
       EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
       emailer.sendEmail(user.email, subject, body)
     }
+  }
+
+  protected void sendEmail(Assignment assignment, User user) {
+    sendEmail(assignment, user, 'AssignmentNotification')
   }
 
   protected void createNotificationCardInfo(Assignment assignment, User user, ActivityExecution execution) {

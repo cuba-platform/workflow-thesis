@@ -23,4 +23,6 @@ public interface WorkCalendarAPI {
     Date addInterval(Date startDate, int qty, TimeUnit unit);
 
     Long getWorkDayLengthInMillis();
+
+    Long getWorkPeriodDurationInDays(Date startTime, Date endTime);
 }

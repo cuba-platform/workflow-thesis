@@ -457,4 +457,60 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
         return null;
     }
+
+//    public Long getWorkPeriodDuration(Date startTime, Date endTime) {
+//        long workIntervalDuration = 0;
+//        loadCaches();
+//        boolean prevMoveForward = moveForward;
+//        moveForward = true;
+//        if (moveForward != prevMoveForward)
+//            reverseCaches();
+//        this.startTime = startTime;
+//
+//        workIntervalDuration += getFirstIntervalDuration();
+//        CalendarItem currentItem = nextInterval();
+//        while (currentItem.isDateAfterInterval(endTime)) {
+//           workIntervalDuration += currentItem.getDuration();
+//            currentItem = nextInterval();
+//        }
+//
+//        if (currentItem.isDateInInterval(endTime)) {
+//            workIntervalDuration = currentItem.getDurationFromStart(endTime);
+//        }
+//
+//        return workIntervalDuration;
+//    }
+
+    private boolean isDateWorkDay(Calendar day) {
+        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
+        for (CalendarItem ci : currentDayCalendarItems) {
+            if (ci.getDuration() > 0) return true;
+        }
+        return false;
+    }
+
+    public Long getWorkPeriodDurationInDays(Date startTime, Date endTime) {
+        if ((startTime == null) || (endTime == null)) return 0L;
+        if (startTime.compareTo(endTime) >= 0) return 0L;
+        long workPeriodDuration = 0;
+        loadCaches();
+        boolean prevMoveForward = moveForward;
+        moveForward = true;
+        if (moveForward != prevMoveForward)
+            reverseCaches();
+
+        currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+
+        while (!DateUtils.isSameDay(currentDay.getTime(), endTime)) {
+            if (isDateWorkDay(currentDay))
+                workPeriodDuration++;
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        return workPeriodDuration;
+    }    
 }

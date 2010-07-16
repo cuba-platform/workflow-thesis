@@ -79,8 +79,8 @@ public class ParallelAssigner extends MultiAssigner {
       }
       em.persist(assignment)
 
-      if (cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
-        sendEmail(assignment, cr.user)
+      if (!('false'.equals(notify)) && cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
+        sendEmail(assignment, cr.user, notificationScript)
 
       if (cr.notifyByCardInfo)
         createNotificationCardInfo(card, cr.user, execution)
