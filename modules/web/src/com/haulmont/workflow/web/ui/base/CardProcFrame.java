@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
@@ -223,7 +224,13 @@ public class CardProcFrame extends AbstractFrame {
                                 window.close("cancel", true);
                                 
                                 WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(window.getId());
-                                App.getInstance().getWindowManager().openEditor(windowInfo, card, OpenType.THIS_TAB, Collections.<String, Object>singletonMap("tabName", "processTab"));
+                                WebWindowManager webWindowManager= App.getInstance().getWindowManager();
+                                Collection<Window> windows = webWindowManager.getOpenWindows();
+                                Map params = Collections.<String, Object>singletonMap("tabName", "processTab");
+                                if(windows != null && windows.size() > 0)
+                                    webWindowManager.openEditor(windowInfo, card, OpenType.THIS_TAB, params);
+                                else
+                                    webWindowManager.openEditor(windowInfo, card, OpenType.NEW_TAB, params);
                             }
                         }
                 );
