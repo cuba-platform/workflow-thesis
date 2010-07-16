@@ -17,11 +17,17 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.MailService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
@@ -234,5 +240,15 @@ public class CardSend extends AbstractCardEditor {
     @Override
     protected boolean isCommentVisible() {
         return true;
+    }
+
+    @Override
+    public void applySettings(Settings settings) {
+        super.applySettings(settings);
+        com.vaadin.ui.Window window = WebComponentsHelper.unwrap(frame).getWindow();
+        if (window.isModal()) {
+            window.setClosable(false);
+            window.setResizable(false);
+        }
     }
 }
