@@ -481,7 +481,14 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 //        return workIntervalDuration;
 //    }
 
-    private boolean isDateWorkDay(Calendar day) {
+    public boolean isDateWorkDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return isDateWorkDay(calendar);
+    }
+
+    public boolean isDateWorkDay(Calendar day) {
+        day = DateUtils.truncate(day, Calendar.DATE);
         List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
         if (currentDayCalendarItems == null)
             currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
@@ -505,7 +512,12 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         currentDay.setTime(startTime);
         currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
 
-        while (!DateUtils.isSameDay(currentDay.getTime(), endTime)) {
+        Calendar endDay = Calendar.getInstance();
+        endDay.setTime(endTime);
+        endDay = DateUtils.truncate(endDay, Calendar.DATE); 
+
+//        while (!DateUtils.isSameDay(currentDay.getTime(), endTime)) {
+        while (currentDay.compareTo(endDay) <= 0) {
             if (isDateWorkDay(currentDay))
                 workPeriodDuration++;
             currentDay.add(Calendar.DAY_OF_YEAR, 1);

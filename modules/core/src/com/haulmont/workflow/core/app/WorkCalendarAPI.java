@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.global.TimeUnit;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public interface WorkCalendarAPI {
@@ -25,4 +26,8 @@ public interface WorkCalendarAPI {
     Long getWorkDayLengthInMillis();
 
     Long getWorkPeriodDurationInDays(Date startTime, Date endTime);
+
+    boolean isDateWorkDay(Date date);
+
+    boolean isDateWorkDay(Calendar date);
 }
