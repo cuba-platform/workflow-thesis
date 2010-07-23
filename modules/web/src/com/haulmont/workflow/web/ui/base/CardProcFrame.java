@@ -18,11 +18,16 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
@@ -33,6 +38,8 @@ import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
+import com.vaadin.data.Property;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
@@ -52,6 +59,7 @@ public class CardProcFrame extends AbstractFrame {
     private Table cardProcTable;
     protected AbstractAction startProcessAction;
     private CardRolesFrame cardRolesFrame;
+    private Button removeProc;
 
     private String createProcCaption;
 
@@ -64,6 +72,7 @@ public class CardProcFrame extends AbstractFrame {
     public void init() {
         cardProcDs = getDsContext().get("cardProcDs");
         Preconditions.checkState(cardProcDs != null, "Enclosing window must declare 'cardProcsDs' datasource");
+        removeProc = getComponent("removeProc");
 
         initProc();
         initRoles();
@@ -79,6 +88,22 @@ public class CardProcFrame extends AbstractFrame {
         cardRolesDs = getDsContext().get("cardRolesDs");
 
         cardProcTable = getComponent("cardProcTable");
+        final com.vaadin.ui.Table vCardProcTable = ( com.vaadin.ui.Table)WebComponentsHelper.unwrap(cardProcTable);
+        vCardProcTable.addListener(new com.vaadin.ui.Table.ValueChangeListener(){
+             public void valueChange(Property.ValueChangeEvent event){
+                 Object uuid = vCardProcTable.getValue();
+                 if(uuid != null){
+                     CardProc proc = (CardProc)cardProcTable.getDatasource().getItem(uuid);
+                     if(proc != null){
+                         if(proc.getStartCount() < 1){
+                             removeProc.setEnabled(true);
+                             return;
+                         }
+                     }
+                 }
+                 removeProc.setEnabled(false);
+             }
+        });
         TableActionsHelper procsTH = new TableActionsHelper(this, cardProcTable);
 
         final Action removeAction = procsTH.createRemoveAction(false);
