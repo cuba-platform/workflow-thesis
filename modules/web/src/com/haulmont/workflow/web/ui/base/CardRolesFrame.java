@@ -361,8 +361,17 @@ public class CardRolesFrame extends AbstractFrame {
             tmpCardRolesDs.addItem(cr);
         }
 
-        // if there is a role with AssignToCreator property set up, and this role is not assigned
-        // by DefaultProcActor list, assign this role to the current user
+        initAssignedToCreatorActors();
+
+        for (Listener listener : listeners) {
+            listener.afterInitDefaultActors(proc);
+        }
+
+    }
+
+    public void initAssignedToCreatorActors() {
+        // if there is a role with AssignToCreator property set up, and this role is not assigned,
+        // assign this role to the current user
         for (UUID procRoleId : procRolesDs.getItemIds()) {
             ProcRole procRole = procRolesDs.getItem(procRoleId);
             if (BooleanUtils.isTrue(procRole.getAssignToCreator())) {
@@ -386,11 +395,6 @@ public class CardRolesFrame extends AbstractFrame {
                 }
             }
         }
-
-        for (Listener listener : listeners) {
-            listener.afterInitDefaultActors(proc);
-        }
-
     }
 
     private void assignNextSortOrder(CardRole cr) {
@@ -433,9 +437,11 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
             assignNextSortOrder(cardRole);
+            cardRole.setUser(user);
             tmpCardRolesDs.addItem(cardRole);
+        } else {
+            cardRole.setUser(user);
         }
-        cardRole.setUser(user);
     }
 
     public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail) {
@@ -480,10 +486,10 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void deleteAllActors() {
-        Collection<UUID> uuidCollection = cardRolesDs.getItemIds();
+        Collection<UUID> uuidCollection = tmpCardRolesDs.getItemIds();
         for (UUID itemId : uuidCollection) {
-            CardRole item = cardRolesDs.getItem(itemId);
-            cardRolesDs.removeItem(item);
+            CardRole item = tmpCardRolesDs.getItem(itemId);
+            tmpCardRolesDs.removeItem(item);
         }
     }
 

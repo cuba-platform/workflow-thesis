@@ -516,7 +516,6 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         endDay.setTime(endTime);
         endDay = DateUtils.truncate(endDay, Calendar.DATE); 
 
-//        while (!DateUtils.isSameDay(currentDay.getTime(), endTime)) {
         while (currentDay.compareTo(endDay) <= 0) {
             if (isDateWorkDay(currentDay))
                 workPeriodDuration++;
