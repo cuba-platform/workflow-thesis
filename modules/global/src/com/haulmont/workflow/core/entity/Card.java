@@ -94,6 +94,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @OneToMany(mappedBy = "parentCard")
     protected Set<Card> subCards;
 
+    @OneToMany(mappedBy = "card")
+    protected Set<Assignment> assignments;
+
     @Transient
     protected Map<String, Object> initialProcessVariables;
 
@@ -238,5 +241,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setInitialProcessVariables(Map<String, Object> initialProcessVariables) {
         this.initialProcessVariables = initialProcessVariables;
+    }
+
+    public Set<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(Set<Assignment> assignments) {
+        this.assignments = assignments;
     }
 }
