@@ -14,8 +14,7 @@ import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
-import com.haulmont.cuba.core.app.EmailerAPI
-import com.haulmont.cuba.core.global.ScriptingProvider
+
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
@@ -29,7 +28,6 @@ import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
-import com.haulmont.workflow.core.entity.CardInfo
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -45,6 +43,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   public void execute(ActivityExecution execution) throws Exception {
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
     checkState(Locator.isInTransaction(), 'An active transaction required')
+    delayedNotify = true
     super.execute(execution)
     if (createAssignment(execution))
       execution.waitForSignal()
@@ -57,6 +56,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     User user
     Card card = findCard(execution)
 
+    notificationMatrix.notify(card,notificationState, role)
     if (!isBlank(assignee)) {
       Query q = em.createQuery('select u from sec$User u where u.loginLowerCase = ?1')
       q.setParameter(1, assignee.toLowerCase())
@@ -93,11 +93,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    if (!'false'.equals(notify) && (cr == null || cr.notifyByEmail) && !StringUtils.isBlank(user.email))
-      sendEmail(assignment, user, notificationScript)
-
-    if (cr == null || cr.notifyByCardInfo)
-      createNotificationCardInfo(assignment, user, execution)
+    notificationMatrix.notify(card, notificationState, assignment, role)
 
     afterCreateAssignment(assignment)
 
@@ -125,63 +121,5 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       return result + 1
     else
       return 1
-  }
-
-  protected void sendEmail(Assignment assignment, User user, String notificationScript) {
-    String subject
-    String body
-
-    if (StringUtils.isEmpty(notificationScript)) notificationScript = 'AssignmentNotification'
-    try {
-      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/' + notificationScript + '.groovy'
-      Binding binding = new Binding(['assignment': assignment, 'user': user])
-      ScriptingProvider.runGroovyScript(script, binding)
-      subject = binding.getVariable('subject')
-      body = binding.getVariable('body')
-    } catch (Exception e) {
-      log.warn("Unable to get email subject and body, using defaults", e)
-      subject = "New assignment: ${assignment.card.description} - ${assignment.card.locState}"
-      body = """
-You've got an assignment: ${assignment.card.description} - ${assignment.card.locState}
-"""
-    }
-
-    Thread.startDaemon('emailThread') {
-      EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME)
-      emailer.sendEmail(user.email, subject, body)
-    }
-  }
-
-  protected void sendEmail(Assignment assignment, User user) {
-    sendEmail(assignment, user, 'AssignmentNotification')
-  }
-
-  protected void createNotificationCardInfo(Assignment assignment, User user, ActivityExecution execution) {
-    CardInfo ci = new CardInfo()
-    ci.setType(CardInfo.TYPE_NOTIFICATION)
-    ci.setCard(assignment.card)
-    ci.setUser(user)
-    ci.setActivity(execution.activityName)
-    ci.setJbpmExecutionId(execution.id)
-
-    String subject = getNotificationSubject(assignment, user)
-    ci.setDescription(subject)
-
-    EntityManager em = PersistenceProvider.getEntityManager()
-    em.persist(ci)
-  }
-
-  protected String getNotificationSubject(Assignment assignment, User user) {
-    String subject
-    try {
-      String script = assignment.card.proc.messagesPack.replace('.', '/') + '/AssignmentNotification.groovy'
-      Binding binding = new Binding(['assignment': assignment, 'user': user])
-      ScriptingProvider.runGroovyScript(script, binding)
-      subject = binding.getVariable('subject')
-    } catch (Exception e) {
-      log.warn("Unable to get notification text, using defaults", e)
-      subject = "New assignment: ${assignment.card.description} - ${assignment.card.locState}"
-    }
-    return subject
   }
 }

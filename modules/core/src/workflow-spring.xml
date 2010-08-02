@@ -32,6 +32,7 @@
                 <entry key="${cuba.webContextName}.workflow:service=TimerManager" value-ref="workflow_TimerManager"/>
                 <entry key="${cuba.webContextName}.workflow:service=WorkCalendar" value-ref="workflow_WorkCalendar"/>
                 <entry key="${cuba.webContextName}.workflow:service=PermissionsManager" value-ref="workflow_PermissionsManager"/>
+                <entry key="${cuba.webContextName}.workflow:service=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
             </map>
         </property>
         <property name="assembler">
@@ -42,6 +43,7 @@
                         <entry key="workflow_TimerManager" value="com.haulmont.workflow.core.app.TimerManagerMBean"/>
                         <entry key="workflow_WorkCalendar" value="com.haulmont.workflow.core.app.WorkCalendarMBean"/>
                         <entry key="workflow_PermissionsManager" value="com.haulmont.workflow.core.app.WorkCalendarMBean"/>
+                        <entry key="workflow_NotificationMatrix" value="com.haulmont.workflow.core.app.NotificationMatrixMBean"/>
                     </map>
                 </property>
             </bean>

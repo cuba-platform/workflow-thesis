@@ -39,6 +39,7 @@ class SequentialAssigner extends MultiAssigner {
 
     Card card = findCard(execution)
 
+    notificationMatrix.notify(card, notificationState, role)
     List<CardRole> cardRoles = getCardRoles(execution, card)
     if (cardRoles.isEmpty()) {
       if (forRefusedOnly(execution)) {
@@ -128,10 +129,6 @@ class SequentialAssigner extends MultiAssigner {
     }
     em.persist(assignment)
 
-    if (!('false'.equals(notify)) && cr.notifyByEmail && !StringUtils.isBlank(cr.user.email))
-      sendEmail(assignment, cr.user, notificationScript)
-
-    if (cr.notifyByCardInfo)
-      createNotificationCardInfo(card, cr.user, execution)
+    notificationMatrix.notify(card, notificationState, assignment, role)
   }
 }
