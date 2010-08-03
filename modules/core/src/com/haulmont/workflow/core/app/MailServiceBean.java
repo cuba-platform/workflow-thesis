@@ -44,6 +44,7 @@ public class MailServiceBean implements MailService  {
             binding.setVariable("card",card);
             binding.setVariable("comment",comment);
             binding.setVariable("user", SecurityProvider.currentUserSession().getUser());
+            binding.setVariable("users", users);
             ScriptingProvider.runGroovyScript(script, binding);
             subject = binding.getVariable("subject").toString();
             body = binding.getVariable("body").toString();
