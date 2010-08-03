@@ -40,7 +40,7 @@ public class CardActivity implements ActivityBehaviour {
 
     Card card = findCard(execution)
 
-    notificationState = (card.getState() != null ? card.getState() :'') + '.' + execution.getActivityName()
+    notificationState = (card.getState() != null ? card.getState() + '.' :'') + execution.getActivityName()
     card.setState(execution.getActivityName())
 
     CardProc cp = card.procs.find { it.proc == card.proc }

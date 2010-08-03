@@ -82,6 +82,7 @@ public class WfServiceBean implements WfService {
                 throw new IllegalStateException("Card.proc required");
 
             ExecutionService es = WfHelper.getExecutionService();
+            card.setState(null);
             ProcessInstance pi = es.startProcessInstanceByKey(
                     card.getProc().getJbpmProcessKey(),
                     initialProcessVariables,
