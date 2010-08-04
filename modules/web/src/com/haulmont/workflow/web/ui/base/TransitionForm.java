@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardRole;
-import com.haulmont.workflow.core.entity.ProcRole;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
@@ -234,8 +231,11 @@ public class TransitionForm extends AbstractForm {
             requiredRolesCodes.remove(cardRole.getCode());
         }
 
+        Proc proc = card.getProc();
+        proc = cardRolesDs.getDataService().reload(proc, "edit");
+
         for (String roleCode : requiredRolesCodes) {
-            cardRolesFrame.addProcActor(card.getProc(), roleCode, null, defaultNotifyByEmail);
+            cardRolesFrame.addProcActor(proc, roleCode, null, defaultNotifyByEmail);
         }
     }
 
