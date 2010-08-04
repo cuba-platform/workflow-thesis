@@ -18,6 +18,7 @@
         <class>com.haulmont.workflow.core.entity.WorkCalendarEntity</class>
         <class>com.haulmont.workflow.core.entity.CardInfo</class>
         <class>com.haulmont.workflow.core.entity.ProcRolePermission</class>
+        <class>com.haulmont.workflow.core.entity.UserGroup</class>
 
         <properties>
             <property name="openjpa.Log"

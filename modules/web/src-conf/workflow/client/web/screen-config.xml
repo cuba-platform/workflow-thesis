@@ -55,4 +55,13 @@
     <screen id="wf$Card.send"
             template="workflow/client/web/ui/card/card-send.xml"/>
 
+    <screen id="wf$UserGroup.browse"
+            template="workflow/client/web/ui/usergroup/usergroup-browse.xml"/>
+
+    <screen id="wf$UserGroup.edit"
+            template="workflow/client/web/ui/usergroup/usergroup-edit.xml"/>
+
+    <screen id="wf$CardRole.add"
+            template="workflow/client/web/ui/card/card-role-add.xml"/>
+
 </screen-config>

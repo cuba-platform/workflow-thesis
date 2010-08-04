@@ -119,4 +119,8 @@
         <property name="procRoleTo" view="_minimal"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.UserGroup" name="browse" extends="_local">
+        <property name="users" view="_local"/>
+    </view>
+
 </views>

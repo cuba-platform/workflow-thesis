@@ -14,6 +14,7 @@
         <item id="sec$UserSessionEntity.browse"/>
         <item id="core$LockInfo.browse"/>
         <item id="core$FileDescriptor.browse"/>
+        <item id="wf$UserGroup.browse"/>
     </menu>
 
     <menu id="settings"/>
