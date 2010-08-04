@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -50,6 +47,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 
@@ -199,15 +197,24 @@ public class CardRolesFrame extends AbstractFrame {
                 params.put("secRole", secRole);
                 params.put("proc", getProc());
                 params.put("users", getUsersByProcRole(procRole));
-                final Window.Editor cardRoleEditor = openEditor("wf$CardRole.edit", cr, OpenType.DIALOG, params, cardRolesDs);
-                cardRoleEditor.addListener(new Window.CloseListener() {
+                final Class cardRoleAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.card.CardRoleAdd");
+                final Window.Editor cardRoleAdd = openEditor("wf$CardRole.add", cr, OpenType.DIALOG, params, cardRolesDs);
+                cardRoleAdd.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            CardRole cardRole = (CardRole)cardRoleEditor.getItem();
-                            cardRole.setCode(cardRole.getProcRole().getCode());
-                            assignNextSortOrder(cardRole);
-                            tmpCardRolesDs.addItem(cardRole);
-                            cardRole.setCard(card);
+                            List<CardRole> cardRoles = new ArrayList<CardRole>();
+                            try {
+                                cardRoles = (List<CardRole>)cardRoleAddClass.getMethod("getCardRoles").invoke(cardRoleAdd);
+                            } catch (Exception e) {
+                                cardRoles.add((CardRole)cardRoleAdd.getItem());
+                            }
+                            for (CardRole cardRole : cardRoles) {
+                                if (procActorExists(cardRole.getProcRole(), cardRole.getUser())) continue;
+                                cardRole.setCode(cardRole.getProcRole().getCode());
+                                assignNextSortOrder(cardRole);
+                                tmpCardRolesDs.addItem(cardRole);
+                                cardRole.setCard(card);
+                            }
                         }
                     }
                 });
@@ -477,7 +484,7 @@ public class CardRolesFrame extends AbstractFrame {
         List<CardRole> cardRoles = card.getRoles();
         if (cardRoles != null) {
            for (CardRole cr : cardRoles) {
-               if (procRole.equals(cr.getProcRole()) && cr.getUser().equals(user)) {
+               if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user))) {
                    return true;
                }
            }

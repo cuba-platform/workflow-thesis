@@ -158,7 +158,8 @@ public class TransitionForm extends AbstractForm {
         addAction(new AbstractAction("windowCommit") {
 
             public void actionPerform(Component component) {
-                doCommit();
+                if (doCommit())
+                    close(COMMIT_ACTION_ID, true);
             }
 
             @Override
@@ -180,18 +181,18 @@ public class TransitionForm extends AbstractForm {
         });
     }
 
-    protected void doCommit() {
+    protected boolean doCommit() {
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
-            return;
+            return false;
         }
         if ((dueDate != null) && (dueDate.getValue() != null) && (((Date)dueDate.getValue()).compareTo(TimeProvider.currentTimestamp()) < 0)) {
             showNotification(getMessage("dueDateIsLessThanNow"), NotificationType.WARNING);
-            return;
+            return false;
         }
         if ((dueDate != null) && dueDate.isRequired() && (dueDate.getValue() == null)) {
             showNotification(getMessage("putDueDate"), NotificationType.WARNING);
-            return;
+            return false;
         }
         if (cardRolesFrame != null) {
             Set<String> emptyRolesNames = getEmptyRolesNames();
@@ -201,7 +202,7 @@ public class TransitionForm extends AbstractForm {
                     message += MessageProvider.formatMessage(TransitionForm.class, "actorNotDefined.msg", emptyRoleName) + "<br/>";
                 }
                 showNotification(message, NotificationType.WARNING);
-                return;
+                return false;
             }
         }
 //                getDsContext().commit();
@@ -221,7 +222,8 @@ public class TransitionForm extends AbstractForm {
 
         if (dueDate != null)
             getDsContext().get("varsDs").commit();
-        close(COMMIT_ACTION_ID, true);
+
+        return true;
     }
     
 

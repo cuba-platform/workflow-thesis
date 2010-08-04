@@ -23,8 +23,8 @@ import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.gui.ServiceLocator
 
 class CardRoleEditor extends AbstractEditor{
-  private ProcRole procRole
-  private CollectionDatasource usersDs
+  protected ProcRole procRole
+  protected CollectionDatasource usersDs
   private Set<UUID> users;
 
   CardRoleEditor(IFrame frame) {
@@ -62,7 +62,7 @@ class CardRoleEditor extends AbstractEditor{
     }
   }
 
-  private void initUserLookup(ProcRole procRole) {
+  protected void initUserLookup(ProcRole procRole) {
     Role secRole = procRole.role
     String usersExclStr = ''
     if (users && !users.isEmpty()) {
