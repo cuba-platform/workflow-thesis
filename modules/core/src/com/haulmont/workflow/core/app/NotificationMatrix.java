@@ -15,7 +15,10 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.EmailerAPI;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.EmailException;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -184,24 +187,18 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     private Card reloadCard(Card card) {
-        Card reloadedCard = null;
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            em.setView(MetadataProvider.getViewRepository().getView(Card.class, "notification-card"));
-            reloadedCard = em.find(Card.class, card.getId());
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Card reloadedCard = em.find(Card.class, card.getId());
+        if (reloadedCard == null)
+            throw new RuntimeException(String.format("Card not found: %s", card.getId()));
+
         return reloadedCard;
     }
 
     private synchronized void load(String processPath) throws Exception {
         Map<String, NotificationType> matrix = cache.get(processPath);
-        if (matrix != null) {
+        if (matrix != null)
             return;
-        }
 
         String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook(new FileInputStream(confDir + "/" + processPath.replace('.', '/') + "/" + "notification.xls"));
@@ -219,9 +216,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
     public void reload(String processPath) throws Exception {
         String path = StringUtils.trimToNull(processPath);
-        if (path == null) {
+        if (path == null)
             throw new IllegalArgumentException("Path to notification matrix must not be empty or null");
-        }
 
         cache.remove(path);
 
@@ -244,38 +240,41 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     public void notify(Card card, String state, Assignment assignment, String role) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
-        if ("".equals(processPath)) {
-            return;
-        }
-
         Map<String, NotificationType> matrix = getMatrix(processPath);
 
-        if (matrix == null) {
+        if (matrix == null)
             return;
-        }
 
         Transaction tx = Locator.getTransaction();
         try {
+            Card reloadedCard = reloadCard(card);
 
-            Collection<CardRole> roleList = card.getRoles();
+            Collection<CardRole> roleList = reloadedCard.getRoles();
+            if (roleList == null || roleList.isEmpty())
+                return;
+
             for (CardRole cardRole : roleList) {
+                if (!reloadedCard.getProc().equals(cardRole.getProcRole().getProc()))
+                    continue;
+
                 String addresseeRole = cardRole.getCode();
+
                 if (role != null && ((assignment == null && role.equals(addresseeRole)) ||
                         (assignment != null && (!role.equals(addresseeRole) ||
-                                (role.equals(addresseeRole) && !cardRole.getUser().equals(assignment.getUser())))))) {
+                                (role.equals(addresseeRole) && !cardRole.getUser().equals(assignment.getUser()))))))
                     continue;
-                }
 
                 String key = state + '_' + addresseeRole;
                 NotificationType type;
+
                 if (BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
                         ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
-                    sendEmail(card, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
+                    sendEmail(reloadedCard, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
                 }
 
                 if (BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
                         ((type = matrix.get(key + "_" + TRAY_SHEET)) != null)) {
-                    createNotificationCardInfo(card, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
+                    createNotificationCardInfo(reloadedCard, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
                 }
             }
 
