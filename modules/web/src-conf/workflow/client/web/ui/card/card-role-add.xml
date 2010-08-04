@@ -25,7 +25,7 @@
             </query>
         </collectionDatasource>
 
-        <collectionDatasource id="userGroupsDs" class="com.haulmont.workflow.core.entity.UserGroup" view="browse">
+        <collectionDatasource id="userGroupsDs" class="com.haulmont.workflow.core.entity.UserGroup" view="card-role-add">
 
             <query>
                 <![CDATA[select ug from wf$UserGroup ug order by ug.name]]>

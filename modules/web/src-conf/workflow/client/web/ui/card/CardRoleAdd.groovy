@@ -30,6 +30,8 @@ import com.vaadin.data.Property
 import com.haulmont.cuba.gui.components.ActionsField
 import com.vaadin.terminal.Sizeable
 import com.vaadin.ui.Component
+import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.security.entity.Role
 
 class CardRoleAdd extends CardRoleEditor{
   private LookupField userGroupLookup
@@ -40,6 +42,7 @@ class CardRoleAdd extends CardRoleEditor{
   private CheckBox userCb
   private CheckBox userGroupCb
   private List cardRoles = []
+  List<User> invalidUsers = []
 
   def CardRoleAdd(IFrame frame) {
     super(frame);
@@ -101,14 +104,19 @@ class CardRoleAdd extends CardRoleEditor{
       UserGroup userGroup = (UserGroup)userGroupLookup.value
       CardRole item = (CardRole)getItem()
       userGroup.users.each{user ->
-        CardRole newCardRole = new CardRole(
-                card : item.card,
-                procRole : item.procRole,
-                notifyByEmail : item.notifyByEmail,
-                notifyByCardInfo : item.notifyByCardInfo,
-                user : user
-        )
-        this.@cardRoles << newCardRole
+        List<Role> userSecRoles = user.userRoles.collect{userRole -> userRole.role}
+        if (!procRole.role || userSecRoles.contains(procRole.role)) {
+          CardRole newCardRole = new CardRole(
+                  card: item.card,
+                  procRole: item.procRole,
+                  notifyByEmail: item.notifyByEmail,
+                  notifyByCardInfo: item.notifyByCardInfo,
+                  user: user
+          )
+          this.@cardRoles << newCardRole
+        } else {
+          this.@invalidUsers << user
+        }
       }
     } else {
       this.@cardRoles << (CardRole)getItem()

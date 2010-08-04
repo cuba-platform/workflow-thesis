@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 import com.haulmont.cuba.core.global.*;
@@ -180,7 +181,8 @@ public class CardRolesFrame extends AbstractFrame {
             public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
                 if (item == null) return;
                 editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
-                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));            }
+                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
+            }
         });
 
         createRoleLookup.addListener(new ValueListener() {
@@ -189,7 +191,7 @@ public class CardRolesFrame extends AbstractFrame {
                     return;
 
                 CardRole cr = new CardRole();
-                ProcRole procRole = (ProcRole) value;
+                final ProcRole procRole = (ProcRole) value;
                 Role secRole = procRole.getRole();
 
                 Map<String, Object> params = new HashMap<String, Object>();
@@ -203,10 +205,12 @@ public class CardRolesFrame extends AbstractFrame {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             List<CardRole> cardRoles = new ArrayList<CardRole>();
+                            List<User> invalidUsers = new ArrayList<User>();
                             try {
-                                cardRoles = (List<CardRole>)cardRoleAddClass.getMethod("getCardRoles").invoke(cardRoleAdd);
+                                cardRoles = (List<CardRole>) cardRoleAddClass.getMethod("getCardRoles").invoke(cardRoleAdd);
+                                invalidUsers = (List<User>) cardRoleAddClass.getMethod("getInvalidUsers").invoke(cardRoleAdd);
                             } catch (Exception e) {
-                                cardRoles.add((CardRole)cardRoleAdd.getItem());
+                                cardRoles.add((CardRole) cardRoleAdd.getItem());
                             }
                             for (CardRole cardRole : cardRoles) {
                                 if (procActorExists(cardRole.getProcRole(), cardRole.getUser())) continue;
@@ -214,6 +218,20 @@ public class CardRolesFrame extends AbstractFrame {
                                 assignNextSortOrder(cardRole);
                                 tmpCardRolesDs.addItem(cardRole);
                                 cardRole.setCard(card);
+                            }
+                            if (!invalidUsers.isEmpty()) {
+                                String usersList = "";
+                                for (User user : invalidUsers) {
+                                    usersList += user.getName() + ", ";
+                                }
+                                usersList = usersList.substring(0, usersList.length() - 2);
+                                String invalidUsersMessage = null;
+                                if (invalidUsers.size() == 1)
+                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, procRole.getName());
+                                else
+                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, procRole.getName());
+
+                                showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
                             }
                         }
                     }
@@ -234,12 +252,12 @@ public class CardRolesFrame extends AbstractFrame {
                 Item item = source.getItem(itemId);
                 final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
                 Property property = item.getItemProperty(columnId);
-                final User value = (User)property.getValue();
+                final User value = (User) property.getValue();
 
                 MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
                 final CollectionDatasource usersDs = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(), "usersDs", metaClass, "_minimal");
                 String query = "";
-                Role secRole =  cardRole.getProcRole().getRole();
+                Role secRole = cardRole.getProcRole().getRole();
                 Set<UUID> users = getUsersByProcRole(cardRole.getProcRole());
                 if (value != null)
                     users.remove(value.getId());
@@ -248,7 +266,7 @@ public class CardRolesFrame extends AbstractFrame {
                 } else {
                     String usersExclStr = " u.id not in (:custom$users)";
                     query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
-                        (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
+                            (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
                 }
                 usersDs.setQuery(query);
                 Map<String, Object> userDsParams = new HashMap<String, Object>();
@@ -279,15 +297,14 @@ public class CardRolesFrame extends AbstractFrame {
 
     private void initRolesTableBooleanColumn(final String propertyName,
                                              final ProcRolePermissionsService procRolePermissionsService,
-                                             com.vaadin.ui.Table vRolesTable)
-    {
+                                             com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = rolesTableDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
         vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
             public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
                 Property property = source.getItem(itemId).getItemProperty(columnId);
-                boolean value = (Boolean)property.getValue();
+                boolean value = (Boolean) property.getValue();
                 com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
                 checkBox.setValue(value);
                 boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
@@ -295,7 +312,7 @@ public class CardRolesFrame extends AbstractFrame {
                 checkBox.addListener(new Property.ValueChangeListener() {
                     public void valueChange(Property.ValueChangeEvent event) {
                         Property property = event.getProperty();
-                        Boolean value = (Boolean)property.getValue();
+                        Boolean value = (Boolean) property.getValue();
                         cardRole.setValue(propertyName, value);
                     }
                 });
@@ -318,14 +335,15 @@ public class CardRolesFrame extends AbstractFrame {
                             assignNextSortOrder(cardRole);
                             tmpCardRolesDs.addItem(cardRole);
                         }
-                    };
-                ((CardProcRolesDatasource)tmpCardRolesDs).fill = false;
+                    }
+                ;
+                ((CardProcRolesDatasource) tmpCardRolesDs).fill = false;
             }
             if (card.getProc() != null) {
                 List<ProcRole> roleList = card.getProc().getRoles();
                 if (roleList != null) {
                     for (ProcRole procRole : roleList) {
-                        if (!procRolesDs.containsItem(procRole.getUuid())&& (procRole.getInvisible()!=null?!procRole.getInvisible():true)) {
+                        if (!procRolesDs.containsItem(procRole.getUuid()) && (procRole.getInvisible() != null ? !procRole.getInvisible() : true)) {
                             procRolesDs.addItem(procRole);
                         }
                     }
@@ -341,7 +359,7 @@ public class CardRolesFrame extends AbstractFrame {
     public void procChanged(Proc proc) {
         procRolesDs.refresh(Collections.<String, Object>singletonMap("procId", proc));
         initCreateRoleLookup();
-        ((CardProcRolesDatasource)tmpCardRolesDs).fillForProc(proc);
+        ((CardProcRolesDatasource) tmpCardRolesDs).fillForProc(proc);
 
         for (Component component : rolesActions) {
             component.setEnabled(proc != null && isEnabled());
@@ -354,7 +372,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
         ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId")
-            .addParameter("procId", proc.getId());
+                .addParameter("procId", proc.getId());
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
         for (DefaultProcActor dpa : dpaList) {
@@ -423,12 +441,12 @@ public class CardRolesFrame extends AbstractFrame {
 
         //If card role assiciated with procRole exists, we'll find it
         if (cardRoles != null) {
-           for (CardRole cr : cardRoles) {
-               if (procRole.equals(cr.getProcRole())) {
-                   cardRole = cr;
-                   break;
-               }
-           }
+            for (CardRole cr : cardRoles) {
+                if (procRole.equals(cr.getProcRole())) {
+                    cardRole = cr;
+                    break;
+                }
+            }
         }
 
         //If card role with given code doesn't exist we'll create a new one
@@ -457,7 +475,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (proc.getRoles() == null) {
             proc = getDsContext().getDataService().reload(proc, "edit");
         }
-        
+
         for (ProcRole pr : proc.getRoles()) {
             if (roleCode.equals(pr.getCode())) {
                 procRole = pr;
@@ -465,7 +483,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
         if (procRole == null)
             return;
-        
+
         if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(procRole, user)) {
             CardRole cardRole = new CardRole();
             cardRole.setProcRole(procRole);
@@ -483,11 +501,11 @@ public class CardRolesFrame extends AbstractFrame {
     private boolean procActorExists(ProcRole procRole, User user) {
         List<CardRole> cardRoles = card.getRoles();
         if (cardRoles != null) {
-           for (CardRole cr : cardRoles) {
-               if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user))) {
-                   return true;
-               }
-           }
+            for (CardRole cr : cardRoles) {
+                if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user))) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -505,7 +523,7 @@ public class CardRolesFrame extends AbstractFrame {
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
             if ((BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr))
-                && procRolePermissionsService.isPermitted(card, pr, getState(), ProcRolePermissionType.ADD)){
+                    && procRolePermissionsService.isPermitted(card, pr, getState(), ProcRolePermissionType.ADD)) {
                 options.add(pr);
             }
         }
@@ -643,5 +661,5 @@ public class CardRolesFrame extends AbstractFrame {
             }
         }
     }
-    
+
 }
