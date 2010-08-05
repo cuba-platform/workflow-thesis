@@ -444,7 +444,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         }
 
         NotificationMatrixAPI notificationBean = Locator.lookup(NotificationMatrixAPI.NAME);
-        notificationBean.notify(c, WfConstants.CARD_STATE_CANCELED);
+        notificationBean.notifyByCard(c, WfConstants.CARD_STATE_CANCELED);
     }
 
     public void addListener(Listener listener) {

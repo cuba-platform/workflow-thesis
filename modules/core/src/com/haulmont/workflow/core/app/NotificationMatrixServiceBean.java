@@ -21,10 +21,10 @@ public class NotificationMatrixServiceBean implements NotificationMatrixService 
     private NotificationMatrixAPI notificationMatrixAPI;
 
     public void notify(Card card, String state) {
-        notificationMatrixAPI.notify(card, state);
+        notificationMatrixAPI.notifyByCard(card, state);
     }
 
     public void notify(Card card, String state, String excludedRole) {
-        notificationMatrixAPI.notify(card, state, excludedRole);
+        notificationMatrixAPI.notifyByCard(card, state, excludedRole);
     }
 }

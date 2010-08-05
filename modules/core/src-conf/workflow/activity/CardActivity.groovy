@@ -47,7 +47,7 @@ public class CardActivity implements ActivityBehaviour {
     cp?.setState(card.state)
 
     if (!delayedNotify)
-      notificationMatrix.notify(card, notificationState)
+      notificationMatrix.notifyByCard(card, notificationState)
   }
 
   protected Card findCard(ActivityExecution execution) {

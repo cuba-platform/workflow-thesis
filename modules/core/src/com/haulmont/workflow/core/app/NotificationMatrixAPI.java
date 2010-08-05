@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardRole;
 
 public interface NotificationMatrixAPI {
     String NAME = "workflow_NotificationMatrix";
@@ -37,9 +38,9 @@ public interface NotificationMatrixAPI {
         }
     }
 
-    void notify(Card card, String state);
+    void notifyByCard(Card card, String state);
     
-    void notify(Card card, String state, String excludedRole);
+    void notifyByCard(Card card, String state, String excludedRole);
 
-    void notify(Card card, String state, Assignment assignment, String assignmentRole);
+    void notifyByAssignment(Assignment assignment, CardRole cardRole, String state);
 }

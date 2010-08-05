@@ -195,6 +195,15 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         return reloadedCard;
     }
 
+    private Assignment reloadAssignment(Assignment assignment) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Assignment reloadedAssignment = em.find(Assignment.class, assignment.getId());
+        if (reloadedAssignment == null)
+            throw new RuntimeException(String.format("Assignment not found: %s", assignment.getId()));
+
+        return reloadedAssignment;
+    }
+
     private synchronized void load(String processPath) throws Exception {
         Map<String, NotificationType> matrix = cache.get(processPath);
         if (matrix != null)
@@ -229,15 +238,27 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         }
     }
 
-    public void notify(Card card, String state) {
-        notify(card, state, null, null);
+    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, NotificationType> matrix, String state) {
+        String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
+        NotificationType type;
+        String key = state + "_" + cardRole.getCode();
+
+        if (BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
+                ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
+            sendEmail(card, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
+        }
+
+        if (BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
+                ((type = matrix.get(key + "_" + TRAY_SHEET)) != null)) {
+            createNotificationCardInfo(card, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
+        }
     }
 
-    public void notify(Card card, String state, String excludedRole) {
-        notify(card, state, null, excludedRole);
+    public void notifyByCard(Card card, String state) {
+        notifyByCard(card, state, null);
     }
 
-    public void notify(Card card, String state, Assignment assignment, String role) {
+    public void notifyByCard(Card card, String state, String excludedRole) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
         Map<String, NotificationType> matrix = getMatrix(processPath);
@@ -254,29 +275,34 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 return;
 
             for (CardRole cardRole : roleList) {
-                if (!reloadedCard.getProc().equals(cardRole.getProcRole().getProc()))
-                    continue;
-
-                String addresseeRole = cardRole.getCode();
-
-                if (role != null && ((assignment == null && role.equals(addresseeRole)) ||
-                        (assignment != null && (!role.equals(addresseeRole) ||
-                                (role.equals(addresseeRole) && !cardRole.getUser().equals(assignment.getUser()))))))
-                    continue;
-
-                String key = state + '_' + addresseeRole;
-                NotificationType type;
-
-                if (BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
-                        ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
-                    sendEmail(reloadedCard, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
-                }
-
-                if (BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
-                        ((type = matrix.get(key + "_" + TRAY_SHEET)) != null)) {
-                    createNotificationCardInfo(reloadedCard, assignment, cardRole.getUser(), getScriptByNotificationType(processPath, type));
+                if (reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) && !cardRole.getCode().equals(excludedRole)) {
+                    notifyUser(card, cardRole, null, matrix, state);
                 }
             }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void notifyByAssignment(Assignment assignment, CardRole cardRole, String state) {
+        if (cardRole == null) {
+            return;
+        }
+
+        String processPath = StringUtils.trimToEmpty(assignment.getProc().getMessagesPack());
+
+        Map<String, NotificationType> matrix = getMatrix(processPath);
+
+        if (matrix == null)
+            return;
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            Assignment reloadAssignment = reloadAssignment(assignment);
+
+            notifyUser(reloadAssignment.getCard(), cardRole, reloadAssignment, matrix, state);
 
             tx.commit();
         } finally {
@@ -294,7 +320,6 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         }
         return notificationScript;
     }
-
 
     private Map<String, NotificationType> getMatrix(String processPath) {
         Map<String, NotificationType> matrix = cache.get(processPath);

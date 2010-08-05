@@ -42,7 +42,7 @@ public class ParallelAssigner extends MultiAssigner {
 
     Card card = findCard(execution)
 
-    notificationMatrix.notify(card, notificationState, role)
+    notificationMatrix.notifyByCard(card, notificationState, role)
     List<CardRole> cardRoles = getCardRoles(execution, card)
     if (cardRoles.isEmpty()) {
       if (forRefusedOnly(execution)) {
@@ -80,7 +80,7 @@ public class ParallelAssigner extends MultiAssigner {
       }
       em.persist(assignment)
 
-      notificationMatrix.notify(card, notificationState, assignment, role)
+      notificationMatrix.notifyByAssignment(assignment, cr, notificationState)
     }
     return true
   }
