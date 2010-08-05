@@ -51,22 +51,50 @@ public class ProcessAction extends AbstractAction {
 
     public void actionPerform(Component component) {
         final Window window = ComponentsHelper.getWindow(frame);
-        if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
-            card = (Card) ((Window.Editor) window).getItem();
-            
-            final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
+        if (!(window instanceof Window.Editor)) return;
 
-            final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
-            managerChain.setCard(card);
-            managerChain.setAssignmentId(assignmentId);
+        card = (Card) ((Window.Editor) window).getItem();
+        final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
 
-            for (Object o : window.getContext().getParams().entrySet()) {
-                Map.Entry entry = (Map.Entry) o;
-                String key = (String) entry.getKey();
-                if (key.startsWith(SEND_PREFIX)) {
-                    managerChain.getCommonParams().put(key.substring(5), entry.getValue());
-                }
+        final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
+        managerChain.setCard(card);
+        managerChain.setAssignmentId(assignmentId);
+
+        for (Object o : window.getContext().getParams().entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            String key = (String) entry.getKey();
+            if (key.startsWith(SEND_PREFIX)) {
+                managerChain.getCommonParams().put(key.substring(5), entry.getValue());
             }
+        }
+
+        //we won't commit the editor if user presses no in cancel process confirmation form
+        if (WfConstants.ACTION_CANCEL.equals(actionName)) {
+            App.getInstance().getWindowManager().showOptionDialog(
+                    MessageProvider.getMessage(getClass(), "cancelProcess.title"),
+                    MessageProvider.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
+                    IFrame.MessageType.CONFIRMATION,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.YES) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    if (((Window.Editor) window).commit()) {
+                                        managerChain.setHandler(new FormManagerChain.Handler() {
+                                            public void onSuccess(String comment) {
+                                                cancelProcess(window, managerChain);
+                                            }
+
+                                            public void onFail() {
+                                            }
+                                        });
+                                        managerChain.doManagerBefore("");
+                                    }
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO)
+                    }
+            );
+        } else if (((Window.Editor) window).commit()) {
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
@@ -114,29 +142,6 @@ public class ProcessAction extends AbstractAction {
                 });
                 managerChain.doManagerBefore("");
 
-            } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-                App.getInstance().getWindowManager().showOptionDialog(
-                        MessageProvider.getMessage(getClass(), "cancelProcess.title"),
-                        MessageProvider.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
-                        IFrame.MessageType.CONFIRMATION,
-                        new Action[] {
-                                new DialogAction(DialogAction.Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        managerChain.setHandler(new FormManagerChain.Handler() {
-                                            public void onSuccess(String comment) {
-                                                cancelProcess(window, managerChain);
-                                            }
-
-                                            public void onFail() {
-                                            }
-                                        });
-                                        managerChain.doManagerBefore("");
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.NO)
-                        }
-                );
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
                 Assignment assignment = ServiceLocator.getDataService().load(lc);
