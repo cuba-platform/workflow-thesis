@@ -235,7 +235,8 @@ public class TransitionForm extends AbstractForm {
         proc = cardRolesDs.getDataService().reload(proc, "edit");
 
         for (String roleCode : requiredRolesCodes) {
-            cardRolesFrame.addProcActor(proc, roleCode, null, defaultNotifyByEmail);
+            if (!roleCode.contains("|"))
+                cardRolesFrame.addProcActor(proc, roleCode, null, defaultNotifyByEmail);
         }
     }
 
@@ -256,16 +257,55 @@ public class TransitionForm extends AbstractForm {
         //if we removed required role from datasource
         Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes();
 
+        Set<String> requiredRolesChoiceCodes = new HashSet<String>();
+        for (String requiredRoleCode: emptyRequiredRolesCodes) {
+            if (requiredRoleCode.contains("|"))
+                requiredRolesChoiceCodes.add(requiredRoleCode);
+        }
+
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
             if (cardRole.getUser() == null) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
+
+            if (!requiredRolesChoiceCodes.isEmpty()) {
+                String choiceRole = null;               
+                for (String requiredRolesChoiceCode: requiredRolesChoiceCodes) {
+                    String[] roles = requiredRolesChoiceCode.split("\\|");
+                    if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
+                        choiceRole = requiredRolesChoiceCode;
+                        break;
+                    }                   
+                }
+
+                if (choiceRole != null) {
+                    requiredRolesChoiceCodes.remove(choiceRole);
+                    emptyRequiredRolesCodes.remove(choiceRole);
+                }
+            }
+
             emptyRequiredRolesCodes.remove(cardRole.getCode());
         }
+
         for (String roleCode : emptyRequiredRolesCodes) {
-            emptyRolesNames.add(procRolesNames.get(roleCode));
+            if (roleCode.contains("|")) {
+                String formattingCode = "";
+                String orStr = " " + MessageProvider.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
+                String[] roles = roleCode.split("\\|");
+                for (String role: roles) {
+                    formattingCode += procRolesNames.get(role) + orStr;
+                }
+
+                if (formattingCode.endsWith(orStr))
+                    formattingCode = formattingCode.substring(0, formattingCode.lastIndexOf(orStr));
+
+                emptyRolesNames.add(formattingCode);
+            } else {
+                emptyRolesNames.add(procRolesNames.get(roleCode));
+            }
         }
+
         return emptyRolesNames;
     }
 
