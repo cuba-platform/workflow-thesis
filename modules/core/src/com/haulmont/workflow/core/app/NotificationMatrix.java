@@ -10,10 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.EmailException;
@@ -274,8 +271,10 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             if (roleList == null || roleList.isEmpty())
                 return;
 
+            User user = SecurityProvider.currentUserSession().getUser();
             for (CardRole cardRole : roleList) {
-                if (reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) && !cardRole.getCode().equals(excludedRole)) {
+                if (!user.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc())
+                        && !cardRole.getCode().equals(excludedRole)) {
                     notifyUser(card, cardRole, null, matrix, state);
                 }
             }
@@ -287,7 +286,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     public void notifyByAssignment(Assignment assignment, CardRole cardRole, String state) {
-        if (cardRole == null) {
+        User user = SecurityProvider.currentUserSession().getUser();
+        if (cardRole == null || user.equals(cardRole.getUser())) {
             return;
         }
 
