@@ -28,7 +28,6 @@
                 <rows>
                     <row>
                         <lookupField id="createRoleLookup" width="150"/>
-                        <button id="editRole" action="rolesTable.edit" icon="icons/edit.png"/>
                         <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
                         <button id="moveUp" action="rolesTable.moveUp" icon="icons/up.png"/>
                         <button id="moveDown" action="rolesTable.moveDown" icon="icons/down.png"/>

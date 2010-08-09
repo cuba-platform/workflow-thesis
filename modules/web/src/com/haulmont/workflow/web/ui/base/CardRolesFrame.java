@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Component;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.WebCheckBox;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -44,9 +46,12 @@ import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -57,6 +62,8 @@ public class CardRolesFrame extends AbstractFrame {
     public interface Listener {
         void afterInitDefaultActors(Proc proc);
     }
+
+    private Log log = LogFactory.getLog(CardRolesFrame.class);
 
     private Set<Listener> listeners = new HashSet<Listener>();
 
@@ -99,27 +106,12 @@ public class CardRolesFrame extends AbstractFrame {
         createRoleLookup = getComponent("createRoleLookup");
 
         rolesActions.add(createRoleLookup);
-        rolesActions.add(getComponent("editRole"));
         rolesActions.add(getComponent("removeRole"));
 
         rolesTable = getComponent("rolesTable");
         TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
 
         rolesTableDs = rolesTable.getDatasource();
-        rolesTable.addAction(new AbstractAction("edit") {
-            public void actionPerform(Component component) {
-                Entity entity = rolesTableDs.getItem();
-                if (entity == null) return;
-                Object users = getUsersByProcRole(((CardRole) entity).getProcRole());
-                openEditor("wf$CardRole.edit", entity, OpenType.DIALOG,
-                        Collections.singletonMap("users", users), rolesTableDs);
-            }
-
-            @Override
-            public String getCaption() {
-                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Edit");
-            }
-        });
 
         initRolesTable();
 
@@ -180,7 +172,7 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
                 if (item == null) return;
-                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
+//                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
                 removeAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
             }
         });
@@ -190,52 +182,15 @@ public class CardRolesFrame extends AbstractFrame {
                 if ((value == null) || createRoleCaption.equals(value))
                     return;
 
-                CardRole cr = new CardRole();
                 final ProcRole procRole = (ProcRole) value;
-                Role secRole = procRole.getRole();
-
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("procRole", procRole);
-                params.put("secRole", secRole);
-                params.put("proc", getProc());
-                params.put("users", getUsersByProcRole(procRole));
-                final Class cardRoleAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.card.CardRoleAdd");
-                final Window.Editor cardRoleAdd = openEditor("wf$CardRole.add", cr, OpenType.DIALOG, params, cardRolesDs);
-                cardRoleAdd.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            List<CardRole> cardRoles = new ArrayList<CardRole>();
-                            List<User> invalidUsers = new ArrayList<User>();
-                            try {
-                                cardRoles = (List<CardRole>) cardRoleAddClass.getMethod("getCardRoles").invoke(cardRoleAdd);
-                                invalidUsers = (List<User>) cardRoleAddClass.getMethod("getInvalidUsers").invoke(cardRoleAdd);
-                            } catch (Exception e) {
-                                cardRoles.add((CardRole) cardRoleAdd.getItem());
-                            }
-                            for (CardRole cardRole : cardRoles) {
-                                if (procActorExists(cardRole.getProcRole(), cardRole.getUser())) continue;
-                                cardRole.setCode(cardRole.getProcRole().getCode());
-                                assignNextSortOrder(cardRole);
-                                tmpCardRolesDs.addItem(cardRole);
-                                cardRole.setCard(card);
-                            }
-                            if (!invalidUsers.isEmpty()) {
-                                String usersList = "";
-                                for (User user : invalidUsers) {
-                                    usersList += user.getName() + ", ";
-                                }
-                                usersList = usersList.substring(0, usersList.length() - 2);
-                                String invalidUsersMessage = null;
-                                if (invalidUsers.size() == 1)
-                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, procRole.getName());
-                                else
-                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, procRole.getName());
-
-                                showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
-                            }
-                        }
-                    }
-                });
+                CardRole cardRole = new CardRole();
+                cardRole.setProcRole(procRole);
+                cardRole.setCode(procRole.getCode());
+                cardRole.setNotifyByEmail(true);
+                cardRole.setNotifyByCardInfo(true);
+                cardRole.setCard(card);
+                assignNextSortOrder(cardRole);
+                tmpCardRolesDs.addItem(cardRole);
 
                 createRoleLookup.setValue(null);
             }
@@ -291,8 +246,106 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
+        final CardRolesFrame crf = this;
+
+        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+                com.vaadin.ui.Button addUserGroupButton = new com.vaadin.ui.Button();
+                addUserGroupButton.setCaption("Add group");
+                final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
+                addUserGroupButton.addListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG);
+                        window.addListener(new Window.CloseListener() {
+                            public void windowClosed(String actionId) {
+                                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                    Set<User> selectedUsers = null;
+                                    Set<User> validUsers = new HashSet<User>();
+                                    Set<User> invalidUsers = new HashSet<User>();
+                                    try {
+                                        selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
+                                    } catch (Exception e) {
+                                        throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
+                                    }
+
+                                    Role secRole = cardRole.getProcRole().getRole();
+                                    for (User user : selectedUsers) {
+                                        if (!procActorExists(cardRole.getProcRole(), user)
+                                                || cardRole.getUser().equals(user)) {
+                                            validUsers.add(user);
+                                            if ((secRole != null) && !(userInRole(user, secRole))) {
+                                                invalidUsers.add(user);
+                                                validUsers.remove(user);
+                                            }
+                                        }
+                                    }
+                                    User oneOfValidUsers = null;
+                                    if (!validUsers.isEmpty()) {
+                                        oneOfValidUsers = validUsers.iterator().next();
+                                    }
+                                    if (oneOfValidUsers != null) {
+                                        cardRole.setUser(oneOfValidUsers);
+                                        validUsers.remove(oneOfValidUsers);
+                                        tmpCardRolesDs.updateItem(cardRole);
+                                    }
+                                    List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
+                                    for (CardRole cr : cardRolesToAdd) {
+                                        tmpCardRolesDs.addItem(cr);
+                                    }
+                                    if (!invalidUsers.isEmpty()) {
+                                        String usersList = "";
+                                        for (User user : invalidUsers) {
+                                            usersList += user.getName() + ", ";
+                                        }
+                                        usersList = usersList.substring(0, usersList.length() - 2);
+                                        String invalidUsersMessage = null;
+                                        if (invalidUsers.size() == 1)
+                                            invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
+                                        else
+                                            invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
+
+                                        showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                });
+
+                addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
+                addUserGroupButton.setWidth("40px");
+                return addUserGroupButton;
+            }
+        });
+
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+    }
+
+    private boolean userInRole(User user, Role role) {
+       if (user.getUserRoles() == null) return false;
+       for (UserRole userRole : user.getUserRoles()) {
+           if (userRole.getRole().equals(role)) return true;
+       }
+       return false;
+    }
+
+    private List<CardRole> createCardRoles(Set<User> users, CardRole cardRole) {
+        List<CardRole> cardRoles = new ArrayList<CardRole>();
+        for (User user : users) {
+            CardRole cr = new CardRole();
+            cr.setUser(user);
+            cr.setProcRole(cardRole.getProcRole());
+            cr.setCode(cardRole.getCode());
+            cr.setNotifyByEmail(true);
+            cr.setNotifyByCardInfo(true);
+            cr.setCard(card);
+            cardRoles.add(cr);
+            assignNextSortOrder(cr);
+        }
+        return cardRoles;
     }
 
     private void initRolesTableBooleanColumn(final String propertyName,

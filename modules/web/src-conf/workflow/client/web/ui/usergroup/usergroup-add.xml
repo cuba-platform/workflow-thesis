@@ -1,0 +1,24 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.usergroup.UserGroupAdd"
+        messagesPack="workflow.client.web.ui.usergroup"
+        datasource="userGroupDs"
+        caption="msg://userGroupAdd.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="userGroupsDs" class="com.haulmont.cuba.core.entity.StandardEntity" view="_local">
+            <datasourceClass>workflow.client.web.ui.usergroup.UserGroupsDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <#assign width = 300>
+    <layout expand="main">
+        <hbox id="main" stylename="edit-area" expand="twinColumn" margin="true">
+            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" width="100%"/>
+        </hbox>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>

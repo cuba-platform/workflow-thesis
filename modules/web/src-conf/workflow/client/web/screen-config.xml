@@ -61,7 +61,7 @@
     <screen id="wf$UserGroup.edit"
             template="workflow/client/web/ui/usergroup/usergroup-edit.xml"/>
 
-    <screen id="wf$CardRole.add"
-            template="workflow/client/web/ui/card/card-role-add.xml"/>
+    <screen id="wf$UserGroup.add"
+            template="workflow/client/web/ui/usergroup/usergroup-add.xml"/>
 
 </screen-config>
