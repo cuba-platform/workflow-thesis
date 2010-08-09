@@ -315,7 +315,8 @@ public class CardRolesFrame extends AbstractFrame {
                 });
 
                 addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
-                addUserGroupButton.setWidth("40px");
+                addUserGroupButton.setWidth("70px");
+                source.setColumnWidth(columnId, 80);
                 return addUserGroupButton;
             }
         });
