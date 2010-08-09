@@ -42,7 +42,6 @@ public class ParallelAssigner extends MultiAssigner {
 
     Card card = findCard(execution)
 
-    notificationMatrix.notifyByCard(card, notificationState, role)
     List<CardRole> cardRoles = getCardRoles(execution, card)
     if (cardRoles.isEmpty()) {
       if (forRefusedOnly(execution)) {
@@ -59,6 +58,7 @@ public class ParallelAssigner extends MultiAssigner {
     master.setCard(card)
     em.persist(master)
 
+    Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment,CardRole>();
     for (CardRole cr: cardRoles) {
       Assignment assignment = new Assignment()
       assignment.setName(execution.getActivityName())
@@ -80,8 +80,10 @@ public class ParallelAssigner extends MultiAssigner {
       }
       em.persist(assignment)
 
-      notificationMatrix.notifyByAssignment(assignment, cr, notificationState)
+      assignmentsCardRoleMap.put(assignment, cr)
     }
+
+    notificationMatrix.notifyByCardAndAssignments(card, assignmentsCardRoleMap, notificationState);
     return true
   }
 

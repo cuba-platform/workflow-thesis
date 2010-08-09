@@ -56,7 +56,6 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     User user
     Card card = findCard(execution)
 
-    notificationMatrix.notifyByCard(card,notificationState, role)
     if (!isBlank(assignee)) {
       Query q = em.createQuery('select u from sec$User u where u.loginLowerCase = ?1')
       q.setParameter(1, assignee.toLowerCase())
@@ -93,7 +92,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    notificationMatrix.notifyByAssignment(assignment, cr, notificationState)
+    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState);
 
     afterCreateAssignment(assignment)
 

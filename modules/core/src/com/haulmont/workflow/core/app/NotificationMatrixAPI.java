@@ -14,6 +14,9 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 
+import java.util.List;
+import java.util.Map;
+
 public interface NotificationMatrixAPI {
     String NAME = "workflow_NotificationMatrix";
 
@@ -42,5 +45,5 @@ public interface NotificationMatrixAPI {
     
     void notifyByCard(Card card, String state, String excludedRole);
 
-    void notifyByAssignment(Assignment assignment, CardRole cardRole, String state);
+    void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state);
 }
