@@ -1,0 +1,29 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.CardCommentFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        caption="msg://cardCommentFrame.caption"
+        >
+
+    <dsContext>
+        <hierarchicalDatasource id="commentDs" class="com.haulmont.workflow.core.entity.CardComment"
+                                hierarchyProperty="parent" view="browse">
+            <query>
+                <![CDATA[select cc from wf$CardComment cc where cc.card.id = :param$item order by cc.createTs]]>
+            </query>
+        </hierarchicalDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox expand="scrollbox" margin="true" height="100%">
+            <button id="add" icon="icons/create.png" />
+            <scrollbox id="scrollbox">
+                <vbox>
+                    <widgetsTree id="treeComment">
+                        <items datasource="commentDs"/>
+                    </widgetsTree>
+                </vbox>
+            </scrollbox>
+        </vbox>
+    </layout>
+</window>

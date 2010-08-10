@@ -1,7 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="workflow.client.web.ui.card.CardSend"
-        messagesPack="workflow.client.web.ui.card"
+        class="com.haulmont.workflow.web.ui.base.CardSend"
+        messagesPack="com.haulmont.workflow.web.ui.base"
         caption="msg://cardSend.caption"
         >
 
@@ -40,6 +40,7 @@
                 <label value="msg://cardSend.comment" width="100"/>
                 <textField id="commentText" width="400" rows="4" required="true"/>
             </hbox>
+            <checkBox id="notifyByCardInfo" caption="msg://cardSend.notifyByCardInfo" />
             <vbox margin="true">
                 <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
             </vbox>

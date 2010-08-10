@@ -53,7 +53,7 @@
             template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>
     
     <screen id="wf$Card.send"
-            template="workflow/client/web/ui/card/card-send.xml"/>
+            template="workflow/web/ui/base/card-send.xml"/>
 
     <screen id="wf$UserGroup.browse"
             template="workflow/client/web/ui/usergroup/usergroup-browse.xml"/>

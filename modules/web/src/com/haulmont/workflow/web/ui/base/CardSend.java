@@ -9,12 +9,15 @@
  * $Id$
  */
 
-package workflow.client.web.ui.card;
+package com.haulmont.workflow.web.ui.base;
 
 
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Button;
@@ -29,16 +32,13 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.MailService;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardRole;
-import com.haulmont.workflow.core.entity.ProcRole;
-import com.haulmont.workflow.web.ui.base.AbstractCardEditor;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.*;
 import java.util.List;
 
-public class CardSend extends AbstractCardEditor {
+public class CardSend extends AbstractWindow {
 
     protected CollectionDatasourceImpl<User, UUID> tmpUserDs;
     protected CollectionDatasource<User, UUID> userDs;
@@ -49,6 +49,8 @@ public class CardSend extends AbstractCardEditor {
     protected LookupField createUserLookup;
     protected Table usersTable;
     protected Card card;
+    protected CardComment parent;
+    protected CheckBox notifyByCardInfo;
 
     public CardSend(IFrame frame) {
         super(frame);
@@ -57,8 +59,13 @@ public class CardSend extends AbstractCardEditor {
     protected void init(Map<String, Object> params) {
         super.init(params);
         card = (Card) params.get("item");
+        if(PersistenceHelper.isNew(card))
+            throw new RuntimeException("Card is new");
         if (card == null)
             throw new RuntimeException("Card null");
+        notifyByCardInfo = getComponent("notifyByCardInfo");
+        notifyByCardInfo.setValue(true);
+        parent = (CardComment)params.get("parent");
         tmpUserDs = getDsContext().get("tmpUserDs");
         tmpUserDs.valid();
         createUserCaption = getMessage("cardSend.createUserCaption");
@@ -150,9 +157,9 @@ public class CardSend extends AbstractCardEditor {
                 TextField comment = getComponent("commentText");
                 String commentStr = comment.getValue();
                 if (commentStr != null && commentStr.length() > 0) {
+                    List<User> users = new LinkedList<User>();
                     if (tmpUserDs.size() > 0) {
                         MailService mailService = ServiceLocator.lookup(MailService.JNDI_NAME);
-                        List<User> users = new LinkedList<User>();
                         for (UUID uuid : tmpUserDs.getItemIds()) {
                             users.add(tmpUserDs.getItem(uuid));
                         }
@@ -161,12 +168,35 @@ public class CardSend extends AbstractCardEditor {
                         showNotification(getMessage("cardSend.noUsers"), IFrame.NotificationType.WARNING);
                         return;
                     }
-
-                    close("cancel", true);
+                    if ((Boolean) notifyByCardInfo.getValue()) {
+                        Set<Entity> toCommit = new HashSet<Entity>();
+                        for (UUID uuid : tmpUserDs.getItemIds()) {
+                            toCommit.add(createCardInfo(card, tmpUserDs.getItem(uuid), commentStr));
+                        }
+                        CommitContext commitContext = new CommitContext(toCommit);
+                        ServiceLocator.getDataService().commit(commitContext);
+                    }
+                    Set<Entity> toCommit = new HashSet<Entity>();
+                    CardComment cardComment = new CardComment();
+                    if(parent != null){
+                        cardComment.setAddressees(users);
+                        cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setCard(card);
+                        cardComment.setComment(commentStr);
+                        cardComment.setParent(parent);
+                    }else{
+                        cardComment.setAddressees(users);
+                        cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setCard(card);
+                        cardComment.setComment(commentStr);
+                    }
+                    toCommit.add(cardComment);
+                    CommitContext commitContext = new CommitContext(toCommit);
+                    ServiceLocator.getDataService().commit(commitContext);
+                    close(Window.COMMIT_ACTION_ID, true);
                 } else {
                     showNotification(getMessage("cardSend.noComment"), IFrame.NotificationType.WARNING);
                 }
-
             }
 
             @Override
@@ -233,15 +263,6 @@ public class CardSend extends AbstractCardEditor {
         createUserLookup.setNullOption(createUserCaption);
     }
 
-    public void setItem(Entity item) {
-        super.setItem(item);
-    }
-
-    @Override
-    protected boolean isCommentVisible() {
-        return true;
-    }
-
     @Override
     public void applySettings(Settings settings) {
         super.applySettings(settings);
@@ -250,5 +271,18 @@ public class CardSend extends AbstractCardEditor {
             window.setClosable(false);
             window.setResizable(false);
         }
+    }
+
+    protected CardInfo createCardInfo(Card card, User user, String comment) {
+        CardInfo ci = new CardInfo();
+        ci.setCard(card);
+        ci.setType(5);
+        ci.setUser(user);
+        Proc proc  = card.getProc();
+        if(proc != null)
+            ci.setJbpmExecutionId(proc.getJbpmProcessKey());
+        ci.setActivity("Comment");
+        ci.setDescription(card.getDescription()+"("+comment+")");
+        return ci;
     }
 }
