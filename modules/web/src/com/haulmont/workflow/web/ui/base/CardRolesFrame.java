@@ -242,87 +242,91 @@ public class CardRolesFrame extends AbstractFrame {
                 });
                 boolean editable = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
                 usersLookup.setEditable(editable);
-                return usersSelect;
-            }
-        });
 
-        final CardRolesFrame crf = this;
-
-        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
-            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
-                com.vaadin.ui.Button addUserGroupButton = new com.vaadin.ui.Button();
-                addUserGroupButton.setCaption("Add group");
-                final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
-                addUserGroupButton.addListener(new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent event) {
-                        final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG);
-                        window.addListener(new Window.CloseListener() {
-                            public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                    Set<User> selectedUsers = null;
-                                    Set<User> validUsers = new HashSet<User>();
-                                    Set<User> invalidUsers = new HashSet<User>();
-                                    try {
-                                        selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
-                                    } catch (Exception e) {
-                                        throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
-                                    }
-
-                                    Role secRole = cardRole.getProcRole().getRole();
-                                    for (User user : selectedUsers) {
-                                        if (!procActorExists(cardRole.getProcRole(), user)
-                                                || cardRole.getUser().equals(user)) {
-                                            validUsers.add(user);
-                                            if ((secRole != null) && !(userInRole(user, secRole))) {
-                                                invalidUsers.add(user);
-                                                validUsers.remove(user);
-                                            }
-                                        }
-                                    }
-                                    User oneOfValidUsers = null;
-                                    if (!validUsers.isEmpty()) {
-                                        oneOfValidUsers = validUsers.iterator().next();
-                                    }
-                                    if (oneOfValidUsers != null) {
-                                        cardRole.setUser(oneOfValidUsers);
-                                        validUsers.remove(oneOfValidUsers);
-                                        tmpCardRolesDs.updateItem(cardRole);
-                                    }
-                                    List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
-                                    for (CardRole cr : cardRolesToAdd) {
-                                        tmpCardRolesDs.addItem(cr);
-                                    }
-                                    if (!invalidUsers.isEmpty()) {
-                                        String usersList = "";
-                                        for (User user : invalidUsers) {
-                                            usersList += user.getName() + ", ";
-                                        }
-                                        usersList = usersList.substring(0, usersList.length() - 2);
-                                        String invalidUsersMessage = null;
-                                        if (invalidUsers.size() == 1)
-                                            invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
-                                        else
-                                            invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
-
-                                        showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
-                                    }
-
-                                }
-                            }
-                        });
-                    }
-                });
-
-                addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
-                addUserGroupButton.setWidth("70px");
-                source.setColumnWidth(columnId, 80);
-                return addUserGroupButton;
+                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
+                HorizontalLayout hbox = new HorizontalLayout();
+                hbox.addComponent(usersSelect);
+                hbox.addComponent(addGroupButton);
+                hbox.setExpandRatio(usersSelect, 1.0f);
+                hbox.setSizeFull();
+                hbox.setSpacing(true);
+                return hbox;
             }
         });
 
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+    }
+
+    private com.vaadin.ui.Button createAddGroupButton(final CardRole cardRole) {
+        final CardRolesFrame crf = this;
+        com.vaadin.ui.Button addUserGroupButton = new com.vaadin.ui.Button();
+        addUserGroupButton.setCaption("Add group");
+        final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
+        addUserGroupButton.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG);
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                            Set<User> selectedUsers = null;
+                            Set<User> validUsers = new HashSet<User>();
+                            Set<User> invalidUsers = new HashSet<User>();
+                            try {
+                                selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
+                            } catch (Exception e) {
+                                throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
+                            }
+
+                            Role secRole = cardRole.getProcRole().getRole();
+                            for (User user : selectedUsers) {
+                                if (!procActorExists(cardRole.getProcRole(), user)
+                                        || cardRole.getUser().equals(user)) {
+                                    validUsers.add(user);
+                                    if ((secRole != null) && !(userInRole(user, secRole))) {
+                                        invalidUsers.add(user);
+                                        validUsers.remove(user);
+                                    }
+                                }
+                            }
+                            User oneOfValidUsers = null;
+                            if (!validUsers.isEmpty()) {
+                                oneOfValidUsers = validUsers.iterator().next();
+                            }
+                            if (oneOfValidUsers != null) {
+                                cardRole.setUser(oneOfValidUsers);
+                                validUsers.remove(oneOfValidUsers);
+                                tmpCardRolesDs.updateItem(cardRole);
+                            }
+                            List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
+                            for (CardRole cr : cardRolesToAdd) {
+                                tmpCardRolesDs.addItem(cr);
+                            }
+                            if (!invalidUsers.isEmpty()) {
+                                String usersList = "";
+                                for (User user : invalidUsers) {
+                                    usersList += user.getName() + ", ";
+                                }
+                                usersList = usersList.substring(0, usersList.length() - 2);
+                                String invalidUsersMessage = null;
+                                if (invalidUsers.size() == 1)
+                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
+                                else
+                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
+
+                                showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
+                            }
+
+                        }
+                    }
+                });
+            }
+        });
+
+        addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
+        addUserGroupButton.setWidth("70px");
+        return addUserGroupButton;
+
     }
 
     private boolean userInRole(User user, Role role) {

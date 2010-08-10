@@ -51,11 +51,11 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
 
         List<UserGroup> userGroups = dataservice.loadList(ctx);
 
-        for (User user : users) {
-            data.put(user.getId(), user);
-        }
         for (UserGroup userGroup : userGroups) {
             data.put(userGroup.getId(), userGroup);
+        }
+        for (User user : users) {
+            data.put(user.getId(), user);
         }
 
 //        State prevState = state;
