@@ -10,28 +10,17 @@
  */
  package workflow.client.web.ui.usergroup
 
-import com.haulmont.workflow.web.ui.base.action.AbstractForm
-import com.haulmont.cuba.gui.components.AbstractWindow
-import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.gui.components.AbstractAction
-import com.haulmont.cuba.gui.components.Component
+import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.MessageProvider
 import com.haulmont.cuba.gui.AppConfig
-import com.haulmont.cuba.gui.components.TwinColumn
-import com.haulmont.workflow.core.entity.UserGroup
-import com.haulmont.workflow.core.entity.ProcRole
-import com.haulmont.workflow.core.entity.CardRole
-import com.haulmont.cuba.security.entity.Role
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper
-import com.vaadin.ui.Window
-import com.haulmont.cuba.gui.settings.Settings
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
-import com.haulmont.cuba.gui.data.Datasource
-import com.vaadin.terminal.Resource
-import com.vaadin.terminal.ThemeResource
-import com.haulmont.cuba.core.entity.Entity
+import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect
+import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect.OptionStyleGenerator
+import com.haulmont.workflow.core.entity.UserGroup
+import com.vaadin.ui.AbstractSelect
+import com.haulmont.cuba.gui.components.*
 
 class UserGroupAdd extends AbstractWindow{
   private TwinColumn twinColumn
@@ -46,13 +35,15 @@ class UserGroupAdd extends AbstractWindow{
     super.init(params);
     twinColumn = getComponent('twinColumn')
     userGroupsDs = getDsContext().get('userGroupsDs')
-//    userGroupsDs.addListener([
-//            stateChanged : {Datasource ds, Datasource.State prevState, Datasource.State state ->
-//              if (state == Datasource.State.VALID) {
-//                setUserGroupsIcons()
-//              }
-//            }
-//    ] as DsListenerAdapter)
+
+    TwinColumnSelect twinColumnSelect = (TwinColumnSelect)WebComponentsHelper.unwrap(twinColumn)
+    twinColumnSelect.setStyleGenerator([
+      generateStyle : {AbstractSelect source, Object itemId, boolean selected ->
+        Object currentItem = userGroupsDs.getItem(itemId)
+        if (currentItem instanceof UserGroup) return 'usergroup'
+        return '';
+      }
+      ] as OptionStyleGenerator)
 
     addAction(new AbstractAction("windowCommit") {
         public void actionPerform(Component component) {
@@ -78,19 +69,6 @@ class UserGroupAdd extends AbstractWindow{
         }
     });
   }
-
-//  private void setUserGroupsIcons() {
-//    List userGroupDsItems = userGroupsDs.getItemIds().collect{itemId -> userGroupsDs.getItem(itemId)}
-//    com.vaadin.ui.TwinColSelect vTwinColumn = (com.vaadin.ui.TwinColSelect)WebComponentsHelper.unwrap(twinColumn)
-////    Resource userGroupIcon = new ThemeResource("icons/userGroup.png");
-//    String groupCaption = getMessage('group')
-//    userGroupDsItems.each{item ->
-//      if (item instanceof UserGroup) {
-////        vTwinColumn.setItemIcon(item.getId(), userGroupIcon)
-//        vTwinColumn.setItemCaption(item.id, vTwinColumn.getItemCaption(item.id) + ' ' + groupCaption)
-//      }
-//    }
-//  }
 
   private void processSelectedItems(Set selectedItems) {
     Set userGroups = selectedItems.findAll{Entity item -> item instanceof UserGroup}
