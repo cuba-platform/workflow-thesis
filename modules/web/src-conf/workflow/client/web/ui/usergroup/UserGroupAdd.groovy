@@ -40,7 +40,7 @@ class UserGroupAdd extends AbstractWindow{
     twinColumnSelect.setStyleGenerator([
       generateStyle : {AbstractSelect source, Object itemId, boolean selected ->
         Object currentItem = userGroupsDs.getItem(itemId)
-        if (currentItem instanceof UserGroup) return 'usergroup'
+        if (currentItem instanceof UserGroup) return 'marked'
         return '';
       }
       ] as OptionStyleGenerator)
