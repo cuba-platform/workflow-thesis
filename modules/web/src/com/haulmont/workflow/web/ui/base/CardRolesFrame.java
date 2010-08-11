@@ -316,7 +316,7 @@ public class CardRolesFrame extends AbstractFrame {
                                 else
                                     invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
 
-                                showNotification(invalidUsersMessage, IFrame.NotificationType.WARNING);
+                                showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
                             }
 
                         }
