@@ -265,7 +265,9 @@ public class CardRolesFrame extends AbstractFrame {
         final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
         addUserGroupButton.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG);
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("secRole", cardRole.getProcRole().getRole());
+                final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {

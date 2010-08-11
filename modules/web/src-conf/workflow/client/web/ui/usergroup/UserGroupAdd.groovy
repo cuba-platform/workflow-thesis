@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect.OptionStyleGenerator
 import com.haulmont.workflow.core.entity.UserGroup
 import com.vaadin.ui.AbstractSelect
 import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.security.entity.Role
 
 class UserGroupAdd extends AbstractWindow{
   private TwinColumn twinColumn
@@ -35,6 +36,9 @@ class UserGroupAdd extends AbstractWindow{
     super.init(params);
     twinColumn = getComponent('twinColumn')
     userGroupsDs = getDsContext().get('userGroupsDs')
+
+    Role secRole = params.get("secRole");
+    if (secRole) userGroupsDs.refresh(['secRole' : secRole])
 
     TwinColumnSelect twinColumnSelect = (TwinColumnSelect)WebComponentsHelper.unwrap(twinColumn)
     twinColumnSelect.setStyleGenerator([
