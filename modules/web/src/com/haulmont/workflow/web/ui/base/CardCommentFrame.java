@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -20,7 +21,9 @@ import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.entity.Card;
@@ -47,10 +50,19 @@ public class CardCommentFrame extends AbstractWindow {
     protected void init(Map<String, Object> params) {
         super.init(params);
         card = (Card) params.get("item");
+        LoadContext ctx = new LoadContext(card.getClass()).setId(card.getId())
+                .setView(MetadataProvider.getViewRepository().getView(card.getClass(), "browse"));
+        card = ServiceLocator.getDataService().load(ctx);
         commentDs = getDsContext().get("commentDs");
         buttonCreate = (com.haulmont.cuba.gui.components.Button)getComponent("add");
         treeComment = (WidgetsTree)getComponent("treeComment");
         commentDs.refresh();
+        commentDs.addListener(new CollectionDsListenerAdapter(){
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                treeComment.expandTree();
+            }
+        });
         treeComment.expandTree();
         treeComment.setWidgetBuilder(new WebWidgetsTree.WidgetBuilder() {
             public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf){

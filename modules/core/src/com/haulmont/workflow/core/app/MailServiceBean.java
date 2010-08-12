@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.haulmont.cuba.core.SecurityProvider;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service(MailService.JNDI_NAME)
@@ -38,26 +39,28 @@ public class MailServiceBean implements MailService  {
         if(users == null)
            return;
 
-        try {
-            String script = /*card.getProc().getMessagesPack().replace('.', '/') +*/"process/EmailNotification.groovy";
-            Binding binding = new Binding();
-            binding.setVariable("card",card);
-            binding.setVariable("comment",comment);
-            binding.setVariable("user", SecurityProvider.currentUserSession().getUser());
-            binding.setVariable("users", users);
-            ScriptingProvider.runGroovyScript(script, binding);
-            subject = binding.getVariable("subject").toString();
-            body = binding.getVariable("body").toString();
+        String script = /*card.getProc().getMessagesPack().replace('.', '/') +*/"process/EmailNotification.groovy";
 
-        } catch (Exception e) {
-            log.warn("Unable to get email subject and body, using defaults", e);
-            subject = String.format("Notification: %1$s - %2$s",card.getDescription(),card.getLocState());
-            body = String.format("Card %1$s has become %2$s \nComment: %3$s",card.getDescription(),card.getLocState(),comment);
-        }
-        for(User user: users){
+        for(User user: new LinkedList<User>(users)){
             if(user.getEmail() != null){
                 log.debug("Card " + card.getDescription()+card.getLocState()+" send user "+user.getLogin()+ " by email "
                         +user.getEmail()+" with comment "+comment);
+                try {
+                    Binding binding = new Binding();
+                    binding.setVariable("card", card);
+                    binding.setVariable("comment", comment);
+                    binding.setVariable("user", SecurityProvider.currentUserSession().getUser());
+                    binding.setVariable("users", users);
+                    binding.setVariable("currentUser", user);
+                    ScriptingProvider.runGroovyScript(script, binding);
+                    subject = binding.getVariable("subject").toString();
+                    body = binding.getVariable("body").toString();
+
+                } catch (Exception e) {
+                    log.warn("Unable to get email subject and body, using defaults", e);
+                    subject = String.format("Notification: %1$s - %2$s", card.getDescription(), card.getLocState());
+                    body = String.format("Card %1$s has become %2$s \nComment: %3$s", card.getDescription(), card.getLocState(), comment);
+                }
                 Mailer mailer = new Mailer(user.getEmail(), subject, body);
                 Thread t = new Thread(mailer);
                 t.start();
