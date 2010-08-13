@@ -45,6 +45,7 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import org.apache.commons.collections.CollectionUtils;
@@ -243,14 +244,22 @@ public class CardRolesFrame extends AbstractFrame {
                 boolean editable = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
                 usersLookup.setEditable(editable);
 
-                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
-                HorizontalLayout hbox = new HorizontalLayout();
-                hbox.addComponent(usersSelect);
-                hbox.addComponent(addGroupButton);
-                hbox.setExpandRatio(usersSelect, 1.0f);
-                hbox.setSizeFull();
-                hbox.setSpacing(true);
-                return hbox;
+//                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
+//                HorizontalLayout hbox = new HorizontalLayout();
+//                hbox.addComponent(usersSelect);
+//                hbox.addComponent(addGroupButton);
+//                hbox.setExpandRatio(usersSelect, 1.0f);
+//                hbox.setSizeFull();
+//                hbox.setSpacing(true);
+//                return hbox;
+                return usersSelect;
+            }
+        });
+
+        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+                return createAddGroupButton(cardRole);
             }
         });
 
@@ -261,7 +270,8 @@ public class CardRolesFrame extends AbstractFrame {
     private com.vaadin.ui.Button createAddGroupButton(final CardRole cardRole) {
         final CardRolesFrame crf = this;
         com.vaadin.ui.Button addUserGroupButton = new com.vaadin.ui.Button();
-        addUserGroupButton.setCaption("Add group");
+        addUserGroupButton.setIcon(new ThemeResource("icons/user-group-big.png"));
+//        addUserGroupButton.setCaption("Add group");
         final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
         addUserGroupButton.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
@@ -326,7 +336,7 @@ public class CardRolesFrame extends AbstractFrame {
         });
 
         addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
-        addUserGroupButton.setWidth("70px");
+//        addUserGroupButton.setWidth("25px");
         return addUserGroupButton;
 
     }

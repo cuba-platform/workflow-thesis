@@ -22,6 +22,7 @@ import com.haulmont.workflow.core.entity.UserGroup
 import com.vaadin.ui.AbstractSelect
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.security.entity.Role
+import com.haulmont.cuba.gui.components.TwinColumn.StyleProvider
 
 class UserGroupAdd extends AbstractWindow{
   private TwinColumn twinColumn
@@ -40,14 +41,22 @@ class UserGroupAdd extends AbstractWindow{
     Role secRole = params.get("secRole");
     if (secRole) userGroupsDs.refresh(['secRole' : secRole])
 
-    TwinColumnSelect twinColumnSelect = (TwinColumnSelect)WebComponentsHelper.unwrap(twinColumn)
-    twinColumnSelect.setStyleGenerator([
-      generateStyle : {AbstractSelect source, Object itemId, boolean selected ->
-        Object currentItem = userGroupsDs.getItem(itemId)
-        if (currentItem instanceof UserGroup) return 'marked'
-        return '';
-      }
-      ] as OptionStyleGenerator)
+//    TwinColumnSelect twinColumnSelect = (TwinColumnSelect)WebComponentsHelper.unwrap(twinColumn)
+//    twinColumnSelect.setStyleGenerator([
+//      generateStyle : {AbstractSelect source, Object itemId, boolean selected ->
+//        Object currentItem = userGroupsDs.getItem(itemId)
+//        if (currentItem instanceof UserGroup) return 'marked'
+//        return '';
+//      }
+//      ] as OptionStyleGenerator)
+
+    twinColumn.styleProvider = [
+            getItemIcon: {Entity item, boolean selected ->
+              if (item instanceof UserGroup) return 'theme:icons/user-group-small.png'
+              return ''
+            },
+            getStyleName : {Entity item, Object property, boolean selected -> return ''}
+    ] as StyleProvider
 
     addAction(new AbstractAction("windowCommit") {
         public void actionPerform(Component component) {

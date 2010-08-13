@@ -13,11 +13,10 @@
     </dsContext>
 
     <#assign width = 300>
-    <layout expand="main">
-        <hbox id="main" stylename="edit-area" expand="twinColumn" margin="true">
-            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" width="100%"/>
-        </hbox>
-        <vbox margin="true">
+    <layout>
+        <vbox id="main" stylename="edit-area" expandable="false">
+            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="10" columns="10" expandable="false"/>
+            <!--<textField id="ee" caption="QQQQ"/>-->
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
     </layout>
