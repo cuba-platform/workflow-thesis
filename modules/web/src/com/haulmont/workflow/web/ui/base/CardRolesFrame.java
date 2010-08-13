@@ -244,24 +244,24 @@ public class CardRolesFrame extends AbstractFrame {
                 boolean editable = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
                 usersLookup.setEditable(editable);
 
-//                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
-//                HorizontalLayout hbox = new HorizontalLayout();
-//                hbox.addComponent(usersSelect);
-//                hbox.addComponent(addGroupButton);
-//                hbox.setExpandRatio(usersSelect, 1.0f);
-//                hbox.setSizeFull();
-//                hbox.setSpacing(true);
-//                return hbox;
-                return usersSelect;
+                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
+                HorizontalLayout hbox = new HorizontalLayout();
+                hbox.addComponent(usersSelect);
+                hbox.addComponent(addGroupButton);
+                hbox.setExpandRatio(usersSelect, 1.0f);
+                hbox.setSizeFull();
+                hbox.setSpacing(true);
+                return hbox;
+//                return usersSelect;
             }
         });
 
-        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
-            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
-                return createAddGroupButton(cardRole);
-            }
-        });
+//        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
+//            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+//                CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+//                return createAddGroupButton(cardRole);
+//            }
+//        });
 
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
