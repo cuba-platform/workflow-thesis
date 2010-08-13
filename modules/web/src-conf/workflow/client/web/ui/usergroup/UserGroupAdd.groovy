@@ -53,9 +53,9 @@ class UserGroupAdd extends AbstractWindow{
     twinColumn.styleProvider = [
             getItemIcon: {Entity item, boolean selected ->
               if (item instanceof UserGroup) return 'theme:icons/user-group-small.png'
-              return ''
+              return null
             },
-            getStyleName : {Entity item, Object property, boolean selected -> return ''}
+            getStyleName : {Entity item, Object property, boolean selected -> return null}
     ] as StyleProvider
 
     addAction(new AbstractAction("windowCommit") {
