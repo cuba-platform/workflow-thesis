@@ -119,7 +119,7 @@ public class ResolutionForm extends AbstractForm {
         addAction(new AbstractAction("windowClose") {
 
             public void actionPerform(Component component) {
-                close("cancel");
+                close("cancel", true);
             }
 
             @Override
