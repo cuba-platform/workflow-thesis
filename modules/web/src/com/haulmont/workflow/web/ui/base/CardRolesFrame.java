@@ -249,6 +249,7 @@ public class CardRolesFrame extends AbstractFrame {
                 hbox.addComponent(usersSelect);
                 hbox.addComponent(addGroupButton);
                 hbox.setExpandRatio(usersSelect, 1.0f);
+                hbox.setComponentAlignment(addGroupButton, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
                 hbox.setSizeFull();
                 hbox.setSpacing(true);
                 return hbox;
