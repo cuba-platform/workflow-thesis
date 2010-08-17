@@ -569,6 +569,16 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
+    public void removeProcActor(String roleCode, User user) {
+        List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
+        for (CardRole cardRole : cardRoles) {
+            if ((cardRole.getUser() != null) && (cardRole.getUser().equals(user)) && (cardRole.getCode().equals(roleCode))) {
+                tmpCardRolesDs.removeItem(cardRole);
+                return;
+            }
+        }
+    }
+
     private boolean procActorExists(ProcRole procRole, User user) {
         List<CardRole> cardRoles = card.getRoles();
         if (cardRoles != null) {
