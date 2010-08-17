@@ -218,7 +218,7 @@ public class CardRolesFrame extends AbstractFrame {
                 if (value != null)
                     users.remove(value.getId());
                 if (secRole == null) {
-                    query = "select u from sec$User u";
+                    query = "select u from sec$User u order by u.name";
                 } else {
                     String usersExclStr = " u.id not in (:custom$users)";
                     query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
