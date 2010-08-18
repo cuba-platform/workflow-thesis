@@ -10,7 +10,9 @@
  */
 package com.haulmont.workflow.core.global;
 
-public enum TimeUnit {
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+public enum TimeUnit implements EnumClass<String>{
 
     MINUTE(60000L, "M"),
     HOUR(3600000L, "H"),
