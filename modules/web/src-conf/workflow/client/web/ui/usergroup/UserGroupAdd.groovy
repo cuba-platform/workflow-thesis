@@ -41,15 +41,6 @@ class UserGroupAdd extends AbstractWindow{
     Role secRole = params.get("secRole");
     if (secRole) userGroupsDs.refresh(['secRole' : secRole])
 
-//    TwinColumnSelect twinColumnSelect = (TwinColumnSelect)WebComponentsHelper.unwrap(twinColumn)
-//    twinColumnSelect.setStyleGenerator([
-//      generateStyle : {AbstractSelect source, Object itemId, boolean selected ->
-//        Object currentItem = userGroupsDs.getItem(itemId)
-//        if (currentItem instanceof UserGroup) return 'marked'
-//        return '';
-//      }
-//      ] as OptionStyleGenerator)
-
     twinColumn.styleProvider = [
             getItemIcon: {Entity item, boolean selected ->
               if (item instanceof UserGroup) return 'theme:icons/user-group-small.png'

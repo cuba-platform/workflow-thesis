@@ -15,46 +15,34 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 
-import static com.haulmont.cuba.gui.WindowManager.OpenType;
-
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.web.app.LinkColumnHelper;
-import com.haulmont.cuba.web.gui.components.WebCheckBox;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 
@@ -82,6 +70,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     protected String createRoleCaption;
     protected ProcRolePermissionsService procRolePermissionsService;
+    protected Map<CardRole, ActionsField> actorActionsFieldsMap = new HashMap<CardRole, ActionsField>();
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -201,80 +190,64 @@ public class CardRolesFrame extends AbstractFrame {
 
     private void initRolesTable() {
         final ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
-        com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+        final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         MetaPropertyPath userProperty = rolesTableDs.getMetaClass().getPropertyEx("user");
         vRolesTable.addGeneratedColumn(userProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 Item item = source.getItem(itemId);
                 final CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
-                Property property = item.getItemProperty(columnId);
+                final Property property = item.getItemProperty(columnId);
                 final User value = (User) property.getValue();
 
                 MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
                 final CollectionDatasource usersDs = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(), "usersDs", metaClass, "_minimal");
-                String query = "";
-                Role secRole = cardRole.getProcRole().getRole();
-                Set<UUID> users = getUsersByProcRole(cardRole.getProcRole());
-                if (value != null)
-                    users.remove(value.getId());
-                if (secRole == null) {
-                    query = "select u from sec$User u order by u.name";
-                } else {
-                    String usersExclStr = " u.id not in (:custom$users)";
-                    query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
-                            (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
-                }
-                usersDs.setQuery(query);
-                Map<String, Object> userDsParams = new HashMap<String, Object>();
-                userDsParams.put("users", users);
-                userDsParams.put("secRole", secRole);
-                usersDs.refresh(userDsParams);
-                WebLookupField usersLookup = new WebLookupField();
-                usersLookup.setOptionsDatasource(usersDs);
-                usersLookup.setValue(value);
-                usersLookup.setWidth("100%");
+
+                WebActionsField actionsField = new WebActionsField();
+                actionsField.enableButton(ActionsField.DROPDOWN, true);
+                actionsField.setOptionsDatasource(usersDs);
+                refreshUsersOptionsDs(cardRole, usersDs);
+                actionsField.setValue(value);
+                actionsField.setWidth("100%");
+                actionsField.setHeight("25px");
+                LookupField usersLookup = actionsField.getLookupField();
                 com.vaadin.ui.Select usersSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
                 usersSelect.addListener(new Property.ValueChangeListener() {
                     public void valueChange(Property.ValueChangeEvent event) {
-                        Property property = event.getProperty();
-                        User selectedUser = (User) usersDs.getItem(property.getValue());
+                        Property eventProperty = event.getProperty();
+                        User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
                         cardRole.setUser(selectedUser);
+                        if (cardRole.getProcRole().getMultiUser()) {
+                            List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
+                            for (CardRole cardRole : cardRoles) {
+                                ActionsField actionsField = actorActionsFieldsMap.get(cardRole);
+                                refreshUsersOptionsDs(cardRole, actionsField.getOptionsDatasource());
+                            }
+                        }
                     }
                 });
-                boolean editable = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
-                usersLookup.setEditable(editable);
 
-                com.vaadin.ui.Button addGroupButton = createAddGroupButton(cardRole);
-                HorizontalLayout hbox = new HorizontalLayout();
-                hbox.addComponent(usersSelect);
-                hbox.addComponent(addGroupButton);
-                hbox.setExpandRatio(usersSelect, 1.0f);
-                hbox.setComponentAlignment(addGroupButton, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
-                hbox.setSizeFull();
-                hbox.setSpacing(true);
-                return hbox;
-//                return usersSelect;
+                if (cardRole.getProcRole().getMultiUser()) {
+                    com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
+                    actionsField.addButton(addGroupButton);
+                }
+
+                actorActionsFieldsMap.put(cardRole, actionsField);
+                return actionsField.getComponent();
             }
         });
-
-//        vRolesTable.addGeneratedColumn("", new com.vaadin.ui.Table.ColumnGenerator() {
-//            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-//                CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
-//                return createAddGroupButton(cardRole);
-//            }
-//        });
 
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
     }
 
-    private com.vaadin.ui.Button createAddGroupButton(final CardRole cardRole) {
+    private com.haulmont.cuba.gui.components.Button createAddGroupButton(final CardRole cardRole) {
         final CardRolesFrame crf = this;
-        com.vaadin.ui.Button addUserGroupButton = new com.vaadin.ui.Button();
-        addUserGroupButton.setIcon(new ThemeResource("icons/user-group-big.png"));
-//        addUserGroupButton.setCaption("Add group");
+        com.haulmont.cuba.gui.components.Button addUserGroupButton = new WebButton();
+        addUserGroupButton.setIcon("select/img/user-group-button.png");
+        addUserGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
+        com.vaadin.ui.Button vAddUserGroupButton = (com.vaadin.ui.Button)WebComponentsHelper.unwrap(addUserGroupButton);
         final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
-        addUserGroupButton.addListener(new Button.ClickListener() {
+        vAddUserGroupButton.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("secRole", cardRole.getProcRole().getRole());
@@ -294,7 +267,7 @@ public class CardRolesFrame extends AbstractFrame {
                             Role secRole = cardRole.getProcRole().getRole();
                             for (User user : selectedUsers) {
                                 if (!procActorExists(cardRole.getProcRole(), user)
-                                        || cardRole.getUser().equals(user)) {
+                                        || ((cardRole.getUser() != null) && cardRole.getUser().equals(user))) {
                                     validUsers.add(user);
                                     if ((secRole != null) && !(userInRole(user, secRole))) {
                                         invalidUsers.add(user);
@@ -336,10 +309,32 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        addUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
-//        addUserGroupButton.setWidth("25px");
+        vAddUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
         return addUserGroupButton;
 
+    }
+
+    protected void refreshUsersOptionsDs(CardRole cardRole, CollectionDatasource usersDs) {
+        if (usersDs == null)
+            throw new RuntimeException("usersDs cannot be null");
+        String query = "";
+        Role secRole = cardRole.getProcRole().getRole();
+        User user = cardRole.getUser();
+        Set<UUID> users = getUsersByProcRole(cardRole.getProcRole());
+        if (user != null)
+            users.remove(user.getId());
+        if (secRole == null) {
+            query = "select u from sec$User u order by u.name";
+        } else {
+            String usersExclStr = " u.id not in (:custom$users)";
+            query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
+                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
+        }
+        usersDs.setQuery(query);
+        Map<String, Object> userDsParams = new HashMap<String, Object>();
+        userDsParams.put("users", users);
+        userDsParams.put("secRole", secRole);
+        usersDs.refresh(userDsParams);
     }
 
     private boolean userInRole(User user, Role role) {
@@ -580,7 +575,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private boolean procActorExists(ProcRole procRole, User user) {
-        List<CardRole> cardRoles = card.getRoles();
+        List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
         if (cardRoles != null) {
             for (CardRole cr : cardRoles) {
                 if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user))) {
@@ -634,9 +629,9 @@ public class CardRolesFrame extends AbstractFrame {
             return null;
         }
         Set<UUID> res = new HashSet<UUID>();
-        Collection<UUID> crIds = cardRolesDs.getItemIds();
+        Collection<UUID> crIds = tmpCardRolesDs.getItemIds();
         for (UUID crId : crIds) {
-            CardRole cr = cardRolesDs.getItem(crId);
+            CardRole cr = tmpCardRolesDs.getItem(crId);
             if (procRole.equals(cr.getProcRole()) && cr.getUser() != null) {
                 res.add(cr.getUser().getId());
             }
