@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -94,7 +95,8 @@ public class ProcessAction extends AbstractAction {
                             new DialogAction(DialogAction.Type.NO)
                     }
             );
-        } else if (((Window.Editor) window).commit()) {
+        } else if ((window instanceof WebWindow)? ((Window.Editor)((WebWindow.Editor) window).getWrapper()).commit()
+                :((Window.Editor) window).commit()) {
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
