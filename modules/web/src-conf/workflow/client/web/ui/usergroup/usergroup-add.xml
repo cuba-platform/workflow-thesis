@@ -15,7 +15,7 @@
     <#assign width = 300>
     <layout>
         <vbox id="main" stylename="edit-area" expandable="false" margin="true" spacing="true">
-            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="25" columns="25" expandable="false"/>
+            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="18" columns="25" expandable="false"/>
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
     </layout>
