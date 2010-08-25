@@ -324,11 +324,11 @@ public class CardRolesFrame extends AbstractFrame {
         if (user != null)
             users.remove(user.getId());
         if (secRole == null) {
-            query = "select u from sec$User u order by u.name";
+            query = "select u from sec$User u order by u.name, u.login";
         } else {
             String usersExclStr = " u.id not in (:custom$users)";
             query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
-                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
+                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name, u.login";
         }
         usersDs.setQuery(query);
         Map<String, Object> userDsParams = new HashMap<String, Object>();
