@@ -225,6 +225,7 @@ public class CardRolesFrame extends AbstractFrame {
                         }
                     }
                 });
+                usersSelect.setReadOnly(vRolesTable.isReadOnly());
 
                 if (cardRole.getProcRole().getMultiUser()) {
                     com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
@@ -363,7 +364,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     private void initRolesTableBooleanColumn(final String propertyName,
                                              final ProcRolePermissionsService procRolePermissionsService,
-                                             com.vaadin.ui.Table vRolesTable) {
+                                             final com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = rolesTableDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
         vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
@@ -382,6 +383,7 @@ public class CardRolesFrame extends AbstractFrame {
                         cardRole.setValue(propertyName, value);
                     }
                 });
+                checkBox.setReadOnly(vRolesTable.isReadOnly());
                 return checkBox;
             }
         });
