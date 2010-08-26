@@ -229,6 +229,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                 if (cardRole.getProcRole().getMultiUser()) {
                     com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
+                    WebComponentsHelper.unwrap(addGroupButton).setReadOnly(vRolesTable.isReadOnly());
                     actionsField.addButton(addGroupButton);
                 }
 
