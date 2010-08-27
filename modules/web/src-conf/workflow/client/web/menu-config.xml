@@ -15,6 +15,7 @@
         <item id="core$LockInfo.browse"/>
         <item id="core$FileDescriptor.browse"/>
         <item id="wf$UserGroup.browse"/>
+        <item id="core$Entity.restore"/>
     </menu>
 
     <menu id="settings"/>
