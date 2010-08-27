@@ -28,7 +28,7 @@
                         <row>
                             <label value="msg://name"/>
                             <textField id="name" datasource="userGroupDs" property="name"
-                                       width="${width}"/>
+                                       width="${width}" required="true"/>
                         </row>
                     </rows>
                 </grid>
