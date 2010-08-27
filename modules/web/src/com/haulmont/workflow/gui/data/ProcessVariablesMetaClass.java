@@ -10,10 +10,7 @@
  */
 package com.haulmont.workflow.gui.data;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 
 import java.util.*;
 
@@ -45,6 +42,10 @@ public class ProcessVariablesMetaClass implements MetaClass {
 
     public MetaPropertyPath getPropertyEx(String propertyPath) {
         return new MetaPropertyPath(this, properties.get(propertyPath));
+    }
+
+    public MetaPropertyPath getPropertyPath(String propertyPath) {
+        return null;
     }
 
     public Collection<MetaProperty> getOwnProperties() {
