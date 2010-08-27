@@ -225,9 +225,11 @@ public class CardRolesFrame extends AbstractFrame {
                         }
                     }
                 });
+                usersSelect.setReadOnly(vRolesTable.isReadOnly());
 
                 if (cardRole.getProcRole().getMultiUser()) {
                     com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
+                    WebComponentsHelper.unwrap(addGroupButton).setReadOnly(vRolesTable.isReadOnly());
                     actionsField.addButton(addGroupButton);
                 }
 
@@ -324,11 +326,11 @@ public class CardRolesFrame extends AbstractFrame {
         if (user != null)
             users.remove(user.getId());
         if (secRole == null) {
-            query = "select u from sec$User u order by u.name";
+            query = "select u from sec$User u order by u.name, u.login";
         } else {
             String usersExclStr = " u.id not in (:custom$users)";
             query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
-                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name";
+                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name, u.login";
         }
         usersDs.setQuery(query);
         Map<String, Object> userDsParams = new HashMap<String, Object>();
@@ -363,7 +365,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     private void initRolesTableBooleanColumn(final String propertyName,
                                              final ProcRolePermissionsService procRolePermissionsService,
-                                             com.vaadin.ui.Table vRolesTable) {
+                                             final com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = rolesTableDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
         vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
@@ -382,6 +384,7 @@ public class CardRolesFrame extends AbstractFrame {
                         cardRole.setValue(propertyName, value);
                     }
                 });
+                checkBox.setReadOnly(vRolesTable.isReadOnly());
                 return checkBox;
             }
         });
@@ -492,21 +495,8 @@ public class CardRolesFrame extends AbstractFrame {
         UUID lastId = tmpCardRolesDs.lastItemId();
         if (lastId == null)
             cr.setSortOrder(1);
-        else {
-            if (tmpCardRolesDs.getItem(lastId).getSortOrder() != null)
-                cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
-            else
-                cr.setSortOrder(getMaxSortOrder() + 1);
-        }
-    }
-
-    private int getMaxSortOrder() {
-        int maxSortOrder = 0;
-        for (CardRole cr : getDsItems(tmpCardRolesDs)) {
-            if (cr.getSortOrder() != null && cr.getSortOrder() > maxSortOrder)
-                maxSortOrder = cr.getSortOrder();
-        }
-        return maxSortOrder;
+        else
+            cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
     }
 
     //todo gorbunkov review and refactor next two methods
