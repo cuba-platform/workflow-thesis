@@ -216,13 +216,13 @@ public class CardRolesFrame extends AbstractFrame {
                         Property eventProperty = event.getProperty();
                         User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
                         cardRole.setUser(selectedUser);
-                        if (cardRole.getProcRole().getMultiUser()) {
-                            List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
-                            for (CardRole cardRole : cardRoles) {
-                                ActionsField actionsField = actorActionsFieldsMap.get(cardRole);
-                                refreshUsersOptionsDs(cardRole, actionsField.getOptionsDatasource());
-                            }
-                        }
+//                        if (cardRole.getProcRole().getMultiUser()) {
+//                            List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
+//                            for (CardRole cardRole : cardRoles) {
+//                                ActionsField actionsField = actorActionsFieldsMap.get(cardRole);
+//                                refreshUsersOptionsDs(cardRole, actionsField.getOptionsDatasource());
+//                            }
+//                        }
                     }
                 });
                 usersSelect.setReadOnly(vRolesTable.isReadOnly());
