@@ -193,6 +193,14 @@ public class FormManagerChain {
         return commonParams;
     }
 
+    public Object getParam(String key){
+        return commonParams.get(key);
+    }
+
+    public void setParam(String key, Object value){
+        commonParams.put(key, value);
+    }
+
     public void setCard(Card card) {
         this.commonParams.put("card", card);
     }

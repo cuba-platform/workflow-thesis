@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.workflow.core.app.WfService;
@@ -60,6 +61,9 @@ public class ProcessAction extends AbstractAction {
         final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
         managerChain.setCard(card);
         managerChain.setAssignmentId(assignmentId);
+        DsContext dsContext = ((Window.Editor) window).getDsContext();
+        if(dsContext != null)
+            managerChain.setParam("modifed",dsContext.isModified());
 
         for (Object o : window.getContext().getParams().entrySet()) {
             Map.Entry entry = (Map.Entry) o;
