@@ -25,6 +25,7 @@ import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.web.App
 import com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 
 class UserGroupBrowser extends AbstractWindow{
   private Table userGroupsTable
@@ -45,6 +46,10 @@ class UserGroupBrowser extends AbstractWindow{
 
     CollectionDatasource userGroupsDs = getDsContext().get('userGroupsDs')
     CollectionDatasource usersDs = getDsContext().get('usersDs')
+
+    userGroupsDs.addListener([collectionChanged:{ ds, operation ->
+        userGroupsDs.refresh()
+      }] as CollectionDsListenerAdapter);
 
     usersTable = getComponent('usersTable')
     usersTable.addAction(new ActionAdapter("add", [
@@ -97,7 +102,7 @@ class UserGroupBrowser extends AbstractWindow{
                       [
                               new ActionAdapter('ok', [
                                       actionPerform: {
-                                        UserGroup userGroup = userGroupsDs.getItem()
+                                        UserGroup userGroup = userGroupsDs.getItem(userGroupsDs.getItem().getId())
                                         userGroup.users.remove(selectedUser)
                                         CommitContext ctx = new CommitContext()
                                         ctx.getCommitInstances().add(userGroup)
