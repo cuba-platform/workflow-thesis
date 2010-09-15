@@ -92,9 +92,6 @@ public class TransitionForm extends AbstractForm {
             varDs.refresh();
         }
 
-        if (commentText != null)
-            commentText.setRequired(commentRequired != null || Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
-
         if (attachmentsTable != null) {
             TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
             attachmentsTH.createCreateAction(
@@ -176,6 +173,9 @@ public class TransitionForm extends AbstractForm {
                 return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
             }
         });
+        
+        if (commentText != null)
+            commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
     }
 
     protected boolean doCommit() {
