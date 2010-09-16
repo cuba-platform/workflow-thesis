@@ -13,23 +13,30 @@ package com.haulmont.workflow.web.ui.base;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ResolutionsFrame extends AbstractFrame {
     private Table table;
+    private CollectionDatasource<Assignment, UUID> resolutionsDs;
 
     public ResolutionsFrame(IFrame frame) {
         super(frame);
@@ -37,8 +44,31 @@ public class ResolutionsFrame extends AbstractFrame {
 
     public void init() {
         table = getComponent("resolutionsTable");
+        resolutionsDs = getDsContext().get("resolutionsDs");
+
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setAllowMultiStringCells(true);
+
+        vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyEx("locOutcomeResult"),
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
+                        final Assignment assignment = resolutionsDs.getItem((UUID) itemId);
+                        String state = assignment.getLocOutcome();
+                        if (state != null && StringUtils.contains(state, ".Saved")){
+                            final com.vaadin.ui.Button vButton = new com.vaadin.ui.Button(assignment.getLocOutcomeResult());
+                            vButton.setStyleName("link");
+                            vButton.addListener(new com.vaadin.ui.Button.ClickListener(){
+                                public void buttonClick(Button.ClickEvent event) {
+                                    WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo("task.log.dialog");
+                                    App.getInstance().getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG,
+                                            Collections.<String,Object>singletonMap("item",assignment));
+                                }
+                            });
+                            return vButton;
+                        } else
+                            return new com.vaadin.ui.Label(assignment.getLocOutcomeResult());
+                    }
+                });
 
         table.addAction(new AbstractAction("openResolution") {
             public void actionPerform(Component component) {
