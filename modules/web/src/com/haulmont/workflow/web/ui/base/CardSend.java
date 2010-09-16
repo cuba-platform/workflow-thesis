@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 
 
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
@@ -51,6 +52,7 @@ public class CardSend extends AbstractWindow {
     protected Card card;
     protected CardComment parent;
     protected CheckBox notifyByCardInfo;
+    protected List<CardRole> roles;
 
     public CardSend(IFrame frame) {
         super(frame);
@@ -58,12 +60,12 @@ public class CardSend extends AbstractWindow {
 
     protected void init(Map<String, Object> params) {
         super.init(params);
-        setHeight("400px");
         card = (Card) params.get("item");
         if(PersistenceHelper.isNew(card))
             throw new RuntimeException("Card is new");
         if (card == null)
             throw new RuntimeException("Card null");
+        roles = getCardRoles(card);
         notifyByCardInfo = getComponent("notifyByCardInfo");
         notifyByCardInfo.setValue(true);
         parent = (CardComment)params.get("parent");
@@ -104,7 +106,6 @@ public class CardSend extends AbstractWindow {
                     }, WindowManager.OpenType.DIALOG, lookupParams);
 
                 } else if (createAllUsersCaption.equals(value)) {
-                    List<CardRole> roles = card.getRoles();
                     if (roles != null) {
                         User user;
                         for (CardRole cardRole : roles) {
@@ -123,8 +124,7 @@ public class CardSend extends AbstractWindow {
                     if (user != null && !alreadyAdded(user)) {
                         tmpUserDs.addItem(user);
                     }
-                } else {
-                    List<CardRole> roles = card.getRoles();
+                } else {;
                     if (roles != null) {
                         User user;
                         for (CardRole cardRole : roles) {
@@ -234,9 +234,15 @@ public class CardSend extends AbstractWindow {
         return false;
     }
 
+    protected List<CardRole> getCardRoles(Card card){
+        LoadContext ctx = new LoadContext(CardRole.class);
+        ctx.setView("card-edit");
+        ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId").addParameter("cardId",card);
+        return ServiceLocator.getDataService().loadList(ctx);
+    }
+
     protected void initCreateUserLookup() {
         List<String> options = new ArrayList<String>();
-        List<CardRole> roles = card.getRoles();
         if (roles != null) {
             User user;
             for (CardRole cardRole : roles) {
