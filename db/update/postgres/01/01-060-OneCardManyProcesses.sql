@@ -30,11 +30,11 @@ update wf_proc set card_types = ',tm$Task,' where jbpm_process_key = 'TaskManage
 update wf_proc set card_types = ',df$SimpleDoc,df$Contract,' where jbpm_process_key in ('SimpleDocument1', 'Endorsement', 'KrsoEndorsement')
 ^
 
-insert into wf_card_proc (id, create_ts, created_by, version, card_id, proc_id, is_active, sort_order)
-select newid(), current_timestamp, 'admin', 0, d.card_id, c.proc_id, case when c.state is null then false else true end, 0
-from df_doc d join wf_card c on c.id = d.card_id
-where c.proc_id is not null
-^
+--insert into wf_card_proc (id, create_ts, created_by, version, card_id, proc_id, is_active, sort_order)
+--select newid(), current_timestamp, 'admin', 0, d.card_id, c.proc_id, case when c.state is null then false else true end, 0
+--from df_doc d join wf_card c on c.id = d.card_id
+--where c.proc_id is not null
+--^
 
 alter table WF_ASSIGNMENT add PROC_ID uuid
 ^
