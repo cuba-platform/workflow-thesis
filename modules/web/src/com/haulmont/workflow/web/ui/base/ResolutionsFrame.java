@@ -31,7 +31,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
-import javax.swing.*;
 import java.util.*;
 
 public class ResolutionsFrame extends AbstractFrame {

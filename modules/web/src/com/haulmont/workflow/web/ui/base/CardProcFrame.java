@@ -194,7 +194,7 @@ public class CardProcFrame extends AbstractFrame {
         });
     }
 
-    private int calculateSortOrder() {
+    public int calculateSortOrder() {
         int i = 0;
         for (CardProc cardProc : getDsItems(cardProcDs)) {
             i = Math.max(i, cardProc.getSortOrder() == null ? 0 : cardProc.getSortOrder());
@@ -202,7 +202,7 @@ public class CardProcFrame extends AbstractFrame {
         return ++i;
     }
 
-    private void startProcess(final CardProc cp) {
+    public void startProcess(final CardProc cp) {
         final Proc prevProc = card.getProc();
         DataService ds = getDsContext().getDataService();
         final Proc proc = ds.reload(cp.getProc(), "edit");
