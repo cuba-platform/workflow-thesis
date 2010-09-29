@@ -146,10 +146,16 @@ public class FormManagerChain {
     }
     
     public void doManagerBefore(String comment) {
+        doManagerBefore(comment, Collections.<String, Object>emptyMap());
+    }
+
+    public void doManagerBefore(String comment, Map<String, Object> params) {
         FormManager nextManager = getNextManagerBefore();
-        if (nextManager != null)
-            nextManager.doBefore(commonParams);
-        else {
+        if (nextManager != null) {
+            params.putAll(commonParams);
+            nextManager.doBefore(params);
+
+        } else {
             handler.onSuccess(comment);
         }
     }
@@ -176,6 +182,14 @@ public class FormManagerChain {
             nextManager.doAfter(commonParams);
     }
 
+    public void doManagerAfter(Map<String, Object> params) {
+        FormManager nextManager = getNextManagerAfter();
+        if (nextManager != null) {
+            params.putAll(commonParams);
+            nextManager.doAfter(params);
+        }
+    }
+
     public void fail() {
         handler.onFail();
     }
@@ -191,14 +205,6 @@ public class FormManagerChain {
 
     public Map<String, Object> getCommonParams() {
         return commonParams;
-    }
-
-    public Object getParam(String key){
-        return commonParams.get(key);
-    }
-
-    public void setParam(String key, Object value){
-        commonParams.put(key, value);
     }
 
     public void setCard(Card card) {

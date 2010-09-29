@@ -26,6 +26,7 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.Iterator;
 import java.util.Map;
@@ -61,15 +62,18 @@ public class ProcessAction extends AbstractAction {
         final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
         managerChain.setCard(card);
         managerChain.setAssignmentId(assignmentId);
+
+        final Map<String, Object> formManagerParams = new HashMap<String, Object>();
+
         DsContext dsContext = ((Window.Editor) window).getDsContext();
         if(dsContext != null)
-            managerChain.setParam("modifed",dsContext.isModified());
+            formManagerParams.put("modifed",dsContext.isModified());
 
         for (Object o : window.getContext().getParams().entrySet()) {
             Map.Entry entry = (Map.Entry) o;
             String key = (String) entry.getKey();
             if (key.startsWith(SEND_PREFIX)) {
-                managerChain.getCommonParams().put(key.substring(5), entry.getValue());
+                formManagerParams.put(key.substring(5), entry.getValue());
             }
         }
 
@@ -92,7 +96,7 @@ public class ProcessAction extends AbstractAction {
                                             public void onFail() {
                                             }
                                         });
-                                        managerChain.doManagerBefore("");
+                                        managerChain.doManagerBefore("", formManagerParams);
                                     }
                                 }
                             },
@@ -109,25 +113,25 @@ public class ProcessAction extends AbstractAction {
                             ((Window.Editor) window).commit();
                         else
                             throw new UnsupportedOperationException();
-                        managerChain.doManagerAfter();
+                        managerChain.doManagerAfter(formManagerParams);
                     }
 
                     public void onFail() {
                     }
                 });
-                managerChain.doManagerBefore("");
+                managerChain.doManagerBefore("", formManagerParams);
 
             } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
                         window.close(Window.COMMIT_ACTION_ID);
-                        managerChain.doManagerAfter();
+                        managerChain.doManagerAfter(formManagerParams);
                     }
 
                     public void onFail() {
                     }
                 });
-                managerChain.doManagerBefore("");
+                managerChain.doManagerBefore("", formManagerParams);
 
             } else if (WfConstants.ACTION_START.equals(actionName)) {
                 LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
@@ -146,7 +150,7 @@ public class ProcessAction extends AbstractAction {
                     public void onFail() {
                     }
                 });
-                managerChain.doManagerBefore("");
+                managerChain.doManagerBefore("", formManagerParams);
 
             } else {
                 LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
@@ -165,7 +169,7 @@ public class ProcessAction extends AbstractAction {
                     public void onFail() {
                     }
                 });
-                managerChain.doManagerBefore(assignment.getComment());
+                managerChain.doManagerBefore(assignment.getComment(), formManagerParams);
             }
         }
     }
