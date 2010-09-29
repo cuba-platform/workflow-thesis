@@ -18,4 +18,6 @@ public interface WorkCalendarService {
     String NAME = "workflow_WorkCalendarService";
 
     Date addInterval(Date startDate, int qty, TimeUnit unit);
+
+    Long getWorkDayLengthInMillis();
 }
