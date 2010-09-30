@@ -45,7 +45,8 @@
                         <row>
                             <label value="msg://user"/>
                             <lookupField id="userLookup" datasource="roleDs" property="user"
-                                       optionsDatasource="usersDs" width="${width}" required="true"/>
+                                       optionsDatasource="usersDs" width="${width}" required="true"
+                                       requiredMessage="msg://userMsg"/>
                         </row>
                         <row>
                             <label value="msg://notifyByEmail"/>

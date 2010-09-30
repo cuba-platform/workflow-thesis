@@ -22,7 +22,7 @@
                     <row>
                         <label value="msg://WorkCalendar.dayOfWeek"/>
                         <lookupField id="dayOfWeek" datasource="calendarDs" property="dayOfWeek"
-                                   width="${width}" required="true"/>
+                                   width="${width}" required="true" requiredMessage="msg://dayOfWeekMsg"/>
                     </row>
                     <row>
                         <label value="msg://WorkCalendar.start"/>

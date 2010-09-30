@@ -38,7 +38,7 @@
             </table>
             <hbox id="commentTextPane">
                 <label value="msg://cardSend.comment" width="100"/>
-                <textField id="commentText" width="400" rows="4" required="true"/>
+                <textField id="commentText" width="400" rows="4" required="true" requiredMessage="msg://commentMsg"/>
             </hbox>
             <checkBox id="notifyByCardInfo" caption="msg://cardSend.notifyByCardInfo" />
             <vbox margin="true">
