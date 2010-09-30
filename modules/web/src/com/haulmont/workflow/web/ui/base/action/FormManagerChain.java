@@ -146,7 +146,7 @@ public class FormManagerChain {
     }
     
     public void doManagerBefore(String comment) {
-        doManagerBefore(comment, Collections.<String, Object>emptyMap());
+        doManagerBefore(comment, new HashMap<String, Object>());
     }
 
     public void doManagerBefore(String comment, Map<String, Object> params) {
@@ -154,7 +154,6 @@ public class FormManagerChain {
         if (nextManager != null) {
             params.putAll(commonParams);
             nextManager.doBefore(params);
-
         } else {
             handler.onSuccess(comment);
         }
