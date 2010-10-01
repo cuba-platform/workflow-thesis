@@ -237,7 +237,9 @@ public class CardSend extends AbstractWindow {
     protected List<CardRole> getCardRoles(Card card){
         LoadContext ctx = new LoadContext(CardRole.class);
         ctx.setView("card-edit");
-        ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId").addParameter("cardId",card);
+        ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and " +
+                "cr.procRole.id in (select pr.id from wf$ProcRole pr where pr.proc.id = :procId)")
+                .addParameter("cardId", card).addParameter("procId",card.getProc());
         return ServiceLocator.getDataService().loadList(ctx);
     }
 
