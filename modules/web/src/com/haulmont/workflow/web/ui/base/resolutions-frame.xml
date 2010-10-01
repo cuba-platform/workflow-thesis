@@ -29,6 +29,7 @@
                     <column id="locOutcomeResult" caption="msg://outcome"/>
                     <column id="hasAttachments" caption="msg://attachments"/>
                     <column id="comment" caption="msg://comment"/>
+                    <!--<column id="attachments" caption="msg://attachments"/>-->
                 </columns>
                 <rows datasource="resolutionsDs"/>
             </groupTable>

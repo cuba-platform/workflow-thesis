@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 
@@ -56,5 +57,10 @@ public class Attachment extends StandardEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @MetaProperty
+    public String getClassName() {
+        return this.getClass().getSimpleName();
     }
 }

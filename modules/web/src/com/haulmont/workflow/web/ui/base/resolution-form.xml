@@ -5,9 +5,10 @@
         caption="msg://resolutionEditCaption">
 
     <dsContext>
-        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
+        <collectionDatasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
+            <datasourceClass>com.haulmont.workflow.web.ui.base.AssignmentCollectionDatasource</datasourceClass>
             <collectionDatasource id="attachmentsDs" property="attachments"/>
-        </datasource>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width=400>
