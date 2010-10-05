@@ -200,7 +200,11 @@ public class CardRolesFrame extends AbstractFrame {
                 final User value = (User) property.getValue();
 
                 MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
-                final CollectionDatasource usersDs = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(), "usersDs", metaClass, "_minimal");
+                final CollectionDatasource usersDs = new DsBuilder(getDsContext())
+                        .setMetaClass(metaClass)
+                        .setId("usersDs")
+                        .setViewName("_minimal")
+                        .buildCollectionDatasource();
 
                 WebActionsField actionsField = new WebActionsField();
                 actionsField.enableButton(ActionsField.DROPDOWN, true);
