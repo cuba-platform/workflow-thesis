@@ -173,7 +173,14 @@ public class CardProcFrame extends AbstractFrame {
                 }
         );
 
-        createProcLookup.setEditable(accessData == null || accessData.getAddCardProcessEnabled());
+        boolean enabled = accessData == null || accessData.getAddCardProcessEnabled();
+        createProcLookup.setEditable(enabled);
+        IFrame frame = getComponent("cardRolesFrame");
+        WebComponentsHelper.unwrap(frame.getComponent("rolesTable")).setReadOnly(!enabled);
+        frame.getComponent("createRoleLookup").setVisible(enabled);
+        frame.getComponent("removeRole").setVisible(enabled);
+        frame.getComponent("moveUp").setVisible(enabled);
+        frame.getComponent("moveDown").setVisible(enabled);
 
         createProcLookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {

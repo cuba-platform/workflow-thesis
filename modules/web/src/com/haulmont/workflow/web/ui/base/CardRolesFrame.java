@@ -238,6 +238,8 @@ public class CardRolesFrame extends AbstractFrame {
                 }
 
                 actorActionsFieldsMap.put(cardRole, actionsField);
+                
+                WebComponentsHelper.unwrap(actionsField).setReadOnly(vRolesTable.isReadOnly());
                 return actionsField.getComponent();
             }
         });
