@@ -229,7 +229,8 @@ public class CardRolesFrame extends AbstractFrame {
 //                        }
                     }
                 });
-                usersSelect.setReadOnly(vRolesTable.isReadOnly());
+                boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
+                usersSelect.setReadOnly(vRolesTable.isReadOnly() || !enabled);
 
                 if (cardRole.getProcRole().getMultiUser()) {
                     com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
@@ -501,8 +502,13 @@ public class CardRolesFrame extends AbstractFrame {
         UUID lastId = tmpCardRolesDs.lastItemId();
         if (lastId == null)
             cr.setSortOrder(1);
-        else
-            cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
+        else {
+            CardRole lastItem = tmpCardRolesDs.getItem(lastId);
+            if (lastItem.getSortOrder() == null)
+                cr.setSortOrder(1);
+            else
+                cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
+        }
     }
 
     //todo gorbunkov review and refactor next two methods

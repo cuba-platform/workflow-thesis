@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -246,12 +247,13 @@ public class TransitionForm extends AbstractForm {
         List<ProcRole> procRoles = card.getProc().getRoles();
         if (procRoles == null) {
             LoadContext ctx = new LoadContext(ProcRole.class);
-            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
+            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc and pr.invisible <> true");
             query.addParameter("proc", card.getProc());
             procRoles = ServiceLocator.getDataService().loadList(ctx);
         }
         for (ProcRole procRole : procRoles) {
-            procRolesNames.put(procRole.getCode(), procRole.getName());
+            if(BooleanUtils.isNotTrue(procRole.getInvisible()))
+                procRolesNames.put(procRole.getCode(), procRole.getName());
         }
 
         //if we removed required role from datasource
