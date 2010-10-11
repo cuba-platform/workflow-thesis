@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -56,7 +55,7 @@ public class TransitionForm extends AbstractForm {
         String dueDateRequired = (String)params.get("dueDateRequired");
         String commentRequired = (String) params.get("param$commentRequired");
         requiredRolesCodes = (String) params.get("param$requiredRoles");
-        
+
         String additionalRolesCodes = (String) params.get("param$additionalRoles");
         if (!StringUtils.isEmpty(additionalRolesCodes)) {
             requiredRolesCodes += "," + additionalRolesCodes;
@@ -174,12 +173,35 @@ public class TransitionForm extends AbstractForm {
                 return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
             }
         });
-        
+
         if (commentText != null)
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
     }
 
     protected boolean doCommit() {
+        if (!validate()) return false;
+//                getDsContext().commit();
+        if (commentText != null) {
+            if (Datasource.State.VALID.equals(assignmentDs.getState()))
+                assignmentDs.commit();
+            else {
+                if (card.getInitialProcessVariables() == null) {
+                    card.setInitialProcessVariables(new HashMap<String, Object>(1));
+                }
+                card.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
+            }
+        }
+
+        if (cardRolesFrame != null)
+            cardRolesDs.commit();
+
+        if (dueDate != null)
+            getDsContext().get("varsDs").commit();
+
+        return true;
+    }
+
+    protected boolean validate() {
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;
@@ -203,27 +225,8 @@ public class TransitionForm extends AbstractForm {
                 return false;
             }
         }
-//                getDsContext().commit();
-        if (commentText != null) {
-            if (Datasource.State.VALID.equals(assignmentDs.getState()))
-                assignmentDs.commit();
-            else {
-                if (card.getInitialProcessVariables() == null) {
-                    card.setInitialProcessVariables(new HashMap<String, Object>(1));
-                }
-                card.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
-            }
-        }
-
-        if (cardRolesFrame != null)
-            cardRolesDs.commit();
-
-        if (dueDate != null)
-            getDsContext().get("varsDs").commit();
-
         return true;
     }
-    
 
     private void fillMissingRoles() {
         Set<String> requiredRolesCodes = getRequiredRolesCodes();
@@ -247,13 +250,12 @@ public class TransitionForm extends AbstractForm {
         List<ProcRole> procRoles = card.getProc().getRoles();
         if (procRoles == null) {
             LoadContext ctx = new LoadContext(ProcRole.class);
-            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc and pr.invisible <> true");
+            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
             query.addParameter("proc", card.getProc());
             procRoles = ServiceLocator.getDataService().loadList(ctx);
         }
         for (ProcRole procRole : procRoles) {
-            if(BooleanUtils.isNotTrue(procRole.getInvisible()))
-                procRolesNames.put(procRole.getCode(), procRole.getName());
+            procRolesNames.put(procRole.getCode(), procRole.getName());
         }
 
         //if we removed required role from datasource
