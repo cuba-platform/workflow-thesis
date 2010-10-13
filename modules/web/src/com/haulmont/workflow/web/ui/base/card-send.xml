@@ -11,7 +11,7 @@
                 <![CDATA[ select u from sec$User u ]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="tmpUserDs" class="com.haulmont.cuba.security.entity.User" view="_local"/>
+        <collectionDatasource id="tmpUserDs" class="com.haulmont.cuba.security.entity.User" view="_local" fetchMode="ALL"/>
     </dsContext>
     <layout expandLayout="true">
         <vbox expand="usersTable" height="100%" spacing="true">

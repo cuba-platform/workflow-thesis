@@ -751,6 +751,11 @@ public class CardRolesFrame extends AbstractFrame {
                 fill = false;
             }
         }
+
+        @Override
+        public void setSuspended(boolean suspended) {
+            super.setSuspended(false);
+        }
     }
 
 }
