@@ -232,7 +232,7 @@ public class CardRolesFrame extends AbstractFrame {
                 boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
                 usersSelect.setReadOnly(vRolesTable.isReadOnly() || !enabled);
 
-                if (cardRole.getProcRole().getMultiUser()) {
+                if (cardRole.getProcRole().getMultiUser() && !vRolesTable.isReadOnly()) {
                     com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
                     WebComponentsHelper.unwrap(addGroupButton).setReadOnly(vRolesTable.isReadOnly());
                     actionsField.addButton(addGroupButton);

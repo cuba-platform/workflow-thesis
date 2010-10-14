@@ -22,8 +22,9 @@ public interface NotificationMatrixAPI {
 
     public enum NotificationType {
         NO,
-        SIMPLE,
-        ACTION;
+        SIMPLE,  //grey
+        ACTION,  //green
+        WARNING; //red
 
         public static NotificationType fromId(String id) {
             if (id == null) {
@@ -42,8 +43,10 @@ public interface NotificationMatrixAPI {
     }
 
     void notifyByCard(Card card, String state);
-    
-    void notifyByCard(Card card, String state, String excludedRole);
+
+    void notifyByCard(Card card, String state, List<String> excludedRoles, String subject, String body, boolean mail, boolean tray);
+
+    void notifyByCard(Card card, String state, List<String> excludedRoles);
 
     void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state);
 }

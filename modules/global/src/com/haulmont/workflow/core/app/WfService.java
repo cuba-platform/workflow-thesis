@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
 import java.util.Map;
@@ -38,4 +39,6 @@ public interface WfService {
     boolean isUserInProcRole(Card card, User user, String procRoleCode);
 
     void deleteNotifications(Card card, User user);
+
+    void deleteNotification(CardInfo cardInfo, User user);
 }

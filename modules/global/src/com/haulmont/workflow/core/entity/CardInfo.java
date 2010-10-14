@@ -24,6 +24,7 @@ public class CardInfo extends BaseUuidEntity implements SoftDelete {
 
     private static final long serialVersionUID = -49071058042769381L;
 
+    public static final int TYPE_SIMPLE = 0;
     public static final int TYPE_NOTIFICATION = 5;
     public static final int TYPE_OVERDUE = 10;
     public static final int TYPE_NOTIFY_OVERDUE = 20;
