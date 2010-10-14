@@ -48,7 +48,7 @@ class UserGroupBrowser extends AbstractWindow{
     CollectionDatasource usersDs = getDsContext().get('usersDs')
 
     userGroupsDs.addListener([collectionChanged:{ ds, operation ->
-        userGroupsDs.refresh()
+        usersDs.refresh()
       }] as CollectionDsListenerAdapter);
 
     usersTable = getComponent('usersTable')
