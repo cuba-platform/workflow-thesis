@@ -11,16 +11,9 @@
 package com.haulmont.workflow.web;
 
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.workflow.web.exception.WorkflowExceptionHandler;
 
 public class WorkflowApp extends App {
-
-    @Override
-    protected void deployViews() {
-        super.deployViews();
-        MetadataProvider.getViewRepository().deployViews("/com/haulmont/workflow/web/workflow.views.xml");
-    }
 
     @Override
     protected void initExceptionHandlers(boolean isConnected) {

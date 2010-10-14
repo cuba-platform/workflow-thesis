@@ -1,5 +1,7 @@
 <views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
 
+    <include file="/com/haulmont/cuba/web/app.views.xml"/>
+
     <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
         <property name="roles" view="edit"/>
     </view>

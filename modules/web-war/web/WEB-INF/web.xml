@@ -15,6 +15,7 @@
             cuba.MenuConfig.xml=workflow/client/web/menu-config.xml
             cuba.PermissionConfig.xml=cuba/permission-config.xml
             cuba.AppConfig.messagesPack=workflow.client.web
+            cuba.ViewsConfig.xml=/com/haulmont/workflow/web/workflow.views.xml
         </param-value>
     </context-param>
 
