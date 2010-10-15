@@ -70,11 +70,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             code = StringUtils.trimToEmpty(code);
             role = StringUtils.trimToEmpty(role);
 
-            if ("".equals(code) || "".equals(role)) {
-                throw new RuntimeException(String.format("code %s or role %s must not be empty", code, role));
+            if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(role)) {
+                rolesMap.put(code, role);
+            } else {
+                log.error(String.format("code %s or role %s must not be empty", code, role));
             }
 
-            rolesMap.put(code, role);
         }
 
         return rolesMap;
@@ -103,11 +104,11 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             code = StringUtils.trimToEmpty(code);
             state = StringUtils.trimToEmpty(state);
 
-            if ("".equals(code) || "".equals(state)) {
-                throw new RuntimeException(String.format("code %s or state %s must not be empty", code, state));
+            if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(state)) {
+                statesMap.put(code, state);
+            } else {
+                log.error(String.format("code %s or state %s must not be empty", code, state));
             }
-
-            statesMap.put(code, state);
         }
         return statesMap;
     }
