@@ -11,7 +11,7 @@
                 select ug from wf$UserGroup ug order by ug.name
             </query>
         </collectionDatasource>
-        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local">
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local" fetchMode="ALL">
             <query>
                 <![CDATA[select u from sec$User u, wf$UserGroup ug where u member of ug.users and ug.id = :ds$userGroupsDs]]>
             </query>
