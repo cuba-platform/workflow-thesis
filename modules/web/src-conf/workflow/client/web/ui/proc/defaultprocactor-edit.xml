@@ -30,7 +30,8 @@
                         <row>
                             <label value="msg://user"/>
                             <lookupField id="userLookup" datasource="dpaDs" property="user"
-                                       optionsDatasource="usersDs" width="${width}"/>
+                                       optionsDatasource="usersDs" width="${width}"
+                                       required="true" requiredMessage="msg://userMsg"/>
                         </row>
                         <row>
                             <label value="msg://notifyByEmail"/>
