@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -71,6 +72,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected String createRoleCaption;
     protected ProcRolePermissionsService procRolePermissionsService;
     protected Map<CardRole, ActionsField> actorActionsFieldsMap = new HashMap<CardRole, ActionsField>();
+    protected List<User> users;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -186,6 +188,8 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
+        users = readUsers();
+
     }
 
     private void initRolesTable() {
@@ -199,17 +203,11 @@ public class CardRolesFrame extends AbstractFrame {
                 final Property property = item.getItemProperty(columnId);
                 final User value = (User) property.getValue();
 
-                MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
-                final CollectionDatasource usersDs = new DsBuilder(getDsContext())
-                        .setMetaClass(metaClass)
-                        .setId("usersDs")
-                        .setViewName("_minimal")
-                        .buildCollectionDatasource();
+                final CollectionDatasource usersDs = createUserOptionsDs(cardRole);
 
                 WebActionsField actionsField = new WebActionsField();
                 actionsField.enableButton(ActionsField.DROPDOWN, true);
                 actionsField.setOptionsDatasource(usersDs);
-                refreshUsersOptionsDs(cardRole, usersDs);
                 actionsField.setValue(value);
                 actionsField.setWidth("100%");
                 actionsField.setHeight("25px");
@@ -220,13 +218,14 @@ public class CardRolesFrame extends AbstractFrame {
                         Property eventProperty = event.getProperty();
                         User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
                         cardRole.setUser(selectedUser);
-//                        if (cardRole.getProcRole().getMultiUser()) {
-//                            List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
-//                            for (CardRole cardRole : cardRoles) {
-//                                ActionsField actionsField = actorActionsFieldsMap.get(cardRole);
-//                                refreshUsersOptionsDs(cardRole, actionsField.getOptionsDatasource());
-//                            }
-//                        }
+
+                        for (CardRole cr : actorActionsFieldsMap.keySet()) {
+                            if (cr.equals(cardRole)) {
+                                ActionsField actionsField  = actorActionsFieldsMap.get(cr);
+                                CollectionDatasource usersDs = createUserOptionsDs(cardRole);
+                                actionsField.setOptionsDatasource(usersDs);
+                            }
+                        }
                     }
                 });
                 boolean enabled = procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
@@ -323,6 +322,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     }
 
+    //we don't use this method any more
     protected void refreshUsersOptionsDs(CardRole cardRole, CollectionDatasource usersDs) {
         if (usersDs == null)
             throw new RuntimeException("usersDs cannot be null");
@@ -344,6 +344,49 @@ public class CardRolesFrame extends AbstractFrame {
         userDsParams.put("users", users);
         userDsParams.put("secRole", secRole);
         usersDs.refresh(userDsParams);
+    }
+
+    //fills users datasource with users with necessary security role (if set)  
+    //and not added to process actors as member of current procRole
+    protected void fillUsersOptionsDs(CardRole cardRole, CollectionDatasource usersDs) {
+        if (usersDs == null)
+            throw new RuntimeException("usersDs cannot be null");
+        Role secRole = cardRole.getProcRole().getRole();
+        Set<UUID> addedUsersOfProcRole = getUsersByProcRole(cardRole.getProcRole());
+        for (User user : users) {
+            if (!user.equals(cardRole.getUser()) && addedUsersOfProcRole.contains(user.getId())) continue;
+
+            if (secRole == null) {
+                usersDs.addItem(user);
+            } else {
+                for (UserRole ur : user.getUserRoles()) {
+                    if (secRole.equals(ur.getRole())) {
+                        usersDs.addItem(user);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    //we'll read users list only once and will use this list while filling users option datasources
+    protected List<User> readUsers() {
+        LoadContext ctx = new LoadContext(User.class).setView("card-roles-frame");
+        ctx.setQueryString("select u from sec$User u order by u.name");
+        List<User> users = ServiceLocator.getDataService().loadList(ctx);
+        return users;
+    }
+
+    private CollectionDatasource createUserOptionsDs(CardRole cardRole) {
+        MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
+        CollectionDatasource usersDs = new DsBuilder(getDsContext())
+                .setMetaClass(metaClass)
+                .setId("usersDs")
+                .setViewName("_minimal")
+                .buildCollectionDatasource();
+        ((DatasourceImpl)usersDs).valid();
+        fillUsersOptionsDs(cardRole, usersDs);
+        return usersDs;
     }
 
     private boolean userInRole(User user, Role role) {

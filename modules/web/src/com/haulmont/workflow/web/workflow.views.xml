@@ -142,6 +142,14 @@
         <property name="role" view="_minimal"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.User" name="card-roles-frame" extends="_local">
+        <property name="userRoles" view="usergroup-add"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.UserRole" name="card-roles-frame" extends="_local">
+        <property name="role" view="_minimal"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.CardComment" name="browse" extends="_local">
         <property name="sender" view="_local"/>
         <property name="card" view="_local"/>
