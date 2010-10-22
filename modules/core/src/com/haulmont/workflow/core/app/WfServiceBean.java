@@ -73,25 +73,11 @@ public class WfServiceBean implements WfService {
     }
 
     public Card startProcess(Card card) {
-        Map<String, Object> initialProcessVariables = card.getInitialProcessVariables();
         Transaction tx = Locator.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            card = em.find(Card.class, card.getId());
-            if (card.getProc() == null)
-                throw new IllegalStateException("Card.proc required");
-
-            ExecutionService es = WfHelper.getExecutionService();
-            card.setState(null);
-            ProcessInstance pi = es.startProcessInstanceByKey(
-                    card.getProc().getJbpmProcessKey(),
-                    initialProcessVariables,
-                    card.getId().toString()
-            );
-            card.setJbpmProcessId(pi.getId());
-
+            Card c = WfHelper.getEngine().startProcess(card);
             tx.commit();
-            return card;
+            return c;
         } finally {
             tx.end();
         }

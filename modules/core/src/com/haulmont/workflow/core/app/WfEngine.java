@@ -415,6 +415,26 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         }
     }
 
+    public Card startProcess(Card card) {
+        Map<String, Object> initialProcessVariables = card.getInitialProcessVariables();
+
+        EntityManager em = PersistenceProvider.getEntityManager();
+        card = em.find(Card.class, card.getId());
+        if (card.getProc() == null)
+            throw new IllegalStateException("Card.proc required");
+
+        ExecutionService es = WfHelper.getExecutionService();
+        card.setState(null);
+        ProcessInstance pi = es.startProcessInstanceByKey(
+                card.getProc().getJbpmProcessKey(),
+                initialProcessVariables,
+                card.getId().toString()
+        );
+        card.setJbpmProcessId(pi.getId());
+
+        return card;
+    }
+
     public void cancelProcess(Card card) {
         EntityManager em = PersistenceProvider.getEntityManager();
 
