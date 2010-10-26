@@ -40,7 +40,7 @@
                     <button id="copyAttach" icon="icons/copy.png"/>
                     <button id="pasteAttach" icon="icons/paste.png"/>
                 </hbox>
-                <table id="attachmentsTable" editable="false" sortable="true">
+                <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
                     <columns>
                         <column id="name" caption="msg://attachName"/>
                         <column id="file.name" caption="msg://fileName"/>

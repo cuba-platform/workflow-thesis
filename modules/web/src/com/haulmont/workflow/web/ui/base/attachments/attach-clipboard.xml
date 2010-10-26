@@ -1,0 +1,31 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.attachments.AttachmentClipboard"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        datasource="attachmentsDs"
+        caption="msg://attachClipboard.caption">
+    <dsContext>
+        <collectionDatasource
+                id="attachmentsDs"
+                class="com.haulmont.workflow.core.entity.Attachment"
+                view="attachments-browse"
+                >
+            <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentsDataSource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+    
+    <layout expand="attachmentsTable">
+        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+            <button id="removeAttach" icon="icons/remove.png"/>
+            <button id="clearAttach" icon="icons/clear.png"/>
+            <button id="refreshAttach" icon="icons/refresh.png"/>
+        </hbox>
+        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
+            <columns>
+                <column id="name" caption="msg://attachName"/>
+                <column id="file.name" caption="msg://fileName"/>
+            </columns>
+            <rows datasource="attachmentsDs"/>
+        </table>
+    </layout>
+</window>

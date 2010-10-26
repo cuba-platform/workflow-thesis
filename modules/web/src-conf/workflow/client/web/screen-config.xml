@@ -9,7 +9,9 @@
     <screen id="wf$WorkCalendarExceptionDay.edit"
             template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-exceptionday-edit.xml"/>
 
-
+    <screen id="wf$AttachClipboard"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-clipboard.xml"/>
+    
     <screen id="wf$Proc.browse"
             template="workflow/client/web/ui/proc/proc-browse.xml"/>
 

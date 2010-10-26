@@ -103,6 +103,10 @@
         <property name="name"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.Attachment" name="attachments-browse" extends="_local">
+        <property name="file" view="_local"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.CardAttachment" name="card-edit" extends="_local">
         <property name="card" view="_local"/>
         <property name="file" view="_local"/>

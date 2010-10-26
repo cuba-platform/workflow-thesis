@@ -93,5 +93,8 @@ public class ResolutionEditor extends AbstractEditor {
         for (Action action : attachmentsTable.getActions()) {
             action.setEnabled(editable);
         }
+
+        Button pasteAttachBtn = getComponent("pasteAttach");
+        pasteAttachBtn.setEnabled(editable);
     }
 }

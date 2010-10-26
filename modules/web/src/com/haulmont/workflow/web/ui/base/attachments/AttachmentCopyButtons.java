@@ -10,13 +10,12 @@
  */
 package com.haulmont.workflow.web.ui.base.attachments;
 
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import java.util.*;
+import java.util.List;
 
 // Create copy/paste buttons actions for attachments table
 public class AttachmentCopyButtons {
@@ -32,12 +31,16 @@ public class AttachmentCopyButtons {
         return new AbstractAction("copyAttachment") {
             public void actionPerform(Component component) {
                 Set descriptors = attachments.getSelected();
-                ArrayList<Attachment> selected = new ArrayList<Attachment>();
-                Iterator iter = descriptors.iterator();
-                while (iter.hasNext()) {
-                    selected.add((Attachment) iter.next());
+                if (descriptors.size() > 0) {
+                    ArrayList<Attachment> selected = new ArrayList<Attachment>();
+                    Iterator iter = descriptors.iterator();
+                    while (iter.hasNext()) {
+                        selected.add((Attachment) iter.next());
+                    }
+                    AttachmentCopyHelper.put(selected);
+                    String info = MessageProvider.getMessage(getClass(), "messages.copyInfo");
+                    attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
-                AttachmentCopyHelper.put(selected);
             }
         };
     }
@@ -53,7 +56,7 @@ public class AttachmentCopyButtons {
         return new AbstractAction("pasteAttachment") {
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
-                if (buffer != null) {
+                if ((buffer != null) && (buffer.size() > 0)) {
                     for (Attachment attach : buffer) {
                         Attachment attachment = propsSetter.createObject();
                         attachment.setFile(attach.getFile());
@@ -63,6 +66,9 @@ public class AttachmentCopyButtons {
                         attachments.getDatasource().addItem(attachment);
                         attachments.refresh();
                     }
+                } else {
+                    String info = MessageProvider.getMessage(getClass(), "messages.bufferEmptyInfo");
+                    attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
             }
         };
