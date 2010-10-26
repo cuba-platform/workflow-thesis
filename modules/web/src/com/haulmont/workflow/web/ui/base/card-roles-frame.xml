@@ -15,35 +15,33 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true">
-        <vbox expand="rolesTable" height="100%" spacing="true">
-            <grid width="100%" spacing="true">
-                <columns>
-                    <column />
-                    <column />
-                    <column />
-                    <column />
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <lookupField id="createRoleLookup" width="150"/>
-                        <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
-                        <button id="moveUp" action="rolesTable.moveUp" icon="icons/up.png"/>
-                        <button id="moveDown" action="rolesTable.moveDown" icon="icons/down.png"/>
-                    </row>
-                </rows>
-            </grid>
-            <table id="rolesTable" sortable="false">
-                <columns>
-                    <column id="procRole.name" caption="msg://role" width="150"/>
-                    <column id="user" caption="msg://user" />
-                    <column id="notifyByEmail" caption="msg://notifyByEmail" width="45"/>
-                    <column id="notifyByCardInfo" caption="msg://notifyByCardInfo" width="20"/>
-                </columns>
-                <rows datasource="tmpCardRolesDs"/>
-            </table>
-        </vbox>
+    <layout expandLayout="true" expand="rolesTable" spacing="true" height="200px">
+        <grid width="100%" spacing="true">
+            <columns>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <lookupField id="createRoleLookup" width="150"/>
+                    <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
+                    <button id="moveUp" action="rolesTable.moveUp" icon="icons/up.png"/>
+                    <button id="moveDown" action="rolesTable.moveDown" icon="icons/down.png"/>
+                </row>
+            </rows>
+        </grid>
+        <table id="rolesTable" sortable="false">
+            <columns>
+                <column id="procRole.name" caption="msg://role" width="150"/>
+                <column id="user" caption="msg://user"/>
+                <column id="notifyByEmail" caption="msg://notifyByEmail" width="45"/>
+                <column id="notifyByCardInfo" caption="msg://notifyByCardInfo" width="30"/>
+            </columns>
+            <rows datasource="tmpCardRolesDs"/>
+        </table>
     </layout>
 
 </window>
