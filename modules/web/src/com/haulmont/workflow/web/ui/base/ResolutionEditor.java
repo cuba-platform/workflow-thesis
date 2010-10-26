@@ -12,11 +12,17 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.AssignmentAttachment;
+import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentCopyButtons;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +57,24 @@ public class ResolutionEditor extends AbstractEditor {
                 WindowManager.OpenType.DIALOG);
         attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
         attachmentsTH.createRemoveAction(false);
+        
+        final Datasource assignmentDs = getDsContext().get("assignmentDs");
+        // Add attachments handler
+        Button copyAttachBtn = getComponent("copyAttach");
+        copyAttachBtn.setAction(AttachmentCopyButtons.createCopyAction(attachmentsTable));
+        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
+
+        Button pasteAttachBtn = getComponent("pasteAttach");
+        pasteAttachBtn.setAction(
+                AttachmentCopyButtons.createPasteAction(attachmentsTable,
+                        new AttachmentCreator() {
+                            public Attachment createObject() {
+                                AssignmentAttachment attachment = new AssignmentAttachment();
+                                attachment.setAssignment((Assignment)assignmentDs.getItem());
+                                return attachment;
+                            }
+                        }));
+        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
     }
 
     @Override
