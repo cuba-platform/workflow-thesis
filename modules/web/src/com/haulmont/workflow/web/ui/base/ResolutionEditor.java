@@ -43,6 +43,7 @@ public class ResolutionEditor extends AbstractEditor {
                         values.put("file", new FileDescriptor());
                         return values;
                     }
+
                     public Map<String, Object> getParameters() {
                         return Collections.emptyMap();
                     }

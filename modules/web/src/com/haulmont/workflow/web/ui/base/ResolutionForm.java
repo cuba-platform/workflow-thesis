@@ -10,7 +10,6 @@
  */
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -23,16 +22,18 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.AssignmentAttachment;
+import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentCopyButtons;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -142,6 +143,24 @@ public class ResolutionForm extends AbstractForm {
                 return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
             }
         });
+
+        final CollectionDatasource assignmentDs = getDsContext().get("assignmentDs");
+        // Add attachments handler
+        Button copyAttachBtn = getComponent("copyAttach");
+        copyAttachBtn.setAction(AttachmentCopyButtons.createCopyAction(attachmentsTable));
+        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
+
+        Button pasteAttachBtn = getComponent("pasteAttach");
+        pasteAttachBtn.setAction(
+                AttachmentCopyButtons.createPasteAction(attachmentsTable,
+                        new AttachmentCreator() {
+                            public Attachment createObject() {
+                                AssignmentAttachment attachment = new AssignmentAttachment();
+                                attachment.setAssignment((Assignment)assignmentDs.getItem());
+                                return attachment;
+                            }
+                        }));
+        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
     }
 
     protected void applyToCards() {

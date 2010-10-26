@@ -11,8 +11,8 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.*;
 
@@ -30,7 +30,7 @@ public class Attachment extends StandardEntity {
     private FileDescriptor file;
 
     @Column(name = "NAME", length = 500)
-    private String name; 
+    private String name;
 
     @Column(name = "COMMENT", length = 1000)
     private String comment;

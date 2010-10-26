@@ -37,6 +37,8 @@
                     <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
                     <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
                     <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                    <button id="copyAttach" icon="icons/copy.png"/>
+                    <button id="pasteAttach" icon="icons/paste.png"/>
                 </hbox>
                 <table id="attachmentsTable" editable="false" sortable="true">
                     <columns>

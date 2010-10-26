@@ -36,7 +36,7 @@
                     <row>
                         <label value="msg://finishedDate"/>
                         <dateField id="finishedDate" datasource="assignmentDs" property="finished"
-                                     width="${width}" editable="false"/>
+                                   width="${width}" editable="false"/>
                     </row>
                     <row>
                         <label value="msg://user"/>
