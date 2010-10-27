@@ -273,7 +273,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
         Transaction tx = Locator.getTransaction();
         try {
-            User currentUser = SecurityProvider.currentUserSession().getUser();
+            User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = null;
             if (mail) {
                 mailList = new ArrayList<User>();
@@ -313,7 +313,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
         Transaction tx = Locator.getTransaction();
         try {
-            User currentUser = SecurityProvider.currentUserSession().getUser();
+            User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
             List<String> excludeRoleCodes = new ArrayList<String>();
