@@ -490,7 +490,7 @@ public class CardRolesFrame extends AbstractFrame {
             return;
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
-        ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId")
+        ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null")
                 .addParameter("procId", proc.getId());
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
