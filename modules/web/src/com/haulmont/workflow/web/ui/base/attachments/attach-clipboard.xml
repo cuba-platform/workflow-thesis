@@ -13,14 +13,16 @@
             <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentsDataSource</datasourceClass>
         </collectionDatasource>
     </dsContext>
-    
-    <layout expand="attachmentsTable">
-        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-            <button id="removeAttach" icon="icons/remove.png"/>
-            <button id="clearAttach" icon="icons/clear.png"/>
-            <button id="refreshAttach" icon="icons/refresh.png"/>
-        </hbox>
-        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
+
+    <#assign height=200>
+    <layout expand="attachmentsTable" expandLayout="false">
+        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true"
+               height="${height}" width="100%">
+            <buttonsPanel>
+                <button id="removeAttach" icon="icons/remove.png"/>
+                <button id="clearAttach" icon="icons/clear.png"/>
+                <button id="refreshAttach" icon="icons/refresh.png"/>
+            </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://attachName"/>
                 <column id="file.name" caption="msg://fileName"/>
