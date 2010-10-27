@@ -646,7 +646,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void deleteAllActors() {
         Collection<UUID> uuidCollection = tmpCardRolesDs.getItemIds();
-        for (UUID itemId : uuidCollection) {
+        for (UUID itemId : new ArrayList<UUID>(uuidCollection)) {
             CardRole item = tmpCardRolesDs.getItem(itemId);
             tmpCardRolesDs.removeItem(item);
         }
