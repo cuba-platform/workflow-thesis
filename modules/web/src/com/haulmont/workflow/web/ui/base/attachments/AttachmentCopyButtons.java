@@ -28,7 +28,7 @@ public class AttachmentCopyButtons {
      */
     public static Action createCopyAction(Table attachmentsTable) {
         final Table attachments = attachmentsTable;
-        return new AbstractAction("copyAttachment") {
+        return new AbstractAction("actions.Copy") {
             public void actionPerform(Component component) {
                 Set descriptors = attachments.getSelected();
                 if (descriptors.size() > 0) {
@@ -38,7 +38,11 @@ public class AttachmentCopyButtons {
                         selected.add((Attachment) iter.next());
                     }
                     AttachmentCopyHelper.put(selected);
-                    String info = MessageProvider.getMessage(getClass(), "messages.copyInfo");
+                    String info;
+                    if (descriptors.size() == 1)
+                        info = MessageProvider.getMessage(getClass(), "messages.copyInfo");
+                    else
+                        info = MessageProvider.getMessage(getClass(), "messages.manyCopyInfo");
                     attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
             }
@@ -53,7 +57,7 @@ public class AttachmentCopyButtons {
     public static Action createPasteAction(Table attachmentsTable, AttachmentCreator creator) {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
-        return new AbstractAction("pasteAttachment") {
+        return new AbstractAction("actions.Paste") {
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
                 if ((buffer != null) && (buffer.size() > 0)) {
@@ -63,8 +67,20 @@ public class AttachmentCopyButtons {
                         attachment.setComment(attach.getComment());
                         attachment.setName(attach.getName());
                         attachment.setUuid(UUID.randomUUID());
-                        attachments.getDatasource().addItem(attachment);
-                        attachments.refresh();
+
+                        UUID fileUid = attach.getFile().getUuid();
+                        Object[] ids = attachments.getDatasource().getItemIds().toArray();
+                        boolean find = false;
+                        int i = 0;
+                        while ((i < ids.length) && !find) {
+                            Attachment obj = (Attachment)attachments.getDatasource().getItem(ids[i]);
+                            find = obj.getFile().getUuid() == fileUid;
+                            i++;
+                        }
+                        if (!find) {
+                            attachments.getDatasource().addItem(attachment);
+                            attachments.refresh();
+                        }
                     }
                 } else {
                     String info = MessageProvider.getMessage(getClass(), "messages.bufferEmptyInfo");
