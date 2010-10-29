@@ -188,19 +188,4 @@ public class WfServiceBean implements WfService {
             tx.end();
         }
     }
-
-    public Integer getCardRelationsCount(Card card) {
-        Integer result = 0;
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("select count(c) from wf$CardRelation c where (c.card.id = :cardId or c.relatedCard.id = :cardId)").
-                    setParameter("cardId", card);
-            result = ((Long) query.getSingleResult()).intValue();
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        return result;
-    }
 }

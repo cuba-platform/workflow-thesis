@@ -41,6 +41,4 @@ public interface WfService {
     void deleteNotifications(Card card, User user);
 
     void deleteNotification(CardInfo cardInfo, User user);
-
-    Integer getCardRelationsCount(Card card); 
 }
