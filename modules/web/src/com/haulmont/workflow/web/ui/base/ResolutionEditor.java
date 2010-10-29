@@ -21,7 +21,7 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.AssignmentAttachment;
 import com.haulmont.workflow.core.entity.Attachment;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentCopyButtons;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 
 import java.util.Collections;
@@ -61,12 +61,12 @@ public class ResolutionEditor extends AbstractEditor {
         final Datasource assignmentDs = getDsContext().get("assignmentDs");
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
-        copyAttachBtn.setAction(AttachmentCopyButtons.createCopyAction(attachmentsTable));
+        copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         pasteAttachBtn.setAction(
-                AttachmentCopyButtons.createPasteAction(attachmentsTable,
+                AttachmentActionsHelper.createPasteAction(attachmentsTable,
                         new AttachmentCreator() {
                             public Attachment createObject() {
                                 AssignmentAttachment attachment = new AssignmentAttachment();
@@ -75,6 +75,9 @@ public class ResolutionEditor extends AbstractEditor {
                             }
                         }));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+        attachmentsTable.addAction(copyAttachBtn.getAction());
+        attachmentsTable.addAction(pasteAttachBtn.getAction());
+        AttachmentActionsHelper.createLoadAction(attachmentsTable,this);
     }
 
     @Override

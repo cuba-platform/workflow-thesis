@@ -32,7 +32,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentCopyButtons;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
@@ -147,12 +147,12 @@ public class ResolutionForm extends AbstractForm {
         final CollectionDatasource assignmentDs = getDsContext().get("assignmentDs");
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
-        copyAttachBtn.setAction(AttachmentCopyButtons.createCopyAction(attachmentsTable));
+        copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         pasteAttachBtn.setAction(
-                AttachmentCopyButtons.createPasteAction(attachmentsTable,
+                AttachmentActionsHelper.createPasteAction(attachmentsTable,
                         new AttachmentCreator() {
                             public Attachment createObject() {
                                 AssignmentAttachment attachment = new AssignmentAttachment();
@@ -161,6 +161,9 @@ public class ResolutionForm extends AbstractForm {
                             }
                         }));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+        attachmentsTable.addAction(copyAttachBtn.getAction());
+        attachmentsTable.addAction(pasteAttachBtn.getAction());
+        AttachmentActionsHelper.createLoadAction(attachmentsTable,this);
     }
 
     protected void applyToCards() {

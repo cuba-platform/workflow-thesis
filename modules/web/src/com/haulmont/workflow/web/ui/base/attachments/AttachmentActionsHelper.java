@@ -10,16 +10,18 @@
  */
 package com.haulmont.workflow.web.ui.base.attachments;
 
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.web.filestorage.FileDisplay;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import java.util.*;
 import java.util.List;
 
 // Create copy/paste buttons actions for attachments table
-public class AttachmentCopyButtons {
-    private AttachmentCopyButtons() {
+public class AttachmentActionsHelper {
+    private AttachmentActionsHelper() {
     }
 
     /* Create copy attachment action for table
@@ -68,18 +70,21 @@ public class AttachmentCopyButtons {
                         attachment.setName(attach.getName());
                         attachment.setUuid(UUID.randomUUID());
 
-                        UUID fileUid = attach.getFile().getUuid();
-                        Object[] ids = attachments.getDatasource().getItemIds().toArray();
-                        boolean find = false;
-                        int i = 0;
-                        while ((i < ids.length) && !find) {
-                            Attachment obj = (Attachment)attachments.getDatasource().getItem(ids[i]);
-                            find = obj.getFile().getUuid() == fileUid;
-                            i++;
-                        }
-                        if (!find) {
-                            attachments.getDatasource().addItem(attachment);
-                            attachments.refresh();
+                        FileDescriptor fd = attach.getFile();
+                        if (fd != null) {
+                            UUID fileUid = fd.getUuid();
+                            Object[] ids = attachments.getDatasource().getItemIds().toArray();
+                            boolean find = false;
+                            int i = 0;
+                            while ((i < ids.length) && !find) {
+                                Attachment obj = (Attachment) attachments.getDatasource().getItem(ids[i]);
+                                find = obj.getFile().getUuid() == fileUid;
+                                i++;
+                            }
+                            if (!find) {
+                                attachments.getDatasource().addItem(attachment);
+                                attachments.refresh();
+                            }
                         }
                     }
                 } else {
@@ -88,5 +93,26 @@ public class AttachmentCopyButtons {
                 }
             }
         };
+    }
+
+    /* Create load attachment context menu for attaghments table
+     * @param attachmentsTable Table with attachments
+     * @param window Window
+     * @return Action
+     */
+    public static void createLoadAction(Table attachmentsTable, IFrame window) {
+        final Table attachments = attachmentsTable;
+        attachments.addAction(new AbstractAction("actions.Load") {
+
+            public void actionPerform(Component component) {
+                Set selected = attachments.getSelected();
+                if (selected.size() == 1) {
+                    FileDescriptor fd = ((Attachment) selected.iterator().next()).getFile();
+
+                    FileDisplay fileDisplay = new FileDisplay(true);
+                    fileDisplay.show(fd.getName(), fd, true);
+                }
+            }
+        });
     }
 }
