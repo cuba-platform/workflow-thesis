@@ -229,7 +229,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     private void fillMissingRoles() {
-        Set<String> requiredRolesCodes = getRequiredRolesCodes();
+        Set<String> requiredRolesCodes = getRequiredRolesCodes(true);
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
             requiredRolesCodes.remove(cardRole.getCode());
@@ -259,7 +259,7 @@ public class TransitionForm extends AbstractForm {
         }
 
         //if we removed required role from datasource
-        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes();
+        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes(false);
 
         Set<String> requiredRolesChoiceCodes = new HashSet<String>();
         for (String requiredRoleCode: emptyRequiredRolesCodes) {
@@ -313,9 +313,9 @@ public class TransitionForm extends AbstractForm {
         return emptyRolesNames;
     }
 
-    protected Set<String> getRequiredRolesCodes() {
+    protected Set<String> getRequiredRolesCodes(boolean isAll) {
         if (requiredRolesCodes != null) {
-            String[] s = requiredRolesCodes.split("\\s*,\\s*");
+            String[] s = requiredRolesCodes.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
             return new HashSet<String>(Arrays.asList(s));
         }
         return Collections.emptySet();
