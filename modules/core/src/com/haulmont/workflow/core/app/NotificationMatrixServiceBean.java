@@ -25,11 +25,11 @@ public class NotificationMatrixServiceBean implements NotificationMatrixService 
         notificationMatrixAPI.notifyByCard(card, state);
     }
 
-    public void notify(Card card, String state, List<String> excludedRoles, String subject, String body, boolean mail, boolean tray) {
-        notificationMatrixAPI.notifyByCard(card, state, excludedRoles, subject, body, mail, tray);
-    }
-
     public void notify(Card card, String state, List<String> excludedRoles) {
         notificationMatrixAPI.notifyByCard(card, state, excludedRoles);
+    }
+
+    public void notify(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
+        notificationMatrixAPI.notifyByCard(card, state, excludedRoles, messageGenerator);
     }
 }

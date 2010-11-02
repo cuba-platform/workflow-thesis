@@ -19,7 +19,7 @@ public interface NotificationMatrixService {
 
     void notify(Card card, String state);
 
-    void notify(Card card, String state, List<String> excludedRoles, String subject, String body, boolean mail, boolean tray);
-
     void notify(Card card, String state, List<String> excludedRoles);
+
+    void notify(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator);
 }

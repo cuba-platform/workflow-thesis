@@ -236,21 +236,46 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         }
     }
 
-    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, NotificationType> matrix, String state, List<User> mailList, List<User> trayList, String subject, String body) {
+    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, NotificationType> matrix, String state,
+                            List<User> mailList, List<User> trayList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
         NotificationType type;
         String key = state + "_" + cardRole.getCode();
-        User user = cardRole.getUser();
+        final User user = cardRole.getUser();
 
-        if (mailList != null && !mailList.contains(user) && BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
+        Map variables = new HashMap();
+        variables.put("assignment", assignment);
+        variables.put("card", card);
+        variables.put("user", user);
+        variables.put("cardRole", cardRole);
+
+        //email
+        if (user.getEmail() != null && !mailList.contains(user) &&
+                BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
                 ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
-            sendEmail(card, assignment, cardRole.getUser(), subject, body, getScriptByNotificationType(processPath, type));
+            variables.put("script", getScriptByNotificationType(processPath, type));
+            final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
+                    try {
+                        emailer.sendEmail(user.getEmail(), message.getSubject(), message.getBody());
+                    } catch (EmailException e) {
+                        log.warn(e);
+                    }
+                }
+            }.start();
+
             mailList.add(user);
         }
 
-        if (trayList != null && !trayList.contains(user) && BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
+        //tray && notificationPanel
+        if (!trayList.contains(user) && BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
                 ((type = matrix.get(key + "_" + TRAY_SHEET)) != null)) {
-            createNotificationCardInfo(card, assignment, cardRole.getUser(), getCardInfoTypeByState(type), subject, getScriptByNotificationType(processPath, type));
+            variables.put("script", getScriptByNotificationType(processPath, type));
+            createNotificationCardInfo(card, assignment, cardRole.getUser(), getCardInfoTypeByState(type), messageGenerator.generateMessage(variables));
             trayList.add(user);
         }
     }
@@ -260,10 +285,10 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     public void notifyByCard(Card card, String state, List<String> excludedRoles) {
-        notifyByCard(card, state, excludedRoles, null, null, true, true);
+        notifyByCard(card, state, Collections.<String>emptyList(), new DefaultMessageGenerator());
     }
 
-    public void notifyByCard(Card card, String state, List<String> excludedRoles, String subject, String body, boolean mail, boolean tray) {
+    public void notifyByCard(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
         Map<String, NotificationType> matrix = getMatrix(processPath);
@@ -274,15 +299,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         Transaction tx = Locator.getTransaction();
         try {
             User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
-            List<User> mailList = null;
-            if (mail) {
-                mailList = new ArrayList<User>();
-            }
-
-            List<User> trayList = null;
-            if (tray) {
-                trayList = new ArrayList<User>();
-            }
+            List<User> mailList = new ArrayList<User>();
+            List<User> trayList = new ArrayList<User>();
 
             Card reloadedCard = reloadCard(card);
 
@@ -293,7 +311,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             for (CardRole cardRole : roleList) {
                 if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc())
                         && !excludedRoles.contains(cardRole.getCode())) {
-                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, subject, body);
+                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
                 }
             }
 
@@ -318,11 +336,13 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             List<User> trayList = new ArrayList<User>();
             List<String> excludeRoleCodes = new ArrayList<String>();
 
+            NotificationMatrixMessage.MessageGenerator messageGenerator = new DefaultMessageGenerator();
+
             if (assignmentsCardRoleMap != null) {
                 for (Map.Entry<Assignment, CardRole> entry : assignmentsCardRoleMap.entrySet()) {
                     CardRole cardRole = entry.getValue();
                     if (!currentUser.equals(cardRole.getUser()))
-                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, trayList, null, null);
+                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, trayList, messageGenerator);
 
                     excludeRoleCodes.add(cardRole.getCode());
                 }
@@ -338,7 +358,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) &&
                         !excludeRoleCodes.contains(cardRole.getCode()) &&
                         ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
-                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, null, null);
+                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
                 }
             }
 
@@ -373,7 +393,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         return matrix != null ? Collections.unmodifiableMap(matrix) : null;
     }
 
-    private void sendEmail(Card card, Assignment assignment, final User user, String subject, String body, String notificationScript) {
+    /*private void sendEmail(NotificationMatrixMessage message) {
         String mSubject = subject;
         String mBody = body;
 
@@ -405,27 +425,22 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             public void run() {
                 EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
                 try {
-                    emailer.sendEmail(user.getEmail(), finalMSubject, finalMBody);
+//                    emailer.sendEmail(user.getEmail(), message.getSubject(), message.getBody());
                 } catch (EmailException e) {
                     log.warn(e);
                 }
             }
         }.start();
-    }
+    }*/
 
-    private void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, String subject, String notificationScript) {
+    private void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = new CardInfo();
         ci.setType(cardInfoType);
         ci.setCard(card);
         ci.setUser(user);
         ci.setActivity(card.getState());
         ci.setJbpmExecutionId(card.getProc().getJbpmProcessKey());
-
-        String mSubject = subject;
-        if (StringUtils.isEmpty(mSubject)) {
-            mSubject = getNotificationSubject(card, assignment, user, notificationScript);
-        }
-        ci.setDescription(mSubject);
+        ci.setDescription(message.getSubject());
 
         EntityManager em = PersistenceProvider.getEntityManager();
         em.persist(ci);
@@ -435,14 +450,14 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         if (type.equals(NotificationType.SIMPLE)) {
             return CardInfo.TYPE_SIMPLE;
         } else if (type.equals(NotificationType.ACTION)) {
-            return CardInfo.TYPE_NOTIFICATION;           
+            return CardInfo.TYPE_NOTIFICATION;
         } else if (type.equals(NotificationType.WARNING)) {
-            return CardInfo.TYPE_OVERDUE;           
+            return CardInfo.TYPE_OVERDUE;
         }
         return CardInfo.TYPE_NOTIFICATION;
     }
 
-    private String getNotificationSubject(Card card, Assignment assignment, User user, String notificationScript) {
+    /*private String getNotificationSubject(Card card, Assignment assignment, User user, String notificationScript) {
         String subject;
         try {
             Map variables = new HashMap();
@@ -458,5 +473,27 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                     (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState());
         }
         return subject;
+    }*/
+
+    private class DefaultMessageGenerator implements NotificationMatrixMessage.MessageGenerator {
+        public NotificationMatrixMessage generateMessage(Map<String, Object> parameters) {
+            NotificationMatrixMessage message = new NotificationMatrixMessage(null, null);
+            Assignment assignment = (Assignment) parameters.get("assignment");
+            Card card = (Card) parameters.get("card");
+            String script = (String) parameters.get("script");
+            try {
+                Binding binding = new Binding(parameters);
+                ScriptingProvider.runGroovyScript(script, binding);
+                message.setSubject(binding.getVariable("subject").toString());
+                message.setBody(binding.getVariable("body").toString());
+            } catch (Exception e) {
+                log.warn("Unable to get email subject and body, using defaults", e);
+                message.setSubject(String.format("%s: %s - %s",
+                        (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState()));
+                message.setBody(String.format("Card %s has become %s", card.getDescription(), card.getLocState()));
+            }
+
+            return message;
+        }
     }
 }
