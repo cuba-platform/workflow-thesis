@@ -105,7 +105,6 @@ public class CardRolesFrame extends AbstractFrame {
 
         initRolesTable();
 
-
         rolesTH.createRemoveAction(false);
 
         rolesTable.addAction(new AbstractAction("moveUp") {
@@ -739,6 +738,17 @@ public class CardRolesFrame extends AbstractFrame {
         return (cardProc == null) ? card.getState() : cardProc.getState();
     }
 
+    public void setEditable(boolean editable) {
+        for (Action action: rolesTable.getActions()) {
+            action.setEnabled(editable);
+        }
+        WebComponentsHelper.unwrap(rolesTable).setReadOnly(!editable);
+        createRoleLookup.setEditable(editable);
+        for(CardRoleField cardRoleField: actorActionsFieldsMap.values()) {
+            cardRoleField.setEditable(editable);
+        }
+    }
+
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
         private static final long serialVersionUID = 2186196099900027571L;
         private CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
@@ -812,6 +822,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         private static final long serialVersionUID = 20978973521879151L;
         private WebActionsField actionsField;
+        private com.haulmont.cuba.gui.components.Button addGroupButton;
 
         private CardRoleField() {
 
@@ -825,6 +836,7 @@ public class CardRolesFrame extends AbstractFrame {
             actionsField.setOptionsDatasource(usersDs);
             actionsField.setValue(value);
             actionsField.setWidth("100%");
+            addGroupButton = null;
 //            actionsField.setHeight("25px");
             LookupField usersLookup = actionsField.getLookupField();
             com.vaadin.ui.Select usersSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
@@ -850,8 +862,7 @@ public class CardRolesFrame extends AbstractFrame {
             usersSelect.setReadOnly(vRolesTable.isReadOnly() || !enabled);
 
             if (cardRole.getProcRole().getMultiUser() && !vRolesTable.isReadOnly()) {
-                com.haulmont.cuba.gui.components.Button addGroupButton = createAddGroupButton(cardRole);
-                WebComponentsHelper.unwrap(addGroupButton).setReadOnly(vRolesTable.isReadOnly());
+                addGroupButton = createAddGroupButton(cardRole);
                 actionsField.addButton(addGroupButton);
             }
 
@@ -868,6 +879,13 @@ public class CardRolesFrame extends AbstractFrame {
 
         void setValue(Object value) {
             actionsField.setValue(value);
+        }
+
+        void setEditable(boolean editable) {
+            actionsField.setEditable(editable);
+            if (addGroupButton != null) {
+                addGroupButton.setVisible(editable);
+            }
         }
     }
 
