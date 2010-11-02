@@ -229,7 +229,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     private void fillMissingRoles() {
-        Set<String> requiredRolesCodes = getRequiredRolesCodes(true);
+        Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
             requiredRolesCodes.remove(cardRole.getCode());
