@@ -47,6 +47,22 @@ public class ResolutionsFrame extends AbstractFrame {
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setAllowMultiStringCells(true);
 
+        vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
+
+            public String getStyle(Object itemId, Object propertyId) {
+                if (propertyId == null) {
+                    if (!(itemId instanceof UUID))
+                        return "";
+                    Assignment assignment = (Assignment) resolutionsDs.getItem((UUID)itemId);
+                    if(assignment.getFinished() == null)
+                        return "taskremind";
+                    else
+                        return "";
+                }
+                return "";
+            }
+        });
+
         vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyEx("locOutcomeResult"),
                 new com.vaadin.ui.Table.ColumnGenerator() {
                     private static final long serialVersionUID = 5218754905457505133L;

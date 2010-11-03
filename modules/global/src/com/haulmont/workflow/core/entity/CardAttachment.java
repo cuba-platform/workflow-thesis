@@ -10,10 +10,13 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
+
 import javax.persistence.*;
 
 @Entity(name = "wf$CardAttachment")
 @DiscriminatorValue("C")
+@NamePattern("%s|name")
 public class CardAttachment extends Attachment {
 
     private static final long serialVersionUID = -6196909618841405629L;
