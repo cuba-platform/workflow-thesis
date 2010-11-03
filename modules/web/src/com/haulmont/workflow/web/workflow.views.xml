@@ -89,6 +89,7 @@
 
     <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="resolutions" extends="_local">
         <property name="file" view="_local"/>
+        <property name="attachType" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolution-edit" extends="_local">
@@ -105,16 +106,23 @@
 
     <view class="com.haulmont.workflow.core.entity.Attachment" name="attachments-browse" extends="_local">
         <property name="file" view="_local"/>
+        <property name="attachType" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.CardAttachment" name="card-edit" extends="_local">
         <property name="card" view="_local"/>
         <property name="file" view="_local"/>
+        <property name="attachType" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="assignment-edit" extends="_local">
         <property name="assignment" view="_local"/>
         <property name="file" view="_local"/>
+        <property name="attachType" view="_local"/>
+    </view>
+
+    <view name="attachmenttype.browse" entity="wf$AttachmentType"
+          class="com.haulmont.workflow.core.entity.AttachmentType" extends="_local">
     </view>
 
     <view class="com.haulmont.workflow.core.entity.CardInfo" name="card-browse" extends="_local">

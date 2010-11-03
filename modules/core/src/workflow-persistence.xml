@@ -19,6 +19,7 @@
         <class>com.haulmont.workflow.core.entity.CardInfo</class>
         <class>com.haulmont.workflow.core.entity.ProcRolePermission</class>
         <class>com.haulmont.workflow.core.entity.UserGroup</class>
+        <class>com.haulmont.workflow.core.entity.AttachmentType</class>
         <class>com.haulmont.workflow.core.entity.CardComment</class>
 
         <properties>

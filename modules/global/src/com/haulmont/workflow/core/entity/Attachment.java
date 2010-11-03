@@ -13,8 +13,11 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity(name = "wf$Attachment")
 @Table(name = "WF_ATTACHMENT")
@@ -35,12 +38,25 @@ public class Attachment extends StandardEntity {
     @Column(name = "COMMENT", length = 1000)
     private String comment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TYPE_ID")
+    @OnDeleteInverse(value = DeletePolicy.DENY)
+    private AttachmentType attachType;
+
     public FileDescriptor getFile() {
         return file;
     }
 
     public void setFile(FileDescriptor file) {
         this.file = file;
+    }
+
+    public AttachmentType getAttachType() {
+        return attachType;
+    }
+
+    public void setAttachType(AttachmentType attachType) {
+        this.attachType = attachType;
     }
 
     public String getName() {

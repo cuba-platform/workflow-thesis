@@ -1,7 +1,6 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         messagesPack="workflow.client.web.ui.attachment">
-
     <layout>
         <vbox margin="true" spacing="true" stylename="edit-area">
             <upload id="uploadField"/>
@@ -38,6 +37,10 @@
                     <row>
                         <label value="msg://comment"/>
                         <textField id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
+                    </row>
+                    <row>
+                        <label value="msg://type"/>
+                        <lookupField required="true" id="attachType" width="200px"/>
                     </row>
                 </rows>
             </grid>

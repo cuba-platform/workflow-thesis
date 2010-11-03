@@ -1,0 +1,28 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.attachmenttypes.AttachmentTypeEditor"
+        messagesPack="workflow.client.web.ui.attachmenttypes"
+        datasource="typeDs"
+        caption="msg://attachType.edit"
+        >
+
+    <dsContext>
+        <datasource
+                id="typeDs"
+                class="com.haulmont.workflow.core.entity.AttachmentType"
+                view="attachmenttype.browse">
+        </datasource>
+    </dsContext>
+    <#assign width = 200>
+    <layout expand="windowActions">
+        <vbox margin="true" stylename="edit-area">
+            <fieldGroup id="fieldsTable" datasource="typeDs">
+                <column flex="1">
+                    <field id="name" required="true" maxLength="500"/>
+                    <field id="comment" required="false" maxLength="1000" rows="4"/>
+                </column>
+            </fieldGroup>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

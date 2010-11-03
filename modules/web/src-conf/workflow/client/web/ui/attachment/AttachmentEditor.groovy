@@ -24,6 +24,12 @@ import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
 import com.haulmont.cuba.gui.components.FileUploadField.Listener
 import org.apache.commons.lang.StringUtils
 import com.haulmont.workflow.core.entity.Attachment
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.core.global.LoadContext
+import com.haulmont.cuba.gui.data.DsContext
+import com.haulmont.workflow.core.entity.AttachmentType
+import com.haulmont.cuba.core.global.MessageProvider
+import org.apache.openjpa.kernel.DelegatingResultList
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -36,6 +42,8 @@ public class AttachmentEditor extends AbstractEditor {
   private Label sizeLab
   private Label createDateLab
   private FileUploadField uploadField
+  private LookupField attachType
+  private AttachmentType defaultAType;
 
   private boolean needSave
 
@@ -58,6 +66,26 @@ public class AttachmentEditor extends AbstractEditor {
     extLabel = getComponent("frame.extension")
     sizeLab = getComponent("frame.size")
     createDateLab = getComponent("frame.createDate")
+    attachType = getComponent("frame.attachType")
+
+    LoadContext lContext = new LoadContext(AttachmentType.class)
+    lContext.setView("attachmenttype.browse")
+    String queryStr = "select att from wf\$AttachmentType att where att.deleteTs is null order by att.isDefault "
+    LoadContext.Query query = new LoadContext.Query(queryStr)
+    lContext.setQuery(query)
+
+    DsContext dsContext = this.getDsContext()
+    DelegatingResultList typesList = dsContext.getDataService().loadList(lContext)
+    defaultAType = typesList.last()
+    Map<String, AttachmentType> typeMap = new HashMap<String, AttachmentType>()
+    for (int i = 0; i < typesList.size(); i++) {
+      AttachmentType aType = typesList.get(i)
+       if ((aType.getCode() != null) && (!aType.getCode().isEmpty())){
+        String name = MessageProvider.getMessage(getClass(), aType.getCode())
+        aType.setName(name)       
+      }
+    }
+    attachType.setOptionsList(typesList)
   }
 
   @Override
@@ -65,8 +93,14 @@ public class AttachmentEditor extends AbstractEditor {
     super.setItem(item)
 
     boolean isNew = PersistenceHelper.isNew(fileDs.getItem())
+    final Attachment attach = (Attachment) item
+    attachType.addListener({ Object source, String property, Object prevValue, Object value ->
+      attach.setAttachType(value)
+    } as ValueListener)
 
     if (isNew) {
+      attachType.setValue(defaultAType)
+
       okBtn.setEnabled(false)
 
       uploadField.addListener([
@@ -78,7 +112,7 @@ public class AttachmentEditor extends AbstractEditor {
               uploadSucceeded: {Event event ->
                 String fileName = uploadField.getFileName()
                 fileNameText.setValue(fileName)
-                nameText.setValue(fileName[0..fileName.lastIndexOf('.')-1])
+                nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
 
                 if (StringUtils.isBlank(nameText.getValue().toString()))
                   nameText.setValue(uploadField.getFileName())
@@ -93,6 +127,7 @@ public class AttachmentEditor extends AbstractEditor {
               }
       ] as Listener)
     } else {
+      attachType.setValue(attach.getAttachType())
       uploadField.setEnabled(false)
       fileNameText.setEditable(false)
     }

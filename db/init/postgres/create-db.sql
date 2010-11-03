@@ -150,6 +150,27 @@ alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC
 
 ------------------------------------------------------------------------------------------------------------
 
+create table WF_ATTACHMENTTYPE (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    VERSION integer,
+    NAME varchar(500),
+    COMMENT varchar(1000),
+    ISDEFAULT boolean,
+    CODE varchar(200),
+    primary key (ID)
+)^
+
+insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
+values (newid(),'Attachment_type.attachment',true)^
+
+------------------------------------------------------------------------------------------------------------
+
 create table WF_ATTACHMENT (
     ID uuid,
     CREATE_TS timestamp,
@@ -161,6 +182,7 @@ create table WF_ATTACHMENT (
     DELETED_BY varchar(50),
     TYPE char(1),
     FILE_ID uuid,
+    TYPE_ID uuid,
     NAME varchar(500),
     COMMENT varchar(1000),
     CARD_ID uuid,
@@ -173,6 +195,8 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key (ASSIGNMENT_ID) references WF_ASSIGNMENT (ID)^
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE_ID) references WF_ATTACHMENTTYPE (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
