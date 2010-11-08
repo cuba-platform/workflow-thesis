@@ -22,11 +22,9 @@ import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
@@ -39,13 +37,10 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
 import com.vaadin.data.Property;
-import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
 import java.util.List;
-
-import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class CardProcFrame extends AbstractFrame {
 
@@ -253,16 +248,16 @@ public class CardProcFrame extends AbstractFrame {
 
                             public void onFail() {
                                 rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
-                                window.close("cancel", true);
-                                
-                                WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(window.getId());
-                                WebWindowManager webWindowManager= App.getInstance().getWindowManager();
-                                Collection<Window> windows = webWindowManager.getOpenWindows();
-                                Map params = Collections.<String, Object>singletonMap("tabName", "processTab");
-                                if(windows != null && windows.size() > 0)
-                                    webWindowManager.openEditor(windowInfo, card, OpenType.THIS_TAB, params);
-                                else
-                                    webWindowManager.openEditor(windowInfo, card, OpenType.NEW_TAB, params);
+
+                                Object editor = null;
+                                if (window instanceof WrappedWindow) {
+                                    editor = ((WrappedWindow) window).getWrapper();
+                                }
+
+                                if (editor instanceof AbstractCardEditor) {
+                                    ((AbstractCardEditor) editor).reopen(Collections.<String, Object>singletonMap("tabName", "processTab"));
+                                } else
+                                    window.close("cancel", true);
                             }
                         }
                 );
