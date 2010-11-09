@@ -166,9 +166,6 @@ create table WF_ATTACHMENTTYPE (
     primary key (ID)
 )^
 
-insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
-values (newid(),'Attachment_type.attachment',true)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_ATTACHMENT (

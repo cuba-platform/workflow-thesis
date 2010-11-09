@@ -31,3 +31,6 @@ values ('43220464-e8b4-11de-902d-8f2700949387', current_timestamp, 0, 'A', null,
 
 insert into SYS_APP_FOLDER (FOLDER_ID, FILTER_COMPONENT, FILTER_XML, VISIBILITY_SCRIPT, QUANTITY_SCRIPT)
 values ('43220464-e8b4-11de-902d-8f2700949387', '[wf$Assignment.browse]', null, null, 'workflow/appfolders/MyAssignmentsQty.groovy');
+
+insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
+values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','Attachment_type.attachment',true);
