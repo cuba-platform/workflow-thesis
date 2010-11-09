@@ -4,8 +4,8 @@
 
 	<property name="root.dir" location=".."/>
 
-	<import file="${root.dir}/build-inc-prj.xml"/>
-	<property file="${root.dir}/build.properties"/>
+	<import file="${root.dir}/build-script/build-inc-prj.xml"/>
+	<property file="${root.dir}/build-script/build.properties"/>
 	<property file="lib.properties"/>
 
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
@@ -31,13 +31,12 @@
 	</target>
 		
 	<target name="install-lib">
-        <ext:install-lib name="jbpm" version="${jbpm.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="juel" version="${juel.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="hibernate-core" version="${hibernate-core.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="slf4j-api" version="${slf4j.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="slf4j-log4j12" version="${slf4j.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="javassist" version="${javassist.version}" toDir="${lib.server.dir}"/>
-        <!--<ext:install-jboss-lib name="el-api" version="${jboss.version}" toDir="${lib.server.dir}"/>-->
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="jbpm" version="${jbpm.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="de.odysseus.juel" artifactId="juel" version="${juel.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.hibernate" artifactId="hibernate-core" version="${hibernate-core.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.slf4j" artifactId="slf4j-api" version="${slf4j.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.slf4j" artifactId="slf4j-log4j12" version="${slf4j.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="javassist" artifactId="javassist" version="${javassist.version}" toDir="${lib.server.dir}"/>
     </target>
     
 	<target name="compile">
