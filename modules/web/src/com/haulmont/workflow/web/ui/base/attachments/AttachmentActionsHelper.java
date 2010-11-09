@@ -69,6 +69,7 @@ public class AttachmentActionsHelper {
                         attachment.setComment(attach.getComment());
                         attachment.setName(attach.getName());
                         attachment.setUuid(UUID.randomUUID());
+                        attachment.setAttachType(attach.getAttachType());
 
                         FileDescriptor fd = attach.getFile();
                         if (fd != null) {

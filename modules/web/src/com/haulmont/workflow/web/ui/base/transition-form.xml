@@ -11,7 +11,8 @@
         <datasource id="varsDs">
             <datasourceClass>com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource</datasourceClass>
         </datasource>
-        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="transition-form">
+        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole"
+                              view="transition-form">
             <query>
                 <![CDATA[select cr from wf$CardRole cr
                 where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
@@ -29,17 +30,20 @@
                 <textField id="outcomeText" width="${width}"/>
             </hbox>
 
-            <accessControl id="cardRolesFrameAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+            <accessControl id="cardRolesFrameAccessControl"
+                           data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
                 <visible property="cardRolesVisible"/>
                 <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
             </accessControl>
-            
-            <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+
+            <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                           param="accessData">
                 <visible property="refusedOnlyVisible"/>
                 <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly" caption="msg://refusedOnly"/>
             </accessControl>
 
-            <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+            <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                           param="accessData">
                 <visible property="dueDateVisible"/>
                 <hbox id="dueDatePane">
                     <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
@@ -64,11 +68,14 @@
                         <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
                         <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
                         <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                        <button id="copyAttach" icon="icons/copy.png"/>
+                        <button id="pasteAttach" icon="icons/paste.png"/>
                     </hbox>
                     <table id="attachmentsTable" editable="false" sortable="true">
                         <columns>
                             <column id="name" caption="msg://attachName"/>
                             <column id="file.name" caption="msg://fileName"/>
+                            <column id="attachType.locName" caption="msg://typeName"/>
                         </columns>
                         <rows datasource="attachmentsDs"/>
                     </table>

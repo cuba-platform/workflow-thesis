@@ -195,6 +195,9 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE_ID) references WF_ATTACHMENTTYPE (ID)^
 
+insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
+values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','AttachmentType.attachment',true)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_PROC_ROLE (

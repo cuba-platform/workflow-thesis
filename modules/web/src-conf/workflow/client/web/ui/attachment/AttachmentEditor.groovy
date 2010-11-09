@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.data.DsContext
 import com.haulmont.workflow.core.entity.AttachmentType
 import com.haulmont.cuba.core.global.MessageProvider
 import org.apache.openjpa.kernel.DelegatingResultList
+import com.haulmont.cuba.gui.data.CollectionDatasource
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -43,7 +44,8 @@ public class AttachmentEditor extends AbstractEditor {
   private Label createDateLab
   private FileUploadField uploadField
   private LookupField attachType
-  private AttachmentType defaultAType;
+  private AttachmentType defaultAType
+  private CollectionDatasource attachTypesDs
 
   private boolean needSave
 
@@ -67,25 +69,7 @@ public class AttachmentEditor extends AbstractEditor {
     sizeLab = getComponent("frame.size")
     createDateLab = getComponent("frame.createDate")
     attachType = getComponent("frame.attachType")
-
-    LoadContext lContext = new LoadContext(AttachmentType.class)
-    lContext.setView("attachmenttype.browse")
-    String queryStr = "select att from wf\$AttachmentType att where att.deleteTs is null order by att.isDefault "
-    LoadContext.Query query = new LoadContext.Query(queryStr)
-    lContext.setQuery(query)
-
-    DsContext dsContext = this.getDsContext()
-    DelegatingResultList typesList = dsContext.getDataService().loadList(lContext)
-    defaultAType = typesList.last()
-    Map<String, AttachmentType> typeMap = new HashMap<String, AttachmentType>()
-    for (int i = 0; i < typesList.size(); i++) {
-      AttachmentType aType = typesList.get(i)
-       if ((aType.getCode() != null) && (!aType.getCode().isEmpty())){
-        String name = MessageProvider.getMessage(getClass(), aType.getCode())
-        aType.setName(name)       
-      }
-    }
-    attachType.setOptionsList(typesList)
+    attachTypesDs = attachType.getOptionsDatasource()
   }
 
   @Override
@@ -93,12 +77,15 @@ public class AttachmentEditor extends AbstractEditor {
     super.setItem(item)
 
     boolean isNew = PersistenceHelper.isNew(fileDs.getItem())
-    final Attachment attach = (Attachment) item
-    attachType.addListener({ Object source, String property, Object prevValue, Object value ->
-      attach.setAttachType(value)
-    } as ValueListener)
 
     if (isNew) {
+      if (attachTypesDs.getState() !=
+              com.haulmont.cuba.gui.data.Datasource.State.VALID) {
+        attachTypesDs.refresh()
+      }
+      Collection ids = attachTypesDs.getItemIds()
+      int size = ids.size()
+      defaultAType = attachTypesDs.getItem(ids.toArray()[size - 1])
       attachType.setValue(defaultAType)
 
       okBtn.setEnabled(false)
@@ -127,7 +114,6 @@ public class AttachmentEditor extends AbstractEditor {
               }
       ] as Listener)
     } else {
-      attachType.setValue(attach.getAttachType())
       uploadField.setEnabled(false)
       fileNameText.setEditable(false)
     }

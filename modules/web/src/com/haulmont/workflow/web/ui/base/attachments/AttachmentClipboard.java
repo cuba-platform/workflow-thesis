@@ -46,7 +46,7 @@ public class AttachmentClipboard extends AbstractEditor {
         removeAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Remove"));
 
         Button clearAttachBtn = getComponent("clearAttach");
-        clearAttachBtn.setAction(new AbstractAction("removeAttach") {
+        clearAttachBtn.setAction(new AbstractAction("clearAttach") {
             public void actionPerform(Component component) {
                 Set selected = attachmentsTable.getSelected();
                 List<Attachment> buffer = AttachmentCopyHelper.get();

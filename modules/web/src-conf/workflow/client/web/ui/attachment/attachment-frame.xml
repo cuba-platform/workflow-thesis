@@ -1,6 +1,14 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         messagesPack="workflow.client.web.ui.attachment">
+    <dsContext>
+        <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
+            <query>
+                select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    
     <layout>
         <vbox margin="true" spacing="true" stylename="edit-area">
             <upload id="uploadField"/>
@@ -40,7 +48,8 @@
                     </row>
                     <row>
                         <label value="msg://type"/>
-                        <lookupField required="true" id="attachType" width="200px"/>
+                        <lookupField datasource="attachmentDs" property="attachType"
+                                     optionsDatasource="attachTypesDs" required="true" id="attachType" width="200px"/>
                     </row>
                 </rows>
             </grid>

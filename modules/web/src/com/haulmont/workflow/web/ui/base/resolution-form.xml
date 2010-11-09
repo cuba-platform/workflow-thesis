@@ -5,7 +5,8 @@
         caption="msg://resolutionEditCaption">
 
     <dsContext>
-        <collectionDatasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
+        <collectionDatasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment"
+                              view="resolution-edit">
             <datasourceClass>com.haulmont.workflow.web.ui.base.AssignmentCollectionDatasource</datasourceClass>
             <collectionDatasource id="attachmentsDs" property="attachments"/>
         </collectionDatasource>
@@ -26,7 +27,7 @@
                     </row>
                     <row>
                         <label value="msg://comment"/>
-                        <textField id="commentText" datasource="assignmentDs" property="comment" 
+                        <textField id="commentText" datasource="assignmentDs" property="comment"
                                    width="${width}" rows="6"/>
                     </row>
                 </rows>
@@ -44,6 +45,7 @@
                     <columns>
                         <column id="name" caption="msg://attachName"/>
                         <column id="file.name" caption="msg://fileName"/>
+                        <column id="attachType.locName" caption="msg://typeName"/>
                     </columns>
                     <rows datasource="attachmentsDs"/>
                 </table>

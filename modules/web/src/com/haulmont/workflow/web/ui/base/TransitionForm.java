@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -52,7 +54,7 @@ public class TransitionForm extends AbstractForm {
     protected void init(Map<String, Object> params) {
         super.init(params);
 
-        String dueDateRequired = (String)params.get("dueDateRequired");
+        String dueDateRequired = (String) params.get("dueDateRequired");
         String commentRequired = (String) params.get("param$commentRequired");
         requiredRolesCodes = (String) params.get("param$requiredRoles");
 
@@ -78,7 +80,7 @@ public class TransitionForm extends AbstractForm {
                 @Override
                 public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                     if (state == Datasource.State.VALID) {
-                      cardRolesFrame.procChanged(card.getProc());
+                        cardRolesFrame.procChanged(card.getProc());
                         fillMissingRoles();
                     }
                 }
@@ -110,6 +112,26 @@ public class TransitionForm extends AbstractForm {
                     WindowManager.OpenType.DIALOG);
             attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
             attachmentsTH.createRemoveAction(false);
+
+            // Add attachments handler
+            Button copyAttachBtn = getComponent("copyAttach");
+            copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
+            copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
+
+            Button pasteAttachBtn = getComponent("pasteAttach");
+            pasteAttachBtn.setAction(
+                    AttachmentActionsHelper.createPasteAction(attachmentsTable,
+                            new AttachmentCreator() {
+                                public Attachment createObject() {
+                                    AssignmentAttachment attachment = new AssignmentAttachment();
+                                    attachment.setAssignment((Assignment) assignmentDs.getItem());
+                                    return attachment;
+                                }
+                            }));
+            pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+            attachmentsTable.addAction(copyAttachBtn.getAction());
+            attachmentsTable.addAction(pasteAttachBtn.getAction());
+            AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
         }
 
         String messagesPack = card.getProc().getMessagesPack();
@@ -138,7 +160,8 @@ public class TransitionForm extends AbstractForm {
         String dueDateLabelParam = (String) params.get("param$dueDateLabel");
         if (StringUtils.isNotBlank(dueDateLabelParam)) {
             Label dueDateLabel = getComponent("dueDateLabel");
-            if (dueDateLabel != null) dueDateLabel.setValue(MessageProvider.getMessage(messagesPack, dueDateLabelParam));
+            if (dueDateLabel != null)
+                dueDateLabel.setValue(MessageProvider.getMessage(messagesPack, dueDateLabelParam));
         }
 
         String dueDateFormatParam = (String) params.get("param$dueDateFormat");
@@ -206,7 +229,7 @@ public class TransitionForm extends AbstractForm {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;
         }
-        if ((dueDate != null) && (dueDate.getValue() != null) && (((Date)dueDate.getValue()).compareTo(TimeProvider.currentTimestamp()) < 0)) {
+        if ((dueDate != null) && (dueDate.getValue() != null) && (((Date) dueDate.getValue()).compareTo(TimeProvider.currentTimestamp()) < 0)) {
             showNotification(getMessage("dueDateIsLessThanNow"), NotificationType.WARNING);
             return false;
         }
@@ -231,7 +254,7 @@ public class TransitionForm extends AbstractForm {
     private void fillMissingRoles() {
         Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
         for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
+            CardRole cardRole = (CardRole) cardRolesDs.getItem(itemId);
             requiredRolesCodes.remove(cardRole.getCode());
         }
 
@@ -262,25 +285,25 @@ public class TransitionForm extends AbstractForm {
         Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes(false);
 
         Set<String> requiredRolesChoiceCodes = new HashSet<String>();
-        for (String requiredRoleCode: emptyRequiredRolesCodes) {
+        for (String requiredRoleCode : emptyRequiredRolesCodes) {
             if (requiredRoleCode.contains("|"))
                 requiredRolesChoiceCodes.add(requiredRoleCode);
         }
 
         for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole)cardRolesDs.getItem(itemId);
+            CardRole cardRole = (CardRole) cardRolesDs.getItem(itemId);
             if (cardRole.getUser() == null) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
             if (!requiredRolesChoiceCodes.isEmpty()) {
-                String choiceRole = null;               
-                for (String requiredRolesChoiceCode: requiredRolesChoiceCodes) {
+                String choiceRole = null;
+                for (String requiredRolesChoiceCode : requiredRolesChoiceCodes) {
                     String[] roles = requiredRolesChoiceCode.split("\\|");
                     if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
                         choiceRole = requiredRolesChoiceCode;
                         break;
-                    }                   
+                    }
                 }
 
                 if (choiceRole != null) {
@@ -297,7 +320,7 @@ public class TransitionForm extends AbstractForm {
                 String formattingCode = "";
                 String orStr = " " + MessageProvider.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
                 String[] roles = roleCode.split("\\|");
-                for (String role: roles) {
+                for (String role : roles) {
                     formattingCode += procRolesNames.get(role) + orStr;
                 }
 
@@ -320,7 +343,7 @@ public class TransitionForm extends AbstractForm {
         }
         return Collections.emptySet();
     }
-    
+
 
     @Override
     public String getComment() {

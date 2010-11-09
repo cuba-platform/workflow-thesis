@@ -14,11 +14,13 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.MessageProvider;
+
 import javax.persistence.*;
 
 @Entity(name = "wf$AttachmentType")
 @Table(name = "WF_ATTACHMENTTYPE")
-@NamePattern("%s|name")
+@NamePattern("%s|locName")
 public class AttachmentType extends StandardEntity implements SoftDelete {
     private static final long serialVersionUID = -7892781327440916914L;
 
@@ -51,24 +53,27 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
         this.comment = comment;
     }
 
-    public Boolean getIsDefault(){
+    public Boolean getIsDefault() {
         return isDefault;
     }
 
-    public void setIsDefault(Boolean isDefault){
+    public void setIsDefault(Boolean isDefault) {
         this.isDefault = isDefault;
     }
 
-    public void setCode(String code){
-        this.code = code;    
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getCode(){
+    public String getCode() {
         return code;
     }
-                          
+
     @MetaProperty
-    public String getClassName() {
-        return this.getClass().getSimpleName();
+    public String getLocName() {
+        if (this.code != null)
+            return MessageProvider.getMessage(getClass(), this.code);
+        else
+            return name;
     }
 }

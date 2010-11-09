@@ -26,6 +26,7 @@
             <columns>
                 <column id="name" caption="msg://attachName"/>
                 <column id="file.name" caption="msg://fileName"/>
+                <column id="attachType.locName" caption="msg://typeName"/>
             </columns>
             <rows datasource="attachmentsDs"/>
         </table>
