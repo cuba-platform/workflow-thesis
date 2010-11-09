@@ -1,3 +1,5 @@
+-- $Id$
+-- Description: WF_ATTACHMENTTYPE created
 create table WF_ATTACHMENTTYPE (
     ID uuid,
     CREATE_TS timestamp,
@@ -20,6 +22,6 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE
 references WF_ATTACHMENTTYPE (ID)^
 
 insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
-values (newid(),'Attachment_type.attachment',true)^
+values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','Attachment_type.attachment',true)^
 
-update WF_ATTACHMENT set TYPE_ID = att.id from WF_ATTACHMENTTYPE att^
+update WF_ATTACHMENT set TYPE_ID = att.id from WF_ATTACHMENTTYPE att where att.id = '6c9c8ccc-e761-11df-94cb-6f884bc56e70'^
