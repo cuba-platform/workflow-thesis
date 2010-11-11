@@ -287,6 +287,7 @@ public class CardRolesFrame extends AbstractFrame {
                             }
                             if (oneOfValidUsers != null) {
                                 cardRole.setUser(oneOfValidUsers);
+                                actorActionsFieldsMap.get(cardRole).setValue(oneOfValidUsers);
                                 validUsers.remove(oneOfValidUsers);
                                 tmpCardRolesDs.updateItem(cardRole);
                             }
