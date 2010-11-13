@@ -83,7 +83,7 @@
         <property name="proc" view="_local"/>
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
-        <property name="attachments" view="resolutions"/>
+        <property name="attachments" view="resolutions" lazy="true"/>
         <property name="card" view="_local"/>
     </view>
 
