@@ -58,8 +58,8 @@ class UserGroupBrowser extends AbstractWindow{
                 showNotification(getMessage('selectUserGroup.msg'), IFrame.NotificationType.HUMANIZED)
                 return
               }
-              Map<String, Object> userBrowserParams = ['multiselect': 'true']
-              openLookup('sec$User.browse',
+              Map<String, Object> userBrowserParams = ['multiSelect': 'true']
+              openLookup('sec$User.lookup',
               [
                       handleLookup : {Collection<User> items ->
                         UserGroup userGroup = userGroupsDs.getItem()
