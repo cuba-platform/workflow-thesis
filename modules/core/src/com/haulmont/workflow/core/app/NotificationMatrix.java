@@ -393,46 +393,6 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         return matrix != null ? Collections.unmodifiableMap(matrix) : null;
     }
 
-    /*private void sendEmail(NotificationMatrixMessage message) {
-        String mSubject = subject;
-        String mBody = body;
-
-        if (user.getEmail() == null)
-            return;
-
-        if (StringUtils.isEmpty(mSubject) && StringUtils.isEmpty(mBody)) {
-            try {
-                Map variables = new HashMap();
-                variables.put("assignment", assignment);
-                variables.put("card", card);
-                variables.put("user", user);
-                Binding binding = new Binding(variables);
-                ScriptingProvider.runGroovyScript(notificationScript, binding);
-                mSubject = binding.getVariable("subject").toString();
-                mBody = binding.getVariable("body").toString();
-            } catch (Exception e) {
-                log.warn("Unable to get email subject and body, using defaults", e);
-                mSubject = String.format("%s: %s - %s",
-                        (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState());
-                mBody = String.format("Card %s has become %s", card.getDescription(), card.getLocState());
-            }
-        }
-
-        final String finalMSubject = mSubject;
-        final String finalMBody = mBody;
-        new Thread() {
-            @Override
-            public void run() {
-                EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
-                try {
-//                    emailer.sendEmail(user.getEmail(), message.getSubject(), message.getBody());
-                } catch (EmailException e) {
-                    log.warn(e);
-                }
-            }
-        }.start();
-    }*/
-
     private void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = new CardInfo();
         ci.setType(cardInfoType);
@@ -456,24 +416,6 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         }
         return CardInfo.TYPE_NOTIFICATION;
     }
-
-    /*private String getNotificationSubject(Card card, Assignment assignment, User user, String notificationScript) {
-        String subject;
-        try {
-            Map variables = new HashMap();
-            variables.put("assignment", assignment);
-            variables.put("card", card);
-            variables.put("user", user);
-            Binding binding = new Binding(variables);
-            ScriptingProvider.runGroovyScript(notificationScript, binding);
-            subject = binding.getVariable("subject").toString();
-        } catch (Exception e) {
-            log.warn("Unable to get notification text, using defaults", e);
-            subject = String.format("%s: %s - %s",
-                    (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState());
-        }
-        return subject;
-    }*/
 
     private class DefaultMessageGenerator implements NotificationMatrixMessage.MessageGenerator {
         public NotificationMatrixMessage generateMessage(Map<String, Object> parameters) {
