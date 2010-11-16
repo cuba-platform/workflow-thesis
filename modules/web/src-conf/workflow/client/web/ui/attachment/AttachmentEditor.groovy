@@ -31,6 +31,7 @@ import com.haulmont.workflow.core.entity.AttachmentType
 import com.haulmont.cuba.core.global.MessageProvider
 import org.apache.openjpa.kernel.DelegatingResultList
 import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.core.sys.AppContext
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -83,9 +84,7 @@ public class AttachmentEditor extends AbstractEditor {
               com.haulmont.cuba.gui.data.Datasource.State.VALID) {
         attachTypesDs.refresh()
       }
-      Collection ids = attachTypesDs.getItemIds()
-      int size = ids.size()
-      defaultAType = attachTypesDs.getItem(ids.toArray()[size - 1])
+      defaultAType = getDefaultAttachmentType()
       attachType.setValue(defaultAType)
 
       okBtn.setEnabled(false)
@@ -117,6 +116,22 @@ public class AttachmentEditor extends AbstractEditor {
       uploadField.setEnabled(false)
       fileNameText.setEditable(false)
     }
+  }
+
+  private AttachmentType getDefaultAttachmentType() {
+    String defaultAttachmentCode = AppContext.getProperty('cuba.defaultAttachmentType')
+    AttachmentType defaultAttachmentType
+    if (defaultAttachmentCode != null) {
+      attachTypesDs.getItemIds().each{UUID itemId ->
+        AttachmentType attachmentType = attachTypesDs.getItem(itemId)
+        if (attachmentType.code == defaultAttachmentCode) {
+          defaultAttachmentType = attachmentType
+          return
+        }
+      }
+    }
+
+    return defaultAttachmentType
   }
 
   def void commitAndClose() {
