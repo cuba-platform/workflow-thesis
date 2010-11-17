@@ -41,4 +41,6 @@ public interface WfService {
     void deleteNotifications(Card card, User user);
 
     void deleteNotification(CardInfo cardInfo, User user);
+
+    boolean isCardInState(Card card, String state);
 }

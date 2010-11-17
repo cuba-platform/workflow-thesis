@@ -134,6 +134,7 @@ public class ParallelAssigner extends MultiAssigner {
         log.debug("All of parallel assignments have been finished successfully")
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
+      afterSignal(execution)
     }
   }
 }

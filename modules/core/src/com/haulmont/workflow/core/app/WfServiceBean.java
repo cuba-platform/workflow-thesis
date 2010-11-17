@@ -188,4 +188,16 @@ public class WfServiceBean implements WfService {
             tx.end();
         }
     }
+
+    public boolean isCardInState(Card card, String state) {
+        String currentState = card.getState();
+        if (currentState == null) {
+            if (state == null)
+                return true;
+            else
+                return false;
+        }
+
+        return currentState.contains("," + state + ",");
+    }
 }

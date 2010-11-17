@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity(name = "wf$Card")
 @Table(name = "WF_CARD")
@@ -36,6 +38,7 @@ import java.util.Set;
 public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -6180254942462308853L;
+    private final String CARD_STATE_SEPARATOR = ", ";
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -222,7 +225,15 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
             return "";
         if (getProc() != null) {
             String messagesPack = getProc().getMessagesPack();
-            return MessageUtils.loadString(messagesPack, "msg://" + getState());
+            StringBuilder sb = new StringBuilder();
+            Matcher matcher = Pattern.compile("\\w+").matcher(getState());
+            while (matcher.find()) {
+                sb.append(MessageUtils.loadString(messagesPack, "msg://" + matcher.group()))
+                        .append(CARD_STATE_SEPARATOR);
+            }
+            if (sb.length() > 0)
+                sb.delete(sb.length() - CARD_STATE_SEPARATOR.length(), sb.length());
+            return sb.toString();
         }
         return getState();
     }
