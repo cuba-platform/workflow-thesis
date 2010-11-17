@@ -374,6 +374,3 @@ create table WF_USER_GROUP_USER (
 
 alter table WF_USER_GROUP_USER add constraint FK_WF_UGU_USER_GROUP foreign key (USER_GROUP_ID) references WF_USER_GROUP (ID)^
 alter table WF_USER_GROUP_USER add constraint FK_WF_UGU_USER foreign key (USER_ID) references SEC_USER (ID)^
-
-insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
-values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','AttachmentType.attachment',true)^
