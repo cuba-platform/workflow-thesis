@@ -19,6 +19,6 @@ import java.util.List;
 public interface MailService {
     public static String JNDI_NAME = "worckflow_common_MailService";
 
-    void sendCardMail(Card card, String comment, List<User> users);
+    void sendCardMail(Card card, String comment, List<User> users, String script);
 
 }

@@ -164,7 +164,7 @@ public class CardSend extends AbstractWindow {
                         for (UUID uuid : tmpUserDs.getItemIds()) {
                             users.add(tmpUserDs.getItem(uuid));
                         }
-                        mailService.sendCardMail(card, commentStr, users);
+                        mailService.sendCardMail(card, commentStr, users, getNotificationScript());
                     } else {
                         showNotification(getMessage("cardSend.noUsers"), IFrame.NotificationType.WARNING);
                         return;
@@ -216,6 +216,10 @@ public class CardSend extends AbstractWindow {
                 return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
             }
         });
+    }
+
+    protected String getNotificationScript() {
+        return "process/EmailNotification.groovy";
     }
 
     protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {

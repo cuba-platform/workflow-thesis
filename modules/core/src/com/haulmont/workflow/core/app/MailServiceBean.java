@@ -30,7 +30,7 @@ public class MailServiceBean implements MailService  {
 
     protected Log log = LogFactory.getLog(MailServiceBean.class);
 
-    public void sendCardMail(Card card, String comment, List<User> users) {
+    public void sendCardMail(Card card, String comment, List<User> users, String script) {
         String subject;
         String body;
 
@@ -38,8 +38,6 @@ public class MailServiceBean implements MailService  {
            return;
         if(users == null)
            return;
-
-        String script = /*card.getProc().getMessagesPack().replace('.', '/') +*/"process/EmailNotification.groovy";
 
         for(User user: new LinkedList<User>(users)){
             if(user.getEmail() != null){
