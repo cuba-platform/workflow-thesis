@@ -250,7 +250,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         variables.put("cardRole", cardRole);
 
         //email
-        if (user.getEmail() != null && !mailList.contains(user) &&
+        if (StringUtils.trimToNull(user.getEmail()) != null && !mailList.contains(user) &&
                 BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
                 ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
             variables.put("script", getScriptByNotificationType(processPath, type));
