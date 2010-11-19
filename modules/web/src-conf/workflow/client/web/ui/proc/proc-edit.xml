@@ -96,7 +96,7 @@
                             <rows datasource="dpaDs"/>
                         </table>
                     </vbox>
-                    <vbox expand="permissionsTable">
+                    <vbox id="permissionsPane" expand="permissionsTable">
                         <label value="msg://permissions"/>
                         <table id="permissionsTable" editable="false">
                             <buttonsPanel>

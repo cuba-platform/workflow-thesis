@@ -30,7 +30,8 @@ import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.components.TableActionsHelper
 import com.haulmont.cuba.gui.data.DataService
 import com.haulmont.cuba.core.global.LoadContext
-import com.haulmont.workflow.core.entity.ProcRolePermission;
+import com.haulmont.workflow.core.entity.ProcRolePermission
+import com.haulmont.cuba.gui.data.ValueListener;
 
 public class ProcEditor extends AbstractEditor {
 
@@ -48,6 +49,17 @@ public class ProcEditor extends AbstractEditor {
     procDs = getDsContext().get("procDs")
     final CollectionDatasource<ProcRole, UUID> rolesDs = getDsContext().get("rolesDs")
     final CollectionDatasource<DefaultProcActor, UUID> dpaDs = getDsContext().get("dpaDs")
+
+    final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
+    final Component permissionsPane = getComponent("permissionsPane");
+    permissionsEnabled.addListener (new ValueListener(){
+
+      void valueChanged(Object source, String property, Object prevValue, Object value) {
+        if(permissionsPane != null)
+          permissionsPane.setVisible(permissionsEnabled.getValue());
+      }
+
+    });
 
     rolesTable = getComponent("rolesTable")
     TableActionsHelper rolesHelper = new TableActionsHelper(this, rolesTable)
