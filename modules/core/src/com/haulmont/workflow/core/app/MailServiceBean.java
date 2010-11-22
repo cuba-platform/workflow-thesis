@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import groovy.lang.Binding;
 import org.apache.commons.logging.Log;
@@ -40,7 +41,7 @@ public class MailServiceBean implements MailService  {
            return;
 
         for(User user: new LinkedList<User>(users)){
-            if(user.getEmail() != null){
+            if(StringUtils.trimToNull(user.getEmail()) != null){
                 log.debug("Card " + card.getDescription()+card.getLocState()+" send user "+user.getLogin()+ " by email "
                         +user.getEmail()+" with comment "+comment);
                 try {
