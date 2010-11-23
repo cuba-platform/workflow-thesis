@@ -43,6 +43,9 @@ public class Attachment extends StandardEntity {
     @OnDeleteInverse(value = DeletePolicy.DENY)
     private AttachmentType attachType;
 
+    @Column(name = "SIGNATURES")
+    private String signatures;
+
     public FileDescriptor getFile() {
         return file;
     }
@@ -73,6 +76,14 @@ public class Attachment extends StandardEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getSignatures() {
+        return signatures;
+    }
+
+    public void setSignatures(String signatures) {
+        this.signatures = signatures;
     }
 
     @MetaProperty

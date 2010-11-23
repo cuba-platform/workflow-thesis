@@ -83,6 +83,8 @@ class SequentialAssigner extends MultiAssigner {
         es.signalExecutionById(execution.getId(), signalName, params)
         afterSignal(execution)
       } else {
+        onSuccess(execution, signalName, assignment)
+
         log.debug("Looking for the next user")
         Card card = assignment.card
         List<CardRole> cardRoles = getCardRoles(execution, card)
@@ -105,6 +107,9 @@ class SequentialAssigner extends MultiAssigner {
         }
       }
     }
+  }
+
+  protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
   }
 
   protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {

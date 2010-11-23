@@ -122,6 +122,7 @@ public class ResolutionForm extends AbstractForm {
                     commitContext.getCommitInstances().addAll(copyAttachments());
                     getDsContext().getDataService().commit(commitContext);
                     getDsContext().commit();
+                    onCommit();
                     close(COMMIT_ACTION_ID);
                 }
             }
@@ -164,6 +165,9 @@ public class ResolutionForm extends AbstractForm {
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
         AttachmentActionsHelper.createLoadAction(attachmentsTable,this);
+    }
+
+    protected void onCommit() {
     }
 
     protected void applyToCards() {

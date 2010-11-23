@@ -104,6 +104,8 @@ public class ParallelAssigner extends MultiAssigner {
     } else {
       log.debug("Trying to finish assignment with success outcome")
 
+      onSuccess(execution, signalName, assignment)
+
       EntityManager em = PersistenceProvider.getEntityManager()
       Query q = em.createQuery('''
               select a from wf$Assignment a
@@ -130,11 +132,15 @@ public class ParallelAssigner extends MultiAssigner {
 
       if (resultTransition != successTransition)
         log.debug("Some of parallel assignments have been finished unsuccessfully")
-      else
+      else {
         log.debug("All of parallel assignments have been finished successfully")
+      }
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
       afterSignal(execution)
     }
+  }
+
+  protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
   }
 }
