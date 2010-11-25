@@ -28,6 +28,7 @@ import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
+import com.haulmont.workflow.core.entity.ProcRole
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -66,9 +67,11 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       user = list.get(0)
     } else {
       cr = card.getRoles().find { CardRole it -> it.procRole.code == role && card.proc == it.procRole.proc}
-      if (!cr)
+      if (!cr) {
+        def pr = getProcRoleByCode(card, role)
         throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
-                "User not found: cardId=${card.getId()}, procRole=$role", role)
+                "User not found: cardId=${card.getId()}, procRole=$role", pr?.name ? pr.name : role)
+      }
       user = cr.getUser()
     }
 
@@ -122,4 +125,17 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     else
       return 1
   }
+
+  protected ProcRole getProcRoleByCode (Card card, String roleCode) {
+    EntityManager em = PersistenceProvider.getEntityManager()
+    Query query = em.createQuery('select pr from wf$ProcRole pr where pr.proc.id = :proc and pr.code = :code')
+    query.setParameter('proc', card.proc)
+    query.setParameter('code', roleCode)
+    List<ProcRole> list = query.getResultList()
+    if (!list.isEmpty())
+      return list[0]
+    else
+      return null;
+  }
+
 }

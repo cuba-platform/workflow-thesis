@@ -44,9 +44,11 @@ class SequentialAssigner extends MultiAssigner {
       if (forRefusedOnly(execution)) {
         log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")
         return false
-      } else
+      } else {
+        def pr = getProcRoleByCode(card, role)
         throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
-                "User not found: cardId=${card.getId()}, procRole=$role", role)
+                "User not found: cardId=${card.getId()}, procRole=$role", pr?.name ? pr.name : role)
+      }
     }
 
     Assignment master = new Assignment()
