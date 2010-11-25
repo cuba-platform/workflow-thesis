@@ -12,7 +12,10 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.app.ui.core.file.MultiUploader;
 import com.haulmont.cuba.web.filestorage.FileDisplay;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -97,7 +100,7 @@ public class AttachmentActionsHelper {
     }
 
     /* Create load attachment context menu for attaghments table
-     * @param attachmentsTable Table with attachments
+     * @param attachments Table Table with attachments
      * @param window Window
      * @return Action
      */
@@ -115,5 +118,41 @@ public class AttachmentActionsHelper {
                 }
             }
         });
+    }
+
+    /**
+     * Create action for multiupload attachments
+     * @param attachmentsTable Table Table with attachments
+     * @param window Window
+     * @param creator Custom method for set object properties
+     */
+    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator){
+        final Table attachments = attachmentsTable;
+        final CollectionDatasource attachDs = attachmentsTable.getDatasource();
+        final IFrame frame = window;
+        final AttachmentCreator fCreator = creator;
+        
+        return new AbstractAction("actions.MultiUpload") {
+            public void actionPerform(Component component) {
+                Map<String, Object> params = new HashMap<String,Object>();
+                params.put("creator",fCreator);
+                
+                final Window editor = frame.openEditor("wf$AttachUploader", null,
+                        WindowManager.OpenType.THIS_TAB,
+                        params, null);
+
+                editor.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId) && editor instanceof Window.Editor) {
+                            List<Attachment> items = ((AttachmentsMultiUploader)editor).getAttachments();
+                            for (Attachment attach : items) {
+                                attachDs.addItem(attach);
+                            }
+                            attachments.refresh();
+                        }
+                    }
+                });
+            }
+        };
     }
 }

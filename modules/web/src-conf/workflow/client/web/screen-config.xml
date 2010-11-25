@@ -12,7 +12,10 @@
     <screen id="wf$AttachClipboard"
                 template="/com/haulmont/workflow/web/ui/base/attachments/attach-clipboard.xml"/>
 
-     <screen id="wf$AttachTypes.browse"
+    <screen id="wf$AttachUploader"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-uploader.xml"/>
+
+    <screen id="wf$AttachTypes.browse"
             template="workflow/client/web/ui/attachmenttypes/type-browse.xml"/>
 
     <screen id="wf$AttachmentType.edit"
