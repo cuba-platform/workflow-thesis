@@ -113,6 +113,8 @@ create table WF_CARD_INFO (
 alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_CARD foreign key (CARD_ID) references WF_CARD(ID)^
 alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_USER foreign key (USER_ID) references SEC_USER(ID)^
 
+create index IDX_WF_CARD_INFO_CARD on WF_CARD_INFO(card_id)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_ASSIGNMENT (
