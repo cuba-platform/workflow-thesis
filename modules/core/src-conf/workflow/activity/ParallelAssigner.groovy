@@ -139,7 +139,7 @@ public class ParallelAssigner extends MultiAssigner {
       }
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
-      afterSignal(execution)
+      afterSignal(execution, signalName, parameters)
     }
   }
 

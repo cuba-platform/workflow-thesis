@@ -90,7 +90,7 @@ public class CardActivity implements ActivityBehaviour {
     return card
   }
 
-  protected void afterSignal(ActivityExecution execution) {
+  protected void afterSignal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
     Card card = findCard(execution);
     card.state = card.state - "${execution.getActivityName()},"
     execution.createVariable(PREV_ACTIVITY_VAR_NAME, execution.getActivityName())

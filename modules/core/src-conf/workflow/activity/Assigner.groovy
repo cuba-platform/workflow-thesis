@@ -109,7 +109,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     if (timersFactory) {
       timersFactory.removeTimers(execution)
     }
-    afterSignal(execution)
+    afterSignal(execution, signalName, parameters)
   }
 
   protected Integer calcIteration(Card card, User user, String activityName) {

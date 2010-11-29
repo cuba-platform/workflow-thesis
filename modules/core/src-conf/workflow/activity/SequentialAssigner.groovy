@@ -83,7 +83,7 @@ class SequentialAssigner extends MultiAssigner {
       if (successTransition != signalName) {
         log.debug("Non-success transition has taken, signal master")
         es.signalExecutionById(execution.getId(), signalName, params)
-        afterSignal(execution)
+        afterSignal(execution, signalName, parameters)
       } else {
         onSuccess(execution, signalName, assignment)
 
@@ -101,7 +101,7 @@ class SequentialAssigner extends MultiAssigner {
         if (nextCr == null) {
           log.debug("Last user assignment finished, taking $signalName")
           es.signalExecutionById(execution.getId(), signalName, params)
-          afterSignal(execution)
+          afterSignal(execution, signalName, parameters)
         } else {
           log.debug("Next assigned user: $nextCr.user")
           createUserAssignment(execution, card, nextCr, assignment.getMasterAssignment())
