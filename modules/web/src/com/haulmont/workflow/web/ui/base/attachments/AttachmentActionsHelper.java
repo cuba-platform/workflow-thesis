@@ -100,7 +100,7 @@ public class AttachmentActionsHelper {
     }
 
     /* Create load attachment context menu for attaghments table
-     * @param attachments Table Table with attachments
+     * @param attachments Table with attachments
      * @param window Window
      * @return Action
      */
@@ -122,7 +122,7 @@ public class AttachmentActionsHelper {
 
     /**
      * Create action for multiupload attachments
-     * @param attachmentsTable Table Table with attachments
+     * @param attachmentsTable Table with attachments
      * @param window Window
      * @param creator Custom method for set object properties
      */

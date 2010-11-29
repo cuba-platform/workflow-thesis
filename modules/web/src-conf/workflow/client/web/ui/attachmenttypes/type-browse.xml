@@ -8,7 +8,7 @@
     <dsContext>
         <collectionDatasource id="typesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
-                select att from wf$AttachmentType att where (att.deleteTs is null) and (att.code is null) order by att.isDefault
+                select att from wf$AttachmentType att where (att.deleteTs is null) and (att.code is null) order by att.isDefault desc
             </query>
         </collectionDatasource>
     </dsContext>

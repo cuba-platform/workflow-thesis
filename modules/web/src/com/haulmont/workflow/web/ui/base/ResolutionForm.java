@@ -152,19 +152,25 @@ public class ResolutionForm extends AbstractForm {
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
+        AttachmentCreator creator = new AttachmentCreator() {
+            public Attachment createObject() {
+                AssignmentAttachment attachment = new AssignmentAttachment();
+                attachment.setAssignment((Assignment) assignmentDs.getItem());
+                return attachment;
+            }
+        };
         pasteAttachBtn.setAction(
-                AttachmentActionsHelper.createPasteAction(attachmentsTable,
-                        new AttachmentCreator() {
-                            public Attachment createObject() {
-                                AssignmentAttachment attachment = new AssignmentAttachment();
-                                attachment.setAssignment((Assignment)assignmentDs.getItem());
-                                return attachment;
-                            }
-                        }));
+                AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+
+        PopupButton createPopup = getComponent("createAttachBtn");
+        TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
+        createPopup.addAction(helper.createCreateAction());
+        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
+
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
-        AttachmentActionsHelper.createLoadAction(attachmentsTable,this);
+        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
     }
 
     protected void onCommit() {

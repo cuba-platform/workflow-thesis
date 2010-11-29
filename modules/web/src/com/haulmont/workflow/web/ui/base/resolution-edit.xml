@@ -69,7 +69,7 @@
             <vbox id="attachmentsPane" expand="attachmentsTable">
                 <label value="msg://attachments"/>
                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                    <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
+                    <popupButton id="createAttachBtn" caption="msg://actions.Create"/>
                     <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
                     <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
                     <button id="copyAttach" icon="icons/copy.png"/>

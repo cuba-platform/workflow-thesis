@@ -119,16 +119,20 @@ public class TransitionForm extends AbstractForm {
             copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
             Button pasteAttachBtn = getComponent("pasteAttach");
+            AttachmentCreator creator = new AttachmentCreator() {
+                public Attachment createObject() {
+                    AssignmentAttachment attachment = new AssignmentAttachment();
+                    attachment.setAssignment((Assignment) assignmentDs.getItem());
+                    return attachment;
+                }
+            };
             pasteAttachBtn.setAction(
-                    AttachmentActionsHelper.createPasteAction(attachmentsTable,
-                            new AttachmentCreator() {
-                                public Attachment createObject() {
-                                    AssignmentAttachment attachment = new AssignmentAttachment();
-                                    attachment.setAssignment((Assignment) assignmentDs.getItem());
-                                    return attachment;
-                                }
-                            }));
+                    AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
             pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+            Button uploadManyBtn = getComponent("uploadMany");
+            uploadManyBtn.setAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
+
+            attachmentsTable.addAction(uploadManyBtn.getAction());
             attachmentsTable.addAction(copyAttachBtn.getAction());
             attachmentsTable.addAction(pasteAttachBtn.getAction());
             AttachmentActionsHelper.createLoadAction(attachmentsTable, this);

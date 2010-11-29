@@ -6,12 +6,13 @@
         caption="msg://editorCaption">
 
     <dsContext>
-        <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment" view="attachments-browse">
+        <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment"
+                              view="attachments-browse">
             <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentUploadDatasource</datasourceClass>
         </collectionDatasource>
         <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
-                select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault
+                select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault desc
             </query>
         </collectionDatasource>
     </dsContext>
@@ -22,7 +23,7 @@
             <hbox height="30" spacing="true">
                 <multiupload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
                 <button action="uploadsTable.remove" icon="icons/remove.png"/>
-                <label value="msg://setAttachmentsType" />
+                <label value="msg://setAttachmentsType"/>
                 <lookupField id="attachTypeCombo" editable="true"/>
             </hbox>
 
@@ -32,12 +33,15 @@
                             required="true" requiredMessage="msg://notNullNames"/>
                     <column id="file.extension" caption="msg://extension" editable="false" width="70"/>
                     <column id="file.size" caption="msg://size" editable="false" width="50"/>
-                    <column id="comment" caption="msg://comment" editable="true" width="100"/>                    
+                    <column id="comment" caption="msg://comment" editable="true" width="100"/>
                     <column id="attachType" caption="msg://attachType" editable="true" width="150"
                             optionsDatasource="attachTypesDs" required="true" requiredMessage="msg://notSetTypes"/>
                 </columns>
                 <rows datasource="attachDs"/>
             </table>
+            <hbox width="${width}">
+                <label align="MIDDLE_RIGHT" id="fileProgress" value=""/>
+            </hbox>
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

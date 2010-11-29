@@ -57,7 +57,7 @@ public class ResolutionEditor extends AbstractEditor {
                 WindowManager.OpenType.DIALOG);
         attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
         attachmentsTH.createRemoveAction(false);
-        
+
         final Datasource assignmentDs = getDsContext().get("assignmentDs");
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
@@ -65,19 +65,25 @@ public class ResolutionEditor extends AbstractEditor {
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
+        AttachmentCreator creator = new AttachmentCreator() {
+            public Attachment createObject() {
+                AssignmentAttachment attachment = new AssignmentAttachment();
+                attachment.setAssignment((Assignment) assignmentDs.getItem());
+                return attachment;
+            }
+        };
         pasteAttachBtn.setAction(
-                AttachmentActionsHelper.createPasteAction(attachmentsTable,
-                        new AttachmentCreator() {
-                            public Attachment createObject() {
-                                AssignmentAttachment attachment = new AssignmentAttachment();
-                                attachment.setAssignment((Assignment)assignmentDs.getItem());
-                                return attachment;
-                            }
-                        }));
+                AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+
+        PopupButton createPopup = getComponent("createAttachBtn");
+        TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
+        createPopup.addAction(helper.createCreateAction());
+        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
+
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
-        AttachmentActionsHelper.createLoadAction(attachmentsTable,this);
+        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
     private String code;
 
     @Column(name = "ISDEFAULT")
-    private Boolean isDefault;
+    private Boolean isDefault = false;
 
     public String getName() {
         return name;

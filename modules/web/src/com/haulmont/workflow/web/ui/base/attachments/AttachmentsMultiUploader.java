@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -34,13 +35,16 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private List<Attachment> attachments = new ArrayList<Attachment>();
 
     private FileMultiUploadField uploadField = null;
-    private Button okBtn;
+    private Button okBtn, cancelBtn;
     private boolean needSave;
     private CollectionDatasource attachDs = null;
     private Table uploadsTable = null;
     private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
     private AttachmentCreator creator = null;
     private LookupField attachTypeCombo = null;
+    private Label labelProgress = null;
+
+    private boolean isUploading = false;
 
     private CollectionDatasource attachTypesDs = null;
     private AttachmentType defaultAttachType = null;
@@ -54,6 +58,31 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         // Do nothing
         defaultAttachType = getDefaultAttachmentType();
         okBtn.setEnabled(false);
+        
+        Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
+        select.select(defaultAttachType);
+
+        cancelBtn.setAction(new AbstractAction("actions.Cancel") {
+            // OnClose
+            public void actionPerform(Component component) {
+                if (AttachmentsMultiUploader.this.isUploading)
+                    AttachmentsMultiUploader.this.showOptionDialog(
+                            getMessage("uploadStopRequest"),
+                            getMessage("uploadStopRequest"),
+                            MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new DialogAction(DialogAction.Type.YES) {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            AttachmentsMultiUploader.this.close("");
+                                        }
+                                    },
+                                    new DialogAction(DialogAction.Type.NO)
+                            });
+                else
+                    close("");
+            }
+        });
     }
 
     @Override
@@ -71,7 +100,10 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachDs = uploadsTable.getDatasource();
         attachDs.refresh();
 
+        labelProgress = getComponent("fileProgress");
+
         okBtn = getComponent("windowActions.windowCommit");
+        cancelBtn = getComponent("windowActions.windowClose");
 
         TableActionsHelper helper = new TableActionsHelper(this, uploadsTable);
         helper.createRemoveAction();
@@ -84,7 +116,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         select.setNullSelectionAllowed(true);
         select.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
         select.setItemCaptionMode(Select.ITEM_CAPTION_MODE_EXPLICIT);
-        
+
         Collection ids = attachTypesDs.getItemIds();
         Iterator iter = ids.iterator();
         while (iter.hasNext()) {
@@ -101,7 +133,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     Collection ids = attachDs.getItemIds();
                     Iterator iter = ids.iterator();
                     while (iter.hasNext()) {
-                        Attachment item = (Attachment)attachDs.getItem( iter.next() );
+                        Attachment item = (Attachment) attachDs.getItem(iter.next());
                         item.setAttachType((AttachmentType) value);
                     }
                     uploadsTable.refresh();
@@ -114,6 +146,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             @Override
             public void queueUploadComplete() {
                 needSave = true;
+                isUploading = false;
                 okBtn.setEnabled(true);
                 FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
@@ -134,11 +167,31 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 }
                 uploads.clear();
                 uploadsTable.refresh();
+                labelProgress.setValue("");
             }
 
             @Override
             public void fileUploadStart(String fileName) {
+                isUploading = true;
                 okBtn.setEnabled(false);
+            }
+
+            @Override
+            public void progressChanged(String fileName, int totalBytes, int contentLength) {
+                String progressString = fileName + ":" +
+                        String.valueOf(Math.round(totalBytes * 100 / (contentLength + 0.1))) + "%";
+                labelProgress.setValue(progressString);
+            }
+
+            @Override
+            public void errorNotify(String fileName, String message, int errorCode) {
+                if (errorCode == FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT) {
+                    String locMessage = MessageProvider.getMessage(getClass(), "fileExceedsSizeLimit") + ":" + fileName;
+                    AttachmentsMultiUploader.this.showNotification(locMessage, NotificationType.WARNING);
+                } else {
+                    String locMessage = MessageProvider.getMessage(getClass(), "fileUploadError") + ":" + fileName;
+                    AttachmentsMultiUploader.this.showNotification(locMessage, NotificationType.ERROR);
+                }
             }
         });
     }
