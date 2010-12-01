@@ -86,6 +86,8 @@ public class AttachmentEditor extends AbstractEditor {
       }
       defaultAType = getDefaultAttachmentType()
       attachType.setValue(defaultAType)
+      attachmentDs.getItem().setFile(new FileDescriptor())
+      fileDs.refresh()
 
       okBtn.setEnabled(false)
 
@@ -97,6 +99,7 @@ public class AttachmentEditor extends AbstractEditor {
 
               uploadSucceeded: {Event event ->
                 String fileName = uploadField.getFileName()
+               
                 fileNameText.setValue(fileName)
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
 
