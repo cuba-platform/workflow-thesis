@@ -316,7 +316,8 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        vAddUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser());
+        vAddUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser()
+         && procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD));
         return addUserGroupButton;
 
     }
