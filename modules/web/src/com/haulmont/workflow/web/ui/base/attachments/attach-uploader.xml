@@ -10,13 +10,16 @@
                               view="attachments-browse">
             <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentUploadDatasource</datasourceClass>
         </collectionDatasource>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="_local">
+            <datasourceClass>com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource</datasourceClass>
+        </collectionDatasource>
         <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
                 select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault desc
             </query>
         </collectionDatasource>
     </dsContext>
-    <#assign width = 600>
+    <#assign width = 630>
     <#assign height = 300>
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">

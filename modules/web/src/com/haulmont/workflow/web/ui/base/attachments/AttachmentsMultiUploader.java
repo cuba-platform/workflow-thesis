@@ -45,7 +45,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     private boolean isUploading = false;
 
-    private CollectionDatasource attachTypesDs = null;
+    private CollectionDatasource attachTypesDs, filesDs = null;
     private AttachmentType defaultAttachType = null;
 
     public AttachmentsMultiUploader(IFrame frame) {
@@ -96,6 +96,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachTypesDs = getDsContext().get("attachTypesDs");
         attachTypesDs.refresh();
 
+        filesDs = getDsContext().get("filesDs");
+        
         attachDs = uploadsTable.getDatasource();
         attachDs.refresh();
 
@@ -157,6 +159,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     Map.Entry<UUID, String> item = iterator.next();
 
                     FileDescriptor fDesc = uploader.getFileDescriptor(item.getKey(), item.getValue());
+                    filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
                     attach.setComment("");
                     attach.setName(fDesc.getName());
