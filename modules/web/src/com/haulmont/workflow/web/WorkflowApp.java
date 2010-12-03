@@ -10,10 +10,10 @@
  */
 package com.haulmont.workflow.web;
 
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.DefaultApp;
 import com.haulmont.workflow.web.exception.WorkflowExceptionHandler;
 
-public class WorkflowApp extends App {
+public class WorkflowApp extends DefaultApp {
 
     @Override
     protected void initExceptionHandlers(boolean isConnected) {
