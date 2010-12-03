@@ -22,12 +22,13 @@
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
             <hbox height="30" spacing="true">
                 <multiupload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
-                <button action="uploadsTable.remove" icon="icons/remove.png"/>
+                <button id="removeAttachBtn" action="uploadsTable.remove" icon="icons/remove.png"/>
                 <label value="msg://setAttachmentsType"/>
                 <lookupField id="attachTypeCombo" editable="true"/>
             </hbox>
 
-            <table id="uploadsTable" editable="true" width="${width}" height="${height}">
+            <table id="uploadsTable" editable="true" multiselect="true"
+                    width="${width}" height="${height}">
                 <columns>
                     <column id="name" caption="msg://name" editable="true" width="150"
                             required="true" requiredMessage="msg://notNullNames"/>

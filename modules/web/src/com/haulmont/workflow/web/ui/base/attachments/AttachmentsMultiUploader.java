@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
@@ -35,7 +34,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private List<Attachment> attachments = new ArrayList<Attachment>();
 
     private FileMultiUploadField uploadField = null;
-    private Button okBtn, cancelBtn;
+    private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
     private CollectionDatasource attachDs = null;
     private Table uploadsTable = null;
@@ -58,7 +57,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         // Do nothing
         defaultAttachType = getDefaultAttachmentType();
         okBtn.setEnabled(false);
-        
+
         Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
         select.select(defaultAttachType);
 
@@ -103,6 +102,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         labelProgress = getComponent("fileProgress");
 
         okBtn = getComponent("windowActions.windowCommit");
+        delBtn = getComponent("removeAttachBtn");
         cancelBtn = getComponent("windowActions.windowClose");
 
         TableActionsHelper helper = new TableActionsHelper(this, uploadsTable);
@@ -148,6 +148,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 needSave = true;
                 isUploading = false;
                 okBtn.setEnabled(true);
+                delBtn.setEnabled(true);
+
                 FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
                 Iterator<Map.Entry<UUID, String>> iterator = uploads.entrySet().iterator();
@@ -160,7 +162,14 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     attach.setName(fDesc.getName());
                     attach.setFile(fDesc);
                     attach.setCreateTs(TimeProvider.currentTimestamp());
-                    attach.setAttachType(defaultAttachType);
+
+                    Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
+                    AttachmentType aType = (AttachmentType) select.getValue();
+
+                    if (aType != null)
+                        attach.setAttachType(aType);
+                    else
+                        attach.setAttachType(defaultAttachType);
 
                     descriptors.put(fDesc, item.getKey());
                     attachDs.addItem(attach);
@@ -174,12 +183,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             public void fileUploadStart(String fileName) {
                 isUploading = true;
                 okBtn.setEnabled(false);
-            }
-
-            @Override
-            public void progressChanged(String fileName, int totalBytes, int contentLength) {
-                String progressString = fileName + ":" +
-                        String.valueOf(Math.round(totalBytes * 100 / (contentLength + 0.1))) + "%";
+                delBtn.setEnabled(false);
+                String progressString = MessageProvider.getMessage(getClass(), "fileUploading") + ":" + fileName;
                 labelProgress.setValue(progressString);
             }
 
