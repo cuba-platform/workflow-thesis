@@ -127,18 +127,30 @@ public class AttachmentActionsHelper {
      * @param creator Custom method for set object properties
      */
     public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator){
+        return  createMultiUploadAction(attachmentsTable,window,creator,WindowManager.OpenType.THIS_TAB);
+    }
+
+    /**
+     * Create action for multiupload attachments
+     * @param attachmentsTable Table with attachments
+     * @param window Window
+     * @param creator Custom method for set object properties
+     * @param openType Window open type
+     */
+    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
+                                                 final WindowManager.OpenType openType){
         final Table attachments = attachmentsTable;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
         final AttachmentCreator fCreator = creator;
-        
+
         return new AbstractAction("actions.MultiUpload") {
             public void actionPerform(Component component) {
                 Map<String, Object> params = new HashMap<String,Object>();
                 params.put("creator",fCreator);
-                
+
                 final Window editor = frame.openEditor("wf$AttachUploader", null,
-                        WindowManager.OpenType.THIS_TAB,
+                        openType,
                         params, null);
 
                 editor.addListener(new Window.CloseListener() {
