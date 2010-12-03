@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base.action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.core.app.WfService;
@@ -70,7 +71,7 @@ public class ActionsFrame extends AbstractFrame {
 
                 actions.addAll(info.getActions());
             }
-            if (!WfConstants.CARD_STATE_CANCELED.equals(card.getState()) && (accessData == null || accessData.getCancelProcessEnabled())) {
+            if (!WfUtils.isCardInState(card,  WfConstants.CARD_STATE_CANCELED) && (accessData == null || accessData.getCancelProcessEnabled())) {
                 actions.add(WfConstants.ACTION_CANCEL);
             }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
