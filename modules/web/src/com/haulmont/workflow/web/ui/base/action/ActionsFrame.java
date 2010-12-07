@@ -87,7 +87,15 @@ public class ActionsFrame extends AbstractFrame {
             Button btn = buttons.get(i);
             if (i <= actions.size() - 1) {
                 btn.setVisible(true);
-                btn.setAction(new ProcessAction(card, actions.get(i), this));
+                String actionName = actions.get(i);
+                btn.setAction(new ProcessAction(card, actionName, this));
+
+                FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
+                String style = (String) managerChain.getCommonParams().get("style");
+                if (style != null) {
+                    btn.setStyleName(style);
+                }
+
                 buttonContainer.add(btn);
             }
         }

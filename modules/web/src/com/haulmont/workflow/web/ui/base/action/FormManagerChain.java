@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -87,6 +88,14 @@ public class FormManagerChain {
                     Map<String, Object> commonParams = new HashMap<String, Object>();
                     commonParams.put("activity", activity);
                     commonParams.put("transition", transition);
+                    
+                    String style = StringUtils.trimToNull(element.attributeValue("style"));
+                    if (style == null && ("Ok".equals(actionName) || "START_PROCESS_ACTION".equals(actionName))) {
+                        style = "wf-success";
+                    }
+                    if (style != null) {
+                        commonParams.put("style", style);
+                    }
 
                     managerChain.setCommonParams(commonParams);
 
