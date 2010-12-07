@@ -4,11 +4,10 @@
     <property name="project.dir" location=".."/>
     <property name="root.dir" location="${project.dir}/.."/>
 
-    <import file="${root.dir}/build-inc-prj.xml"/>
+    <property file="${root.dir}/build-script/local.build.properties"/>
+    <property file="${root.dir}/build-script/build.properties"/>
 
-    <property file="${root.dir}/build.properties"/>
-    <property file="${project.dir}/local.build.properties"/>
-    <property file="${project.dir}/build.properties"/>
+    <import file="${root.dir}/build-script/build-inc-prj.xml"/>
 
     <property name="sql.dir" value="init/sql"/>
 
