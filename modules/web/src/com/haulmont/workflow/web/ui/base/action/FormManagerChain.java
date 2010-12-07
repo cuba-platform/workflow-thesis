@@ -90,7 +90,7 @@ public class FormManagerChain {
                     commonParams.put("transition", transition);
                     
                     String style = StringUtils.trimToNull(element.attributeValue("style"));
-                    if (style == null && ("Ok".equals(actionName) || "START_PROCESS_ACTION".equals(actionName))) {
+                    if (style == null && ("Ok".equals(transition) || "START_PROCESS_ACTION".equals(actionName))) {
                         style = "wf-success";
                     }
                     if (style != null) {
