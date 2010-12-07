@@ -76,20 +76,6 @@ public class ResolutionForm extends AbstractForm {
         attachmentsPane.setVisible(attachmentsVisible == null || Boolean.valueOf(attachmentsVisible).equals(Boolean.TRUE));
 
         TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
-        attachmentsTH.createCreateAction(
-                new ValueProvider() {
-                    public Map<String, Object> getValues() {
-                        Map<String, Object> values = new HashMap<String, Object>();
-                        values.put("assignment", getDsContext().get("assignmentDs").getItem());
-                        values.put("file", new FileDescriptor());
-                        return values;
-                    }
-
-                    public Map<String, Object> getParameters() {
-                        return Collections.emptyMap();
-                    }
-                },
-                WindowManager.OpenType.DIALOG);
         attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
         attachmentsTH.createRemoveAction(false);
 
@@ -165,8 +151,22 @@ public class ResolutionForm extends AbstractForm {
 
         PopupButton createPopup = getComponent("createAttachBtn");
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
-        createPopup.addAction(helper.createCreateAction());
-        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
+        createPopup.addAction(helper.createCreateAction(
+                new ValueProvider() {
+                    public Map<String, Object> getValues() {
+                        Map<String, Object> values = new HashMap<String, Object>();
+                        values.put("assignment", getDsContext().get("assignmentDs").getItem());
+                        values.put("file", new FileDescriptor());
+                        return values;
+                    }
+
+                    public Map<String, Object> getParameters() {
+                        return Collections.emptyMap();
+                    }
+                },
+                WindowManager.OpenType.DIALOG
+        ));
+        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
