@@ -228,6 +228,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                 CardRoleField cardRoleField = actorActionsFieldsMap.get(cardRole);
                 if (cardRoleField != null) {
+                    cardRoleField.setValue(cardRole.getUser());
                     return cardRoleField;
                 }
 
