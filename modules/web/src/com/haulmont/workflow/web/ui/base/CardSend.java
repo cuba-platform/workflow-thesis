@@ -71,6 +71,9 @@ public class CardSend extends AbstractWindow {
         parent = (CardComment)params.get("parent");
         tmpUserDs = getDsContext().get("tmpUserDs");
         tmpUserDs.valid();
+        if (parent != null) {
+            tmpUserDs.addItem(parent.getSender());    
+        }
         createUserCaption = getMessage("cardSend.createUserCaption");
         createAllUsersCaption = getMessage("cardSend.createAllUsersCaption");
         createAnyUserCaption = getMessage("cardSend.createAnyUserCaption");
