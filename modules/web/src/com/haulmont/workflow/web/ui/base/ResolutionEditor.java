@@ -22,6 +22,7 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.AssignmentAttachment;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 
 import java.util.Collections;
@@ -105,5 +106,7 @@ public class ResolutionEditor extends AbstractEditor {
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         pasteAttachBtn.setEnabled(editable);
+        if (attachmentsTable != null)
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
     }
 }

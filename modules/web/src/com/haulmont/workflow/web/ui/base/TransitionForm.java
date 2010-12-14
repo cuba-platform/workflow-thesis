@@ -26,6 +26,7 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
@@ -203,6 +204,8 @@ public class TransitionForm extends AbstractForm {
 
         if (commentText != null)
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
+        if (attachmentsTable != null)
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
     }
 
     protected boolean doCommit() {

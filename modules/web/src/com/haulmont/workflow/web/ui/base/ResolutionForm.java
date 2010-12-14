@@ -33,6 +33,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
@@ -171,6 +172,8 @@ public class ResolutionForm extends AbstractForm {
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
         AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
+        if (attachmentsTable != null)
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
     }
 
     protected void onCommit() {

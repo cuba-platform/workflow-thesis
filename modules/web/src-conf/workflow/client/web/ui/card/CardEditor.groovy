@@ -19,6 +19,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
 import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.workflow.web.ui.base.AbstractCardEditor
+import com.haulmont.cuba.gui.components.Table
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 
 public class CardEditor extends AbstractCardEditor {
 
@@ -51,6 +53,9 @@ public class CardEditor extends AbstractCardEditor {
 
   public void setItem(Entity item) {
     super.setItem(item);
+    Table attachmentsTable = getComponent("attachmentsTable")
+    if (attachmentsTable != null)
+      AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
   }
 
   @Override

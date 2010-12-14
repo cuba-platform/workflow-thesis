@@ -70,6 +70,7 @@
                                     <columns>
                                         <column id="name" caption="msg://attachName"/>
                                         <column id="file.name" caption="msg://fileName"/>
+                                        <column id="file.size" caption="msg://fileSize"/>
                                     </columns>
                                     <rows datasource="attachmentsDs"/>
                                 </table>

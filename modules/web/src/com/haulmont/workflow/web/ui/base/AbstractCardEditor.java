@@ -31,6 +31,7 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import org.apache.commons.collections.CollectionUtils;
@@ -104,6 +105,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (attachmentsTable != null) {
             FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
         }
 
         if (cardProcFrame != null) {

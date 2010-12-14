@@ -30,6 +30,8 @@ public class AttachmentClipboard extends AbstractEditor {
 
         Button removeAttachBtn = getComponent("removeAttach");
         final Table attachmentsTable = getComponent("attachmentsTable");
+        if (attachmentsTable != null)
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
         removeAttachBtn.setAction(new AbstractAction("removeAttach") {
             public void actionPerform(Component component) {
                 Set selected = attachmentsTable.getSelected();
