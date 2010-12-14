@@ -27,7 +27,7 @@
                 <column id="name" caption="msg://attachName"/>
                 <column id="file.name" caption="msg://fileName"/>
                 <column id="attachType.locName" caption="msg://typeName"/>
-                <column id="file.Size" caption="msg://fileSize"/>
+                <column id="file.size" caption="msg://fileSize"/>
             </columns>
             <rows datasource="attachmentsDs"/>
         </table>
