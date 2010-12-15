@@ -78,7 +78,7 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
 
 
 //        for not-active processes we'll allow everything by now
-        if (card.getProcs() == null) {
+        if (card.getProcs() == null && !PersistenceHelper.isNew(card)) {
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
@@ -92,54 +92,55 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
 
         User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
         Set<ProcRole> usersProcRolesFrom = new HashSet<ProcRole>();
-        
-        for (CardProc cp : card.getProcs()) {
-            if (cp.getProc().equals(procRoleTo.getProc())) {
+
+        if (card.getProcs() != null)
+            for (CardProc cp : card.getProcs()) {
+                if (cp.getProc().equals(procRoleTo.getProc())) {
 
 //              BooleanUtils.isNotTrue(cp.getActive() - not-active process in case of cardProcFrame in Card Editor
 //              BooleanUtils.isTrue(cp.getActive()) && StringUtils.isBlank(cp.getState()) - not-active process in case of cardRolesFrame in TransitionForm 
-                if (BooleanUtils.isNotTrue(cp.getActive()) ||
-                        (BooleanUtils.isTrue(cp.getActive()) && StringUtils.isBlank(cp.getState()))) {
+                    if (BooleanUtils.isNotTrue(cp.getActive()) ||
+                            (BooleanUtils.isTrue(cp.getActive()) && StringUtils.isBlank(cp.getState()))) {
 
-                    state = WfConstants.PROC_NOT_ACTIVE;
-                    //figure out  whether currentUser is card creator
-                    User substitutedCreator = card.getSubstitutedCreator();
-                    if (substitutedCreator == null) {
-                        Transaction tx = Locator.createTransaction();
-                        try {
-                            EntityManager em = PersistenceProvider.getEntityManager();
-                            Query query = em.createQuery("select c.substitutedCreator from wf$Card c where c.id = :card");
-                            query.setParameter("card", card);
-                            substitutedCreator = (User)query.getSingleResult();
-                            tx.commit();
-                        } finally {
-                            tx.end();
-                        }
-                    }
-
-                    //if current user is task creator
-                    if (currentUser.equals(substitutedCreator)) {
-                        //find proc in cahce
-                        Proc currentProc = null;
-                        for (Proc p : processes) {
-                            if (procRoleTo.getProc().equals(p)) {
-                                currentProc = p;
-                                break;
+                        state = WfConstants.PROC_NOT_ACTIVE;
+                        //figure out  whether currentUser is card creator
+                        User substitutedCreator = card.getSubstitutedCreator();
+                        if (substitutedCreator == null) {
+                            Transaction tx = Locator.createTransaction();
+                            try {
+                                EntityManager em = PersistenceProvider.getEntityManager();
+                                Query query = em.createQuery("select c.substitutedCreator from wf$Card c where c.id = :card");
+                                query.setParameter("card", card);
+                                substitutedCreator = (User) query.getSingleResult();
+                                tx.commit();
+                            } finally {
+                                tx.end();
                             }
                         }
 
-                        //find CARD_CREATOR procRole for current process and add it to usersProcRolesFrom
-                        for (ProcRole pr : currentProc.getRoles()) {
-                            if (WfConstants.CARD_CREATOR.equals(pr.getCode())) {
-                                usersProcRolesFrom.add(pr);
-                                break;
+                        //if current user is task creator
+                        if (currentUser.equals(substitutedCreator)) {
+                            //find proc in cahce
+                            Proc currentProc = null;
+                            for (Proc p : processes) {
+                                if (procRoleTo.getProc().equals(p)) {
+                                    currentProc = p;
+                                    break;
+                                }
+                            }
+
+                            //find CARD_CREATOR procRole for current process and add it to usersProcRolesFrom
+                            for (ProcRole pr : currentProc.getRoles()) {
+                                if (WfConstants.CARD_CREATOR.equals(pr.getCode())) {
+                                    usersProcRolesFrom.add(pr);
+                                    break;
+                                }
                             }
                         }
-                    }
-                };
-                break;
+                    };
+                    break;
+                }
             }
-        }
 
         //find procRoles which curent user has for current card
         if (card.getRoles() != null) {
