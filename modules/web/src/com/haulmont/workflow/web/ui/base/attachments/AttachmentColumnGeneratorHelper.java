@@ -26,10 +26,12 @@ public class AttachmentColumnGeneratorHelper {
 
     public static void addSizeGeneratedColumn(final Table attachmentsTable) {
         attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
+            private boolean generatorAdded = false;
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 super.stateChanged(ds, prevState, state);
-                if (state == Datasource.State.VALID) {
+                if (state == Datasource.State.VALID && !generatorAdded) {
+                    generatorAdded = true;
                     final HashMap<UUID, com.vaadin.ui.Component> map = new HashMap<UUID, com.vaadin.ui.Component>();
                     ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(attachmentsTable)).addGeneratedColumn(
                             attachmentsTable.getDatasource().getMetaClass().getPropertyEx("file.size"),
