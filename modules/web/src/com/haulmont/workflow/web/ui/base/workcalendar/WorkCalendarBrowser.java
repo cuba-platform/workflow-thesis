@@ -50,12 +50,15 @@ public class WorkCalendarBrowser extends AbstractWindow {
         workDaysTable.addAction(new AbstractAction("edit") {
             public void actionPerform(Component component) {
                 Entity entity = getDsContext().get("workDaysDs").getItem();
-                Window window = openEditor("wf$WorkCalendarWorkDay.edit", entity, WindowManager.OpenType.DIALOG);
-                window.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        getDsContext().get("workDaysDs").refresh();
-                    }
-                });
+                if (entity != null) {
+                    Window window = openEditor("wf$WorkCalendarWorkDay.edit", entity, WindowManager.OpenType.DIALOG);
+                    window.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            getDsContext().get("workDaysDs").refresh();
+                        }
+                    });
+                }
+
             }
             @Override
             public String getCaption() {
@@ -85,12 +88,14 @@ public class WorkCalendarBrowser extends AbstractWindow {
         exceptionDaysTable.addAction(new AbstractAction("edit") {
             public void actionPerform(Component component) {
                 Entity entity = getDsContext().get("exceptionDaysDs").getItem();
-                Window window = openEditor("wf$WorkCalendarExceptionDay.edit", entity, WindowManager.OpenType.DIALOG);
-                window.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        getDsContext().get("exceptionDaysDs").refresh();
-                    }
-                });
+                if (entity != null) {
+                    Window window = openEditor("wf$WorkCalendarExceptionDay.edit", entity, WindowManager.OpenType.DIALOG);
+                    window.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            getDsContext().get("exceptionDaysDs").refresh();
+                        }
+                    });
+                }
             }
             @Override
             public String getCaption() {
