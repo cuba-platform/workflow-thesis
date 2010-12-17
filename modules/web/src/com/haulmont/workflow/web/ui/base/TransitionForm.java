@@ -346,7 +346,7 @@ public class TransitionForm extends AbstractForm {
     protected Set<String> getRequiredRolesCodes(boolean isAll) {
         if (requiredRolesCodes != null) {
             String[] s = requiredRolesCodes.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
-            return new HashSet<String>(Arrays.asList(s));
+            return new LinkedHashSet<String>(Arrays.asList(s));
         }
         return Collections.emptySet();
     }
