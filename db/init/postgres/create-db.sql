@@ -53,7 +53,7 @@ create table WF_CARD_COMMENT (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    COMMENT varchar(1000),
+    COMMENT text,
     USER_ID uuid,
     CARD_ID uuid,
     PARENT_ID uuid,
@@ -106,7 +106,7 @@ create table WF_CARD_INFO (
     USER_ID uuid,
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
-    DESCRIPTION varchar(500),
+    DESCRIPTION text,
     primary key (ID)
 )^
 

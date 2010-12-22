@@ -72,7 +72,7 @@ create table WF_CARD_INFO (
     USER_ID varchar(36),
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
-    DESCRIPTION varchar(500),
+    DESCRIPTION text,
     primary key (ID)
 );
 
@@ -147,7 +147,7 @@ create table WF_ATTACHMENT (
     FILE_ID varchar(36),
     TYPE_ID varchar(36),
     NAME varchar(500),
-    COMMENT varchar(1000),
+    COMMENT text,
     SIGNATURES longvarchar,
     CARD_ID varchar(36),
     ASSIGNMENT_ID varchar(36),
