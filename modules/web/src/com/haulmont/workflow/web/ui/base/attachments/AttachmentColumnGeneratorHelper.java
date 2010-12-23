@@ -25,32 +25,42 @@ import java.util.HashMap;
 public class AttachmentColumnGeneratorHelper {
 
     public static void addSizeGeneratedColumn(final Table attachmentsTable) {
-        attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
-            private boolean generatorAdded = false;
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                super.stateChanged(ds, prevState, state);
-                if (state == Datasource.State.VALID && !generatorAdded) {
-                    generatorAdded = true;
-                    final HashMap<UUID, com.vaadin.ui.Component> map = new HashMap<UUID, com.vaadin.ui.Component>();
-                    ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(attachmentsTable)).addGeneratedColumn(
-                            attachmentsTable.getDatasource().getMetaClass().getPropertyEx("file.size"),
-                            new com.vaadin.ui.Table.ColumnGenerator() {
-                                public Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
-                                    UUID uuid = (UUID) itemId;
-                                    if (map.containsKey(uuid)) {
-                                        return map.get(uuid);
-                                    }
-                                    Attachment attach = (Attachment) attachmentsTable.getDatasource().getItem(uuid);
-                                    com.vaadin.ui.Label label = new com.vaadin.ui.Label(formatSize(attach.getFile().getSize(), 0));
-                                    label.setWidth("-1px");
-                                    map.put(uuid, label);
-                                    return label;
-                                }
-                            });
+        if (attachmentsTable.getDatasource().getState() != Datasource.State.VALID) {
+            attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
+                private boolean generatorAdded = false;
+
+                @Override
+                public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                    super.stateChanged(ds, prevState, state);
+                    if (state == Datasource.State.VALID && !generatorAdded) {
+                        generatorAdded = true;
+                        setGenerateColumn(attachmentsTable);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            setGenerateColumn(attachmentsTable);
+        }
+    }
+
+    private static void setGenerateColumn(final Table attachmentsTable)
+    {
+        final HashMap<UUID, com.vaadin.ui.Component> map = new HashMap<UUID, com.vaadin.ui.Component>();
+        ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(attachmentsTable)).addGeneratedColumn(
+                attachmentsTable.getDatasource().getMetaClass().getPropertyEx("file.size"),
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    public Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
+                        UUID uuid = (UUID) itemId;
+                        if (map.containsKey(uuid)) {
+                            return map.get(uuid);
+                        }
+                        Attachment attach = (Attachment) attachmentsTable.getDatasource().getItem(uuid);
+                        com.vaadin.ui.Label label = new com.vaadin.ui.Label(formatSize(attach.getFile().getSize(), 0));
+                        label.setWidth("-1px");
+                        map.put(uuid, label);
+                        return label;
+                    }
+                });
     }
 
     private static String formatSize(long longSize, int decimalPos) {
