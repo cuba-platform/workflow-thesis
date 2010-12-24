@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.gui.components.WebActionsField;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.vaadin.data.Item;
@@ -525,9 +526,10 @@ public class CardRolesFrame extends AbstractFrame {
     public void initAssignedToCreatorActors() {
         // if there is a role with AssignToCreator property set up, and this role is not assigned,
         // assign this role to the current user
+        WfService wfService = ServiceLocator.lookup(WfService.NAME);
         for (UUID procRoleId : procRolesDs.getItemIds()) {
             ProcRole procRole = procRolesDs.getItem(procRoleId);
-            if (BooleanUtils.isTrue(procRole.getAssignToCreator())) {
+            if (BooleanUtils.isTrue(procRole.getAssignToCreator()) && wfService.isCurrentUserContainsRole(procRole.getRole())) {
                 boolean found = false;
                 for (UUID cardRoleId : tmpCardRolesDs.getItemIds()) {
                     CardRole cardRole = tmpCardRolesDs.getItem(cardRoleId);

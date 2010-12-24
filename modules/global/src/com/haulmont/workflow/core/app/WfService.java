@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
@@ -41,4 +42,6 @@ public interface WfService {
     void deleteNotifications(Card card, User user);
 
     void deleteNotification(CardInfo cardInfo, User user);
+
+    boolean isCurrentUserContainsRole(Role role);
 }

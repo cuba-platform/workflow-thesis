@@ -14,7 +14,9 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
@@ -187,5 +189,16 @@ public class WfServiceBean implements WfService {
         } finally {
             tx.end();
         }
+    }
+
+    public boolean isCurrentUserContainsRole(Role role) {
+        boolean isRoleContains = false;
+        Set<UserRole> userRoles =  SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser().getUserRoles();
+        for (UserRole userRole : userRoles) {
+            if (userRole.getRole().equals(role)) {
+                isRoleContains = true;
+            }
+        }
+        return isRoleContains;
     }
 }
