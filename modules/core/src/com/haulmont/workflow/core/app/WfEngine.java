@@ -458,7 +458,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             }
         }
         c.setJbpmProcessId(null);
-        c.setState(WfConstants.CARD_STATE_CANCELED);
+        c.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
         for (Listener listener : listeners) {
             listener.onProcessCancel(card);
         }
