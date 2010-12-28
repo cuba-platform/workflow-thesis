@@ -39,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,6 +73,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected ProcRolePermissionsService procRolePermissionsService;
     protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<CardRole, CardRoleField>();
     protected List<User> users;
+    protected Map<Role, Collection<User>> roleUsersMap = new HashMap<Role, Collection<User>>();
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -324,61 +326,55 @@ public class CardRolesFrame extends AbstractFrame {
 
     }
 
-    //we don't use this method any more
-    protected void refreshUsersOptionsDs(CardRole cardRole, CollectionDatasource usersDs) {
-        if (usersDs == null) {
-            throw new RuntimeException("usersDs cannot be null");
-        }
-
-        String query;
-        Role secRole = cardRole.getProcRole().getRole();
-        User user = cardRole.getUser();
-        Set<UUID> users = getUsersByProcRole(cardRole.getProcRole());
-        if (user != null)
-            users.remove(user.getId());
-        if (secRole == null) {
-            query = "select u from sec$User u order by u.name, u.login";
-        } else {
-            String usersExclStr = " u.id not in (:custom$users)";
-            query = "select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole" +
-                    (CollectionUtils.isEmpty(users) ? " " : " and" + usersExclStr) + " order by u.name, u.login";
-        }
-        usersDs.setQuery(query);
-        Map<String, Object> userDsParams = new HashMap<String, Object>();
-        userDsParams.put("users", users);
-        userDsParams.put("secRole", secRole);
-        usersDs.refresh(userDsParams);
-    }
-
-    //fills users datasource with users with necessary security role (if set)  
+    //fills users datasource with users with necessary security role (if set)
     //and not added to process actors as member of current procRole
     protected void fillUsersOptionsDs(CardRole cardRole, CollectionDatasource usersDs) {
         if (usersDs == null)
             throw new RuntimeException("usersDs cannot be null");
         Role secRole = cardRole.getProcRole().getRole();
-        Set<UUID> addedUsersOfProcRole = getUsersByProcRole(cardRole.getProcRole());
+        Set<User> addedUsersOfProcRole = getUsersByProcRole(cardRole.getProcRole());
         if (cardRole.getUser() != null) {
             addedUsersOfProcRole.remove(cardRole.getUser().getId());
         }
-        for (User user : users) {
-            if (addedUsersOfProcRole.contains(user.getId())) continue;
 
-            if (secRole == null) {
-                usersDs.addItem(user);
-            } else {
-                for (UserRole ur : user.getUserRoles()) {
-                    if (secRole.equals(ur.getRole())) {
-                        usersDs.addItem(user);
-                        break;
-                    }
-                }
-            }
+        Collection<User> dsItems;
+        if (secRole == null) {
+            dsItems = ListUtils.removeAll(users, addedUsersOfProcRole);
+        } else {
+            dsItems = ListUtils.removeAll(getRoleUsers(secRole), addedUsersOfProcRole);
         }
+
+        for (User u : dsItems) {
+            usersDs.addItem(u);
+        }
+    }
+
+    /**
+     * Find all users, who have a given role
+     * @param secRole
+     * @return collection of users
+     */
+    private Collection<User> getRoleUsers(Role secRole) {
+        Collection<User> roleUsers = roleUsersMap.get(secRole);
+
+        if (roleUsers == null) {
+            LoadContext ctx = new LoadContext(User.class).setView(View.MINIMAL);
+            LoadContext.Query query = ctx.setQueryString("select u from sec$User u join u.userRoles ur where ur.role.id = :role order by u.name");
+            query.addParameter("role", secRole);
+            List<User> loadedUsers = ServiceLocator.getDataService().loadList(ctx);
+            if (loadedUsers == null) {
+                roleUsers = new ArrayList<User>();
+            }
+            roleUsers = new ArrayList<User>(loadedUsers);
+            roleUsersMap.put(secRole, roleUsers);
+        }
+
+        return roleUsers;
     }
 
     //we'll read users list only once and will use this list while filling users option datasources
     protected List<User> readUsers() {
-        LoadContext ctx = new LoadContext(User.class).setView("card-roles-frame");
+        LoadContext ctx = new LoadContext(User.class).setView(View.MINIMAL);
         ctx.setQueryString("select u from sec$User u order by u.name");
         List<User> users = ServiceLocator.getDataService().loadList(ctx);
         return users;
@@ -693,16 +689,16 @@ public class CardRolesFrame extends AbstractFrame {
         return items;
     }
 
-    private Set<UUID> getUsersByProcRole(ProcRole procRole) {
+    private Set<User> getUsersByProcRole(ProcRole procRole) {
         if (procRole == null) {
             return null;
         }
-        Set<UUID> res = new HashSet<UUID>();
+        Set<User> res = new HashSet<User>();
         Collection<UUID> crIds = tmpCardRolesDs.getItemIds();
         for (UUID crId : crIds) {
             CardRole cr = tmpCardRolesDs.getItem(crId);
             if (procRole.equals(cr.getProcRole()) && cr.getUser() != null) {
-                res.add(cr.getUser().getId());
+                res.add(cr.getUser());
             }
         }
         return res;
