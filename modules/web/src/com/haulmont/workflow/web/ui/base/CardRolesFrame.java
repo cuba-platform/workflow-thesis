@@ -33,12 +33,10 @@ import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.BaseTheme;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -214,9 +212,6 @@ public class CardRolesFrame extends AbstractFrame {
                 createRoleLookup.setValue(null);
             }
         });
-
-        users = readUsers();
-
     }
 
     private void initRolesTable() {
@@ -339,7 +334,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         Collection<User> dsItems;
         if (secRole == null) {
-            dsItems = ListUtils.removeAll(users, addedUsersOfProcRole);
+            dsItems = ListUtils.removeAll(getUsers(), addedUsersOfProcRole);
         } else {
             dsItems = ListUtils.removeAll(getRoleUsers(secRole), addedUsersOfProcRole);
         }
@@ -373,10 +368,13 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     //we'll read users list only once and will use this list while filling users option datasources
-    protected List<User> readUsers() {
-        LoadContext ctx = new LoadContext(User.class).setView(View.MINIMAL);
-        ctx.setQueryString("select u from sec$User u order by u.name");
-        List<User> users = ServiceLocator.getDataService().loadList(ctx);
+    protected List<User> getUsers() {
+        if (users == null) {
+            LoadContext ctx = new LoadContext(User.class).setView(View.MINIMAL);
+            ctx.setQueryString("select u from sec$User u order by u.name");
+            List<User> loadedUsers = ServiceLocator.getDataService().loadList(ctx);
+            users = new ArrayList<User>(loadedUsers);
+        }
         return users;
     }
 
