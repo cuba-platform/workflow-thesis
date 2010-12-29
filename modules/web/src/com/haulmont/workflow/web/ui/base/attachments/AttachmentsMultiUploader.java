@@ -164,7 +164,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     attach.setComment("");
                     attach.setName(fDesc.getName());
                     attach.setFile(fDesc);
-                    attach.setCreateTs(TimeProvider.currentTimestamp());
 
                     Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
                     AttachmentType aType = (AttachmentType) select.getValue();
