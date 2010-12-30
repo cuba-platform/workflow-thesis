@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -31,6 +32,7 @@ import com.haulmont.workflow.core.entity.CardComment;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +105,14 @@ public class CardCommentFrame extends AbstractWindow {
                     }
                 }
                 hLayoutTo.setSpacing(true);
+                WebHBoxLayout dateLayout = new WebHBoxLayout();
+                dateLayout.setSpacing(true);
+                WebLabel dateLabel = new WebLabel();
+                dateLabel.setValue(getMessage("date"));
+                dateLayout.add(dateLabel);
+                WebLabel dateValueLabel = new WebLabel();
+                dateValueLabel.setValue(new SimpleDateFormat(MessageUtils.getDateTimeFormat()).format(cardComment.getCreateTs()));
+                dateLayout.add(dateValueLabel);
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
                 WebTextField labelComment = new WebTextField();
                 labelComment.setValue(cardComment.getComment());
@@ -135,6 +145,7 @@ public class CardCommentFrame extends AbstractWindow {
                 hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment),1.0f);                
                 vLayout.add(hLayoutFrom);
                 vLayout.add(hLayoutTo);
+                vLayout.add(dateLayout);
                 vLayout.add(hLayoutComment);
                 return vLayout;
             }
