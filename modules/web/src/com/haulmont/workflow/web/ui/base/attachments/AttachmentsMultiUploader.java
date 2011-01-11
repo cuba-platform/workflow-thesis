@@ -101,7 +101,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachDs = uploadsTable.getDatasource();
         attachDs.refresh();
 
-        labelProgress = getComponent("fileProgress");
+//        labelProgress = getComponent("fileProgress");
 
         okBtn = getComponent("windowActions.windowCommit");
         delBtn = getComponent("removeAttachBtn");
@@ -178,7 +178,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 }
                 uploads.clear();
                 uploadsTable.refresh();
-                labelProgress.setValue("");
+//                labelProgress.setValue("");
             }
 
             @Override
@@ -186,8 +186,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 isUploading = true;
                 okBtn.setEnabled(false);
                 delBtn.setEnabled(false);
-                String progressString = MessageProvider.getMessage(getClass(), "fileUploading") + ":" + fileName;
-                labelProgress.setValue(progressString);
+                /*String progressString = MessageProvider.getMessage(getClass(), "fileUploading") + ":" + fileName;
+                labelProgress.setValue(progressString);*/
             }
 
             @Override
