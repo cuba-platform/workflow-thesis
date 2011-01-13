@@ -22,7 +22,7 @@ import java.util.List;
 @Table(name = "WF_CARD_COMMENT")
 public class CardComment extends StandardEntity {
 
-    @Column(name = "COMMENT", length = 1000)
+    @Column(name = "COMMENT")
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
