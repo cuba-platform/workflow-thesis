@@ -59,7 +59,21 @@ public class WfServiceBean implements WfService {
                     ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
 
                     ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
-                    ProcessDefinition pd = query.processDefinitionId(pi.getProcessDefinitionId()).uniqueResult();
+
+                    // Getting List instead of uniqueResult because of rare bug in process deployment which leads
+                    // to creation of 2 PD with the same ID
+                    List<ProcessDefinition> pdList = query.processDefinitionId(pi.getProcessDefinitionId()).list();
+                    if (pdList.isEmpty())
+                        throw new RuntimeException("ProcessDefinition not found: " + pi.getProcessDefinitionId());
+                    Collections.sort(
+                            pdList,
+                            new Comparator<ProcessDefinition>() {
+                                public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
+                                    return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
+                                }
+                            }
+                    );
+                    ProcessDefinition pd = pdList.get(pdList.size() - 1);
 
                     Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
                     for (Transition transition : activity.getOutgoingTransitions()) {
