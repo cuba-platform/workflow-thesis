@@ -79,7 +79,15 @@ public class ResolutionEditor extends AbstractEditor {
 
         PopupButton createPopup = getComponent("createAttachBtn");
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
-        createPopup.addAction(helper.createCreateAction());
+        createPopup.addAction(helper.createCreateAction(new ValueProvider() {
+            public Map<String, Object> getValues() {
+                return Collections.emptyMap();
+            }
+
+            public Map<String, Object> getParameters() {
+                return Collections.emptyMap();
+            }
+        }, WindowManager.OpenType.THIS_TAB, "actions.New"));
         createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
