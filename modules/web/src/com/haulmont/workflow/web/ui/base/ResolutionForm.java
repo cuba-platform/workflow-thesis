@@ -165,7 +165,7 @@ public class ResolutionForm extends AbstractForm {
                         return Collections.emptyMap();
                     }
                 },
-                WindowManager.OpenType.DIALOG
+                WindowManager.OpenType.DIALOG,"actions.New"
         ));
         createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG));
 
