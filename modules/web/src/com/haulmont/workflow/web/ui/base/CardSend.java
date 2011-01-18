@@ -60,6 +60,7 @@ public class CardSend extends AbstractWindow {
 
     protected void init(Map<String, Object> params) {
         super.init(params);
+        setHeight("400px");
         card = (Card) params.get("item");
         if(PersistenceHelper.isNew(card))
             throw new RuntimeException("Card is new");
