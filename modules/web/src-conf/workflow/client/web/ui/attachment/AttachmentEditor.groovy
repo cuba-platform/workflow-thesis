@@ -32,6 +32,7 @@ import com.haulmont.cuba.core.global.MessageProvider
 import org.apache.openjpa.kernel.DelegatingResultList
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.core.sys.AppContext
+import com.haulmont.cuba.gui.UserSessionClient
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -87,6 +88,8 @@ public class AttachmentEditor extends AbstractEditor {
       defaultAType = getDefaultAttachmentType()
       attachType.setValue(defaultAType)
       attachmentDs.getItem().setFile(new FileDescriptor())
+      attachmentDs.getItem().setCreateTs(TimeProvider.currentTimestamp());
+      attachmentDs.getItem().setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
       fileDs.refresh()
 
       okBtn.setEnabled(false)
