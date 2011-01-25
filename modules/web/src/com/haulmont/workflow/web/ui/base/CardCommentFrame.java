@@ -11,10 +11,7 @@
 
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -26,6 +23,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardComment;
@@ -44,6 +42,7 @@ public class CardCommentFrame extends AbstractWindow {
     protected com.haulmont.cuba.gui.components.Button buttonCreate;
     protected Card card;
     protected String cardSend;
+    protected Boolean justCreated;
 
     public CardCommentFrame(IFrame frame) {
         super(frame);
@@ -52,9 +51,12 @@ public class CardCommentFrame extends AbstractWindow {
     protected void init(Map<String, Object> params) {
         super.init(params);
         card = (Card) params.get("item");
-        LoadContext ctx = new LoadContext(card.getClass()).setId(card.getId())
-                .setView(MetadataProvider.getViewRepository().getView(card.getClass(), "browse"));
-        card = ServiceLocator.getDataService().load(ctx);
+        justCreated = (Boolean) params.get("justCreated");
+        if (!PersistenceHelper.isNew(card)) {
+            LoadContext ctx = new LoadContext(card.getClass()).setId(card.getId())
+                    .setView(MetadataProvider.getViewRepository().getView(card.getClass(), "browse"));
+            card = ServiceLocator.getDataService().load(ctx);
+        }
         commentDs = getDsContext().get("commentDs");
         buttonCreate = (com.haulmont.cuba.gui.components.Button)getComponent("add");
         treeComment = (WidgetsTree)getComponent("treeComment");
@@ -154,16 +156,43 @@ public class CardCommentFrame extends AbstractWindow {
         buttonCreate.setAction(new AbstractAction("add") {
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 if (card != null) {
-                    Map paramsCard = new HashMap();
-                    paramsCard.put("item", card);
-                    Window window = openWindow(card.getMetaClass().getName()+".send", WindowManager.OpenType.DIALOG, paramsCard);
-                    window.addListener(new CloseListener() {
-                        public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                commentDs.refresh();
-                            }
-                        }
-                    });
+                    if (PersistenceHelper.isNew(card) || (justCreated != null)) {
+                        showOptionDialog(
+                                getMessage("cardComment.dialogHeader"),
+                                getMessage("cardComment.dialogMessage"),
+                                IFrame.MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new DialogAction(DialogAction.Type.YES) {
+                                            @Override
+                                            public void actionPerform(Component component) {
+                                                boolean isCommited = true;
+                                                if (getFrame() instanceof WebWindow.Editor)
+                                                    isCommited = ((AbstractEditor)((WebWindow.Editor) getFrame()).getWrapper()).commit(true);
+                                                else
+                                                    getFrame().getDsContext().commit();
+                                                if (isCommited)
+                                                    openCardSend(card);
+                                            }
+                                        },
+                                        new DialogAction(DialogAction.Type.NO)
+                                }
+                        );
+                    } else {
+                        openCardSend(card);
+                    }
+                }
+            }
+        });
+    }
+
+    protected void openCardSend(Card card) {
+        Map paramsCard = new HashMap();
+        paramsCard.put("item", card);
+        Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
+        window.addListener(new CloseListener() {
+            public void windowClosed(String actionId) {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    commentDs.refresh();
                 }
             }
         });
