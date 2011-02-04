@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -54,6 +55,11 @@ public class ResolutionsFrame extends AbstractFrame {
                     if (!(itemId instanceof UUID))
                         return "";
                     Assignment assignment = (Assignment) resolutionsDs.getItem((UUID)itemId);
+                    if ((assignment.getDueDate() != null) &&
+                            (((assignment.getFinished() == null && assignment.getDueDate().before(TimeProvider.currentTimestamp())))
+                            || (assignment.getFinished() != null && assignment.getDueDate().before(assignment.getFinished())))) {
+                        return "overdue";
+                    }
                     if(assignment.getFinished() == null)
                         return "taskremind";
                     else
@@ -61,6 +67,7 @@ public class ResolutionsFrame extends AbstractFrame {
                 }
                 return "";
             }
+
         });
 
         vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyEx("locOutcomeResult"),

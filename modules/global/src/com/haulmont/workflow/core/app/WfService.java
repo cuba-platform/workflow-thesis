@@ -42,6 +42,8 @@ public interface WfService {
     void deleteNotifications(Card card, User user);
 
     void deleteNotification(CardInfo cardInfo, User user);
-
+    
     boolean isCurrentUserContainsRole(Role role);
+
+    void deleteNotifications(Card card, User user, int type);    
 }

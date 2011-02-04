@@ -344,10 +344,12 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
     private long getFirstIntervalDuration() {
         int i = 0;
+        currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+        Calendar startDay = Calendar.getInstance();
+        startDay.setTime(startTime);
         while (i++ < 365) {
-            currentDay = Calendar.getInstance();
-            currentDay.setTime(startTime);
-            currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
             List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
             if (currentDayCalendarItems == null)
                 currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
@@ -356,7 +358,8 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             while (ciIterator.hasNext()) {
                 CalendarItem ci = ciIterator.next();
 
-                if ((moveForward && ci.isDateBeforeInterval(startTime)) || (!moveForward && ci.isDateAfterInterval(startTime)))
+                if ((moveForward && (ci.isDateBeforeInterval(startTime) || (currentDay.after(startDay))))
+                        || (!moveForward && (ci.isDateAfterInterval(startTime))))
                     return ci.getDuration();
 
                 if (ci.isDateInInterval(startTime)) {
@@ -367,10 +370,11 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 }
             }
 
-            if (moveForward)
+            if (moveForward) {
                 currentDay.add(Calendar.DAY_OF_YEAR, 1);
-            else
+            } else {
                 currentDay.add(Calendar.DAY_OF_YEAR, -1);
+            }
         }
         return 0;
     }

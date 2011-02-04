@@ -15,107 +15,133 @@
                 <collectionDatasource id="dpaDs" property="defaultProcActors"/>
                 <collectionDatasource id="permissionsDs" property="permissions"/>
             </collectionDatasource>
+            <collectionDatasource id="stagesDs" property="stages"/>
         </datasource>
     </dsContext>
 
     <#assign width = 400>
-    <layout expand="rolesSplit">
-        <hbox stylename="edit-area">
-            <vbox margin="true">
-                <grid spacing="true" width="100%">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://name"/>
-                            <textField id="name" datasource="procDs" property="name"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://jbpmProcessKey"/>
-                            <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
-                                       width="${width}" editable="false"/>
-                        </row>
-                        <row>
-                            <label value="msg://cardTypes"/>
-                            <textField id="cardTypes" datasource="procDs" property="cardTypes"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://states"/>
-                            <textField id="states" datasource="procDs" property="states"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://permissionsEnabled"/>
-                            <checkBox id="permissionsEnabled" datasource="procDs" property="permissionsEnabled"/>
-                        </row>
-                    </rows>
-                </grid>
-            </vbox>
-        </hbox>
-
-        <split id="rolesSplit" orientation="horizontal">
-            <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true">
-                <label value="msg://roles"/>
-                <hbox align="MIDDLE_LEFT" spacing="true">
-                    <button action="rolesTable.create" icon="icons/create.png"/>
-                    <button action="rolesTable.edit" icon="icons/edit.png"/>
-                    <button action="rolesTable.remove" icon="icons/remove.png"/>
-                </hbox>
-                <table id="rolesTable" editable="false">
-                    <columns>
-                        <column id="code" caption="msg://code"/>
-                        <column id="name" caption="msg://name"/>
-                        <column id="multiUser" caption="msg://multiUser"/>
-                        <column id="assignToCreator" caption="msg://assignToCreator"/>
-                        <column id="invisible" caption="msg://invisible"/>
-                        <column id="role" caption="msg://role"/>
-                    </columns>
-                    <rows datasource="rolesDs"/>
-                </table>                                  
-            </vbox>
-
-            <vbox margin="false;false;false;true;">
-                <split orientation="vertical">
-                    <vbox expand="dpaTable" spacing="true">
-                        <label value="msg://dpa"/>
-                        <hbox align="MIDDLE_LEFT" spacing="true">
-                            <button action="dpaTable.create" icon="icons/create.png"/>
-                            <button action="dpaTable.edit" icon="icons/edit.png"/>
-                            <button action="dpaTable.remove" icon="icons/remove.png"/>
-                        </hbox>
-                        <table id="dpaTable" editable="false">
+    <layout expand="tabsheet">
+        <tabsheet id="tabsheet">
+            <tab id="mainTab" caption="msg://mainTab" expand="rolesSplit" margin="true">
+                <hbox stylename="edit-area">
+                    <vbox margin="true">
+                        <grid spacing="true" width="100%">
                             <columns>
-                                <column id="user" caption="msg://user"/>
-                                <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                                <column flex="1"/>
+                                <column flex="1"/>
+                                <column flex="1"/>
                             </columns>
-                            <rows datasource="dpaDs"/>
+                            <rows>
+                                <row>
+                                    <label value="msg://name"/>
+                                    <textField id="name" datasource="procDs" property="name"
+                                               width="${width}"/>
+                                </row>
+                                <row>
+                                    <label value="msg://jbpmProcessKey"/>
+                                    <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
+                                               width="${width}" editable="false"/>
+                                </row>
+                                <row>
+                                    <label value="msg://cardTypes"/>
+                                    <textField id="cardTypes" datasource="procDs" property="cardTypes"
+                                               width="${width}"/>
+                                </row>
+                                <row>
+                                    <label value="msg://states"/>
+                                    <textField id="states" datasource="procDs" property="states"
+                                               width="${width}"/>
+                                </row>
+                                <row>
+                                    <label value="msg://permissionsEnabled"/>
+                                    <checkBox id="permissionsEnabled" datasource="procDs"
+                                              property="permissionsEnabled"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </vbox>
+                </hbox>
+
+                <split id="rolesSplit" orientation="horizontal">
+                    <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true">
+                        <label value="msg://roles"/>
+                        <hbox align="MIDDLE_LEFT" spacing="true">
+                            <button action="rolesTable.create" icon="icons/create.png"/>
+                            <button action="rolesTable.edit" icon="icons/edit.png"/>
+                            <button action="rolesTable.remove" icon="icons/remove.png"/>
+                        </hbox>
+                        <table id="rolesTable" editable="false">
+                            <columns>
+                                <column id="code" caption="msg://code"/>
+                                <column id="name" caption="msg://name"/>
+                                <column id="multiUser" caption="msg://multiUser"/>
+                                <column id="assignToCreator" caption="msg://assignToCreator"/>
+                                <column id="invisible" caption="msg://invisible"/>
+                                <column id="role" caption="msg://role"/>
+                            </columns>
+                            <rows datasource="rolesDs"/>
                         </table>
                     </vbox>
-                    <vbox id="permissionsPane" expand="permissionsTable">
-                        <label value="msg://permissions"/>
-                        <table id="permissionsTable" editable="false">
-                            <buttonsPanel>
-                                <button action="permissionsTable.create" icon="icons/create.png"/>
-                                <button action="permissionsTable.edit" icon="icons/edit.png"/>
-                                <button action="permissionsTable.remove" icon="icons/remove.png"/>
-                            </buttonsPanel>
-                            <columns>
-                                <column id="locState" caption="msg://state"/>
-                                <column id="procRoleTo" caption="msg://procRoleTo"/>
-                                <column id="type" caption="msg://type"/>
-                                <column id="value" caption="msg://value"/>
-                            </columns>
-                            <rows datasource="permissionsDs"/>
-                        </table>
+
+                    <vbox margin="false;false;false;true;">
+                        <split orientation="vertical">
+                            <vbox expand="dpaTable" spacing="true">
+                                <label value="msg://dpa"/>
+                                <hbox align="MIDDLE_LEFT" spacing="true">
+                                    <button action="dpaTable.create" icon="icons/create.png"/>
+                                    <button action="dpaTable.edit" icon="icons/edit.png"/>
+                                    <button action="dpaTable.remove" icon="icons/remove.png"/>
+                                </hbox>
+                                <table id="dpaTable" editable="false">
+                                    <columns>
+                                        <column id="user" caption="msg://user"/>
+                                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                                    </columns>
+                                    <rows datasource="dpaDs"/>
+                                </table>
+                            </vbox>
+                            <vbox id="permissionsPane" expand="permissionsTable">
+                                <label value="msg://permissions"/>
+                                <table id="permissionsTable" editable="false">
+                                    <buttonsPanel>
+                                        <button action="permissionsTable.create" icon="icons/create.png"/>
+                                        <button action="permissionsTable.edit" icon="icons/edit.png"/>
+                                        <button action="permissionsTable.remove" icon="icons/remove.png"/>
+                                    </buttonsPanel>
+                                    <columns>
+                                        <column id="locState" caption="msg://state"/>
+                                        <column id="procRoleTo" caption="msg://procRoleTo"/>
+                                        <column id="type" caption="msg://type"/>
+                                        <column id="value" caption="msg://value"/>
+                                    </columns>
+                                    <rows datasource="permissionsDs"/>
+                                </table>
+                            </vbox>
+                        </split>
                     </vbox>
                 </split>
-            </vbox>
-        </split>
+            </tab>
+
+            <tab id="stagesTab" caption="msg://stagesTab" lazy="true" margin="true" spacing="true" expand="stagesTable">
+                <buttonsPanel>
+                    <button action="stagesTable.create" icon="icons/create.png"/>
+                    <button action="stagesTable.edit" icon="icons/edit.png"/>
+                    <button action="stagesTable.remove" icon="icons/remove.png"/>
+                </buttonsPanel>
+                <table id="stagesTable">
+                    <columns>
+                        <column id="name"/>
+                        <column id="locStartActivity"/>
+                        <column id="locEndActivity"/>
+                        <column id="endTransition"/>
+                        <column id="duration"/>
+                        <column id="timeUnit"/>
+                        <column id="type"/>
+                    </columns>
+                    <rows datasource="stagesDs"/>
+                </table>
+            </tab>
+        </tabsheet>
 
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

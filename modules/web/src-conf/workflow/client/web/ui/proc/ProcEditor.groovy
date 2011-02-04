@@ -38,6 +38,7 @@ public class ProcEditor extends AbstractEditor {
   private Table rolesTable;
   private Table permissionsTable;
   private Datasource<Proc> procDs;
+  private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>()
 
   public ProcEditor(IFrame frame) {
     super(frame);
@@ -160,6 +161,39 @@ public class ProcEditor extends AbstractEditor {
                     valueChanged: { source, property, prevValue, value -> enableDpaActions() }
             ] as DsListenerAdapter
     )
+
+    initLazyTabs()    
+  }
+
+  private void initLazyTabs() {
+    Tabsheet tabsheet = getComponent("tabsheet")
+    tabsheet.addListener([
+            tabChanged : {Tabsheet.Tab newTab ->
+              if (!initedTabs.contains(newTab)) {
+                initedTabs << newTab
+                if (newTab.name == 'stagesTab')
+                  initStagesTab()
+              }
+            }
+    ] as Tabsheet.TabChangeListener)
+  }
+
+  private void initStagesTab() {
+    final Table stagesTable = getComponent("stagesTable")
+
+    TableActionsHelper stagesTableHelper = new TableActionsHelper(this, stagesTable)
+    stagesTableHelper.createCreateAction(new ValueProvider() {
+        public Map<String, Object> getValues() {
+            return Collections.<String, Object>singletonMap("proc", procDs.getItem())
+        }
+
+        public Map<String, Object> getParameters() {
+            return null;
+        }
+    }, WindowManager.OpenType.THIS_TAB)
+
+    stagesTableHelper.createEditAction(WindowManager.OpenType.THIS_TAB)
+    stagesTableHelper.createRemoveAction(false)
   }
 
   def void commitAndClose() {

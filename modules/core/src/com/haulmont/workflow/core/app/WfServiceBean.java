@@ -188,6 +188,24 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    public void deleteNotifications(Card card, User user, int type) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("update wf$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
+                    "where ci.card.id = ?3 and ci.user.id = ?4 and ci.type = ?5");
+            query.setParameter(1, TimeProvider.currentTimestamp());
+            query.setParameter(2, user.getLogin());
+            query.setParameter(3, card.getId());
+            query.setParameter(4, user.getId());
+            query.setParameter(5, type);
+            query.executeUpdate();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
     public void deleteNotification(CardInfo cardInfo, User user) {
         Transaction tx = Locator.createTransaction();
         try {

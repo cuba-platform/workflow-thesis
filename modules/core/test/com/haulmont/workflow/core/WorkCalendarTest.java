@@ -11,10 +11,15 @@
 package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.testsupport.TestContext;
+import com.haulmont.cuba.testsupport.TestDataSource;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,50 +33,37 @@ public class WorkCalendarTest extends WfTestCase {
         workCalendar = Locator.lookup(WorkCalendarAPI.NAME);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createNativeQuery("delete from WF_CALENDAR");
-            q.executeUpdate();
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        super.tearDown();
-    }
+//    @Override
+//    protected void tearDown() throws Exception {
+//        Transaction tx = Locator.createTransaction();
+//        try {
+//            EntityManager em = PersistenceProvider.getEntityManager();
+//            Query q = em.createNativeQuery("delete from WF_CALENDAR");
+//            q.executeUpdate();
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//        super.tearDown();
+//    }
 
     public void test() {
-        createStandardWorkTime();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy hh:mm");
+        try {
+            Date endDate = workCalendar.addInterval(df.parse("25.01.2011 11:00"), 5, TimeUnit.MINUTE);
+            assertEquals(df.parse("25.01.2011 11:05"), endDate);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2010);
-        cal.set(Calendar.MONTH, 0);
-        cal.set(Calendar.DAY_OF_MONTH, 10);
-        cal.set(Calendar.HOUR, 10);
-        cal.set(Calendar.MINUTE, 10);
+            endDate = workCalendar.addInterval(df.parse("28.01.2011 22:00"), 2, TimeUnit.HOUR);
+            assertEquals(df.parse("31.01.2011 11:00"), endDate);
 
-//        Long millis = workCalendar.getAbsoluteMillis(cal.getTime(), 10, TimeUnit.MINUTE);
-//        assertEquals(600000L, millis.longValue());
-        Calendar startDay = Calendar.getInstance();
-        startDay.set(Calendar.YEAR, 2010);
-        startDay.set(Calendar.MONTH, 1);
-        startDay.set(Calendar.DAY_OF_MONTH, 6);
-        startDay.set(Calendar.HOUR_OF_DAY, 10);
-        startDay.set(Calendar.MINUTE, 10);
+            endDate = workCalendar.addInterval(df.parse("25.01.2011 19:00"), 2, TimeUnit.DAY);
+            assertEquals(df.parse("27.01.2011 18:00"), endDate);
 
-        Date endDate = workCalendar.addInterval(startDay.getTime(), 5, TimeUnit.HOUR);
-        Calendar endDay = Calendar.getInstance();
-        endDay.setTime(endDate);
-        assertEquals(endDay.get(Calendar.MONTH), 1);
-        assertEquals(endDay.get(Calendar.DAY_OF_MONTH), 8);
-        assertEquals(endDay.get(Calendar.HOUR_OF_DAY), 15);
-        assertEquals(endDay.get(Calendar.MINUTE), 0);
-
-//        Long workDayLength = workCalendar.getWorkDayLengthInMillis();
-//        assertEquals(2880000L, workDayLength.longValue());
-
+            endDate = workCalendar.addInterval(df.parse("25.01.2011 21:00"), 15, TimeUnit.HOUR);
+            assertEquals(df.parse("27.01.2011 17:00"), endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private void createStandardWorkTime() {
@@ -107,5 +99,12 @@ public class WorkCalendarTest extends WfTestCase {
 
         return calendarEntity;
     }
-    
+
+
+    @Override
+    protected void initDataSources() throws Exception {
+        Class.forName("org.postgresql.Driver");
+        TestDataSource ds = new TestDataSource("jdbc:postgresql://localhost/alt239", "root", "root");
+        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
+    }
 }

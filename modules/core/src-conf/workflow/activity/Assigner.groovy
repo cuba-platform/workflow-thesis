@@ -29,6 +29,15 @@ import org.jbpm.api.activity.ExternalActivityBehaviour
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
 import com.haulmont.workflow.core.entity.ProcRole
+import com.haulmont.workflow.core.entity.ProcStage
+
+import com.haulmont.workflow.core.app.WorkCalendarAPI
+import com.haulmont.cuba.core.global.TimeProvider
+
+import com.haulmont.workflow.core.entity.CardStage
+import com.haulmont.cuba.core.global.ScriptingProvider
+import com.haulmont.cuba.core.global.ScriptingProvider.Layer
+import com.haulmont.workflow.core.global.TimeUnit
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -40,6 +49,10 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   String notify
   String notificationScript
   AssignmentTimersFactory timersFactory
+  
+  //we don't use this property in Assigner, but use 'duration' property in *.jpdl.xml when reading default stage durations
+  //if duration definition will be moved to other place, then remove duration from here
+  String duration
 
   public void execute(ActivityExecution execution) throws Exception {
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
@@ -93,6 +106,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       timersFactory.createTimers(execution, assignment)
     }
 
+    createStages(assignment)
+
     em.persist(assignment)
 
     notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState);
@@ -109,6 +124,9 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     if (timersFactory) {
       timersFactory.removeTimers(execution)
     }
+    Card card = findCard(execution)
+    finishStages(card, execution, signalName)
+
     afterSignal(execution, signalName, parameters)
   }
 
@@ -138,4 +156,64 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       return null;
   }
 
+  protected void createStages(Assignment assignment) {
+    Card card = assignment.card
+    EntityManager em = PersistenceProvider.getEntityManager()
+    def query = em.createQuery('select ps from wf$ProcStage ps where ps.proc.id = :proc and ps.startActivity = :activityName')
+    query.setParameter('proc', card.proc)
+    query.setParameter('activityName', assignment.name)
+
+    WorkCalendarAPI workCalendarAPI = Locator.lookup(WorkCalendarAPI.NAME)
+    List<ProcStage> list = query.getResultList()
+    Date currentTimestamp = TimeProvider.currentTimestamp()
+    list.each{ProcStage ps ->
+      Date dueDate = null
+      Map durationMap = getStageDuration(card, ps)
+      int duration = durationMap['duration']
+      TimeUnit timeUnit = durationMap['timeUnit']
+      if (ps.startActivity == ps.endActivity) {
+        dueDate = workCalendarAPI.addInterval(currentTimestamp, duration, timeUnit)
+        assignment.dueDate = dueDate
+      }
+
+      CardStage cardStage = card.stages.find{CardStage cs -> cs.procStage == ps && cs.endDateFact == null}
+      if (cardStage == null) {
+        cardStage = new CardStage()
+        cardStage.setCard(card)
+        cardStage.setStartDate(currentTimestamp)
+        if (dueDate == null)
+          dueDate = workCalendarAPI.addInterval(currentTimestamp, duration, timeUnit)
+        cardStage.setEndDatePlan(dueDate)
+        cardStage.setProcStage(ps)
+        em.persist(cardStage)
+      }
+
+    }
+  }
+
+  protected Map getStageDuration(Card card, ProcStage procStage) {
+    if (procStage.durationScriptEnabled && (procStage.durationScript != null)) {
+      Binding binding = new Binding()
+      binding.setVariable('card', card)
+      ScriptingProvider.evaluateGroovy(Layer.CORE, procStage.durationScript, binding)
+      return binding.getVariables()
+    }
+
+    return ['duration' : procStage.duration, 'timeUnit' : procStage.timeUnit]
+  }
+
+  protected void finishStages(Card card, ActivityExecution execution, String transition) {
+    def currentDate = TimeProvider.currentTimestamp()
+    card.stages.each{CardStage cs ->
+      List<String> endTransitionList = []
+      if (cs.procStage.endTransition) {
+        endTransitionList = cs.procStage.endTransition.split(',');
+      }
+      if (cs.procStage.endActivity == execution.activityName
+          && (cs.procStage.endTransition == null || endTransitionList.contains(transition))
+          && !cs.endDateFact) {
+        cs.endDateFact = currentDate
+      }
+    }
+  }
 }

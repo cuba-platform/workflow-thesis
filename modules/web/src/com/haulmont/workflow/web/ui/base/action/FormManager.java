@@ -27,6 +27,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -34,6 +35,7 @@ import org.dom4j.Element;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -50,6 +52,8 @@ public abstract class FormManager implements Serializable {
     protected FormManagerChain chain;
 
     protected transient Log log = LogFactory.getLog(getClass());
+
+
 
     protected FormManager(Element element, String activity, String transition, FormManagerChain chain) {
         this.element = element;
@@ -98,9 +102,51 @@ public abstract class FormManager implements Serializable {
         return entity;
     }
 
+    public void setFormManagerChain(FormManagerChain chain) {
+        this.chain = chain;
+    }
+
+    public Element getElement() {
+        return element;
+    }
+
+    public void setElement(Element element) {
+        this.element = element;
+    }
+
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
+    public String getTransition() {
+        return transition;
+    }
+
+    public void setTransition(String transition) {
+        this.transition = transition;
+    }
+
     public abstract void doBefore(Map<String, Object> params);
 
     public abstract void doAfter(Map<String, Object> params);
+
+    public FormManager clone() {
+        FormManager clonedFormManager = null;
+        try {
+            Constructor<? extends FormManager> constructor = getClass().getConstructor(Element.class, String.class, String.class, FormManagerChain.class);
+            clonedFormManager = constructor.newInstance(element, activity, transition, chain);
+            clonedFormManager.setActivity(activity);
+            clonedFormManager.setElement(element);
+            clonedFormManager.setTransition(transition);
+        } catch (Exception e) {
+           log.error(ExceptionUtils.getStackTrace(e));
+        }
+        return clonedFormManager;
+    }
 
     public static class ScreenFormManager extends FormManager {
 

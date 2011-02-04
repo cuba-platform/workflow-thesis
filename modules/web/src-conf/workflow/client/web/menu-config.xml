@@ -3,6 +3,7 @@
     <menu id="workflow">
         <item id="wf$Assignment.browse"/>
         <item id="wf$Proc.browse"/>
+        <item id="wf$ProcStageType.browse"/>
         <item id="wf$Card.browse"/>
         <item id="wf$WorkCalendar.browse"/>
     </menu>

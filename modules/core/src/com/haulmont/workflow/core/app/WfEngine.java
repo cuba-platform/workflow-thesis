@@ -23,11 +23,14 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
+import com.haulmont.workflow.core.global.TimeUnit;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.jbpm.api.*;
@@ -45,6 +48,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @ManagedBean(WfEngineAPI.NAME)
 public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
+
+    private Log log = LogFactory.getLog(getClass());
 
     private Configuration jbpmConfiguration;
 
@@ -129,7 +134,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 proc.setMessagesPack("process." + pName);
             }
 
-            deployRoles(pd.getDeploymentId(), proc);
+            deployProcessStuff(pd.getDeploymentId(), proc);
 
             tx.commit();
             return "Deployed: " + deployment;
@@ -147,9 +152,16 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         return deployJpdlXml(fileName);
     }
 
-    private void deployRoles(String deploymentId, Proc proc) {
+    /**
+     * Deploys roles, states
+     * @param deploymentId
+     * @param proc
+     */
+    private void deployProcessStuff(String deploymentId, Proc proc) {
         Set<String> roles = new HashSet<String>();
         String states = "";
+
+        EntityManager em = PersistenceProvider.getEntityManager();
 
         RepositoryService rs = getProcessEngine().getRepositoryService();
         Set<String> resourceNames = rs.getResourceNames(deploymentId);
@@ -159,22 +171,22 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Document doc = Dom4j.readDocument(is);
                 Element root = doc.getRootElement();
                 for (Element stateElem : Dom4j.elements(root)) {
+                    String state = stateElem.attributeValue("name");
                     if ("custom".equals(stateElem.getName())) {
-                        String state = stateElem.attributeValue("name");
                         if (StringUtils.isNotBlank(state))
                         states += state + ",";
                     }
                     for (Element element : Dom4j.elements(stateElem)) {
                         String name = element.attributeValue("name");
-                        if (name != null && "property".equals(element.getName()) &&
-                                ("role".equals(name) || "observers".equals(name)))
-                        {
+                        if (name != null && "property".equals(element.getName())) {
                             Element valueElem = element.element("string");
-                            String role = valueElem.attributeValue("value");
-                            if (!StringUtils.isBlank(role)) {
-                                String[] strings = role.split(",");
-                                for (String string : strings) {
-                                    roles.add(string.trim());
+                            if ("role".equals(name) || "observers".equals(name)) {
+                                String role = valueElem.attributeValue("value");
+                                if (!StringUtils.isBlank(role)) {
+                                    String[] strings = role.split(",");
+                                    for (String string : strings) {
+                                        roles.add(string.trim());
+                                    }
                                 }
                             }
                         }
@@ -186,7 +198,6 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         roles.add(WfConstants.CARD_CREATOR);
 
         if (!roles.isEmpty()) {
-            EntityManager em = PersistenceProvider.getEntityManager();
             for (String role : roles) {
                 boolean exists = false;
                 for (ProcRole procRole : proc.getRoles()) {
@@ -210,6 +221,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             proc.setStates(states);
         }
     }
+
 
     public String printDeployments() {
         Transaction tx = Locator.createTransaction();

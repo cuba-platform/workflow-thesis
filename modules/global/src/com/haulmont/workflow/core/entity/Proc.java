@@ -47,6 +47,10 @@ public class Proc extends StandardEntity {
     @Column(name = "STATES", length = 500)
     private String states;
 
+    @OneToMany(mappedBy = "proc")
+    @Aggregation
+    private List<ProcStage> stages;
+
     public String getName() {
         return name;
     }
@@ -101,5 +105,13 @@ public class Proc extends StandardEntity {
 
     public void setStates(String states) {
         this.states = states;
+    }
+
+    public List<ProcStage> getStages() {
+        return stages;
+    }
+
+    public void setStages(List<ProcStage> stages) {
+        this.stages = stages;
     }
 }

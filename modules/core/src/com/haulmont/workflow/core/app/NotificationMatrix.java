@@ -398,7 +398,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         ci.setType(cardInfoType);
         ci.setCard(card);
         ci.setUser(user);
-        ci.setActivity(card.getState());
+//        ci.setActivity((assignment == null) ? null : assignment.getName());
         ci.setJbpmExecutionId(card.getProc().getJbpmProcessKey());
         ci.setDescription(message.getSubject());
 

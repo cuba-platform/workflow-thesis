@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class WfHelper {
 
-    private static Map<String, TimeUnit> timeUnits = new HashMap<String, TimeUnit>();
+    public static Map<String, TimeUnit> timeUnits = new HashMap<String, TimeUnit>();
 
     static {
         timeUnits.put("minute", TimeUnit.MINUTE);

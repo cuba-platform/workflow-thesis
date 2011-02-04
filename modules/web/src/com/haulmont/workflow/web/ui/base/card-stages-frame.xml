@@ -1,0 +1,44 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.CardStagesFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        caption="msg://cardStagesFrame"
+        >
+
+    <dsContext>
+        <collectionDatasource id="stagesDs" class="com.haulmont.workflow.core.entity.CardStage" view="browse">
+            <query>
+                <![CDATA[select cs from wf$CardStage cs where cs.card.id = :ds$cardDs order by cs.startDate]]>
+                <filter>
+                    <and>
+                        <c>cs.procStage.type.code = :custom$type</c>
+                    </and>
+                </filter>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="procStageTypesDs" class="com.haulmont.workflow.core.entity.ProcStageType"
+                              view="_local">
+            <query>
+                <![CDATA[select t from wf$ProcStageType t order by t.name]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true" expand="stagesTable" height="100%" spacing="true">
+        <hbox id="typeFilter" stylename="edit-area" spacing="true" margin="true" expand="filterSpring" width="100%">
+            <label value="msg://ProcStage.type"/>
+            <lookupField id="type" optionsDatasource="procStageTypesDs" width="100px"/>
+            <button id="applyType" width="120px" icon="icons/search.png"/>
+            <hbox id="filterSpring"/>
+        </hbox>
+        <table id="stagesTable">
+            <columns>
+                <column id="procStage.name"/>
+                <column id="startDate"/>
+                <column id="endDatePlan"/>
+                <column id="endDateFact"/>
+            </columns>
+            <rows datasource="stagesDs"/>
+        </table>
+    </layout>
+
+</window>

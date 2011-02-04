@@ -77,6 +77,11 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     protected List<CardRole> roles;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    @OrderBy("startDate")
+    @Aggregation
+    protected List<CardStage> stages;
+
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("createTs")
     @Aggregation
     protected List<CardAttachment> attachments;
@@ -260,5 +265,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setAssignments(Set<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+    public List<CardStage> getStages() {
+        return stages;
+    }
+
+    public void setStages(List<CardStage> stages) {
+        this.stages = stages;
     }
 }

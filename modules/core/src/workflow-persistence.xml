@@ -21,6 +21,9 @@
         <class>com.haulmont.workflow.core.entity.UserGroup</class>
         <class>com.haulmont.workflow.core.entity.AttachmentType</class>
         <class>com.haulmont.workflow.core.entity.CardComment</class>
+        <class>com.haulmont.workflow.core.entity.ProcStage</class>
+        <class>com.haulmont.workflow.core.entity.CardStage</class>
+        <class>com.haulmont.workflow.core.entity.ProcStageType</class>
 
         <properties>
             <property name="openjpa.Log"

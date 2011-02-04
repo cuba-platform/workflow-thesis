@@ -33,6 +33,18 @@ public class FormManagerChain {
     private static FormManagerChain nullObject = new FormManagerChain();
     private static Map<String, FormManagerChain> cache = new ConcurrentHashMap<String, FormManagerChain>();
 
+    private Handler handler;
+
+    //activity and transitions params fills when reading FormManagerChain from xml
+    //card and assignmentId fills before usage
+    private Map<String, Object> commonParams = new HashMap<String, Object>();
+
+    private List<FormManager> managersBefore = new ArrayList<FormManager>();
+    private int positionBefore = 0;
+
+    private List<FormManager> managersAfter = new ArrayList<FormManager>();
+    private int positionAfter = 0;
+
     public static FormManagerChain getManagerChain(Card card, String actionName) {
         if (card.getProc() == null)
             return nullObject;
@@ -128,17 +140,23 @@ public class FormManagerChain {
         }
     }
 
-    private Handler handler;
+    public FormManagerChain clone() {
+        FormManagerChain clonedChain = new FormManagerChain();
+        clonedChain.setCommonParams(getCommonParams());
 
-    //activity and transitions params fills when reading FormManagerChain from xml
-    //card and assignmentId fills before usage
-    private Map<String, Object> commonParams = new HashMap<String, Object>();
+        for (FormManager manager : getManagersAfter()) {
+            FormManager clonedManager = manager.clone();
+            clonedManager.setFormManagerChain(clonedChain);
+            clonedChain.addManagerAfter(clonedManager);
+        }
+        for (FormManager manager : getManagersBefore()) {
+            FormManager clonedManager = manager.clone();
+            clonedManager.setFormManagerChain(clonedChain);
+            clonedChain.addManagerBefore(clonedManager);
+        }
 
-    private List<FormManager> managersBefore = new ArrayList<FormManager>();
-    private int positionBefore = 0;
-
-    private List<FormManager> managersAfter = new ArrayList<FormManager>();
-    private int positionAfter = 0;
+        return clonedChain;
+    }
 
     public void addManagerBefore(FormManager manager) {
         managersBefore.add(manager);
@@ -231,4 +249,19 @@ public class FormManagerChain {
         this.handler = handler;
     }
 
+    public List<FormManager> getManagersBefore() {
+        return managersBefore;
+    }
+
+    public void setManagersBefore(List<FormManager> managersBefore) {
+        this.managersBefore = managersBefore;
+    }
+
+    public List<FormManager> getManagersAfter() {
+        return managersAfter;
+    }
+
+    public void setManagersAfter(List<FormManager> managersAfter) {
+        this.managersAfter = managersAfter;
+    }
 }
