@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
@@ -31,6 +30,8 @@ import java.util.*;
 import java.util.List;
 
 public class AttachmentsMultiUploader extends AbstractEditor {
+    private static final long serialVersionUID = 5049622742528690083L;
+
     private List<Attachment> attachments = new ArrayList<Attachment>();
 
     private FileMultiUploadField uploadField = null;
@@ -41,7 +42,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
     private AttachmentCreator creator = null;
     private LookupField attachTypeCombo = null;
-    private Label labelProgress = null;
 
     private boolean isUploading = false;
 
@@ -97,7 +97,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachTypesDs.refresh();
 
         filesDs = getDsContext().get("filesDs");
-        
+
         attachDs = uploadsTable.getDatasource();
         attachDs.refresh();
 
@@ -120,9 +120,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         select.setItemCaptionMode(Select.ITEM_CAPTION_MODE_EXPLICIT);
 
         Collection ids = attachTypesDs.getItemIds();
-        Iterator iter = ids.iterator();
-        while (iter.hasNext()) {
-            AttachmentType type = (AttachmentType) attachTypesDs.getItem(iter.next());
+        for (Object id : ids) {
+            AttachmentType type = (AttachmentType) attachTypesDs.getItem(id);
             select.addItem(type);
             select.setItemCaption(type, type.getLocName());
         }
@@ -133,9 +132,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if ((value != null) && (value instanceof AttachmentType)) {
                     Collection ids = attachDs.getItemIds();
-                    Iterator iter = ids.iterator();
-                    while (iter.hasNext()) {
-                        Attachment item = (Attachment) attachDs.getItem(iter.next());
+                    for (Object id : ids) {
+                        Attachment item = (Attachment) attachDs.getItem(id);
                         item.setAttachType((AttachmentType) value);
                     }
                     uploadsTable.refresh();
@@ -154,11 +152,9 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
                 FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
-                Iterator<Map.Entry<UUID, String>> iterator = uploads.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<UUID, String> item = iterator.next();
+                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
 
-                    FileDescriptor fDesc = uploader.getFileDescriptor(item.getKey(), item.getValue());
+                    FileDescriptor fDesc = uploader.getFileDescriptor(upload.getKey(), upload.getValue());
                     filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
                     attach.setComment("");
@@ -173,12 +169,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     else
                         attach.setAttachType(defaultAttachType);
 
-                    descriptors.put(fDesc, item.getKey());
+                    descriptors.put(fDesc, upload.getKey());
                     attachDs.addItem(attach);
                 }
                 uploads.clear();
                 uploadsTable.refresh();
-//                labelProgress.setValue("");
             }
 
             @Override
@@ -186,8 +181,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 isUploading = true;
                 okBtn.setEnabled(false);
                 delBtn.setEnabled(false);
-                /*String progressString = MessageProvider.getMessage(getClass(), "fileUploading") + ":" + fileName;
-                labelProgress.setValue(progressString);*/
             }
 
             @Override
@@ -212,6 +205,21 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             }
             close(COMMIT_ACTION_ID);
         }
+    }
+
+    @Override
+    public boolean close(String actionId) {
+        if (!COMMIT_ACTION_ID.equals(actionId)) {
+            FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+            for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
+                try {
+                    uploadService.deleteFile(upload.getValue());
+                } catch (FileStorageException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return super.close(actionId);
     }
 
     private AttachmentType getDefaultAttachmentType() {
@@ -250,11 +258,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = attachDs.getItemIds();
-            Iterator iter = ids.iterator();
-            while (iter.hasNext()) {
-                Attachment attach = (Attachment) attachDs.getItem(iter.next());
+            for (Object id : ids) {
+                Attachment attach = (Attachment) attachDs.getItem(id);
                 UUID fileId = descriptors.get(attach.getFile());
                 fss.putFile(attach.getFile(), uploader.getFile(fileId));
+                uploader.deleteFile(fileId);
                 attachments.add(attach);
             }
         } catch (FileStorageException e) {
