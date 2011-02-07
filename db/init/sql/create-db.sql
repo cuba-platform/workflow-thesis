@@ -1,3 +1,58 @@
+create table WF_DESIGN (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(100),
+    SRC longvarchar,
+    NOTIFICATION_MATRIX longvarbinary,
+    NOTIFICATION_MATRIX_UPLOADED smallint,
+    LOCALIZATION longvarchar,
+    COMPILE_TS timestamp,
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_DESIGN_SCRIPT (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    DESIGN_ID varchar(36),
+    NAME varchar(100),
+    CONTENT text,
+    primary key (ID)
+);
+
+alter table WF_DESIGN_SCRIPT add constraint FK_WF_DESIGN_SCRIPT_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_DESIGN_FILE (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    DESIGN_ID varchar(36),
+    NAME varchar(100),
+    TYPE varchar(20),
+    CONTENT longvarchar,
+    BINARY_CONTENT longvarbinary,
+    primary key (ID)
+);
+
+alter table WF_DESIGN_FILE add constraint FK_WF_DESIGN_FILE_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID);
+
+------------------------------------------------------------------------------------------------------------
+
 create table WF_PROC (
     ID varchar(36),
     CREATE_TS timestamp,
@@ -13,8 +68,11 @@ create table WF_PROC (
     CARD_TYPES varchar(500),
     STATES varchar(500),
     PERMISSIONS_ENABLED boolean,
+    DESIGN_ID varchar(36),
     primary key (ID)
 );
+
+alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID);
 
 ------------------------------------------------------------------------------------------------------------
 

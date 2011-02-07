@@ -51,6 +51,10 @@ public class Proc extends StandardEntity {
     @Aggregation
     private List<ProcStage> stages;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DESIGN_ID")
+    private Design design;
+
     public String getName() {
         return name;
     }
@@ -113,5 +117,13 @@ public class Proc extends StandardEntity {
 
     public void setStages(List<ProcStage> stages) {
         this.stages = stages;
+    }
+
+    public Design getDesign() {
+        return design;
+    }
+
+    public void setDesign(Design design) {
+        this.design = design;
     }
 }

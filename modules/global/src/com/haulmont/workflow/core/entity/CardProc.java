@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageUtils;
 
 import javax.persistence.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity(name = "wf$CardProc")
 @Table(name = "WF_CARD_PROC")
@@ -96,7 +98,15 @@ public class CardProc extends StandardEntity {
             return "";
         if (getProc() != null) {
             String messagesPack = getProc().getMessagesPack();
-            return MessageUtils.loadString(messagesPack, "msg://" + getState());
+            StringBuilder sb = new StringBuilder();
+            Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
+            while (matcher.find()) {
+                sb.append(MessageUtils.loadString(messagesPack, "msg://" + matcher.group()))
+                        .append(Card.STATE_SEPARATOR);
+            }
+            if (sb.length() > 0)
+                sb.delete(sb.length() - Card.STATE_SEPARATOR.length(), sb.length());
+            return sb.toString();
         }
         return getState();
     }

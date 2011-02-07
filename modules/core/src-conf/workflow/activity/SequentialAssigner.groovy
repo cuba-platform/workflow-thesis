@@ -29,9 +29,6 @@ class SequentialAssigner extends MultiAssigner {
 
   private static Log log = LogFactory.getLog(SequentialAssigner.class)
 
-  String successTransition
-  Boolean refusedOnly
-
   protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 

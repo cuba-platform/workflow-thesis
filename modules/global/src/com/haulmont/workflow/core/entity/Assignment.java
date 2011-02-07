@@ -225,7 +225,17 @@ public class Assignment extends StandardEntity {
 
     @MetaProperty
     public String getLocOutcomeResult() {
-        return outcome == null ? null : getLocalizedAttribute(name + "." + outcome + "Result");
+        if (outcome == null)
+            return null;
+        else {
+            String key = name + "." + outcome + ".Result";
+            String value = getLocalizedAttribute(key);
+            if (key.equals(value)) {
+                key = name + "." + outcome + "Result"; // try old style
+                return getLocalizedAttribute(key);
+            } else
+                return value;
+        }
     }
 
     private String getLocalizedAttribute(String value) {

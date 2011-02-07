@@ -43,6 +43,11 @@
                                                width="${width}" editable="false"/>
                                 </row>
                                 <row>
+                                    <label value="msg://design"/>
+                                    <textField id="design" datasource="procDs" property="design"
+                                               width="${width}" editable="false"/>
+                                </row>
+                                <row>
                                     <label value="msg://cardTypes"/>
                                     <textField id="cardTypes" datasource="procDs" property="cardTypes"
                                                width="${width}"/>

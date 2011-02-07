@@ -20,8 +20,6 @@ public interface WfEngineMBean {
 
     String getJbpmConfigName();
 
-    String deployJpdlXml(String fileName);
-
     String deployProcess(String name);
 
     String printDeployments();

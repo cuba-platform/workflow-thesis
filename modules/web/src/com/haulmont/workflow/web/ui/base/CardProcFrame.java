@@ -201,7 +201,7 @@ public class CardProcFrame extends AbstractFrame {
     public void startProcess(final CardProc cp) {
         final Proc prevProc = card.getProc();
         DataService ds = getDsContext().getDataService();
-        final Proc proc = ds.reload(cp.getProc(), "edit");
+        final Proc proc = ds.reload(cp.getProc(), "start-process");
         final String prevCardProcState = cp.getState();
         card.setProc(proc);
         cp.setProc(proc);

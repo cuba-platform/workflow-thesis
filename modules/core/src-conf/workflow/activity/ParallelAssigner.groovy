@@ -32,8 +32,6 @@ public class ParallelAssigner extends MultiAssigner {
 
   private Log log = LogFactory.getLog(ParallelAssigner.class)
 
-  String successTransition
-
   @Override
   protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')

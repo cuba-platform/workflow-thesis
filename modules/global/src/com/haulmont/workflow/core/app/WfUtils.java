@@ -12,7 +12,12 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Card;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class WfUtils {
+
+    public static final String ENC = "UTF-8";
 
     /**
      * Checks whether card's state field contains sended state
@@ -43,5 +48,13 @@ public class WfUtils {
             if (isCardInState(card, state)) return true;
         }
         return false;
+    }
+
+    public static String encodeKey(String msg) {
+        try {
+            return URLEncoder.encode(msg, ENC);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

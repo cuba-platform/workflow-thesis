@@ -57,9 +57,13 @@
     <option name="DEPRECATION" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/modules/web-war/web/wfdesigner" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src-conf" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/workflow/web/ui/base" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/workflow/web/ui/base/CardCommentFrame.java" charset="UTF-8" />
+  </component>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
   </component>
   <component name="ExportToHTMLSettings">
     <option name="OUTPUT_DIRECTORY" value="C:\dev\thesis\workflow\exportToHTML" />
@@ -100,6 +104,7 @@
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <inspection_tool class="AntDuplicateImportedTargetsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="EjbEnvironmentInspection" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="EmptyWebServiceClass" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="ImplicitlyExposedWebServiceMethods" enabled="false" level="INFO" enabled_by_default="false" />
         <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
@@ -130,6 +135,7 @@
           <option name="IGNORE_DEPRECATED" value="false" />
           <option name="IGNORE_JAVADOC_PERIOD" value="true" />
           <option name="IGNORE_DUPLICATED_THROWS" value="false" />
+          <option name="IGNORE_POINT_TO_ITSELF" value="false" />
           <option name="myAdditionalJavadocTags" value="" />
         </inspection_tool>
         <inspection_tool class="NonJaxWsWebServices" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -333,6 +339,9 @@
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
   </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
@@ -363,6 +372,28 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="bali">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../bali/build/bali.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../bali/src" />
+      </SOURCES>
+    </library>
+    <library name="chile">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-jpa.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
+        <root url="file://$PROJECT_DIR$/../chile/modules/jpa/src" />
+        <root url="file://$PROJECT_DIR$/../chile/modules/jpa/test" />
+        <root url="file://$PROJECT_DIR$/../chile/modules/core/test" />
+      </SOURCES>
+    </library>
     <library name="common">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/../lib/common" />
@@ -401,6 +432,53 @@
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/../lib/common" recursive="false" />
     </library>
+    <library name="cuba-core">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-core.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/core/src" />
+        <root url="file://$PROJECT_DIR$/../cuba/modules/core/test" />
+      </SOURCES>
+    </library>
+    <library name="cuba-global">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-global.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/global/src" />
+      </SOURCES>
+    </library>
+    <library name="cuba-gui">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-gui.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/gui/src" />
+      </SOURCES>
+    </library>
+    <library name="cuba-test">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-test.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/core/test" />
+      </SOURCES>
+    </library>
+    <library name="cuba-web">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-web.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../cuba/modules/web/src" />
+        <root url="file://$PROJECT_DIR$/../cuba/modules/web-war/src" />
+      </SOURCES>
+    </library>
     <library name="server">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/../lib/server" />
@@ -427,29 +505,6 @@
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/../lib/server" recursive="false" />
     </library>
-    <library name="chile">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../chile/build/chile-jpa.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
-        <root url="file://$PROJECT_DIR$/../chile/modules/jpa/src" />
-        <root url="file://$PROJECT_DIR$/../chile/modules/jpa/test" />
-        <root url="file://$PROJECT_DIR$/../chile/modules/core/test" />
-      </SOURCES>
-    </library>
-    <library name="cuba-core">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-core.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../cuba/modules/core/src" />
-        <root url="file://$PROJECT_DIR$/../cuba/modules/core/test" />
-      </SOURCES>
-    </library>
     <library name="test">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/test/junit.jar!/" />
@@ -457,52 +512,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="cuba-global">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-global.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../cuba/modules/global/src" />
-      </SOURCES>
-    </library>
-    <library name="cuba-web">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-web.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../cuba/modules/web/src" />
-        <root url="file://$PROJECT_DIR$/../cuba/modules/web-war/src" />
-      </SOURCES>
-    </library>
-    <library name="cuba-test">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-test.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../cuba/modules/core/test" />
-      </SOURCES>
-    </library>
-    <library name="cuba-gui">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../cuba/build/cuba-gui.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../cuba/modules/gui/src" />
-      </SOURCES>
-    </library>
-    <library name="bali">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../bali/build/bali.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../bali/src" />
       </SOURCES>
     </library>
   </component>

@@ -4,6 +4,9 @@
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
         <class>com.haulmont.workflow.core.entity.Proc</class>
+        <class>com.haulmont.workflow.core.entity.Design</class>
+        <class>com.haulmont.workflow.core.entity.DesignScript</class>
+        <class>com.haulmont.workflow.core.entity.DesignFile</class>
         <class>com.haulmont.workflow.core.entity.ProcRole</class>
         <class>com.haulmont.workflow.core.entity.Card</class>
         <class>com.haulmont.workflow.core.entity.CardRelation</class>

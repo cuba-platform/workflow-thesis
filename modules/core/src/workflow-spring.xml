@@ -18,10 +18,40 @@
     <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.workflow.core.sys.WorkingTimeBetweenQueryMacroHandler" 
           scope="prototype"/>
 
+    <bean id="base_workflow_DesignCompiler" abstract="true"
+          class="com.haulmont.workflow.core.app.design.DesignCompiler">
+        <property name="moduleClasses">
+            <map>
+                <entry key="Start" value="com.haulmont.workflow.core.app.design.modules.StartModule"/>
+                <entry key="End" value="com.haulmont.workflow.core.app.design.modules.EndModule"/>
+                <entry key="CardState" value="com.haulmont.workflow.core.app.design.modules.CardStateModule"/>
+                <entry key="Assignment" value="com.haulmont.workflow.core.app.design.modules.AssignmentModule"/>
+                <entry key="ParallelAssignment" value="com.haulmont.workflow.core.app.design.modules.ParallelAssignmentModule"/>
+                <entry key="Decision" value="com.haulmont.workflow.core.app.design.modules.DecisionModule"/>
+            </map>
+        </property>
+        <property name="formCompiler" ref="workflow_FormCompiler"/>
+    </bean>
+
+    <bean id="workflow_DesignCompiler" parent="base_workflow_DesignCompiler"/>
+
+    <bean id="workflow_FormCompiler" class="com.haulmont.workflow.core.app.design.FormCompiler">
+        <property name="builderClasses">
+            <map>
+                <entry key="notification" value="com.haulmont.workflow.core.app.design.forms.NotificationFormBuilder"/>
+                <entry key="resolution" value="com.haulmont.workflow.core.app.design.forms.ResolutionFormBuilder"/>
+                <entry key="transition" value="com.haulmont.workflow.core.app.design.forms.TransitionFormBuilder"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
+
+    <bean id="workflow_DesignDeployer" class="com.haulmont.workflow.core.app.design.DesignDeployer"/>
+
     <!-- Annotation-based beans -->
 
     <context:component-scan base-package="com.haulmont.workflow"/>
-
 
     <!-- MBeans registration -->
 

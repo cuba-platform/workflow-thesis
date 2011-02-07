@@ -1,0 +1,41 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.design.DesignBrowser"
+        messagesPack="workflow.client.web.ui.design"
+        caption="msg://browser.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="browse">
+            <query>
+                select d from wf$Design d order by d.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="tablePanel" expand="designTable">
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="designTable.refresh" icon="icons/refresh.png"/>
+                <button action="designTable.create" icon="icons/create.png"/>
+                <button action="designTable.copy"/>
+                <button action="designTable.design" icon="icons/edit.png"/>
+                <button action="designTable.remove" icon="icons/remove.png"/>
+                <button action="designTable.scripts"/>
+                <popupButton id="notificationMatrix" caption="msg://notificationMatrix"/>
+                <button action="designTable.localize"/>
+                <button action="designTable.compile"/>
+                <button action="designTable.deploy"/>
+            </hbox>
+            <table id="designTable">
+                <columns>
+                    <column id="name"/>
+                    <column id="createTs"/>
+                    <column id="notificationMatrixUploaded"/>
+                    <column id="compileTs"/>
+                </columns>
+                <rows datasource="designDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

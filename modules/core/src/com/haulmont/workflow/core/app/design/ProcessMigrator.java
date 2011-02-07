@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Konstantin Krivopustov
+ * Created: 02.02.11 18:17
+ *
+ * $Id$
+ */
+package com.haulmont.workflow.core.app.design;
+
+import java.util.UUID;
+
+public interface ProcessMigrator {
+
+    Result checkMigrationPossibility(UUID designId, UUID procId);
+
+    void migrate(UUID designId, UUID procId, String oldJbpmProcessKey);
+
+    public static class Result {
+        private boolean success;
+        private String message;
+        private String oldJbpmProcessKey;
+
+        public Result(boolean success, String message) {
+            this(success, message, null);
+        }
+
+        public Result(boolean success, String message, String oldJbpmProcessKey) {
+            this.success = success;
+            this.message = message;
+            this.oldJbpmProcessKey = oldJbpmProcessKey;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getOldJbpmProcessKey() {
+            return oldJbpmProcessKey;
+        }
+    }
+}

@@ -50,8 +50,8 @@ public class SimpleDocflow3Test extends WfTestCase {
         Transaction tx = Locator.createTransaction();
         try {
             String curDir = System.getProperty("user.dir");
-            String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow3.jpdl.xml");
-            assertTrue(res, res.startsWith("Deployed:"));
+            Proc res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow3.jpdl.xml");
+            assertTrue(res != null);
 
             tx.commitRetaining();
 

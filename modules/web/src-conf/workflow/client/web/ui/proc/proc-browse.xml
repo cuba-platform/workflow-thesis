@@ -6,7 +6,7 @@
         >
 
     <dsContext>
-        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local">
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="browse">
             <query>
                 select p from wf$Proc p order by p.name
             </query>
@@ -21,8 +21,9 @@
             </hbox>
             <table id="procTable" editable="false">
                 <columns>
-                    <column id="name" caption="msg://name"/>
-                    <column id="jbpmProcessKey" caption="msg://jbpmProcessKey"/>
+                    <column id="name"/>
+                    <column id="jbpmProcessKey"/>
+                    <column id="design"/>
                 </columns>
                 <rows datasource="procDs"/>
             </table>

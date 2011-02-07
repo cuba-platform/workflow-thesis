@@ -48,8 +48,8 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
         try {
             WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
-            String res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow-groovy.jpdl.xml");
-            assertTrue(res, res.startsWith("Deployed:"));
+            Proc res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/simple-docflow-groovy.jpdl.xml");
+            assertTrue(res != null);
 
             tx.commitRetaining();
 

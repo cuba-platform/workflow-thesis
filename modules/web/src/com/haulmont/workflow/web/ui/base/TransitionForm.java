@@ -266,7 +266,7 @@ public class TransitionForm extends AbstractForm {
         }
 
         Proc proc = card.getProc();
-        proc = cardRolesDs.getDataService().reload(proc, "edit");
+        proc = cardRolesDs.getDataService().reload(proc, "start-process");
 
         for (String roleCode : requiredRolesCodes) {
             if (!roleCode.contains("|"))

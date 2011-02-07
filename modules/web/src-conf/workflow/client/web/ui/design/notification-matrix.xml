@@ -1,0 +1,20 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="workflow.client.web.ui.design.NotificationMatrixWindow"
+        messagesPack="workflow.client.web.ui.design"
+        caption="msg://notificationMatrix.caption"
+        datasource="designDs"
+        >
+
+    <dsContext>
+        <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
+    </dsContext>
+
+    <layout>
+        <vbox spacing="true">
+            <upload id="uploadField"/>
+            <textField id="fileNameField" editable="false" width="300"/>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

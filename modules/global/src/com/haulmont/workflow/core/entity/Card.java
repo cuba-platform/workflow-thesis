@@ -11,7 +11,6 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
-import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.MessageUtils;
@@ -38,7 +37,8 @@ import java.util.regex.Pattern;
 public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -6180254942462308853L;
-    private final String CARD_STATE_SEPARATOR = ", ";
+
+    public static final String STATE_SEPARATOR = ", ";
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -231,13 +231,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
         if (getProc() != null) {
             String messagesPack = getProc().getMessagesPack();
             StringBuilder sb = new StringBuilder();
-            Matcher matcher = Pattern.compile("\\w+").matcher(getState());
+            Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
             while (matcher.find()) {
                 sb.append(MessageUtils.loadString(messagesPack, "msg://" + matcher.group()))
-                        .append(CARD_STATE_SEPARATOR);
+                        .append(STATE_SEPARATOR);
             }
             if (sb.length() > 0)
-                sb.delete(sb.length() - CARD_STATE_SEPARATOR.length(), sb.length());
+                sb.delete(sb.length() - STATE_SEPARATOR.length(), sb.length());
             return sb.toString();
         }
         return getState();

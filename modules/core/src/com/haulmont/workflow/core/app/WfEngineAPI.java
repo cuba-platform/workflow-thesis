@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.Proc;
 import org.jbpm.api.ProcessEngine;
 
 import javax.annotation.Nullable;
@@ -26,7 +27,9 @@ public interface WfEngineAPI {
         void onProcessCancel(Card card);
     }
 
-    String deployJpdlXml(String fileName);
+    Proc deployJpdlXml(String fileName, Proc proc);
+
+    Proc deployJpdlXml(String fileName);
 
     ProcessEngine getProcessEngine();
 

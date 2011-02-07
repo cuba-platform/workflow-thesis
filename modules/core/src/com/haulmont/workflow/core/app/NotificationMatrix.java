@@ -32,8 +32,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.annotation.ManagedBean;
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ManagedBean(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixMBean, NotificationMatrixAPI {
@@ -45,7 +47,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
 
-    private volatile Map<String, Map<String, NotificationType>> cache = new HashMap<String, Map<String, NotificationType>>();
+    private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -208,7 +210,11 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             return;
 
         String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
-        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(new FileInputStream(confDir + "/" + processPath.replace('.', '/') + "/" + "notification.xls"));
+        File file = new File(confDir + "/" + processPath.replace('.', '/') + "/" + "notification.xls");
+        if (!file.exists())
+            return;
+
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(new FileInputStream(file));
 
         Map<String, String> rolesMap = readRoles(hssfWorkbook);
         Map<String, String> statesMap = readStates(hssfWorkbook);

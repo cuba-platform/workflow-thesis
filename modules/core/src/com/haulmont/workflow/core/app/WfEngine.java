@@ -13,7 +13,6 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -92,31 +91,28 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         return name == null ? DEF_JBPM_CFG_NAME : name;
     }
 
-    public String deployJpdlXml(String fileName) {
-        Transaction tx = Locator.createTransaction();
-        try {
-            login();
+    public Proc deployJpdlXml(String fileName, Proc proc) {
+        RepositoryService rs = getProcessEngine().getRepositoryService();
 
-            RepositoryService rs = getProcessEngine().getRepositoryService();
+        NewDeployment deployment = rs.createDeployment();
+        File file = new File(fileName);
+        if (!file.exists())
+            throw new IllegalArgumentException("File doesn't exist: " + fileName);
 
-            NewDeployment deployment = rs.createDeployment();
-            File file = new File(fileName);
-            if (!file.exists())
-                return "File doesn't exist: " + fileName;
-            deployment.addResourceFromFile(file);
-            deployment.setName(file.getName());
-            deployment.setTimestamp(file.lastModified());
-            deployment.deploy();
+        deployment.addResourceFromFile(file);
+        deployment.setName(file.getName());
+        deployment.setTimestamp(file.lastModified());
+        deployment.deploy();
 
-            int dot = file.getName().indexOf(".jpdl.xml");
-            String pName = StringUtils.substring(file.getName(), 0, dot);
+        int dot = file.getName().indexOf(".jpdl.xml");
+        String pName = StringUtils.substring(file.getName(), 0, dot);
 
-            ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
-            ProcessDefinition pd = pdq.uniqueResult();
+        ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
+        ProcessDefinition pd = pdq.uniqueResult();
 
-            Proc proc;
+        EntityManager em = PersistenceProvider.getEntityManager();
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+        if (proc == null) {
             Query q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
             q.setParameter(1, pd.getKey());
             List<Proc> processes = q.getResultList();
@@ -124,32 +120,45 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 proc = new Proc();
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
-                proc.setMessagesPack("process." + pName);
                 proc.setRoles(new ArrayList());
                 em.persist(proc);
             } else {
                 proc = processes.get(0);
                 if (StringUtils.isEmpty(pd.getName()))
                     proc.setName(pd.getName());
-                proc.setMessagesPack("process." + pName);
             }
+        } else {
+            proc.setJbpmProcessKey(pd.getKey());
+        }
+        proc.setMessagesPack("process." + pName);
 
             deployProcessStuff(pd.getDeploymentId(), proc);
 
+        log.info("Deployed: key=" + pd.getKey() + ", name=" + proc.getName() + ", id=" + proc.getId());
+        return proc;
+    }
+
+    public Proc deployJpdlXml(String fileName) {
+        return deployJpdlXml(fileName, null);
+    }
+
+    public String deployProcess(String name) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            login();
+
+            String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
+            String fileName = confDir + "/process/" + name + "/" + name + ".jpdl.xml";
+            Proc proc = deployJpdlXml(fileName);
+
             tx.commit();
-            return "Deployed: " + deployment;
+            return "Deployed process " + proc.getJbpmProcessKey();
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
             logout();
         }
-    }
-
-    public String deployProcess(String name) {
-        String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
-        String fileName = confDir + "/process/" + name + "/" + name + ".jpdl.xml";
-        return deployJpdlXml(fileName);
     }
 
     /**
@@ -311,8 +320,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String deployTestProcesses() {
-        String dir = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
-        return deployJpdlXml(dir + "/process/test1/test1.jpdl.xml");
+        return deployProcess("test1");
     }
 
     public String startProcessByKey(String key) {
@@ -453,7 +461,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         Card c = em.merge(card);
 
         Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
-        query.setParameter("1", c);
+        query.setParameter(1, c);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
             if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
