@@ -33,6 +33,7 @@ class Decision implements ActivityBehaviour {
 
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("card", card);
+    params.put("activity", execution.getActivityName())
 
     String processKey = card.getProc().getJbpmProcessKey()
     String fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName

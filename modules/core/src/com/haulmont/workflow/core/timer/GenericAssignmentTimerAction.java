@@ -82,6 +82,7 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("card", context.getCard());
         params.put("dueDate", context.getDueDate());
+        params.put("activity", context.getActivity());
         params.put("user", user);
 
         String processKey = context.getCard().getProc().getJbpmProcessKey();

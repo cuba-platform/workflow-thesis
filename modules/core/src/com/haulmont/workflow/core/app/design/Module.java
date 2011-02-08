@@ -96,8 +96,10 @@ public abstract class Module {
     }
 
     protected void initScriptNamesMap() {
-        for (DesignScript designScript : context.getDesign().getScripts()) {
-            scriptNamesMap.put(designScript.getName(), designScript.getFileName());
+        if (context.getDesign().getScripts() != null) {
+            for (DesignScript designScript : context.getDesign().getScripts()) {
+                scriptNamesMap.put(designScript.getName(), designScript.getFileName());
+            }
         }
     }
 

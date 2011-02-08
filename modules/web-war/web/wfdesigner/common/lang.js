@@ -90,7 +90,6 @@ var wfLanguage = {
             "category": "common",
             "container": {
                 "xtype": "Wf.Container",
-                "title": "CardState",
                 "icon": "../common/res/icons/card_state_icon.png",
                 "width": 230,
 
@@ -123,7 +122,6 @@ var wfLanguage = {
             "category": "common",
             "container": {
                 "xtype": "Wf.MultiOutContainer",
-                "title": "msg://Assignment",
                 "icon": "../common/res/icons/assignment_icon.png",
                 "width": 230,
 
@@ -202,7 +200,6 @@ var wfLanguage = {
             "category": "common",
             "container": {
                 "xtype": "Wf.MultiOutContainer",
-                "title": "msg://ParallelAssignment",
                 "icon": "../common/res/icons/parallel_assignment_icon.png",
                 "width": 250,
 
