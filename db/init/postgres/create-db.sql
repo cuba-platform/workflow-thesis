@@ -461,7 +461,6 @@ create table WF_PROC_STAGE (
 )^
 
 alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
-alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE (ID);
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -512,3 +511,8 @@ create table WF_PROC_STAGE_TYPE (
     CODE varchar(200),
     primary key (ID)
 )^
+alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE (ID)^
+
+alter table WF_PROC_STAGE
+    add DURATION_SCRIPT_ENABLED boolean,
+    add DURATION_SCRIPT text^
