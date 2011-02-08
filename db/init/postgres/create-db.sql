@@ -507,12 +507,12 @@ create table WF_PROC_STAGE_TYPE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+
     NAME varchar(200),
     CODE varchar(200),
+    DURATION_SCRIPT_ENABLED boolean,
+    DURATION_SCRIPT text,
+
     primary key (ID)
 )^
 alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE (ID)^
-
-alter table WF_PROC_STAGE
-    add DURATION_SCRIPT_ENABLED boolean,
-    add DURATION_SCRIPT text^
