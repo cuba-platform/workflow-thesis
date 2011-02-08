@@ -456,7 +456,7 @@ create table WF_PROC_STAGE (
     END_TRANSITION varchar(200),
     NOTIFICATION_SCRIPT varchar(200),
     NOTIFY_CURRENT_ACTOR boolean,
-    PROC_STAGE_TYPE_ID uuid;
+    PROC_STAGE_TYPE_ID uuid,
     primary key (ID)
 )^
 
