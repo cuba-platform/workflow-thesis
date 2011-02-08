@@ -17,7 +17,7 @@ import org.json.JSONObject;
 public class TransitionFormBuilder extends FormBuilder {
 
     @Override
-    public void writeFormEl(Element parentEl, JSONObject jsProperties) {
+    public Element writeFormEl(Element parentEl, JSONObject jsProperties) {
         Element el = parentEl.addElement("screen");
         el.addAttribute("id", "transition.form");
         el.addAttribute("before", "true");
@@ -27,5 +27,7 @@ public class TransitionFormBuilder extends FormBuilder {
         addFormParam(el, "dueDateVisible", Boolean.toString(jsProperties.optBoolean("dueDateVisible")));
         addFormParam(el, "refusedOnlyVisible", Boolean.toString(jsProperties.optBoolean("refusedOnlyVisible")));
         addFormParam(el, "requiredRoles", jsProperties.optString("requiredRoles"));
+
+        return el;
     }
 }

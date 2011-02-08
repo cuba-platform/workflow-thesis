@@ -62,7 +62,20 @@ var Wf = {
             res.languageName = lang2.languageName;
 
         if (lang2.modules) {
-            res.modules = res.modules.concat(lang2.modules);
+            for (var i = 0; i < lang2.modules.length; i++) {
+                var m = lang2.modules[i];
+
+                var found = false;
+                for (var j = 0; j < res.modules.length; j++) {
+                    if (res.modules[j].name == m.name) {
+                        res.modules[j] = m;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    res.modules.push(m);
+            }
         }
 
         return res;

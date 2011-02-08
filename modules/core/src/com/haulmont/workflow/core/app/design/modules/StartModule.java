@@ -19,6 +19,14 @@ import org.json.JSONObject;
 
 public class StartModule extends Module {
 
+    protected JSONObject jsOptions;
+
+    @Override
+    public void init(Context context) throws DesignCompilationException {
+        super.init(context);
+        jsOptions = jsValue.optJSONObject("options");
+    }
+
     @Override
     public Element writeJpdlMainEl(Element parentEl) {
         Element el = parentEl.addElement("start");
@@ -29,7 +37,6 @@ public class StartModule extends Module {
     @Override
     public void writeFormsXml(Element rootEl) throws DesignCompilationException {
         try {
-            JSONObject jsOptions = jsValue.optJSONObject("options");
             if (jsOptions == null)
                 return;
 

@@ -17,11 +17,13 @@ import org.json.JSONObject;
 public class NotificationFormBuilder extends FormBuilder {
 
     @Override
-    public void writeFormEl(Element parentEl, JSONObject jsProperties) {
+    public Element writeFormEl(Element parentEl, JSONObject jsProperties) {
         Element el = parentEl.addElement("invoke");
         el.addAttribute("class", "com.haulmont.workflow.web.ui.base.NotificationForm");
         el.addAttribute("after", "true");
 
         addFormParam(el, "message", jsProperties.optString("message"));
+
+        return el;
     }
 }

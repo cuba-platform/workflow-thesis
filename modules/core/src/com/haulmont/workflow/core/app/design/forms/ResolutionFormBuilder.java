@@ -17,12 +17,14 @@ import org.json.JSONObject;
 public class ResolutionFormBuilder extends FormBuilder {
 
     @Override
-    public void writeFormEl(Element parentEl, JSONObject jsProperties) {
+    public Element writeFormEl(Element parentEl, JSONObject jsProperties) {
         Element el = parentEl.addElement("screen");
         el.addAttribute("id", "resolution.form");
         el.addAttribute("before", "true");
 
         addFormParam(el, "attachmentsVisible", Boolean.toString(jsProperties.optBoolean("attachmentsVisible")));
         addFormParam(el, "commentRequired", Boolean.toString(jsProperties.optBoolean("commentRequired")));
+
+        return el;
     }
 }

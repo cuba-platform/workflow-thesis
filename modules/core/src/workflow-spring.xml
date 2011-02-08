@@ -35,7 +35,8 @@
 
     <bean id="workflow_DesignCompiler" parent="base_workflow_DesignCompiler"/>
 
-    <bean id="workflow_FormCompiler" class="com.haulmont.workflow.core.app.design.FormCompiler">
+    <bean id="base_workflow_FormCompiler" abstract="true"
+          class="com.haulmont.workflow.core.app.design.FormCompiler">
         <property name="builderClasses">
             <map>
                 <entry key="notification" value="com.haulmont.workflow.core.app.design.forms.NotificationFormBuilder"/>
@@ -44,6 +45,8 @@
             </map>
         </property>
     </bean>
+
+    <bean id="workflow_FormCompiler" parent="base_workflow_FormCompiler"/>
 
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 
