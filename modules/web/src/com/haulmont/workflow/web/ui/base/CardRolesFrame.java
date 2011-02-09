@@ -72,6 +72,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<CardRole, CardRoleField>();
     protected List<User> users;
     protected Map<Role, Collection<User>> roleUsersMap = new HashMap<Role, Collection<User>>();
+    private String requiredRolesCodesStr;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -746,6 +747,103 @@ public class CardRolesFrame extends AbstractFrame {
         for(CardRoleField cardRoleField: actorActionsFieldsMap.values()) {
             cardRoleField.setEditable(editable);
         }
+    }
+
+    public void fillMissingRoles() {
+        Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
+        for (Object itemId : cardRolesDs.getItemIds()) {
+            CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
+            requiredRolesCodes.remove(cardRole.getCode());
+        }
+
+        Proc proc = card.getProc();
+        proc = cardRolesDs.getDataService().reload(proc, "edit");
+
+        for (String roleCode : requiredRolesCodes) {
+            if (!roleCode.contains("|"))
+                addProcActor(proc, roleCode, null, true);
+        }
+    }
+
+    public Set<String> getEmptyRolesNames() {
+        Set<String> emptyRolesNames = new HashSet<String>();
+        Map<String, String> procRolesNames = new HashMap<String, String>();
+        List<ProcRole> procRoles = card.getProc().getRoles();
+        if (procRoles == null) {
+            LoadContext ctx = new LoadContext(ProcRole.class);
+            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
+            query.addParameter("proc", card.getProc());
+            procRoles = ServiceLocator.getDataService().loadList(ctx);
+        }
+        for (ProcRole procRole : procRoles) {
+            procRolesNames.put(procRole.getCode(), procRole.getName());
+        }
+
+        //if we removed required role from datasource
+        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes(false);
+
+        Set<String> requiredRolesChoiceCodes = new HashSet<String>();
+        for (String requiredRoleCode : emptyRequiredRolesCodes) {
+            if (requiredRoleCode.contains("|"))
+                requiredRolesChoiceCodes.add(requiredRoleCode);
+        }
+
+        for (Object itemId : cardRolesDs.getItemIds()) {
+            CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
+            if (cardRole.getUser() == null) {
+                emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
+            }
+
+            if (!requiredRolesChoiceCodes.isEmpty()) {
+                String choiceRole = null;
+                for (String requiredRolesChoiceCode : requiredRolesChoiceCodes) {
+                    String[] roles = requiredRolesChoiceCode.split("\\|");
+                    if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
+                        choiceRole = requiredRolesChoiceCode;
+                        break;
+                    }
+                }
+
+                if (choiceRole != null) {
+                    requiredRolesChoiceCodes.remove(choiceRole);
+                    emptyRequiredRolesCodes.remove(choiceRole);
+                }
+            }
+
+            emptyRequiredRolesCodes.remove(cardRole.getCode());
+        }
+
+        for (String roleCode : emptyRequiredRolesCodes) {
+            if (roleCode.contains("|")) {
+                String formattingCode = "";
+                String orStr = " " + MessageProvider.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
+                String[] roles = roleCode.split("\\|");
+                for (String role : roles) {
+                    formattingCode += procRolesNames.get(role) + orStr;
+                }
+
+                if (formattingCode.endsWith(orStr))
+                    formattingCode = formattingCode.substring(0, formattingCode.lastIndexOf(orStr));
+
+                emptyRolesNames.add(formattingCode);
+            } else {
+                emptyRolesNames.add(procRolesNames.get(roleCode));
+            }
+        }
+
+        return emptyRolesNames;
+    }
+
+    private Set<String> getRequiredRolesCodes(boolean isAll) {
+        if (requiredRolesCodesStr != null) {
+            String[] s = requiredRolesCodesStr.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
+            return new LinkedHashSet<String>(Arrays.asList(s));
+        }
+        return Collections.emptySet();
+    }
+
+    public void setRequiredRolesCodesStr(String requiredRolesCodesStr) {
+        this.requiredRolesCodesStr = requiredRolesCodesStr;
     }
 
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {

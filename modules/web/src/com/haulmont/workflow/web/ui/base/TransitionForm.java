@@ -31,7 +31,6 @@ import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.List;
 
 public class TransitionForm extends AbstractForm {
     private TextField commentText;
@@ -45,7 +44,7 @@ public class TransitionForm extends AbstractForm {
     private TextField outcomeText;
     protected boolean defaultNotifyByEmail = true;
 
-    private String requiredRolesCodes;
+    private String requiredRolesCodesStr;
 
     public TransitionForm(IFrame frame) {
         super(frame);
@@ -57,11 +56,11 @@ public class TransitionForm extends AbstractForm {
 
         String dueDateRequired = (String) params.get("dueDateRequired");
         String commentRequired = (String) params.get("param$commentRequired");
-        requiredRolesCodes = (String) params.get("param$requiredRoles");
+        requiredRolesCodesStr = (String) params.get("param$requiredRoles");
 
         String additionalRolesCodes = (String) params.get("param$additionalRoles");
         if (!StringUtils.isEmpty(additionalRolesCodes)) {
-            requiredRolesCodes += "," + additionalRolesCodes;
+            requiredRolesCodesStr += "," + additionalRolesCodes;
         }
 
         commentText = getComponent("commentText");
@@ -82,7 +81,8 @@ public class TransitionForm extends AbstractForm {
                 public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                     if (state == Datasource.State.VALID) {
                         cardRolesFrame.procChanged(card.getProc());
-                        fillMissingRoles();
+                        cardRolesFrame.setRequiredRolesCodesStr(requiredRolesCodesStr);
+                        cardRolesFrame.fillMissingRoles();
                     }
                 }
             });
@@ -245,7 +245,7 @@ public class TransitionForm extends AbstractForm {
             return false;
         }
         if (cardRolesFrame != null) {
-            Set<String> emptyRolesNames = getEmptyRolesNames();
+            Set<String> emptyRolesNames = cardRolesFrame.getEmptyRolesNames();
             if (!emptyRolesNames.isEmpty()) {
                 String message = "";
                 for (String emptyRoleName : emptyRolesNames) {
@@ -257,100 +257,6 @@ public class TransitionForm extends AbstractForm {
         }
         return true;
     }
-
-    private void fillMissingRoles() {
-        Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
-        for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole) cardRolesDs.getItem(itemId);
-            requiredRolesCodes.remove(cardRole.getCode());
-        }
-
-        Proc proc = card.getProc();
-        proc = cardRolesDs.getDataService().reload(proc, "start-process");
-
-        for (String roleCode : requiredRolesCodes) {
-            if (!roleCode.contains("|"))
-                cardRolesFrame.addProcActor(proc, roleCode, null, defaultNotifyByEmail);
-        }
-    }
-
-    private Set<String> getEmptyRolesNames() {
-        Set<String> emptyRolesNames = new HashSet<String>();
-        Map<String, String> procRolesNames = new HashMap<String, String>();
-        List<ProcRole> procRoles = card.getProc().getRoles();
-        if (procRoles == null) {
-            LoadContext ctx = new LoadContext(ProcRole.class);
-            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
-            query.addParameter("proc", card.getProc());
-            procRoles = ServiceLocator.getDataService().loadList(ctx);
-        }
-        for (ProcRole procRole : procRoles) {
-            procRolesNames.put(procRole.getCode(), procRole.getName());
-        }
-
-        //if we removed required role from datasource
-        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes(false);
-
-        Set<String> requiredRolesChoiceCodes = new HashSet<String>();
-        for (String requiredRoleCode : emptyRequiredRolesCodes) {
-            if (requiredRoleCode.contains("|"))
-                requiredRolesChoiceCodes.add(requiredRoleCode);
-        }
-
-        for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole) cardRolesDs.getItem(itemId);
-            if (cardRole.getUser() == null) {
-                emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
-            }
-
-            if (!requiredRolesChoiceCodes.isEmpty()) {
-                String choiceRole = null;
-                for (String requiredRolesChoiceCode : requiredRolesChoiceCodes) {
-                    String[] roles = requiredRolesChoiceCode.split("\\|");
-                    if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
-                        choiceRole = requiredRolesChoiceCode;
-                        break;
-                    }
-                }
-
-                if (choiceRole != null) {
-                    requiredRolesChoiceCodes.remove(choiceRole);
-                    emptyRequiredRolesCodes.remove(choiceRole);
-                }
-            }
-
-            emptyRequiredRolesCodes.remove(cardRole.getCode());
-        }
-
-        for (String roleCode : emptyRequiredRolesCodes) {
-            if (roleCode.contains("|")) {
-                String formattingCode = "";
-                String orStr = " " + MessageProvider.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
-                String[] roles = roleCode.split("\\|");
-                for (String role : roles) {
-                    formattingCode += procRolesNames.get(role) + orStr;
-                }
-
-                if (formattingCode.endsWith(orStr))
-                    formattingCode = formattingCode.substring(0, formattingCode.lastIndexOf(orStr));
-
-                emptyRolesNames.add(formattingCode);
-            } else {
-                emptyRolesNames.add(procRolesNames.get(roleCode));
-            }
-        }
-
-        return emptyRolesNames;
-    }
-
-    protected Set<String> getRequiredRolesCodes(boolean isAll) {
-        if (requiredRolesCodes != null) {
-            String[] s = requiredRolesCodes.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
-            return new LinkedHashSet<String>(Arrays.asList(s));
-        }
-        return Collections.emptySet();
-    }
-
 
     @Override
     public String getComment() {
