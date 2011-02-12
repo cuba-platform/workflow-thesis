@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import java.util.Map;
 
 public class AttachmentUploadDatasource extends CollectionDatasourceImpl {
+    private static final long serialVersionUID = -2327452460673221443L;
+
     public AttachmentUploadDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }

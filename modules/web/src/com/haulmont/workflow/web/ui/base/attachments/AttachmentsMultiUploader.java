@@ -34,19 +34,19 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
 
-    private FileMultiUploadField uploadField = null;
+    private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
-    private CollectionDatasource attachDs = null;
+    private CollectionDatasource attachDs;
     private Table uploadsTable = null;
     private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
-    private AttachmentCreator creator = null;
-    private LookupField attachTypeCombo = null;
+    private AttachmentCreator creator;
+    private LookupField attachTypeCombo;
 
     private boolean isUploading = false;
 
-    private CollectionDatasource attachTypesDs, filesDs = null;
-    private AttachmentType defaultAttachType = null;
+    private CollectionDatasource attachTypesDs, filesDs;
+    private AttachmentType defaultAttachType;
 
     public AttachmentsMultiUploader(IFrame frame) {
         super(frame);
@@ -62,6 +62,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         select.select(defaultAttachType);
 
         cancelBtn.setAction(new AbstractAction("actions.Cancel") {
+            private static final long serialVersionUID = 6603819180519108350L;
+
             // OnClose
             public void actionPerform(Component component) {
                 if (AttachmentsMultiUploader.this.isUploading)
@@ -71,6 +73,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                             MessageType.CONFIRMATION,
                             new Action[]{
                                     new DialogAction(DialogAction.Type.YES) {
+                                        private static final long serialVersionUID = -1090801189008445909L;
+
                                         @Override
                                         public void actionPerform(Component component) {
                                             AttachmentsMultiUploader.this.close("");
@@ -128,6 +132,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         select.select(null);
 
         attachTypeCombo.addListener(new ValueListener() {
+
+            private static final long serialVersionUID = -7749607248779629771L;
 
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if ((value != null) && (value instanceof AttachmentType)) {
@@ -244,17 +250,9 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         return attachments;
     }
 
-    public static int safeLongToInt(long l) {
-        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException
-                    (l + " cannot be cast to int without changing its value.");
-        }
-        return (int) l;
-    }
-
     private void saveFile() {
         FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = attachDs.getItemIds();
