@@ -12,6 +12,10 @@
         <property name="design" view="_minimal"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
+        <property name="roles" view="edit"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.Proc" name="start-process" extends="_local">
         <property name="roles" view="edit"/>
     </view>

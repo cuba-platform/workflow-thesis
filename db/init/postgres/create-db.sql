@@ -447,6 +447,7 @@ create table WF_PROC_STAGE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+
     NAME varchar(255),
     DURATION numeric(3),
     TIME_UNIT varchar(1),
@@ -457,6 +458,9 @@ create table WF_PROC_STAGE (
     NOTIFICATION_SCRIPT varchar(200),
     NOTIFY_CURRENT_ACTOR boolean,
     PROC_STAGE_TYPE_ID uuid,
+    DURATION_SCRIPT_ENABLED boolean,
+    DURATION_SCRIPT text,
+
     primary key (ID)
 )^
 
