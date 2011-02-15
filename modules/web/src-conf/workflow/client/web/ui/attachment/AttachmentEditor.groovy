@@ -33,6 +33,9 @@ import org.apache.openjpa.kernel.DelegatingResultList
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.core.sys.AppContext
 import com.haulmont.cuba.gui.UserSessionClient
+import java.text.NumberFormat
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
+import com.haulmont.workflow.core.entity.CardAttachment
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -110,7 +113,10 @@ public class AttachmentEditor extends AbstractEditor {
                   nameText.setValue(uploadField.getFileName())
 
                 extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()))
-                sizeLab.setValue(uploadField.getBytes().length)
+                sizeLab.setValue(formatSize(uploadField.getBytes().length, 0) + " (" + uploadField.getBytes().length + ")")
+                FileDescriptor file = getDsContext().get("fileDs").getItem()
+                if (file)
+                  file.size = uploadField.getBytes().length 
                 createDateLab.setValue(TimeProvider.currentTimestamp())
 
                 okBtn.setEnabled(true)
@@ -119,6 +125,15 @@ public class AttachmentEditor extends AbstractEditor {
               }
       ] as Listener)
     } else {
+      if (item != null && item instanceof CardAttachment) {
+        CardAttachment cardAttachment = (CardAttachment) item
+        FileDescriptor file = cardAttachment.file
+        if (file) {
+          if (file.size != null ) {
+            sizeLab.setValue(formatSize(file.size, 0) + " (" + file.size + ")")
+          }
+        }
+      }
       uploadField.setEnabled(false)
       fileNameText.setEditable(false)
     }
@@ -146,6 +161,23 @@ public class AttachmentEditor extends AbstractEditor {
     }
     super.commitAndClose();
   }
+
+  private String formatSize(long longSize, int decimalPos) {
+        NumberFormat fmt = NumberFormat.getNumberInstance();
+        if (decimalPos >= 0) {
+            fmt.setMaximumFractionDigits(decimalPos);
+        }
+        final double size = longSize;
+        double val = size / (1024 * 1024);
+        if (val > 1) {
+            return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtMb"));
+        }
+        val = size / 1024;
+        if (val > 10) {
+            return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtKb"));
+        }
+        return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB"));
+    }
 
   private void saveFile() {
     FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME)

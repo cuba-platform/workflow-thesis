@@ -33,7 +33,7 @@
                     </row>
                     <row>
                         <label value="msg://size"/>
-                        <label id="size" datasource="fileDs" property="size"/>
+                        <label id="size"/>
                     </row>
                     <row>
                         <label value="msg://createDate"/>

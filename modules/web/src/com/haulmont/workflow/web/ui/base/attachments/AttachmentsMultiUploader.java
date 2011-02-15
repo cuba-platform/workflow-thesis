@@ -95,6 +95,9 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         creator = (AttachmentCreator) params.get("creator");
 
         uploadsTable = getComponent("uploadsTable");
+        if (uploadsTable != null) {
+            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(uploadsTable);
+        }
         attachTypeCombo = getComponent("attachTypeCombo");
 
         attachTypesDs = getDsContext().get("attachTypesDs");
