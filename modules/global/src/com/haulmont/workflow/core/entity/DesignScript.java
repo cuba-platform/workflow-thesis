@@ -29,7 +29,7 @@ public class DesignScript extends StandardEntity {
     @Column(name = "NAME", length = 100)
     private String name;
 
-    @Column(name = "CONTENT")
+    @Column(name = "CONTENT", length = 0)
     private String content;
 
     public Design getDesign() {

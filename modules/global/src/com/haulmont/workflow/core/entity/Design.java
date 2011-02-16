@@ -29,7 +29,7 @@ public class Design extends StandardEntity {
     @Column(name = "NAME", length = 100)
     private String name;
 
-    @Column(name = "SRC")
+    @Column(name = "SRC", length = 0)
     private String src;
 
     @Column(name = "NOTIFICATION_MATRIX")

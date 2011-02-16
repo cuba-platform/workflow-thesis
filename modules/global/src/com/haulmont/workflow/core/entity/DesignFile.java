@@ -30,7 +30,7 @@ public class DesignFile extends BaseUuidEntity {
     @Column(name = "TYPE", length = 20)
     private String type;
 
-    @Column(name = "CONTENT")
+    @Column(name = "CONTENT", length = 0)
     private String content;
 
     @Column(name = "BINARY_CONTENT")
