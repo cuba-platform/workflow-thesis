@@ -10,9 +10,12 @@
  */
 
 WireIt.Terminal.prototype.wireConfig = {
-    xtype: "WireIt.BezierArrowWire"
+    xtype: "Wf.BezierArrowWire",
+    width: 2,
+    borderwidth: 0
+
 };
-//WireIt.Terminal.prototype.wireConfig.width=1;
+
 
 WireIt.Terminal.prototype.editingWireConfig = WireIt.Terminal.prototype.wireConfig;
 
