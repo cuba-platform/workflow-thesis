@@ -77,3 +77,12 @@ div.Wf-Decision div.body {
 	border: 0;
 	cursor: move;
 }
+div.Wf-Container-change {
+    background-image: url("res/icons/change_direction.png");
+    cursor: pointer;
+    height: 16px;
+    position: absolute;
+    right: 20px;
+    top: 4px;
+    width: 16px;
+}

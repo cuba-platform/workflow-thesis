@@ -19,6 +19,17 @@ Wf.Container = function(options, layer) {
 YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     xtype: "Wf.Container",
+    direction :"down",
+
+    render: function() {
+        Wf.Container.superclass.render.call(this);
+
+        var changeArrow  = WireIt.cn('div',{className: "Wf-Container-change"},null,null);
+
+		this.ddHandle.appendChild(changeArrow);
+
+        YAHOO.util.Event.addListener(changeArrow,"click",this.changeDirection,this,true);
+    },
 
     initTerminals: function(terminalConfigs) {
         Wf.Container.superclass.initTerminals.call(this, terminalConfigs);
@@ -49,6 +60,79 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     setValue: function(val) {
         Wf.Container.superclass.setValue.call(this, val);
         Wf.OptionFieldsHelper.setValue(this, val.options);
+    },
+
+    getOutputs: function() {
+        var outputs = [];
+        for (var i = 0; i < this.terminals.length; i++) {
+            var terminal = this.terminals[i];
+            if (terminal.ddConfig.type == "out")
+                outputs.push(terminal);
+        }
+        return outputs;
+    },
+
+    getInput : function() {
+      var input;
+        for(var i=0;i<this.terminals.length; i++){
+            var terminal = this.terminals[i];
+            if(terminal.ddConfig.type == "in"){return terminal;}
+        }
+      return null;
+    },
+
+    renderInput: function() {
+      var input = this.getInput();
+        if (this.direction=="down"){
+                input.setPosition({left: input.offsetPosition.left,top:-15});
+            input.direction= [0,-1];
+        }
+        else if(this.direction=="up"){
+             input.setPosition({left: input.offsetPosition.left,bottom:-15});
+            input.direction= [0,1];
+        }
+    },
+
+    renderOutputs: function() {
+        var outputs = this.getOutputs();
+        var offset = Math.round((this.width - 30) / (outputs.length + 1));
+
+        for (var i = 0; i < outputs.length; i++) {
+            var output = outputs[i];
+
+
+            if (this.direction=="down"){
+                output.setPosition({left: output.offsetPosition.left, bottom:-15});
+
+                output.direction= [0,1];
+            }
+            else if(this.direction=="up"){
+                output.setPosition({left: output.offsetPosition.left, top:-15});
+
+                output.direction= [0,-1];
+            }
+
+        }
+        var style;
+        if (this.direction=="down"){
+            style = { bottom: "-15px", top: "auto"};
+        }
+        else if(this.direction=="up"){
+            style = { top:"-15px",bottom: "auto"};
+        }
+         var labels =  YAHOO.util.Dom.getElementsByClassName("terminalLabel","div",this.bodyEl);
+            for(var j=0;j<labels.length;j++){
+                var currLabel = labels[j];
+                WireIt.sn(currLabel,null,style);
+            }
+        this.redrawAllWires();
+    },
+
+    changeDirection : function() {
+        if(this.direction=="down"){this.direction="up";}
+        else if(this.direction="up"){this.direction="down";}
+        this.renderInput();
+        this.renderOutputs();
     }
 
 });

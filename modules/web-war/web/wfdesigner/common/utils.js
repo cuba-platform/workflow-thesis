@@ -12,6 +12,7 @@
 WireIt.Terminal.prototype.wireConfig = {
     xtype: "WireIt.BezierArrowWire"
 };
+//WireIt.Terminal.prototype.wireConfig.width=1;
 
 WireIt.Terminal.prototype.editingWireConfig = WireIt.Terminal.prototype.wireConfig;
 
@@ -113,7 +114,8 @@ var Wf = {
                     }
                     style[prop] = val;
                 }
-                container.bodyEl.appendChild(WireIt.cn('div', null, style, tc.label));
+                var labelDiv = WireIt.cn('div', {class:"terminalLabel",name:tc.label}, style, tc.label);
+                container.bodyEl.appendChild(labelDiv);
             }
         }
     }

@@ -19,14 +19,16 @@ Wf.MultiOutContainer = function(options, layer) {
 
 YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
+
     xtype: "Wf.MultiOutContainer",
+
 
     render: function() {
         Wf.MultiOutContainer.superclass.render.call(this);
 
         var className = "Wf-MultiOutContainer-link";
 
-        var buttonsDiv = WireIt.cn('div', {className: className}, null, null);
+        var buttonsDiv = WireIt.cn('div', {className: className}, {float : "left"}, null);
         this.bodyEl.appendChild(buttonsDiv);
 
         var addBtn = WireIt.cn('a', {href: "#", className: className}, null, i18n.get('MultiOutContainer.add'));
@@ -36,6 +38,15 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         var delBtn = WireIt.cn('a', {href: "#", className: className}, null, i18n.get('MultiOutContainer.delete'));
         buttonsDiv.appendChild(delBtn);
         YAHOO.util.Event.addListener(delBtn, "click", this.deleteOutput, this, true);
+        /*
+        var changeDiv = WireIt.cn('div',{className : "Wf-MultiOutContainer-arrow"},null,null);
+        this.bodyEl.appendChild(changeDiv);
+        */
+        var changeArrow  = WireIt.cn('div',{className: "Wf-MultiOutContainer-change"},null,null);
+
+		this.ddHandle.appendChild(changeArrow);
+
+        YAHOO.util.Event.addListener(changeArrow,"click",this.changeDirection,this,true);
     },
 
     addOutput: function(e) {
@@ -61,13 +72,19 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
     createOutput: function(e, params) {
         var i;
         var name = params[0];
+        var bottomPos=-15;
+        var topPos=undefined;
+        if (this.getOutputs()[0]){
+            bottomPos=this.getOutputs()[0].offsetPosition.bottom;
+            topPos=this.getOutputs()[0].offsetPosition.top;
+        }
 
         if (this.getTerminal(name))
             return;
 
         this.addTerminal({
             "name": name, "direction": [0,1],
-            "offsetPosition": {"left": 150, "bottom": -15},
+            "offsetPosition": {"left": 150, "bottom": bottomPos, "top" : topPos},
             "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
         });
 
@@ -77,15 +94,27 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.eventAddOutput.fire(name);
     },
 
+
     renderOutputs: function() {
         var outputs = this.getOutputs();
         var offset = Math.round((this.width - 30) / (outputs.length + 1));
+
         for (var i = 0; i < outputs.length; i++) {
             var output = outputs[i];
-            output.offsetPosition.left = offset * (i+1);
-            output.setPosition({left: output.offsetPosition.left, bottom: -15});
 
-            var style = {position: "absolute", left: output.offsetPosition.left+20+"px", bottom: "-15px"};
+            var style;
+            output.offsetPosition.left = offset * (i+1);
+            if (this.direction=="down"){
+                output.setPosition({left: output.offsetPosition.left, bottom:-15});
+                style = {position: "absolute", left: output.offsetPosition.left+20+"px", bottom: "-15px", top: "auto"};
+                output.direction= [0,1];
+            }
+            else if(this.direction=="up"){
+                output.setPosition({left: output.offsetPosition.left, top:-15});
+                style = {position: "absolute", left: output.offsetPosition.left+20+"px", top:"-15px",bottom: "auto"};
+                output.direction= [0,-1];
+            }
+
             var lab = this.outputLabels[output.name];
             if (!lab) {
                 lab = WireIt.cn('div', null, style, output.name);
@@ -97,6 +126,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         }
         this.redrawAllWires();
     },
+
 
     deleteOutput: function(e) {
         YAHOO.util.Event.stopEvent(e);
@@ -154,16 +184,6 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.eventDelOutput.fire(name);
     },
 
-    getOutputs: function() {
-        var outputs = [];
-        for (var i = 0; i < this.terminals.length; i++) {
-            var terminal = this.terminals[i];
-            if (terminal.ddConfig.type == "out")
-                outputs.push(terminal);
-        }
-        return outputs;
-    },
-
     getValue: function() {
         var value = Wf.MultiOutContainer.superclass.getValue.call(this);
         value.outputs = [];
@@ -192,4 +212,5 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.renderOutputs();
         Wf.MultiOutContainer.superclass.setValue.call(this, val);
     }
-});
+
+})
