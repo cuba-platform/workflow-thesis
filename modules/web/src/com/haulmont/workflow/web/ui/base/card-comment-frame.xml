@@ -15,15 +15,11 @@
     </dsContext>
 
     <layout>
-        <vbox expand="scrollbox" margin="true" height="100%">
-            <button id="add" icon="icons/create.png" />
-            <scrollbox id="scrollbox">
-                <vbox>
-                    <widgetsTree id="treeComment">
-                        <items datasource="commentDs"/>
-                    </widgetsTree>
-                </vbox>
-            </scrollbox>
+        <vbox expand="treeComment" margin="true" height="100%">
+            <button id="add" icon="icons/create.png"/>
+            <widgetsTree id="treeComment">
+                <items datasource="commentDs"/>
+            </widgetsTree>
         </vbox>
     </layout>
 </window>
