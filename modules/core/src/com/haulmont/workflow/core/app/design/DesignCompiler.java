@@ -13,25 +13,26 @@ package com.haulmont.workflow.core.app.design;
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.dom4j.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URLDecoder;
 import java.util.*;
 
 public class DesignCompiler {
@@ -115,6 +116,183 @@ public class DesignCompiler {
         }
     }
 
+    /**
+     * Method for compile jpdl of Design without saving in DataBase
+     *
+     * @param designId
+     * @return jpdl in String format
+     * @throws DesignCompilationException
+     */
+    private String compileDesignJpdl(UUID designId) throws DesignCompilationException {
+        Preconditions.checkArgument(designId != null, "designId is null");
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Design design = em.find(Design.class, designId);
+
+            List<Module> modules = new ArrayList<Module>();
+
+            createModules(design, modules);
+
+            cleanup(design);
+
+            String jpdl = compileJpdl(modules);
+            return jpdl;
+        } catch (JSONException e) {
+            throw new DesignCompilationException(e);
+        } finally {
+            tx.end();
+        }
+
+
+    }
+
+    private List<String> parseRoles(Document document) {
+        List<String> rolesList = new LinkedList<String>();
+        List<Element> elements = document.getRootElement().elements("custom");
+        for (Element e : elements) {
+            List<Element> properties = e.elements("property");
+            for (Element prop : properties) {
+                if (prop.attribute("name").getValue().equals("role")) {
+                    String role = prop.element("string").attribute("value").getValue();
+                    if (!rolesList.contains(role)) {
+                        rolesList.add(role);
+                    }
+                }
+
+            }
+        }
+        return rolesList;
+    }
+
+    private Map<String, String> parseStates(Document document) throws UnsupportedEncodingException {
+        Map<String, String> states = new HashMap<String, String>();
+        List<Element> elements = document.getRootElement().elements("custom");
+        for (Element element : elements) {
+            String elementKey = element.attributeValue("name");
+            List<Element> transitions = element.elements("transition");
+            for (Element transition : transitions) {
+                String stateKey = transition.attributeValue("to");
+                String stateName = URLDecoder.decode(elementKey + '.' + stateKey, "UTF-8");
+                states.put(elementKey + '.' + stateKey, stateName);
+            }
+
+        }
+
+        return states;
+    }
+
+    private void createStatesSheet(Workbook book, Map<String, String> statesMap) {
+        Sheet statesSheet = book.getSheet("States");
+
+        Set<Map.Entry<String, String>> set = statesMap.entrySet();
+        Iterator<Row> rowIt = statesSheet.rowIterator();
+        Iterator<Map.Entry<String, String>> stateIt = set.iterator();
+        Map.Entry<String, String> stateEntry = null;
+        while (rowIt.hasNext()) {
+            Row row = rowIt.next();
+            if (stateIt.hasNext()) {
+                stateEntry = stateIt.next();
+                row.getCell(0).setCellValue(stateEntry.getValue());
+                row.getCell(1).setCellValue(stateEntry.getKey());
+            } else {
+                row.removeCell(row.getCell(0));
+                row.removeCell(row.getCell(1));
+            }
+        }
+
+    }
+
+    private void createRolesSheet(Workbook book, List<String> rolesList) {
+
+        Sheet roles = book.getSheet("Roles");
+        int i = 0;
+        Iterator<String> roleIt = rolesList.iterator();
+        Iterator<Row> rowIt = roles.rowIterator();
+        while (rowIt.hasNext()) {
+            Row row = rowIt.next();
+            if (roleIt.hasNext()) {
+                String role = roleIt.next();
+                row.getCell(0).setCellValue(role);
+                row.getCell(1).setCellValue(role);
+            } else {
+                row.removeCell(row.getCell(0));
+                row.removeCell(row.getCell(1));
+            }
+        }
+
+    }
+
+    private void createNotificationSheet(Workbook book, List<String> rolesList, Collection<String> states, String sheetName) {
+        Sheet mail = book.getSheet(sheetName);
+        Row statesRow = mail.getRow(1);
+        Iterator<Cell> cellIt = statesRow.cellIterator();
+        cellIt.next();
+        Iterator<String> statesIt = states.iterator();
+        while(cellIt.hasNext()){
+            Cell cell = cellIt.next();
+            if(statesIt.hasNext()){
+                cell.setCellValue(statesIt.next());
+            }
+            else{
+                statesRow.removeCell(cell);
+            }
+        }
+        Iterator<Row> rowIt = mail.rowIterator();
+        rowIt.next();
+        Iterator<String> roleIt = rolesList.iterator();
+        while(rowIt.hasNext()){
+            Row row = rowIt.next();
+            if(roleIt.hasNext()){
+                row.getCell(0).setCellValue(roleIt.next());
+                Iterator<Cell> cellIterator = row.cellIterator();
+                cellIterator.next();
+                while(cellIterator.hasNext()){
+                    row.removeCell(cellIterator.next());
+                }
+
+            }
+            else{
+                Iterator<Cell> cellIterator = row.cellIterator();
+                while(cellIterator.hasNext()){
+                    row.removeCell(cellIterator.next());
+                }
+            }
+        }
+
+    }
+
+
+
+    public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException, DesignCompilationException {
+        String jpdl = compileDesignJpdl(designId);
+        try {
+
+            Document document = DocumentHelper.parseText(jpdl);
+            String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
+            Workbook wb = new HSSFWorkbook(new FileInputStream(confDir + "/workflow/" + "NotificationMatrixTemplate.xls"));
+
+            List<String> rolesList = parseRoles(document);
+            Map<String, String> states = parseStates(document);
+            createRolesSheet(wb, rolesList);
+            createStatesSheet(wb, states);
+            createNotificationSheet(wb, rolesList, states.values(),"Mail");
+            createNotificationSheet(wb, rolesList, states.values(),"Tray");
+
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            wb.write(buffer);
+            return buffer.toByteArray();
+
+        } catch (DocumentException e) {
+            throw new TemplateGenerationException(e);
+        } catch (IOException e) {
+            throw new TemplateGenerationException(e);
+        }
+
+    }
+
+
     private void createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
         JSONObject json = new JSONObject(design.getSrc());
 
@@ -182,7 +360,6 @@ public class DesignCompiler {
         onEl.addAttribute("event", "end");
         Element listenerEl = onEl.addElement("event-listener");
         listenerEl.addAttribute("class", "workflow.activity.EndProcessListener");
-
         return Dom4j.writeDocument(document, true);
     }
 

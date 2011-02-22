@@ -20,6 +20,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
+import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,8 +110,11 @@ public class DesignerServiceBean implements DesignerService {
     }
 
     public Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages)
-            throws DesignCompilationException
-    {
+            throws DesignCompilationException {
         return compiler.compileMessagesForLocalization(design, languages);
+    }
+
+    public byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException, TemplateGenerationException {
+        return this.compiler.compileXlsTemplate(designId);
     }
 }

@@ -44,10 +44,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     static final String TRAY_SHEET = "Tray";
     static final String ROLES_SHEET = "Roles";
     static final String STATES_SHEET = "States";
+    static final String ACTIONS_SHEET = "Actions";
 
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
 
     private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
+    private Map<String, Map<NotificationType, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<NotificationType, NotificationMessageBuilder>>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -113,6 +115,62 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             }
         }
         return statesMap;
+    }
+
+    /**
+     * Method for load message templates or groovy scripts
+     *
+     * @param hssfWorkbook
+     * @return true, if xls file have templeates or groovy scripts
+     */
+    private void loadMessages(HSSFWorkbook hssfWorkbook, String processPath) {
+        HSSFSheet sheet = hssfWorkbook.getSheet(ACTIONS_SHEET);
+        for (Iterator it = sheet.rowIterator(); it.hasNext();) {
+            HSSFRow row = (HSSFRow) it.next();
+
+            HSSFCell cellNotifType = row.getCell(0);
+            HSSFCell cellTempleateType = row.getCell(1);
+            HSSFCell cellText = row.getCell(2);
+
+            if ((cellNotifType == null) || (cellTempleateType == null) || (cellText == null)) {
+                return;
+            }
+
+            String notificationType = null;
+            String templeateType = null;
+            String text = null;
+
+            if (HSSFCell.CELL_TYPE_STRING == cellNotifType.getCellType()) {
+                notificationType = cellNotifType.getStringCellValue();
+            }
+
+            if (HSSFCell.CELL_TYPE_STRING == cellTempleateType.getCellType()) {
+                templeateType = cellTempleateType.getStringCellValue();
+            }
+
+            if (HSSFCell.CELL_TYPE_STRING == cellText.getCellType()) {
+                text = cellText.getStringCellValue();
+            }
+
+            notificationType = StringUtils.trimToEmpty(notificationType);
+            templeateType = StringUtils.trimToEmpty(templeateType);
+
+            if (!StringUtils.isEmpty(notificationType) && !StringUtils.isEmpty(templeateType) && !StringUtils.isEmpty(text)) {
+                NotificationMessageBuilder message = getNotificationMessageBuilder(templeateType, text);
+                Map<NotificationType, NotificationMessageBuilder> map = messageCache.get(processPath);
+                NotificationType type = NotificationType.fromId(notificationType);
+
+                if (type != null) {
+                    map.put(type, message);
+                }
+
+            } else {
+                log.error(String.format("NotificationType %s or TempleateType %s or ScriptText %s is missing or incorrect", notificationType, templeateType, text));
+                return;
+            }
+
+        }
+
     }
 
     private boolean fillMatrixBySheet(Map<String, NotificationType> matrix, String sheetName, HSSFWorkbook matrixTemplate,
@@ -223,9 +281,13 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap);
         boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap);
 
+        messageCache.put(processPath, new HashMap<NotificationType, NotificationMessageBuilder>());
+        loadMessages(hssfWorkbook, processPath);
+
         if (mailMatrixFilled || trayMatrixFilled)
             cache.put(processPath, matrix);
     }
+
 
     public void reload(String processPath) throws Exception {
         String path = StringUtils.trimToNull(processPath);
@@ -259,7 +321,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         if (StringUtils.trimToNull(user.getEmail()) != null && !mailList.contains(user) &&
                 BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
                 ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
-            variables.put("script", getScriptByNotificationType(processPath, type));
+            NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
+            if (notificationMessage != null) {
+                variables.put("messagetemplate", notificationMessage);
+            } else {
+                variables.put("script", getScriptByNotificationType(processPath, type));
+            }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
             new Thread() {
@@ -364,6 +431,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) &&
                         !excludeRoleCodes.contains(cardRole.getCode()) &&
                         ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
+
                     notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
                 }
             }
@@ -372,6 +440,27 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         } finally {
             tx.end();
         }
+    }
+
+    /**
+     * Simple Factory for create MessageInstance of concreete type,such as FreeMarkerNotificationMessage
+     *
+     * @param templateType
+     * @param text
+     * @return new NotificationMessage
+     */
+    private NotificationMessageBuilder getNotificationMessageBuilder(String templateType, String text) {
+        NotificationMessageBuilder message = null;
+        if (templateType.equals("Groovy")) {
+            message = new GroovyNotificationMessageBuilder(text);
+        }
+        if (templateType.equals("Text")) {
+            message = new TextNotificationMessageBuilder(text);
+        }
+        if (templateType.equals("FreeMarker")) {
+            message = new FreeMarkerNotificationMessageBuilder(text);
+        }
+        return message;
     }
 
     private String getScriptByNotificationType(String processPath, NotificationType type) {
@@ -429,16 +518,32 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             Assignment assignment = (Assignment) parameters.get("assignment");
             Card card = (Card) parameters.get("card");
             String script = (String) parameters.get("script");
-            try {
-                Binding binding = new Binding(parameters);
-                ScriptingProvider.runGroovyScript(script, binding);
-                message.setSubject(binding.getVariable("subject").toString());
-                message.setBody(binding.getVariable("body").toString());
-            } catch (Exception e) {
-                log.warn("Unable to get email subject and body, using defaults", e);
-                message.setSubject(String.format("%s: %s - %s",
-                        (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState()));
-                message.setBody(String.format("Card %s has become %s", card.getDescription(), card.getLocState()));
+            if (script != null) {
+                //Old mechanism to run Groovy scripts for create message
+                try {
+                    Binding binding = new Binding(parameters);
+                    ScriptingProvider.runGroovyScript(script, binding);
+                    message.setSubject(binding.getVariable("subject").toString());
+                    message.setBody(binding.getVariable("body").toString());
+                } catch (Exception e) {
+                    log.warn("Unable to get email subject and body, using defaults", e);
+                    message.setSubject(String.format("%s: %s - %s",
+                            (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState()));
+                    message.setBody(String.format("Card %s has become %s", card.getDescription(), card.getLocState()));
+                }
+            } else {
+                //New mechanism to create message for user
+                NotificationMessageBuilder notificationMessage = (NotificationMessageBuilder) parameters.get("messagetemplate");
+                notificationMessage.setParameters(parameters);
+                try {
+                    message.setSubject(notificationMessage.getSubject());
+                    message.setBody(notificationMessage.getBody());
+                } catch (Exception e) {
+                    log.warn("Unable to get email subject and body, using defaults", e);
+                    message.setSubject(String.format("%s: %s - %s",
+                            (assignment != null ? "New Assignment" : "Notification"), card.getDescription(), card.getLocState()));
+                    message.setBody(String.format("Card %s has become %s", card.getDescription(), card.getLocState()));
+                }
             }
 
             return message;

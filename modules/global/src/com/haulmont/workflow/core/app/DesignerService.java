@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
+import com.haulmont.workflow.core.exception.TemplateGenerationException;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public interface DesignerService {
     void compileDesign(UUID designId) throws DesignCompilationException;
 
     void deployDesign(UUID designId, UUID procId) throws DesignDeploymentException;
+
+    byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException,TemplateGenerationException;
 
     Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages) throws DesignCompilationException;
 }

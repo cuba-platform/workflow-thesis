@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.*;
@@ -76,7 +77,7 @@ public class DesignBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 Set selected = table.getSelected();
                 if (!selected.isEmpty()) {
-                    String id = ((Design)selected.iterator().next()).getId().toString();
+                    String id = ((Design) selected.iterator().next()).getId().toString();
                     openDesigner(id);
                 }
             }
@@ -106,6 +107,7 @@ public class DesignBrowser extends AbstractWindow {
         PopupButton notificationMatrixBtn = getComponent("notificationMatrix");
         notificationMatrixBtn.addAction(new UploadNotificationMatrixAction());
         notificationMatrixBtn.addAction(new ClearNotificationMatrixAction());
+        notificationMatrixBtn.addAction(new DownloadNotificationMatrix());
     }
 
     private void initColumns() {
@@ -332,7 +334,7 @@ public class DesignBrowser extends AbstractWindow {
                         getMessage("confirmNMClear.title"),
                         String.format(getMessage("confirmNMClear.msg"), design.getName()),
                         MessageType.CONFIRMATION,
-                        new Action[] {
+                        new Action[]{
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
@@ -346,6 +348,39 @@ public class DesignBrowser extends AbstractWindow {
                         }
                 );
             }
+        }
+    }
+
+    private class DownloadNotificationMatrix extends AbstractAction {
+        protected DownloadNotificationMatrix() {
+            super("downloadNotificationMatrix");
+        }
+
+        public void actionPerform(Component component) {
+            Set selected = table.getSelected();
+            try {
+                if (!selected.isEmpty()) {
+                    final Design design = (Design) selected.iterator().next();
+                    WebExportDisplay export = new WebExportDisplay(true, false);
+
+                    byte[] bytes = service.getNotificationMatrixTemplate(design.getUuid());
+                    ByteArrayDataProvider array = new ByteArrayDataProvider(bytes);
+                    export.show(array, "NotificationMatrix", ExportFormat.XLS);
+                }
+            } catch (DesignCompilationException e) {
+                showNotification(
+                        getMessage("notification.createTemplateFailed"),
+                        e.getMessage(),
+                        NotificationType.ERROR
+                );
+            } catch (TemplateGenerationException e) {
+                showNotification(
+                        getMessage("notification.createTemplateFailed"),
+                        e.getMessage(),
+                        NotificationType.ERROR
+                );
+            }
+
         }
     }
 }
