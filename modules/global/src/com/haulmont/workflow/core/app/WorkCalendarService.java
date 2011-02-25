@@ -20,4 +20,6 @@ public interface WorkCalendarService {
     Date addInterval(Date startDate, int qty, TimeUnit unit);
 
     Long getWorkDayLengthInMillis();
+
+    Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit);
 }

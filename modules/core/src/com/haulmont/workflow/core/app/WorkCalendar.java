@@ -407,6 +407,80 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
     }
 
+    public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
+        if (startTime.after(endTime))
+            throw new IllegalStateException("Start time cannot be after end time!");
+
+        loadCaches();
+        double duration = 0;
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+
+        Calendar endDay = Calendar.getInstance();
+        endDay.setTime(endTime);
+
+        long timeUnitDuaration = (timeUnit == TimeUnit.DAY) ? getWorkDayLengthInMillis() : timeUnit.getMillis();
+
+        boolean searchingFirstInterval = true;
+
+        for (int i = 0; i < 365; i++) {
+            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
+            if (currentDayCalendarItems == null)
+                currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+            int ciPos = 0;
+            for (CalendarItem ci : currentDayCalendarItems) {
+                ciPos++;
+
+                if (DateUtils.isSameDay(currentDay, endDay)) {
+                    if (ci.isDateInInterval(endTime)) {
+                        if (searchingFirstInterval && DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                            //if necessary interval is in first CI interval
+                            duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
+                        } else {
+                            duration += ci.getDurationFromStart(endTime);
+                        }
+                        return duration / timeUnitDuaration;
+                    }
+                    if (ci.isDateBeforeInterval(endTime)) {
+                        return duration / timeUnitDuaration;
+                    }
+                    if (ciPos == currentDayCalendarItems.size()) {
+                        if (ci.isDateInInterval(startTime)) {
+                            duration = ci.getDurationToEnd(startTime);
+                        } else {
+                            duration += ci.getDuration();
+                        }
+                        return duration / timeUnitDuaration;
+                    }
+                }
+
+                if (searchingFirstInterval) {
+                    //truncate currentDay if we move to next day
+                    if (!DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+                    }
+
+                    if (ci.isDateInInterval(currentDay.getTime())) {
+                        duration += ci.getDurationToEnd(currentDay.getTime());
+                        searchingFirstInterval = false;
+                    } else if (ci.isDateBeforeInterval(currentDay.getTime())) {
+                        duration += ci.getDuration();
+                        searchingFirstInterval = false;
+                    }
+                } else {
+                    duration += ci.getDuration();
+                }
+
+            } //end loop for CalendarItems
+
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+
+        } //end main loop
+
+        return duration / timeUnitDuaration;
+    }
+
     public Date addInterval(Date date, int qty, TimeUnit unit) {
         this.startTime = date;
         Calendar startTimeCalendar = Calendar.getInstance();

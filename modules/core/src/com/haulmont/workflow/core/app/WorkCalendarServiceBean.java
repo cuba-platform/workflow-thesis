@@ -28,4 +28,9 @@ public class WorkCalendarServiceBean implements WorkCalendarService{
         WorkCalendarAPI workCalendarAPI = Locator.lookup(WorkCalendarAPI.NAME);
         return workCalendarAPI.getWorkDayLengthInMillis();
     }
+
+    public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
+        WorkCalendarAPI workCalendarAPI = Locator.lookup(WorkCalendarAPI.NAME);
+        return workCalendarAPI.getIntervalDuration(startTime, endTime, timeUnit);
+    }
 }

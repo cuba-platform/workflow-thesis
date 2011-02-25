@@ -30,4 +30,6 @@ public interface WorkCalendarAPI {
     boolean isDateWorkDay(Date date);
 
     boolean isDateWorkDay(Calendar date);
+
+    Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit);
 }

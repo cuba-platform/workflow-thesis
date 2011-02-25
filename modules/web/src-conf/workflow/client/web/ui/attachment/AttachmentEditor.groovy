@@ -39,20 +39,20 @@ import com.haulmont.workflow.core.entity.CardAttachment
 
 public class AttachmentEditor extends AbstractEditor {
 
-  private Datasource<Attachment> attachmentDs
-  private Datasource<FileDescriptor> fileDs
-  private Button okBtn
-  private TextField nameText
-  private TextField fileNameText
-  private Label extLabel
-  private Label sizeLab
-  private Label createDateLab
-  private FileUploadField uploadField
-  private LookupField attachType
-  private AttachmentType defaultAType
-  private CollectionDatasource attachTypesDs
+  protected Datasource<Attachment> attachmentDs
+  protected Datasource<FileDescriptor> fileDs
+  protected Button okBtn
+  protected TextField nameText
+  protected TextField fileNameText
+  protected Label extLabel
+  protected Label sizeLab
+  protected Label createDateLab
+  protected FileUploadField uploadField
+  protected LookupField attachType
+  protected AttachmentType defaultAType
+  protected CollectionDatasource attachTypesDs
 
-  private boolean needSave
+  protected boolean needSave
 
   public AttachmentEditor(IFrame frame) {
     super(frame)
@@ -139,7 +139,7 @@ public class AttachmentEditor extends AbstractEditor {
     }
   }
 
-  private AttachmentType getDefaultAttachmentType() {
+  protected AttachmentType getDefaultAttachmentType() {
     String defaultAttachmentCode = AppContext.getProperty('cuba.defaultAttachmentType')
     AttachmentType defaultAttachmentType
     if (defaultAttachmentCode != null) {
@@ -162,7 +162,7 @@ public class AttachmentEditor extends AbstractEditor {
     super.commitAndClose();
   }
 
-  private String formatSize(long longSize, int decimalPos) {
+  protected String formatSize(long longSize, int decimalPos) {
         NumberFormat fmt = NumberFormat.getNumberInstance();
         if (decimalPos >= 0) {
             fmt.setMaximumFractionDigits(decimalPos);
@@ -179,7 +179,7 @@ public class AttachmentEditor extends AbstractEditor {
         return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB"));
     }
 
-  private void saveFile() {
+  protected void saveFile() {
     FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME)
     try {
       fss.saveFile(fileDs.getItem(), uploadField.getBytes())
