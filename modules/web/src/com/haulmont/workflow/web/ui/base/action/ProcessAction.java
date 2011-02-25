@@ -56,8 +56,7 @@ public class ProcessAction extends AbstractAction {
         card = (Card) ((Window.Editor) window).getItem();
         final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
 
-        FormManagerChain cachedManagerChain = FormManagerChain.getManagerChain(card, actionName);
-        final FormManagerChain managerChain = cachedManagerChain.clone();
+        final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
         managerChain.setCard(card);
         managerChain.setAssignmentId(assignmentId);
 

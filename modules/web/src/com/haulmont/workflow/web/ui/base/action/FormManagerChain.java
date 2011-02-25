@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -55,7 +56,7 @@ public class FormManagerChain {
         FormManagerChain cached = cache.get(cacheKey);
         if (cached != null) {
             cached.reset();
-            return cached;
+            return cached.clone();
         } else {
             ResourceRepositoryService rr = ServiceLocator.lookup(ResourceRepositoryService.NAME);
             if (rr.resourceExists(resourceName)) {
@@ -131,7 +132,7 @@ public class FormManagerChain {
                     }
 
                     cache.put(cacheKey, managerChain);
-                    return managerChain;
+                    return managerChain.clone();
                 }
             }
 
@@ -142,7 +143,7 @@ public class FormManagerChain {
 
     public FormManagerChain clone() {
         FormManagerChain clonedChain = new FormManagerChain();
-        clonedChain.setCommonParams(getCommonParams());
+        clonedChain.setCommonParams(new HashMap(getCommonParams()));
 
         for (FormManager manager : getManagersAfter()) {
             FormManager clonedManager = manager.clone();
