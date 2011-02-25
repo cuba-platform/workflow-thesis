@@ -86,5 +86,13 @@ var i18nDict = {
 
     "Decision": "Выбор",
     "Decision.yes": "Да",
-    "Decision.no": "Нет"
-};
+    "Decision.no": "Нет",
+
+    ////////////////////////////////
+    ///Messages
+
+    "Saved" : "Сохранено",
+    "Unsaved" : "Не сохранено",
+    "AlertMessage" : "Сообщение",
+    "ChooseName" : "Пожалуйста, введите имя процесса"
+    };

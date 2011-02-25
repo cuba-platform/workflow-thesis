@@ -11,7 +11,7 @@
 
 <!-- WireIt CSS -->
 <link rel="stylesheet" type="text/css" href="../lib/wireit/assets/WireIt.css"/>
-<link rel="stylesheet" type="text/css" href="../lib/wireit/plugins/editor/assets/WireItEditor.css"/>
+<link rel="stylesheet" type="text/css" href="../common/wireiteditor.css"/>
 
 <link rel="stylesheet" type="text/css" href="../common/main.css"/>
 
@@ -71,6 +71,7 @@
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/CombineField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/IntegerField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/js/fields.js"></script>
+<#if locale == "ru"><script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/locals/ru.js"></script></#if>
 
 <!-- wireit-inputex-editor.js -->
 <script type="text/javascript" src="../lib/wireit/plugins/editor/js/BaseEditor.js"></script>

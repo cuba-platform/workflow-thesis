@@ -10,16 +10,28 @@
  */
 
 Wf.Container = function(options, layer) {
+    var initialized=false;
+    var optionsInitialized=false;
     Wf.Container.superclass.constructor.call(this, options, layer);
 
     this.eventFocus.subscribe(this.onContainerFocus, this, true);
     this.eventBlur.subscribe(this.onContainerBlur, this, true);
+    this.form.updatedEvt.subscribe(function(){
+         if(!initialized){
+             initialized=true;
+         }
+         else{
+            layer.eventChanged.fire();
+         }
+    });
+
 };
 
 YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     xtype: "Wf.Container",
     direction :"down",
+
 
     render: function() {
         Wf.Container.superclass.render.call(this);
@@ -29,7 +41,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 		this.ddHandle.appendChild(changeArrow);
 
         YAHOO.util.Event.addListener(changeArrow,"click",this.changeDirection,this,true);
-    },
+     },
 
     initTerminals: function(terminalConfigs) {
         Wf.Container.superclass.initTerminals.call(this, terminalConfigs);
@@ -38,6 +50,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     onContainerFocus: function(eventName, containers) {
         var container = containers[0];
+        container.optionsInitialized=false;
         Wf.OptionFieldsHelper.showOptions(container);
     },
 
@@ -133,6 +146,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
         else if(this.direction="up"){this.direction="down";}
         this.renderInput();
         this.renderOutputs();
+        this.layer.eventChanged.fire();
     }
 
 });

@@ -22,8 +22,8 @@ YAHOO.util.Event.onDOMReady(function() {
 
         wfLanguage.adapter = WireIt.WiringEditor.adapters.WfAdapter;
 
-        var editor = new Wf.Editor(wfLanguage);
-        editor.accordionView.openPanel(1);
+        Wf.editor = new Wf.Editor(wfLanguage);
+        Wf.editor.accordionView.openPanel(1);
 
     } catch(ex) {
         console.log(ex);
@@ -33,3 +33,23 @@ YAHOO.util.Event.onDOMReady(function() {
 window.onload = (function() {
     i18n.translateNodes();
 });
+window.onbeforeunload=(function(){
+	if (!Wf.editor.isSaved()){
+        if(window.confirm("Сохранить изменения?")){
+            var value = Wf.editor.getValue();
+            while(value.name === "") {
+       	        value.name = prompt(i18nDict.ChooseName);
+                if (value.name==null){
+                    valee.name="Unnamed "+ new Date()
+                }
+            }
+            value.working.properties.name=value.name;
+
+		Wf.editor.tempSavedWiring = {name: value.name, working: value.working, language: Wf.editor.options.languageName };
+        Wf.editor.adapter.saveWiring(Wf.editor.tempSavedWiring, {
+       	    scope: Wf.editor
+    	});
+        }
+    }
+});
+

@@ -276,7 +276,7 @@ var wfLanguage = {
 
                 "terminals": [
                     {
-                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 100, "top": -15},
+                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     }
                 ]
@@ -307,17 +307,17 @@ var wfLanguage = {
                 ],
                 "terminals": [
                     {
-                        "direction": [0,-1], "offsetPosition": {"left": 7, "top": -17 }, "name": "in",
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in",
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     },
                     {
-                        "direction": [-1,0], "offsetPosition": {"left": -15, "top": 5 }, "name": "yes",
-                        "label": "msg://Decision.yes", "labelPosition": {"left": -15, "top": 25},
+                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "yes",
+                        "label": "msg://Decision.yes", "labelPosition": {"left": -18, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [1,0], "offsetPosition": {"left": 29, "top": 5 }, "name": "no",
-                        "label": "msg://Decision.no", "labelPosition": {"left": 40, "top": 25},
+                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "no",
+                        "label": "msg://Decision.no", "labelPosition": {"left": 45, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]

@@ -31,11 +31,11 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         var buttonsDiv = WireIt.cn('div', {className: className}, {float : "left"}, null);
         this.bodyEl.appendChild(buttonsDiv);
 
-        var addBtn = WireIt.cn('a', {href: "#", className: className}, null, i18n.get('MultiOutContainer.add'));
+        var addBtn = WireIt.cn('div', {className: 'addButton'}, null, null);
         buttonsDiv.appendChild(addBtn);
         YAHOO.util.Event.addListener(addBtn, "click", this.addOutput, this, true);
 
-        var delBtn = WireIt.cn('a', {href: "#", className: className}, null, i18n.get('MultiOutContainer.delete'));
+        var delBtn = WireIt.cn('div', { className: 'deleteButton'}, null, null);
         buttonsDiv.appendChild(delBtn);
         YAHOO.util.Event.addListener(delBtn, "click", this.deleteOutput, this, true);
         /*
@@ -79,8 +79,10 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
             topPos=this.getOutputs()[0].offsetPosition.top;
         }
 
-        if (this.getTerminal(name))
-            return;
+        if (this.getTerminal(name)){
+         this.closeNewOutEditor();
+         return;
+        }
 
         this.addTerminal({
             "name": name, "direction": [0,1],
@@ -92,6 +94,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.renderOutputs();
 
         this.eventAddOutput.fire(name);
+        this.layer.eventChanged.fire();
     },
 
 
@@ -182,6 +185,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.renderOutputs();
 
         this.eventDelOutput.fire(name);
+        this.layer.eventChanged.fire();
     },
 
     getValue: function() {

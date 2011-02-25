@@ -76,5 +76,12 @@ var i18nDict = {
 
     "Decision": "Decision",
     "Decision.yes": "Yes",
-    "Decision.no": "No"
+    "Decision.no": "No",
+    ////////////////////////////////
+    ///Messages
+
+    "Saved" : "Saved",
+    "Unsaved" : "Save failure",
+    "AlertMessage" : "Message",
+    "ChooseName" : "Please choose a name"
 };

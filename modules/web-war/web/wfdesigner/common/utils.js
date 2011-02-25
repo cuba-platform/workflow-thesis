@@ -12,12 +12,16 @@
 WireIt.Terminal.prototype.wireConfig = {
     xtype: "Wf.BezierArrowWire",
     width: 2,
-    borderwidth: 0
+    borderwidth: 0,
+    color: 'rgb(55,55,56)',
+    bordercolor: '#373738'
 
 };
 
 
 WireIt.Terminal.prototype.editingWireConfig = WireIt.Terminal.prototype.wireConfig;
+
+WireIt.Container.prototype.resizable=false;
 
 var Wf = {
 
@@ -132,9 +136,8 @@ Wf.Editor = function(options) {
 
 };
 
-YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor);
-
-Wf.Editor.prototype.renderButtons = function() {
+YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
+    renderButtons : function() {
     var toolbar = YAHOO.util.Dom.get('toolbar');
 
     var saveButton = new YAHOO.widget.Button({ label:"Save", id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
@@ -142,7 +145,52 @@ Wf.Editor.prototype.renderButtons = function() {
 
     var helpButton = new YAHOO.widget.Button({ label:"Help", id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
     helpButton.on("click", this.onHelp, this, true);
-};
+    },
+
+    onSave : function(){
+      var value = this.getValue();
+
+    	if(value.name === "") {
+       	    this.alert(i18nDict.ChooseName);
+       	    return;
+    	}
+
+		this.tempSavedWiring = {name: value.name, working: value.working, language: this.options.languageName };
+        this.adapter.saveWiring(this.tempSavedWiring, {
+       	    success: this.saveModuleSuccess,
+       	    failure: this.saveModuleFailure,
+       	    scope: this
+    	});
+    },
+    saveModuleSuccess: function(o) {
+
+	   this.markSaved();
+       this.alert(i18nDict.Saved);
+    },
+    renderAlertPanel: function() {
+
+ 	 /**
+     * @property alertPanel
+     * @type {YAHOO.widget.Panel}
+     */
+		this.alertPanel = new YAHOO.widget.Panel('WiringEditor-alertPanel', {
+         fixedcenter: true,
+         draggable: true,
+         width: '300px',
+         visible: false,
+         modal: true
+      });
+      this.alertPanel.setHeader(i18nDict.AlertMessage);
+      this.alertPanel.setBody("<div id='alertPanelBody'></div><button id='alertPanelButton'>Ok</button>");
+      this.alertPanel.render(document.body);
+		YAHOO.util.Event.addListener('alertPanelButton','click', function() {
+			this.alertPanel.hide();
+		}, this, true);
+	}
+});
+
+
+
 
 Wf.Editor.prototype.checkAutoLoad = function() {
     this.loadPipe("default");
@@ -171,10 +219,20 @@ Wf.OptionFieldsHelper.showOptions = function(container) {
         var groupParams = { parentEl: optionsParentEl, fields: container.optFields, collapsible: false };
         container.optionsForm = new inputEx.Group(groupParams);
         container.optionsForm.setContainer(container);
+        container.optionsForm.updatedEvt.subscribe(
+                function() {
+                    if(!container.optionsInitialized){
+                        container.optionsInitialized=true;
+                    }
+                    else{
+                        container.layer.eventChanged.fire();
+                    }
+                });
 
         for(var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
             var field = container.optionsForm.inputs[i];
             field.setContainer(container);
+
         }
 
         if (container.optionsValue) {

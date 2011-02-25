@@ -14,6 +14,11 @@ Wf.BezierArrowWire = function(terminal1, terminal2, parentEl, options){
 };
 YAHOO.lang.extend(Wf.BezierArrowWire,WireIt.BezierArrowWire,{
    xtype: "Wf.BezierArrowWire",
+   width: 2,
+   borderwidth: 0,
+   color: 'rgb(55,55,56)',
+   bordercolor: '#373738',
+
 
     /**
     * Attempted bezier drawing method for arrows
