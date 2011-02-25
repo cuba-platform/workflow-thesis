@@ -35,7 +35,7 @@ window.onload = (function() {
 });
 window.onbeforeunload=(function(){
 	if (!Wf.editor.isSaved()){
-        if(window.confirm("Сохранить изменения?")){
+        if(window.confirm(i18nDict.SaveChanges)){
             var value = Wf.editor.getValue();
             while(value.name === "") {
        	        value.name = prompt(i18nDict.ChooseName);

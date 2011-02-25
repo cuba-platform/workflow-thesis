@@ -83,5 +83,6 @@ var i18nDict = {
     "Saved" : "Saved",
     "Unsaved" : "Save failure",
     "AlertMessage" : "Message",
-    "ChooseName" : "Please choose a name"
+    "ChooseName" : "Please choose a name",
+    "SaveChanges" : "Сохранить изменения?"
 };
