@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
