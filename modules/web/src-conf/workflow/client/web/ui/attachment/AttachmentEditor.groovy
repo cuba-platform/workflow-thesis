@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.UserSessionClient
 import java.text.NumberFormat
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 import com.haulmont.workflow.core.entity.CardAttachment
+import java.text.DecimalFormat
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -112,8 +113,11 @@ public class AttachmentEditor extends AbstractEditor {
                 if (StringUtils.isBlank(nameText.getValue().toString()))
                   nameText.setValue(uploadField.getFileName())
 
+                DecimalFormat formatter = new DecimalFormat("###,###,###,###"); 
+
                 extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()))
-                sizeLab.setValue(formatSize(uploadField.getBytes().length, 0) + " (" + uploadField.getBytes().length + ")")
+                sizeLab.setValue(formatSize(uploadField.getBytes().length, 0) + " (" + formatter.format(uploadField.getBytes().length) +
+                        " " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")")
                 FileDescriptor file = getDsContext().get("fileDs").getItem()
                 if (file)
                   file.size = uploadField.getBytes().length 
