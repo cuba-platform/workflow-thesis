@@ -87,6 +87,8 @@ var i18nDict = {
     "Decision": "Выбор",
     "Decision.yes": "Да",
     "Decision.no": "Нет",
+    "Fork" : "Ветвление",
+    "Join" : "Объединение",
 
     ////////////////////////////////
     ///Messages

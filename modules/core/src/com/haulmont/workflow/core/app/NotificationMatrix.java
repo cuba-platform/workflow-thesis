@@ -93,7 +93,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
             HSSFCell cell = row.getCell(0);
             HSSFCell cellCode = row.getCell(1);
-
+            if((cell==null)||(cellCode==null)){
+                break;
+            }
             String state = null;
             String code = null;
 

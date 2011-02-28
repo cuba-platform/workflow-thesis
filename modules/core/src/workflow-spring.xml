@@ -28,6 +28,8 @@
                 <entry key="Assignment" value="com.haulmont.workflow.core.app.design.modules.AssignmentModule"/>
                 <entry key="ParallelAssignment" value="com.haulmont.workflow.core.app.design.modules.ParallelAssignmentModule"/>
                 <entry key="Decision" value="com.haulmont.workflow.core.app.design.modules.DecisionModule"/>
+                <entry key="Fork" value="com.haulmont.workflow.core.app.design.modules.ForkModule"/>
+                <entry key="Join" value="com.haulmont.workflow.core.app.design.modules.JoinModule"/>
             </map>
         </property>
         <property name="formCompiler" ref="workflow_FormCompiler"/>

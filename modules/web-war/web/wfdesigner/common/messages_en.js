@@ -77,6 +77,8 @@ var i18nDict = {
     "Decision": "Decision",
     "Decision.yes": "Yes",
     "Decision.no": "No",
+    "Fork" : "Fork",
+    "Join" : "Join",
     ////////////////////////////////
     ///Messages
 

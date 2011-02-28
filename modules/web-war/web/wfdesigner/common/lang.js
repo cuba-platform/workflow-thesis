@@ -322,6 +322,72 @@ var wfLanguage = {
                     }
                 ]
             }
+        },
+        {
+            "name" : "Fork",
+            "label" : "msg://Fork",
+            "category" : "common",
+            "container" : {
+                "xtype":"Wf.ImageContainer",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-Fork",
+                "icon": "../common/res/icons/fork_icon.png",
+                "image": "../common/res/icons/fork.png",
+                "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "value": ""
+                    }
+                ],
+                "terminals": [
+                    {
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in",
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    },
+                    {
+                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "out1",
+
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    },
+                    {
+                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "out2",
+
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    }
+                ]
+            }
+        },
+        {
+            "name" : "Join",
+            "label" : "msg://Join",
+            "category" : "common",
+            "container" : {
+                "xtype":"Wf.ImageContainer",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-Fork",
+                "icon": "../common/res/icons/join_icon.png",
+                "image": "../common/res/icons/join.png",
+                "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "value": ""
+                    }
+
+                ],
+                "terminals": [
+                    {
+                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": 0 }, "name": "out",
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    },
+                    {
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in1",
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    }
+                ]
+            }
         }
+
     ]
 };

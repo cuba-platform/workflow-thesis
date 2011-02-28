@@ -174,7 +174,7 @@ public class DesignCompiler {
             for (Element transition : transitions) {
                 String stateKey = transition.attributeValue("to");
                 String stateName = URLDecoder.decode(elementKey + '.' + stateKey, "UTF-8");
-                states.put(elementKey + '.' + stateKey, stateName);
+                states.put(elementKey+", "+elementKey + '.' + stateKey, stateName);
             }
 
         }
@@ -239,6 +239,7 @@ public class DesignCompiler {
             }
         }
         Iterator<Row> rowIt = mail.rowIterator();
+        rowIt.next();
         rowIt.next();
         Iterator<String> roleIt = rolesList.iterator();
         while(rowIt.hasNext()){
