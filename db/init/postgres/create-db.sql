@@ -223,8 +223,10 @@ create table WF_ATTACHMENTTYPE (
     COMMENT varchar(1000),
     ISDEFAULT boolean,
     CODE varchar(200),
+    ISSYSTEM boolean,
     primary key (ID)
 )^
+alter table WF_ATTACHMENTTYPE add constraint WF_ATTACHMENTTYPE_UNIQ_CODE unique (CODE, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 

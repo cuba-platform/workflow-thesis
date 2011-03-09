@@ -15,6 +15,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 
@@ -36,6 +37,9 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
 
     @Column(name = "ISDEFAULT")
     private Boolean isDefault = false;
+
+    @Column(name = "ISSYSTEM")
+    private Boolean isSystem = false;
 
     public String getName() {
         return name;
@@ -71,9 +75,13 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
 
     @MetaProperty
     public String getLocName() {
-        if (this.code != null)
-            return MessageProvider.getMessage(getClass(), this.code);
-        else
+        if (StringUtils.isNotBlank(this.name))
             return name;
+        else
+            return MessageProvider.getMessage(getClass(), this.code);
+    }
+
+    public Boolean getIsSystem() {
+        return isSystem;
     }
 }
