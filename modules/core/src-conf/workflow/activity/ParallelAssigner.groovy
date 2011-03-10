@@ -83,6 +83,8 @@ public class ParallelAssigner extends MultiAssigner {
       assignmentsCardRoleMap.put(assignment, cr)
     }
 
+    createStages(master);
+
     notificationMatrix.notifyByCardAndAssignments(card, assignmentsCardRoleMap, notificationState);
     return true
   }
@@ -137,6 +139,8 @@ public class ParallelAssigner extends MultiAssigner {
       }
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
+      Card card = findCard(execution)
+      finishStages(card, execution, signalName)
       afterSignal(execution, signalName, parameters)
     }
   }
