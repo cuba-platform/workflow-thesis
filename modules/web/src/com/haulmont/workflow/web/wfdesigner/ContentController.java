@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 23.12.10 14:58
+ *
+ * Author: Nikolay Gorodnov
+ * Created: 11.03.2011 11:23:29
  *
  * $Id$
  */
@@ -12,22 +12,25 @@ package com.haulmont.workflow.web.wfdesigner;
 
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.sys.StaticContentServlet;
+import com.haulmont.cuba.web.controllers.StaticContentController;
 import freemarker.cache.WebappTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @deprecated Need to use {@link com.haulmont.workflow.web.wfdesigner.ContentController} */
-public class StaticServlet extends StaticContentServlet {
-
+@Controller
+@RequestMapping(value = {"/wfdesigner/**", "/wfdesigner/common/**", "/wfdesigner/workflow/**"})
+public class ContentController extends StaticContentController {
     public class FreemarkerTemplateFile implements LookupResult {
 
         protected long lastModified;
@@ -42,13 +45,13 @@ public class StaticServlet extends StaticContentServlet {
             this.req = req;
         }
 
-        public void respondGet(HttpServletResponse resp) throws IOException {
+        public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             setHeaders(resp);
 
             Configuration configuration = getFreemarkerConfiguration();
-            WebappTemplateLoader loader = new WebappTemplateLoader(getServletContext());
+            WebappTemplateLoader loader = new WebappTemplateLoader(req.getSession().getServletContext());
             configuration.setTemplateLoader(loader);
-            Template template = configuration.getTemplate(getPath(req));
+            Template template = configuration.getTemplate(getPath(this.req));
 
             try {
                 template.process(createTemplateParams(), resp.getWriter());
@@ -75,7 +78,7 @@ public class StaticServlet extends StaticContentServlet {
             return configuration;
         }
 
-        public void respondHead(HttpServletResponse resp) {
+        public void respondHead(HttpServletRequest req, HttpServletResponse resp) {
         }
 
         public long getLastModified() {
@@ -87,7 +90,30 @@ public class StaticServlet extends StaticContentServlet {
             resp.setContentType(mimeType);
             resp.setCharacterEncoding("UTF-8");
         }
+    }
 
+    @Override
+    public String handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (checkUserSession(request, response)) {
+            return super.handleGetRequest(request, response);
+        }
+        return null;
+    }
+
+    @Override
+    public String handlePostRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (checkUserSession(request, response)) {
+            return super.handlePostRequest(request, response);
+        }
+        return null;
+    }
+
+    @Override
+    public String handleHeadRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (checkUserSession(request, response)) {
+            return super.handleHeadRequest(request, response);
+        }
+        return null;
     }
 
     @Override
@@ -106,5 +132,15 @@ public class StaticServlet extends StaticContentServlet {
             return new FreemarkerTemplateFile(lastModified, mimeType, req);
         else
             return super.createLookupResult(req, lastModified, mimeType, contentLength, acceptsDeflate, url);
+    }
+
+    protected boolean checkUserSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("userSessionId") != null) {
+            return true;
+        } else {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return false;
+        }
     }
 }

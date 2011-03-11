@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.workflow.core.app.DesignerService;
@@ -146,9 +147,11 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     private void openDesigner(String id) {
-        StringBuilder url = new StringBuilder(App.getInstance().getURL().toString());
         String designerUrl = ConfigProvider.getConfig(WfConfig.class).getDesignerUrl();
-        url.append(designerUrl).append("?id=").append(id);
+        StringBuilder url = new StringBuilder();
+        url.append(ControllerUtils.getControllerURL(designerUrl))
+                .append("?id=")
+                .append(id);
         String target = String.valueOf(Math.round(Math.random() * 100));
         App.getInstance().getAppWindow().open(new ExternalResource(url.toString()), target);
     }

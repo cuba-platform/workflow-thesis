@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+/** @deprecated Need to use {@link ActionController} */
 public class ActionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 579462138595504996L;
