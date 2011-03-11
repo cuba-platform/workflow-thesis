@@ -7,6 +7,7 @@
 	
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="workflow-core.jar"/>
+	<property name="module-test.jar" value="workflow-test.jar"/>
 
     <property file="${root.dir}/build-script/build.properties"/>
     <import file="${root.dir}/build-script/build-inc-mod.xml"/>
@@ -58,6 +59,9 @@
         <echo>==> building ${project.dir} ${module.name}</echo>
         <mkdir dir="${build.dir}"/>
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
+            <include name="**/*"/>
+        </jar>
+        <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module-test.jar}">
             <include name="**/*"/>
         </jar>
         <mkdir dir="${build.dir}/conf"/>

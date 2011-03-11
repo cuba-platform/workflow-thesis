@@ -23,16 +23,10 @@ import java.util.List;
 public abstract class WfTestCase extends CubaTestCase {
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        System.out.println(Locator.isInTransaction());
-    }
-
-    @Override
-    protected void initAppContext() {
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(new String[]
-                {"cuba-spring.xml", "workflow-spring.xml", "test-spring.xml"});
-        AppContext.setApplicationContext(appContext);
+    protected List<String> getTestAppContextFiles() {
+        List<String> files = super.getTestAppContextFiles();
+        files.add("workflow-spring.xml");
+        return files;
     }
 
     @Override
