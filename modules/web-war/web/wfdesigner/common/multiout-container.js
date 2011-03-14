@@ -28,7 +28,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
         var className = "Wf-MultiOutContainer-link";
 
-        var buttonsDiv = WireIt.cn('div', {className: className}, {float : "left"}, null);
+        var buttonsDiv = WireIt.cn('div', {className: className}, {float : "none"}, null);
         this.bodyEl.appendChild(buttonsDiv);
 
         var addBtn = WireIt.cn('div', {className: 'addButton'}, null, null);

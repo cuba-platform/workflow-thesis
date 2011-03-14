@@ -45,8 +45,22 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     initTerminals: function(terminalConfigs) {
         Wf.Container.superclass.initTerminals.call(this, terminalConfigs);
+        this.renderInput();
+        this.renderOutputs();
         Wf.initTerminalLabels(this, terminalConfigs);
     },
+
+       /**
+    * Return the config of this container.
+    * @method getConfig
+    */
+   getConfig: function() {
+      return {
+			position: this.getXY(),
+			xtype: this.xtype,
+			direction: this.direction
+		};
+   },
 
     onContainerFocus: function(eventName, containers) {
         var container = containers[0];

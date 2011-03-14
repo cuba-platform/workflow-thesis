@@ -83,6 +83,7 @@
 
 <script type="text/javascript" src="../common/messages_${locale}.js"></script>
 
+<script type="text/javascript" src="../common/Wf.js"></script>
 <script type="text/javascript" src="../common/utils.js"></script>
 <script type="text/javascript" src="../common/output-select.js"></script>
 <script type="text/javascript" src="../common/script-select.js"></script>

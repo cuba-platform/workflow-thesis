@@ -23,7 +23,7 @@ WireIt.Terminal.prototype.editingWireConfig = WireIt.Terminal.prototype.wireConf
 
 WireIt.Container.prototype.resizable=false;
 
-var Wf = {
+Wf = {
 
     createProcIdParam: function() {
             var s = window.location.search;
@@ -121,7 +121,7 @@ var Wf = {
                     }
                     style[prop] = val;
                 }
-                var labelDiv = WireIt.cn('div', {class:"terminalLabel",name:tc.label}, style, tc.label);
+                var labelDiv = WireIt.cn( 'div', { 'class':'terminalLabel', 'name':tc.label } , style, tc.label);
                 container.bodyEl.appendChild(labelDiv);
             }
         }
@@ -140,10 +140,10 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
     renderButtons : function() {
     var toolbar = YAHOO.util.Dom.get('toolbar');
 
-    var saveButton = new YAHOO.widget.Button({ label:"Save", id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
+    var saveButton = new YAHOO.widget.Button({ label:i18nDict.Save, id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
     saveButton.on("click", this.onSave, this, true);
 
-    var helpButton = new YAHOO.widget.Button({ label:"Help", id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
+    var helpButton = new YAHOO.widget.Button({ label:i18nDict.Help, id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
     helpButton.on("click", this.onHelp, this, true);
     },
 
@@ -168,8 +168,7 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
        this.alert(i18nDict.Saved);
     },
     renderAlertPanel: function() {
-
- 	 /**
+    /**
      * @property alertPanel
      * @type {YAHOO.widget.Panel}
      */
@@ -181,15 +180,57 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
          modal: true
       });
       this.alertPanel.setHeader(i18nDict.AlertMessage);
-      this.alertPanel.setBody("<div id='alertPanelBody'></div><button id='alertPanelButton'>Ok</button>");
+      this.alertPanel.setBody("<div id='alertPanelBody'></div><button id='alertPanelButton'>OK</button>");
       this.alertPanel.render(document.body);
 		YAHOO.util.Event.addListener('alertPanelButton','click', function() {
 			this.alertPanel.hide();
 		}, this, true);
-	}
+	},
+
+    criticalAlert: function(txt) {
+		if(!this.criticalAlertPanel){ this.renderCriticalAlertPanel(); }
+		YAHOO.util.Dom.get('alertPanelBody').innerHTML = txt;
+		this.criticalAlertPanel.show();
+	},
+
+	renderCriticalAlertPanel: function(){
+	    	this.criticalAlertPanel = new YAHOO.widget.Panel('WiringEditor-alertPanel', {
+         fixedcenter: true,
+         draggable: true,
+         width: '300px',
+         visible: false,
+         modal: true,
+         close: false
+      });
+      this.criticalAlertPanel.setHeader(i18nDict.AlertMessage);
+      this.criticalAlertPanel.setBody("<div id='alertPanelBody'></div>");
+      this.criticalAlertPanel.render(document.body);
+	},
+
+      /**
+	  * Start the loading of the pipes using the adapter
+	  * @method load
+	  */
+	 load: function() {
+        if ( (navigator.appName.indexOf("Explorer")) != -1 ){
+            this.criticalAlert(i18nDict.NotSupportedBrowser);
+
+            return;
+        }
+
+	    this.adapter.listWirings({language: this.options.languageName},{
+			success: function(result) {
+				this.onLoadSuccess(result);
+			},
+			failure: function(errorStr) {
+				this.alert("Unable to load the wirings: "+errorStr);
+			},
+			scope: this
+		});
+
+	 }
+
 });
-
-
 
 
 Wf.Editor.prototype.checkAutoLoad = function() {

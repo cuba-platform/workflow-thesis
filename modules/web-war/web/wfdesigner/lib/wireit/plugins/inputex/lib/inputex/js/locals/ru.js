@@ -20,7 +20,7 @@
 
 
    msgs.cancelEditor = "Отмена";
-   msgs.okEditor = "Ок";
+   msgs.okEditor = "ОК";
    msgs.listAddLink = "Добавить";
    msgs.listRemoveLink = "Удалить";
    // for YUI loader

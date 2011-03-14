@@ -259,8 +259,7 @@ div.WireIt-Container-closebutton {
     width:16px;
     display: inline-block;
     letter-spacing: normal;
-    white-space: normal;
-    vertical-align: middle;
+
  }
 .Wf-MultiOutContainer-link .deleteButton{
     background:url('./res/icons/delete.png') no-repeat;
@@ -269,8 +268,7 @@ div.WireIt-Container-closebutton {
     width:16px;
     display: inline-block;
     letter-spacing: normal;
-    white-space: normal;
-    vertical-align: middle;
+
 }
 div.WireIt-Terminal {
     background: url("./res/icons/terminals.png") no-repeat scroll 0 0 transparent;
@@ -286,4 +284,7 @@ legend.inputEx-Group-legend {
 }
 a.inputEx-List-link {
     color: black;
+}
+.bd #alertPanelButton {
+   padding: 3px 5px;
 }

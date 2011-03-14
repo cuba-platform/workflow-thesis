@@ -94,3 +94,19 @@ div.Wf-Container-change {
     top: 4px;
     width: 16px;
 }
+
+.yui-accordion-content, .yui-accordion-content #optionsForm,.yui-accordion-content #propertiesForm{
+    margin-left:5px;
+    margin-right:5px;
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.inputEx-Button {
+    padding-left:3px;
+    padding-right:3px;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin-left:3px;
+    margin-right:0;
+}
