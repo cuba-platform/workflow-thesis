@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping(value = {"/wfdesigner/common/action/*", "/wfdesigner/workflow/action/*"})
+@RequestMapping("/wfdesigner/*/action/*.json")
 public class ActionController {
 
     protected Log log = LogFactory.getLog(getClass());

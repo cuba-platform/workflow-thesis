@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value = {"/wfdesigner/**", "/wfdesigner/common/**", "/wfdesigner/workflow/**"})
+@RequestMapping("/wfdesigner/**")
 public class ContentController extends StaticContentController {
     public class FreemarkerTemplateFile implements LookupResult {
 
