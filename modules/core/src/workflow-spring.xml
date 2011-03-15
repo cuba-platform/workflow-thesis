@@ -15,7 +15,7 @@
 
     <!-- Various beans -->
 
-    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.workflow.core.sys.WorkingTimeBetweenQueryMacroHandler" 
+    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.workflow.core.sys.querymacro.WorkingTimeBetweenQueryMacroHandler"
           scope="prototype"/>
 
     <bean id="base_workflow_DesignCompiler" abstract="true"

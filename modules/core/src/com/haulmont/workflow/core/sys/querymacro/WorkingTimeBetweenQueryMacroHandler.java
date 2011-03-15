@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.core.sys;
+package com.haulmont.workflow.core.sys.querymacro;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.sys.TimeBetweenQueryMacroHandler;
+import com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
 import com.haulmont.workflow.core.global.TimeUnit;
 import org.apache.commons.lang.time.DateUtils;
