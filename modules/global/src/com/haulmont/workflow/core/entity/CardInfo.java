@@ -68,7 +68,7 @@ public class CardInfo extends BaseUuidEntity implements SoftDelete {
     @Column(name = "ACTIVITY", length = 255)
     private String activity;
 
-    @Column(name = "DESCRIPTION", length = 500)
+    @Column(name = "DESCRIPTION", length = 100000)
     private String description;
 
     public String getDeletedBy() {
