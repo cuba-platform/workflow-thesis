@@ -260,7 +260,8 @@ public class CardSend extends AbstractWindow {
                 if (user != null) {
                     ProcRole procRole = cardRole.getProcRole();
                     if (procRole != null && !alreadyAdded(user)) {
-                        options.add(procRole.getName());
+                        if(!options.contains(procRole.getName()))
+                           options.add(procRole.getName());
                     }
                 }
             }
