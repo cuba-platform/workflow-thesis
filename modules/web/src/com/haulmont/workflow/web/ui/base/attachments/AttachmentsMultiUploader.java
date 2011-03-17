@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
@@ -45,7 +46,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     private boolean isUploading = false;
 
-    private CollectionDatasource attachTypesDs, filesDs;
+    private CollectionDatasourceImpl attachTypesDs, filesDs;
     private AttachmentType defaultAttachType;
 
     public AttachmentsMultiUploader(IFrame frame) {
@@ -108,14 +109,28 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachDs = uploadsTable.getDatasource();
         attachDs.refresh();
 
-//        labelProgress = getComponent("fileProgress");
-
         okBtn = getComponent("windowActions.windowCommit");
-        delBtn = getComponent("removeAttachBtn");
         cancelBtn = getComponent("windowActions.windowClose");
 
-        TableActionsHelper helper = new TableActionsHelper(this, uploadsTable);
-        helper.createRemoveAction();
+        delBtn = getComponent("removeAttachBtn");
+        delBtn.setAction(new AbstractAction("actions.Remove") {
+            public void actionPerform(Component component) {
+                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                for (Object item : uploadsTable.getSelected()) {
+                    attachDs.excludeItem((Entity) item);
+
+                    FileDescriptor fDesc = ((Attachment) item).getFile();
+                    filesDs.removeItem(fDesc);
+
+                    UUID fileId = descriptors.get(fDesc);
+                    try {
+                        uploadService.deleteFile(fileId);
+                    } catch (FileStorageException ignored) { }
+                    descriptors.remove(fDesc);
+                }
+                uploadsTable.refresh();
+            }
+        });
 
         uploadField = getComponent("multiUpload");
         uploadField.setCaption(getMessage("upload"));
@@ -161,8 +176,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
                 FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
-                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
 
+                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
                     FileDescriptor fDesc = uploader.getFileDescriptor(upload.getKey(), upload.getValue());
                     filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
@@ -179,7 +194,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                         attach.setAttachType(defaultAttachType);
 
                     descriptors.put(fDesc, upload.getKey());
-                    attachDs.addItem(attach);
+                    attachDs.includeItem(attach);
                 }
                 uploads.clear();
                 uploadsTable.refresh();
@@ -207,7 +222,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
-        ((AttachmentUploadDatasource) attachDs).setModified(false);
         if (commit()) {
             if (needSave) {
                 saveFile();

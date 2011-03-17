@@ -7,12 +7,10 @@
 
     <dsContext>
         <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment"
-                              view="attachments-browse">
-            <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentUploadDatasource</datasourceClass>
-        </collectionDatasource>
-        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="_local">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource</datasourceClass>
-        </collectionDatasource>
+                              view="attachments-browse" refreshMode="NEVER"/>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
+                              view="_local" refreshMode="NEVER"/>
+
         <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
                 select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault desc
@@ -25,7 +23,7 @@
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
             <hbox height="30" spacing="true">
                 <multiupload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
-                <button id="removeAttachBtn" action="uploadsTable.remove" icon="icons/remove.png"/>
+                <button id="removeAttachBtn" icon="icons/remove.png"/>
                 <label value="msg://setAttachmentsType"/>
                 <lookupField id="attachTypeCombo" editable="true"/>
             </hbox>
