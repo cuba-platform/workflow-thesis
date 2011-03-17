@@ -37,6 +37,7 @@ import java.text.NumberFormat
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 import com.haulmont.workflow.core.entity.CardAttachment
 import java.text.DecimalFormat
+import com.haulmont.cuba.core.app.FileUploadService
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -106,21 +107,24 @@ public class AttachmentEditor extends AbstractEditor {
 
               uploadSucceeded: {Event event ->
                 String fileName = uploadField.getFileName()
-               
+
                 fileNameText.setValue(fileName)
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
 
                 if (StringUtils.isBlank(nameText.getValue().toString()))
                   nameText.setValue(uploadField.getFileName())
 
-                DecimalFormat formatter = new DecimalFormat("###,###,###,###"); 
+                DecimalFormat formatter = new DecimalFormat("###,###,###,###");
+
+                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                File tmpFile = uploadService.getFile(uploadField.getFileId());
 
                 extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()))
-                sizeLab.setValue(formatSize(uploadField.getBytes().length, 0) + " (" + formatter.format(uploadField.getBytes().length) +
+                sizeLab.setValue(formatSize(tmpFile.length(), 0) + " (" + formatter.format(tmpFile.length()) +
                         " " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")")
-                FileDescriptor file = getDsContext().get("fileDs").getItem()
-                if (file)
-                  file.size = uploadField.getBytes().length 
+                FileDescriptor fileDescriptor = getDsContext().get("fileDs").getItem()
+                if (fileDescriptor)
+                  fileDescriptor.size = tmpFile.length()
                 createDateLab.setValue(TimeProvider.currentTimestamp())
 
                 okBtn.setEnabled(true)
@@ -145,7 +149,7 @@ public class AttachmentEditor extends AbstractEditor {
 
   protected AttachmentType getDefaultAttachmentType() {
     String defaultAttachmentCode = AppContext.getProperty('cuba.defaultAttachmentType')
-    AttachmentType defaultAttachmentType
+    AttachmentType defaultAttachmentType = null
     if (defaultAttachmentCode != null) {
       attachTypesDs.getItemIds().each{UUID itemId ->
         AttachmentType attachmentType = attachTypesDs.getItem(itemId)
@@ -184,9 +188,13 @@ public class AttachmentEditor extends AbstractEditor {
     }
 
   protected void saveFile() {
-    FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME)
+    FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME)
+    FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
     try {
-      fss.saveFile(fileDs.getItem(), uploadField.getBytes())
+        UUID fileId = uploadField.getFileId();
+        File file = uploadService.getFile(fileId);
+        fss.putFile(fileDs.getItem(), file);
+        uploadService.deleteFile(fileId);
     } catch (FileStorageException e) {
       throw new RuntimeException(e)
     }
