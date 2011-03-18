@@ -188,6 +188,10 @@ public class CardRolesFrame extends AbstractFrame {
                 if (entity != null) {
                     for(Object item: entity) {
                         actorActionsFieldsMap.remove(item);
+                        CardRole cardRole = (CardRole) item;
+                        if (cardRole.getUser() != null) {
+                            refreshFieldsWithRole(cardRole);
+                        }
                     }
                 }
             }
@@ -233,6 +237,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                 cardRoleField = new CardRoleField();
                 actorActionsFieldsMap.put(cardRole, cardRoleField.initField(cardRole, cardRole.getUser()));
+                refreshFieldsWithRole(cardRole);
 
                 return cardRoleField;
             }
@@ -748,6 +753,15 @@ public class CardRolesFrame extends AbstractFrame {
             cardRoleField.setEditable(editable);
         }
     }
+    
+    private void refreshFieldsWithRole(CardRole cardRole) {
+        for (CardRole cr : actorActionsFieldsMap.keySet()) {
+            if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
+                CardRoleField cardRoleField = actorActionsFieldsMap.get(cr);
+                cardRoleField.initField(cr, cardRoleField.getValue());
+            }
+        }
+    }
 
     public void fillMissingRoles() {
         Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
@@ -944,13 +958,7 @@ public class CardRolesFrame extends AbstractFrame {
                     Property eventProperty = event.getProperty();
                     User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
                     cardRole.setUser(selectedUser);
-
-                    for (CardRole cr : actorActionsFieldsMap.keySet()) {
-                        if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
-                            CardRoleField cardRoleField = actorActionsFieldsMap.get(cr);
-                            cardRoleField.initField(cr, cardRoleField.getValue());
-                        }
-                    }
+                    refreshFieldsWithRole(cardRole);
                 }
             });
 
