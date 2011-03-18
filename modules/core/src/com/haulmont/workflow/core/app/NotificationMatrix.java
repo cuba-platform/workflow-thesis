@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @ManagedBean(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixMBean, NotificationMatrixAPI {
@@ -50,6 +52,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
     private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
     private Map<String, Map<NotificationType, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<NotificationType, NotificationMessageBuilder>>();
+
+    private ExecutorService mailExecutorService = Executors.newFixedThreadPool(3);
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -331,8 +335,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            new Thread() {
-                @Override
+            mailExecutorService.submit(new Runnable() {
                 public void run() {
                     EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
                     try {
@@ -341,7 +344,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                         log.warn(e);
                     }
                 }
-            }.start();
+            });
 
             mailList.add(user);
         }
