@@ -184,7 +184,7 @@ public class AttachmentEditor extends AbstractEditor {
         if (val > 10) {
             return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtKb"));
         }
-        return fmt.format(val).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB"));
+        return fmt.format(size).concat(" " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB"));
     }
 
   protected void saveFile() {
