@@ -38,7 +38,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
-    private CollectionDatasource attachDs;
     private Table uploadsTable = null;
     private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
     private AttachmentCreator creator;
@@ -46,7 +45,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     private boolean isUploading = false;
 
-    private CollectionDatasourceImpl attachTypesDs, filesDs;
+    private CollectionDatasourceImpl attachDs, attachTypesDs, filesDs;
     private AttachmentType defaultAttachType;
 
     public AttachmentsMultiUploader(IFrame frame) {
@@ -95,6 +94,9 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
         creator = (AttachmentCreator) params.get("creator");
 
+        attachDs = getDsContext().get("attachDs");
+        attachDs.valid();
+
         uploadsTable = getComponent("uploadsTable");
         if (uploadsTable != null) {
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(uploadsTable);
@@ -105,9 +107,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachTypesDs.refresh();
 
         filesDs = getDsContext().get("filesDs");
-
-        attachDs = uploadsTable.getDatasource();
-        attachDs.refresh();
 
         okBtn = getComponent("windowActions.windowCommit");
         cancelBtn = getComponent("windowActions.windowClose");
