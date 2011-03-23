@@ -171,6 +171,24 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             return false;
         }
 
+
+        public Calendar getRealStartDay(Date base) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(base);
+            cal.set(Calendar.HOUR_OF_DAY, startH);
+            cal.set(Calendar.MINUTE, startM);
+
+            return cal;
+        }
+
+        public Calendar getRealEndDay(Date base) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(base);
+            cal.set(Calendar.HOUR_OF_DAY, endH);
+            cal.set(Calendar.MINUTE, endM);
+
+            return cal;
+        }
     }
 
     private volatile Map<Date, List<CalendarItem>> exceptionDays;
@@ -407,6 +425,109 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
     }
 
+    public Double getIntervalDurationNew(Date startTime, Date endTime, TimeUnit timeUnit) {
+        if (startTime.after(endTime))
+            throw new IllegalStateException("Start time cannot be after end time!");
+        if ((startTime == null) || (endTime == null))
+            throw new IllegalStateException("Start time and end time cannot be null!");
+
+        loadCaches();
+        double duration = 0;
+        DateUtils.truncate(endTime, Calendar.MINUTE);
+        Calendar cursor = Calendar.getInstance();
+        cursor.setTime(startTime);
+        DateUtils.truncate(cursor, Calendar.MINUTE);
+        IntervalLine il = new IntervalLine(startTime);
+        il.nextInterval();
+        boolean insideInterval = il.isInitialInsideInterval();
+        long timeUnitDuaration = (timeUnit == TimeUnit.DAY) ? getWorkDayLengthInMillis() : timeUnit.getMillis();
+
+
+        //todo set limit
+        for (long i = 0; i < 525600L; i++) {
+            if (cursor.getTime().equals(il.getCIStartDate()))
+                insideInterval = true;
+
+            if (cursor.getTime().equals(il.getCIEndDate())) {
+                insideInterval = false;
+                il.nextInterval();
+            }
+
+            if (cursor.getTime().equals(endTime)) {
+                return duration / timeUnitDuaration;
+            } else {
+                if (insideInterval) duration += 60000;
+            }
+
+            cursor.add(Calendar.MINUTE, 1);
+        }
+        return duration / timeUnitDuaration;
+    }
+
+    private class IntervalLine {
+        private Calendar ciStartDay;
+        private Calendar ciEndDay;
+        private boolean initialInsideInterval = false;
+        private boolean firstSearch = true;
+
+
+        private IntervalLine(Date startDate) {
+            this.ciStartDay = Calendar.getInstance();
+            ciStartDay.setTime(startDate);
+            this.ciEndDay = Calendar.getInstance();
+            ciEndDay.setTime(startDate);
+        }
+
+        public Date getCIStartDate() {
+            return ciStartDay.getTime();
+        }
+
+        public Date getCIEndDate() {
+            return ciEndDay.getTime();
+        }
+
+        public void nextInterval() {
+
+            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(DateUtils.truncate(ciStartDay.getTime(), Calendar.DATE));
+            if (currentDayCalendarItems == null) {
+                currentDayCalendarItems = defaultDays.get(ciStartDay.get(Calendar.DAY_OF_WEEK));
+            }
+
+            boolean intervalFound = false;
+            for (CalendarItem ci : currentDayCalendarItems) {
+                //durations == 0 is holiday
+                if (ci.getDuration() == 0) continue;
+
+                if (firstSearch && ci.isDateInInterval(ciStartDay.getTime())) {
+                    ciStartDay = ci.getRealStartDay(ciStartDay.getTime());
+                    ciEndDay = ci.getRealEndDay(ciStartDay.getTime());
+                    intervalFound = true;
+                    initialInsideInterval = true;
+                    break;
+                } else if (ci.isDateBeforeInterval(ciStartDay.getTime())) {
+                    ciStartDay = ci.getRealStartDay(ciStartDay.getTime());
+                    ciEndDay = ci.getRealEndDay(ciStartDay.getTime());
+                    intervalFound = true;
+                    break;
+                }
+            }
+
+            if (!intervalFound) {
+                ciStartDay.add(Calendar.DATE, 1);
+                ciStartDay = DateUtils.truncate(ciStartDay, Calendar.DATE);
+                nextInterval();
+            }
+
+            firstSearch = false;
+        }
+
+        public boolean isInitialInsideInterval() {
+            return initialInsideInterval;
+        }
+
+    }
+
+
     public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
         if (startTime.after(endTime))
             throw new IllegalStateException("Start time cannot be after end time!");
@@ -448,7 +569,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                     if (ciPos == currentDayCalendarItems.size()) {
                         if (ci.isDateInInterval(startTime)) {
                             duration = ci.getDurationToEnd(startTime);
-                        } else {
+                        } else if (!(searchingFirstInterval && ci.isDateAfterInterval(startTime))) {
                             duration += ci.getDuration();
                         }
                         return duration / timeUnitDuaration;

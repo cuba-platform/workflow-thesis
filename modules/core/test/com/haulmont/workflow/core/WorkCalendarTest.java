@@ -76,14 +76,24 @@ public class WorkCalendarTest extends WfTestCase {
 //            duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 11:00"), df.parse("22.02.2011 11:00"), TimeUnit.DAY);
 //            assertEquals(1.0, duration);
 
-            double duration = workCalendar.getIntervalDuration(df.parse("03.02.2011 16:00"), df.parse("03.02.2011 17:26"), TimeUnit.HOUR);
+            double duration = 0.0;
+            duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 19:00"), df.parse("22.02.2011 21:00"), TimeUnit.HOUR);
+            assertEquals(16.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 16:00"), df.parse("27.03.2011 21:00"), TimeUnit.HOUR);
+            assertEquals(1.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("26.03.2011 16:00"), df.parse("27.03.2011 21:00"), TimeUnit.HOUR);
+            assertEquals(0.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("21.03.2011 17:04"), df.parse("21.03.2011 17:20"), TimeUnit.HOUR);
+            assertEquals(0.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("03.02.2011 16:00"), df.parse("03.02.2011 17:26"), TimeUnit.HOUR);
             assertEquals(1.0, duration);
 
             duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 11:00"), df.parse("22.02.2011 06:00"), TimeUnit.HOUR);
             assertEquals(8.0, duration);
-
-            duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 19:00"), df.parse("22.02.2011 21:00"), TimeUnit.HOUR);
-            assertEquals(16.0, duration);
 
             duration = workCalendar.getIntervalDuration(df.parse("22.02.2011 09:00"), df.parse("22.02.2011 11:00"), TimeUnit.HOUR);
             assertEquals(2.0, duration);
