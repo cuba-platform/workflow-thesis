@@ -121,7 +121,11 @@ public class ProcessAction extends AbstractAction {
             } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        window.close(Window.COMMIT_ACTION_ID);
+                        if (window instanceof WebWindow) {
+                            ((WebWindow) window).getWrapper().close(Window.COMMIT_ACTION_ID);
+                        } else {
+                            window.close(Window.COMMIT_ACTION_ID);
+                        }
                         managerChain.doManagerAfter(formManagerParams);
                     }
 
