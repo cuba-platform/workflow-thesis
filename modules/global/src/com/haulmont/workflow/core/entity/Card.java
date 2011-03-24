@@ -105,6 +105,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @OneToMany(mappedBy = "card")
     protected Set<Assignment> assignments;
 
+    @Column(name = "HAS_ATTACHMENTS")
+    protected Boolean hasAttachments;
+
     @Transient
     protected Map<String, Object> initialProcessVariables;
 
@@ -273,5 +276,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setStages(List<CardStage> stages) {
         this.stages = stages;
+    }
+
+    public Boolean getHasAttachments() {
+        return hasAttachments;
+    }
+
+    public void setHasAttachments(Boolean hasAttachments) {
+        this.hasAttachments = hasAttachments;
     }
 }

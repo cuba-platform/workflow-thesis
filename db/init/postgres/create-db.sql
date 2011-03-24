@@ -92,6 +92,7 @@ create table WF_CARD (
     CREATOR_ID uuid,
     SUBSTITUTED_CREATOR_ID uuid,
     PARENT_CARD_ID uuid,
+    HAS_ATTACHMENTS boolean,
     primary key (ID)
 )^
 

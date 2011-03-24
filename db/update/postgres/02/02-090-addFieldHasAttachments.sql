@@ -1,0 +1,1 @@
+alter table WF_CARD add column HAS_ATTACHMENTS boolean^

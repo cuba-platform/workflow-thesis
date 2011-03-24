@@ -11,11 +11,13 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 import javax.persistence.*;
 
 @Entity(name = "wf$CardAttachment")
 @DiscriminatorValue("C")
+@Listeners("com.haulmont.workflow.core.listeners.CardAttachmentEntityListener")
 @NamePattern("%s|name")
 public class CardAttachment extends Attachment {
 
