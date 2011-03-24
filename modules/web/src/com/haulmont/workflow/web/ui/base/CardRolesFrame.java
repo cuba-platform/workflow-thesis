@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebActionsField;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -260,6 +261,7 @@ public class CardRolesFrame extends AbstractFrame {
             public void buttonClick(Button.ClickEvent event) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("secRole", cardRole.getProcRole().getRole());
+                App.getInstance().getWindowManager().getDialogParams().setWidth(680);
                 final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
                     private static final long serialVersionUID = -4182051025753394757L;
