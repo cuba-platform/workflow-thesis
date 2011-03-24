@@ -10,7 +10,7 @@
             <query>
                 select a from wf$Assignment a
                 where a.card.id = :custom$cardId and a.user is not null
-                order by a.createTs
+                order by a.createTs desc
             </query>
         </groupDatasource>
     </dsContext>
