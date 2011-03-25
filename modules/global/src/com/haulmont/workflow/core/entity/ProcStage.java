@@ -14,10 +14,13 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.workflow.core.global.TimeUnit;
+import groovy.lang.Binding;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 @Entity(name = "wf$ProcStage")
 @Table(name = "WF_PROC_STAGE")
@@ -189,5 +192,18 @@ public class ProcStage extends StandardEntity {
 
     public void setDurationScriptEnabled(Boolean durationScriptEnabled) {
         this.durationScriptEnabled = durationScriptEnabled;
+    }
+
+    public Map calculateStageDuration(Card card) {
+        if (durationScriptEnabled && (durationScript != null)) {
+            Binding binding = new Binding();
+            binding.setVariable("card", card);
+            ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, durationScript, binding);
+            return binding.getVariables();
+        }
+        Map result = new java.util.HashMap();
+        result.put("duration", duration);
+        result.put("timeUnit", getTimeUnit());
+        return result;
     }
 }
