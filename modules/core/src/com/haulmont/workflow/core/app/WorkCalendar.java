@@ -557,7 +557,10 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                     if (ci.isDateInInterval(endTime)) {
                         if (searchingFirstInterval && DateUtils.isSameDay(currentDay.getTime(), startTime)) {
                             //if necessary interval is in first CI interval
-                            duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
+                            if (ci.isDateInInterval(currentDay.getTime()))
+                                duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
+                            else
+                                duration = endDay.getTimeInMillis() - ci.getRealStartDay(currentDay.getTime()).getTimeInMillis();
                         } else {
                             duration += ci.getDurationFromStart(endTime);
                         }

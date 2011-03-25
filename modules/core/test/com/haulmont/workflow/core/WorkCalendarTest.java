@@ -67,7 +67,7 @@ public class WorkCalendarTest extends WfTestCase {
 //    }
 
     public void testIntervalDurationCalc() {
-        DateFormat df = new SimpleDateFormat("dd.MM.yyyy hh:mm");
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         try {
 //            double duration = workCalendar.getIntervalDuration(df.parse("21.02.2011 11:00"), df.parse("22.02.2011 11:00"), TimeUnit.DAY);
@@ -77,6 +77,30 @@ public class WorkCalendarTest extends WfTestCase {
 //            assertEquals(1.0, duration);
 
             double duration = 0.0;
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 11:00"), df.parse("25.03.2011 16:00"), TimeUnit.HOUR);
+            assertEquals(4.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 14:00"), df.parse("25.03.2011 16:00"), TimeUnit.HOUR);
+            assertEquals(2.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 12:00"), df.parse("25.03.2011 14:00"), TimeUnit.HOUR);
+            assertEquals(1.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("26.03.2011 12:00"), df.parse("27.03.2011 12:10"), TimeUnit.HOUR);
+            assertEquals(0.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 12:00"), df.parse("25.03.2011 12:10"), TimeUnit.HOUR);
+            assertEquals(0.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("25.03.2011 16:00"), df.parse("28.03.2011 10:00"), TimeUnit.HOUR);
+            assertEquals(3.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 19:00"), df.parse("22.02.2011 21:00"), TimeUnit.HOUR);
+            assertEquals(16.0, duration);
+
+            duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 19:00"), df.parse("22.02.2011 21:00"), TimeUnit.HOUR);
+            assertEquals(16.0, duration);
+
             duration = workCalendar.getIntervalDuration(df.parse("20.02.2011 19:00"), df.parse("22.02.2011 21:00"), TimeUnit.HOUR);
             assertEquals(16.0, duration);
 
