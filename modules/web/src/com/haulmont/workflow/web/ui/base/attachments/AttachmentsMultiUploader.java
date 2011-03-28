@@ -221,6 +221,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
+        attachDs.setModified(false);
         if (commit()) {
             if (needSave) {
                 saveFile();
