@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
@@ -49,4 +50,6 @@ public interface NotificationMatrixAPI {
     void notifyByCard(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator);
 
     void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state);
+
+    void notifyUser(Card card, String state, User user);
 }

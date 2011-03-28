@@ -383,13 +383,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             Card reloadedCard = reloadCard(card);
 
             Collection<CardRole> roleList = reloadedCard.getRoles();
-            if (roleList == null || roleList.isEmpty())
-                return;
-
-            for (CardRole cardRole : roleList) {
-                if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc())
-                        && !excludedRoles.contains(cardRole.getCode())) {
-                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+            if (roleList != null) {
+                for (CardRole cardRole : roleList) {
+                    if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc())
+                            && !excludedRoles.contains(cardRole.getCode())) {
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+                    }
                 }
             }
 
@@ -429,19 +428,54 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             Card reloadedCard = reloadCard(card);
 
             Collection<CardRole> roleList = reloadedCard.getRoles();
-            if (roleList == null || roleList.isEmpty())
-                return;
 
-            for (CardRole cardRole : roleList) {
-                if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) &&
-                        !excludeRoleCodes.contains(cardRole.getCode()) &&
-                        ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
+            if (roleList != null) {
+                for (CardRole cardRole : roleList) {
+                    if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) &&
+                            !excludeRoleCodes.contains(cardRole.getCode()) &&
+                            ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
 
-                    notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+                    }
                 }
             }
 
             tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void notifyUser(Card card, String state, User user) {
+        String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
+
+        Map<String, NotificationType> matrix = getMatrix(processPath);
+
+        if (matrix == null)
+            return;
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            List<User> mailList = new ArrayList<User>();
+            List<User> trayList = new ArrayList<User>();
+
+            Card reloadedCard = reloadCard(card);
+
+            Collection<CardRole> roleList = reloadedCard.getRoles();
+
+            if (roleList != null && user != null) {
+                for (CardRole cardRole : roleList) {
+                    if (user.equals(cardRole.getUser())) {
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, new DefaultMessageGenerator());
+                        break;
+                    }
+                }
+            }
+
+
+            tx.commit();
+        } catch (Exception e) {
+            log.error(e);
         } finally {
             tx.end();
         }
