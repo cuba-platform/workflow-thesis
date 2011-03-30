@@ -912,7 +912,7 @@ public class CardRolesFrame extends AbstractFrame {
                 if (proc != null) {
                     for (UUID id : cardRolesDs.getItemIds()) {
                         CardRole cardRole = cardRolesDs.getItem(id);
-                        if (cardRole.getProcRole().getProc().equals(proc)) {
+                        if (!cardRole.getProcRole().getInvisible() && cardRole.getProcRole().getProc().equals(proc)) {
                             addItem(cardRole);
                         }
                     }

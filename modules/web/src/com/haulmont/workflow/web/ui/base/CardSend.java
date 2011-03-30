@@ -53,6 +53,7 @@ public class CardSend extends AbstractWindow {
     protected CardComment parent;
     protected CheckBox notifyByCardInfo;
     protected List<CardRole> roles;
+    protected IFrame rootFrame;
 
     public CardSend(IFrame frame) {
         super(frame);
@@ -62,6 +63,7 @@ public class CardSend extends AbstractWindow {
         super.init(params);
         setHeight("400px");
         card = (Card) params.get("item");
+        rootFrame = (IFrame) params.get("rootFrame");
         if(PersistenceHelper.isNew(card))
             throw new RuntimeException("Card is new");
         if (card == null)
@@ -245,7 +247,7 @@ public class CardSend extends AbstractWindow {
     protected List<CardRole> getCardRoles(Card card){
         LoadContext ctx = new LoadContext(CardRole.class);
         ctx.setView("card-edit");
-        ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and " +
+        ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and cr.procRole.invisible = false and " +
                 "cr.procRole.id in (select pr.id from wf$ProcRole pr where pr.proc.id = :procId)")
                 .addParameter("cardId", card).addParameter("procId",card.getProc());
         return ServiceLocator.getDataService().loadList(ctx);

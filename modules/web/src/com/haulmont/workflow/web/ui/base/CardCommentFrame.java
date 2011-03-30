@@ -188,6 +188,7 @@ public class CardCommentFrame extends AbstractWindow {
     protected void openCardSend(Card card) {
         Map paramsCard = new HashMap();
         paramsCard.put("item", card);
+        paramsCard.put("rootFrame", this.<IFrame>getFrame());
         Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
         window.addListener(new CloseListener() {
             public void windowClosed(String actionId) {
