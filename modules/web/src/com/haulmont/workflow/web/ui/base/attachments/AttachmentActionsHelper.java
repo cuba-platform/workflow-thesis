@@ -12,10 +12,12 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.app.ui.core.file.MultiUploader;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.filestorage.FileDisplay;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -143,6 +145,7 @@ public class AttachmentActionsHelper {
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
         final AttachmentCreator fCreator = creator;
+        final UserSession userSession = UserSessionClient.getUserSession();
 
         return new AbstractAction("actions.MultiUpload") {
             public void actionPerform(Component component) {
@@ -164,6 +167,11 @@ public class AttachmentActionsHelper {
                         }
                     }
                 });
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return super.isEnabled() && userSession.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE );
             }
         };
     }
