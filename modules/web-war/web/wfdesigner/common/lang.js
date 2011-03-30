@@ -28,6 +28,7 @@ var wfLanguage = {
                 "className": "WireIt-Container WireIt-ImageContainer Bubble",
                 "icon": "../common/res/icons/start_icon.png",
                 "image": "../common/res/icons/start.png",
+                "selectedImage": "../common/res/icons/start-selected.png",
                 "optFields": [
                     {
                         type: "group",
@@ -66,6 +67,7 @@ var wfLanguage = {
                 "className": "WireIt-Container WireIt-ImageContainer Bubble",
                 "icon": "../common/res/icons/end_icon.png",
                 "image": "../common/res/icons/end.png",
+                "selectedImage": "../common/res/icons/end-selected.png",
                 "optFields": [
                     {
                         "type": "string",
@@ -92,6 +94,17 @@ var wfLanguage = {
                 "xtype": "Wf.Container",
                 "icon": "../common/res/icons/card_state_icon.png",
                 "width": 230,
+
+                "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "required": false,
+                        "value": "CardState",
+                        "readonly":"true"
+                    }
+                ],
 
                 "fields": [
                     {
@@ -143,6 +156,15 @@ var wfLanguage = {
                 ],
 
                 "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "required": false,
+                        "value": "msg://Assignment",
+                        "readonly":"true"
+                    },
+
                     {
                         "type": "string",
                         "label": "msg://description",
@@ -223,6 +245,14 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "required": false,
+                        "value": "msg://ParallelAssignment",
+                        "readonly":"true"
+                    },
+                    {
+                        "type": "string",
                         "label": "msg://description",
                         "name": "description",
                         "value": ""
@@ -291,12 +321,13 @@ var wfLanguage = {
                 "className": "WireIt-Container WireIt-ImageContainer Wf-Decision",
                 "icon": "../common/res/icons/decision_icon.png",
                 "image": "../common/res/icons/decision.png",
+                "selectedImage": "../common/res/icons/decision-selected.png",
                 "optFields": [
                     {
                         "type": "string",
                         "label": "msg://name",
                         "name": "name",
-                        "value": ""
+                        "value": "msg://Decision"
                     },
                     {
                         "type": "wfScriptSelect",
@@ -332,12 +363,13 @@ var wfLanguage = {
                 "className": "WireIt-Container WireIt-ImageContainer Wf-Fork",
                 "icon": "../common/res/icons/fork_icon.png",
                 "image": "../common/res/icons/fork.png",
+                "selectedImage": "../common/res/icons/fork-selected.png",
                 "optFields": [
                     {
                         "type": "string",
                         "label": "msg://name",
                         "name": "name",
-                        "value": ""
+                        "value": "msg://Fork"
                     }
                 ],
                 "terminals": [
@@ -367,12 +399,13 @@ var wfLanguage = {
                 "className": "WireIt-Container WireIt-ImageContainer Wf-Fork",
                 "icon": "../common/res/icons/join_icon.png",
                 "image": "../common/res/icons/join.png",
+                "selectedImage": "../common/res/icons/join-selected.png",
                 "optFields": [
                     {
                         "type": "string",
                         "label": "msg://name",
                         "name": "name",
-                        "value": ""
+                        "value": "msg://Join"
                     }
 
                 ],

@@ -24,6 +24,7 @@ Wf.Container = function(options, layer) {
             layer.eventChanged.fire();
          }
     });
+    this.form.updatedEvt.subscribe(this.onUpdateForm,this,true);
 
 };
 
@@ -39,7 +40,6 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
         var changeArrow  = WireIt.cn('div',{className: "Wf-Container-change"},null,null);
 
 		this.ddHandle.appendChild(changeArrow);
-
         YAHOO.util.Event.addListener(changeArrow,"click",this.changeDirection,this,true);
      },
 
@@ -60,6 +60,15 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 			xtype: this.xtype,
 			direction: this.direction
 		};
+   },
+
+   onUpdateForm : function(type, args) {
+      
+      if(!this.optionsValue){
+          this.optionsValue = this.optionsForm.getValue();
+      }
+      this.optionsValue.name = args[0].name;
+      this.optionsForm.setValue(this.optionsValue);
    },
 
     onContainerFocus: function(eventName, containers) {

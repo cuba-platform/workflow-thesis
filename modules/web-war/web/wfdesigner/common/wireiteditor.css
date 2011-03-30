@@ -177,11 +177,6 @@ div.savedStatus {
 	width: 100%;
 }
 
-#propertiesForm div.inputEx-Group div.inputEx-label {
-	width: 85px;
-}
-
-
 /**
  * Dialogs
  */
@@ -221,6 +216,21 @@ div.WireIt-Container-ddhandle {
     border-bottom: 0;
     color: #000;
 }
+
+div.WireIt-Container-focused div.WireIt-Container-ddhandle {
+    background-color:#FBF7E3;
+    border-color:#EB5B54;
+    border-bottom: 0;
+    color: #000;
+}
+
+div.WireIt-Container-ddhandle {
+    background-color:#FBF7E3;
+    border-color:#373738;
+    border-bottom: 0;
+    color: #000;
+}
+
 div.WireIt-Container div.body {
     -moz-border-radius-bottomleft: 5px;
     -moz-border-radius-bottomright: 5px;
@@ -228,6 +238,9 @@ div.WireIt-Container div.body {
     border-color:#373738;
     border-top: 0;
     color: #000;
+}
+div.WireIt-Container-focused div.body{
+    border-color: #EB5B54;
 }
 div.WiringEditor-module-Start div.body,div.WiringEditor-module-End div.body{
     background-color:transparent;

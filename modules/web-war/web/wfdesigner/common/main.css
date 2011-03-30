@@ -22,6 +22,30 @@ div.inputEx-Group div.inputEx-label {
     width: 75px;
 }
 
+#optionsForm div.inputEx-Group div.inputEx-label {
+    width: auto;
+}
+
+#optionsForm div.inputEx-Group div.inputEx-Field input {
+    width: 100%;
+}
+
+#optionsForm div.inputEx-Group div.inputEx-Field {
+   width : 100%;
+}
+
+#optionsForm div.inputEx-Group div.inputEx-CheckBox {
+   width : auto;
+}
+
+#propertiesForm div.inputEx-Group div.inputEx-label {
+    width: auto;
+}
+
+#propertiesForm div.inputEx-Group div.inputEx-Field  {
+    width: auto;
+}
+
 div.WireIt-ImageContainer {
     width: auto;
 }

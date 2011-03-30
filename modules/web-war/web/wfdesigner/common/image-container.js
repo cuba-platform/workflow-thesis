@@ -19,6 +19,8 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
 
     xtype: "Wf.ImageContainer",
 
+    selectedImage: null,
+
     initTerminals: function(terminalConfigs) {
         Wf.ImageContainer.superclass.initTerminals.call(this, terminalConfigs);
         Wf.initTerminalLabels(this, terminalConfigs);
@@ -27,11 +29,13 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
     onContainerFocus: function(eventName, containers) {
         var container = containers[0];
         Wf.OptionFieldsHelper.showOptions(container);
+        YAHOO.util.Dom.setStyle(this.bodyEl, "background-image", "url("+this.selectedImage+")");
     },
 
     onContainerBlur: function(eventName, containers) {
         var container = containers[0];
         Wf.OptionFieldsHelper.hideOptions(container);
+        YAHOO.util.Dom.setStyle(this.bodyEl, "background-image", "url("+this.image+")");
     },
 
     onCloseButton: function(e, args) {
