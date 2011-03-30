@@ -299,9 +299,7 @@ public class CardRolesFrame extends AbstractFrame {
                                 tmpCardRolesDs.updateItem(cardRole);
                             }
                             List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
-                            for (CardRole cr : cardRolesToAdd) {
-                                tmpCardRolesDs.addItem(cr);
-                            }
+
                             if (!invalidUsers.isEmpty()) {
                                 String usersList = "";
                                 for (User user : invalidUsers) {
@@ -418,6 +416,7 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setCard(card);
             cardRoles.add(cr);
             assignNextSortOrder(cr);
+            tmpCardRolesDs.addItem(cr);
         }
         return cardRoles;
     }
