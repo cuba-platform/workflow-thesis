@@ -10,11 +10,13 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -33,4 +35,8 @@ public interface DesignerService {
     byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException,TemplateGenerationException;
 
     Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages) throws DesignCompilationException;
+
+    byte[] exportDesign(Design design) throws IOException, FileStorageException;
+
+    Design importDesign(byte[] bytes) throws IOException, FileStorageException;
 }

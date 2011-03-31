@@ -96,6 +96,9 @@
     <screen id="wf$Design.notificationMatrix"
             template="/workflow/client/web/ui/design/notification-matrix.xml"/>
 
+    <screen id="wf$Design.import"
+            template="/workflow/client/web/ui/design/design-import.xml"/>
+
     <screen id="wf$Design.localize"
             template="/workflow/client/web/ui/design/localize-design.xml"/>
 

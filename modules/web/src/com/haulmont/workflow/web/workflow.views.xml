@@ -8,6 +8,10 @@
         <property name="notificationMatrixUploaded"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.Design" name="export" extends="_local">
+        <property name="scripts" view="_local"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.Proc" name="browse" extends="_local">
         <property name="design" view="_minimal"/>
     </view>

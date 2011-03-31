@@ -71,6 +71,8 @@ public class DesignBrowser extends AbstractWindow {
         helper.createCreateAction(WindowManager.OpenType.DIALOG);
 
         table.addAction(new CopyAction());
+        table.addAction(new ImportAction());
+        table.addAction(new ExportAction());
 
         helper.createRemoveAction();
 
@@ -168,6 +170,60 @@ public class DesignBrowser extends AbstractWindow {
                 UUID newId = service.copyDesign(design.getId());
                 openDesigner(newId.toString());
             }
+        }
+    }
+
+    private class ExportAction extends AbstractAction {
+        protected ExportAction() {
+            super("export");
+        }
+
+        public void actionPerform(Component component) {
+            Set selected = table.getSelected();
+            if (!selected.isEmpty()) {
+                Design design = (Design) selected.iterator().next();
+                design = getDsContext().getDataService().reload(design, "export");
+                try {
+                    new WebExportDisplay().show(new ByteArrayDataProvider(service.exportDesign(design)), "Design", ExportFormat.ZIP);
+                } catch (Exception e) {
+
+                    showNotification(
+                            getMessage("notification.exportFailed"),
+                            e.getMessage(),
+                            NotificationType.ERROR
+                    );
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private class ImportAction extends AbstractAction {
+        protected ImportAction() {
+            super("import");
+        }
+
+        public void actionPerform(Component component) {
+            final ImportDialog importDialog = openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
+            importDialog.addListener(new CloseListener() {
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+
+                        try {
+                            service.importDesign(importDialog.getBytes());
+                        } catch (Exception ex) {
+
+                            showNotification(
+                                    getMessage("notification.importFailed"),
+                                    ex.getMessage(),
+                                    NotificationType.ERROR
+                            );
+                            throw new RuntimeException(ex);
+                        }
+                        table.getDatasource().refresh();
+                    }
+                }
+            });
         }
     }
 

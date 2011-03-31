@@ -19,6 +19,8 @@
                 <button action="designTable.refresh" icon="icons/refresh.png"/>
                 <button action="designTable.create" icon="icons/create.png"/>
                 <button action="designTable.copy"/>
+                <button action="designTable.import" icon="icons/import.png"/>
+                <button action="designTable.export" icon="icons/export.png"/>
                 <button action="designTable.design" icon="icons/edit.png"/>
                 <button action="designTable.remove" icon="icons/remove.png"/>
                 <button action="designTable.scripts"/>

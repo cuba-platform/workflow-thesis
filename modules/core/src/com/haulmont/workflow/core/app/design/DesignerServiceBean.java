@@ -14,7 +14,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.workflow.core.DesignImportExportHelper;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -112,6 +115,14 @@ public class DesignerServiceBean implements DesignerService {
     public Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages)
             throws DesignCompilationException {
         return compiler.compileMessagesForLocalization(design, languages);
+    }
+
+    public byte[] exportDesign(Design design) throws IOException, FileStorageException {
+        return DesignImportExportHelper.exportDesign(design);
+    }
+
+    public Design importDesign(byte[] bytes) throws IOException, FileStorageException {
+        return DesignImportExportHelper.importDesign(bytes);
     }
 
     public byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException, TemplateGenerationException {
