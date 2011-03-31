@@ -140,7 +140,7 @@ public class AttachmentActionsHelper {
      * @param openType Window open type
      */
     public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
-                                                 final WindowManager.OpenType openType){
+                                                 final WindowManager.OpenType openType, final Map<String, Object> params){
         final Table attachments = attachmentsTable;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
@@ -149,12 +149,15 @@ public class AttachmentActionsHelper {
 
         return new AbstractAction("actions.MultiUpload") {
             public void actionPerform(Component component) {
-                Map<String, Object> params = new HashMap<String,Object>();
-                params.put("creator",fCreator);
+                Map<String, Object> paramz = new HashMap<String,Object>();
+                if (params != null) {
+                    paramz.putAll(params);
+                }
+                paramz.put("creator",fCreator);
 
                 final Window editor = frame.openEditor("wf$AttachUploader", null,
                         openType,
-                        params, null);
+                        paramz, null);
 
                 editor.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
@@ -174,5 +177,10 @@ public class AttachmentActionsHelper {
                 return super.isEnabled() && userSession.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE );
             }
         };
+    }
+
+    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
+                                                 final WindowManager.OpenType openType) {
+        return createMultiUploadAction(attachmentsTable,window,creator,openType, null);
     }
 }

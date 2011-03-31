@@ -90,8 +90,10 @@ public class AttachmentEditor extends AbstractEditor {
               com.haulmont.cuba.gui.data.Datasource.State.VALID) {
         attachTypesDs.refresh()
       }
-      defaultAType = getDefaultAttachmentType()
-      attachType.setValue(defaultAType)
+      if (((Attachment)item).getAttachType()==null) {
+        defaultAType = getDefaultAttachmentType()
+        attachType.setValue(defaultAType)
+      }
       attachmentDs.getItem().setFile(new FileDescriptor())
       attachmentDs.getItem().setCreateTs(TimeProvider.currentTimestamp());
       attachmentDs.getItem().setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());

@@ -25,10 +25,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.AssignmentAttachment;
-import com.haulmont.workflow.core.entity.Attachment;
-import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
@@ -45,6 +42,7 @@ public class ResolutionForm extends AbstractForm {
     private TextField commentText;
     private Table attachmentsTable;
     private Assignment assignment;
+    protected AttachmentType attachmentType;
 
     private CollectionDatasourceImpl<Assignment, UUID> datasource;
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
@@ -158,6 +156,9 @@ public class ResolutionForm extends AbstractForm {
                         Map<String, Object> values = new HashMap<String, Object>();
                         values.put("assignment", getDsContext().get("assignmentDs").getItem());
                         values.put("file", new FileDescriptor());
+                        if (attachmentType != null){
+                            values.put("attachType", attachmentType);
+                        }
                         return values;
                     }
 
@@ -167,7 +168,12 @@ public class ResolutionForm extends AbstractForm {
                 },
                 WindowManager.OpenType.DIALOG,"actions.New"
         ));
-        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG));
+
+        Map map = new HashMap<String, Object>();
+        if (attachmentType != null) {
+            map.put("attachType", attachmentType);
+        }
+        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG, map));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());

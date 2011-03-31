@@ -55,7 +55,9 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     @Override
     public void setItem(Entity item) {
         // Do nothing
-        defaultAttachType = getDefaultAttachmentType();
+        if (defaultAttachType == null) {
+            defaultAttachType = getDefaultAttachmentType();
+        }
         okBtn.setEnabled(false);
 
         Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
@@ -91,6 +93,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     @Override
     protected void init(Map<String, Object> params) {
         super.init(params);
+
+        defaultAttachType = (AttachmentType)params.get("attachType");
 
         creator = (AttachmentCreator) params.get("creator");
 
