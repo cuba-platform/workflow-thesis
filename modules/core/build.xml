@@ -64,8 +64,8 @@
         <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module-test.jar}">
             <include name="**/*"/>
         </jar>
-        <mkdir dir="${build.dir}/conf"/>
-        <copy todir="${build.dir}/conf">
+        <mkdir dir="${build.dir}/core-conf"/>
+        <copy todir="${build.dir}/core-conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
 

@@ -19,7 +19,7 @@
     <orderEntry type="library" name="cuba-test" level="project" />
     <orderEntry type="module" module-name="global" />
     <orderEntry type="library" name="bali" level="project" />
-    <orderEntry type="library" name="groovy-1.7.2" level="application" />
+    <orderEntry type="library" scope="TEST" name="jdbc" level="project" />
   </component>
 </module>
 

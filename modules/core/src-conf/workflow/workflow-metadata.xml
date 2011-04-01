@@ -1,6 +1,6 @@
 <metadata>
 
-    <include file="cuba-metadata.xml"/>
+    <include file="/cuba/cuba-metadata.xml"/>
 
     <metadata-model name="workflow">
         <class>com.haulmont.workflow.core.entity.DesignLocKey</class>

@@ -21,66 +21,9 @@
         <delete dir="${build.dir}/${module.name}"/>
         <mkdir dir="${build.dir}/${module.name}"/>
 
-        <copy todir="${build.dir}/${module.name}">
-            <fileset dir="${root.dir}/cuba/build/web-war" includes="**/*"/>
-        </copy>
-
         <copy todir="${build.dir}/${module.name}" overwrite="true">
             <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
     </target>
-
-    <!-- Commented out until custom module WidgetSet is needed -->
-
-    <!--<path id="compile-cp">-->
-        <!--<fileset refid="common-lib-fs"/>-->
-        <!--<fileset refid="server-lib-fs"/>-->
-        <!--<pathelement location="${lib.gwt.dir}/gwt-user-1.0.jar"/>-->
-        <!--<pathelement location="${lib.gwt.dir}/gwt-dev-windows-1.0.jar"/>-->
-        <!--<pathelement location="${prod.out.dir}/core"/>-->
-        <!--<pathelement location="${root.dir}/cuba/out/production/web-war"/>-->
-    <!--</path>-->
-
-    <!--<path id="test-compile-cp">-->
-        <!--<fileset refid="common-lib-fs"/>-->
-        <!--<fileset refid="server-lib-fs"/>-->
-    <!--</path>-->
-
-    <!--<target name="build-module" depends="base-mod.compile-module">-->
-        <!--<echo>==> building ${project.dir} ${module.name}</echo>-->
-
-        <!--<mkdir dir="${build.dir}"/>-->
-        <!--<mkdir dir="${build.dir}/${module.name}"/>-->
-        <!--<copy todir="${build.dir}/${module.name}">-->
-            <!--<fileset dir="${web.src}" includes="**/*"/>-->
-        <!--</copy>-->
-
-        <!--<condition property="do-build-gwt" value="true">-->
-            <!--<not>-->
-                <!--<available file="${widgets.out.dir}"/>-->
-            <!--</not>-->
-        <!--</condition>-->
-
-        <!--<antcall target="build-gwt"/>-->
-
-        <!--<jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>-->
-    <!--</target>-->
-
-    <!--<target name="build-gwt" if="do-build-gwt">-->
-        <!--<echo>==> building GWT module</echo>-->
-        <!--<java classname="com.google.gwt.dev.GWTCompiler" failonerror="yes" fork="yes" maxmemory="128m">-->
-            <!--<arg value="-out"/>-->
-            <!--<arg value="${widgets.out.dir}"/>-->
-            <!--<arg value="com.haulmont.docfloww.toolkit.gwt.SanecoWidgetSet"/>-->
-            <!--<classpath>-->
-                <!--<pathelement path="${java.src.dir}"/>-->
-                <!--<pathelement location="${prod.out.dir}/web-war"/>-->
-                <!--<pathelement location="${root.dir}/cuba/modules/web-war/src"/>-->
-                <!--<pathelement location="${lib.server.dir}/itmill-toolkit-5.2.12.jar"/>-->
-                <!--<pathelement location="${lib.gwt.dir}/gwt-user-1.0.jar"/>-->
-                <!--<pathelement location="${lib.gwt.dir}/gwt-dev-windows-1.0.jar"/>-->
-            <!--</classpath>-->
-        <!--</java>-->
-    <!--</target>-->
 
 </project>

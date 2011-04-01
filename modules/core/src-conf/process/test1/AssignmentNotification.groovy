@@ -13,19 +13,18 @@ import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.core.SecurityProvider
 import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.cuba.core.global.GlobalConfig
-import com.haulmont.cuba.core.global.GlobalUtils
 
 Assignment a = assignment
 User u = user
 String link = makeLink(a)
 
 if (SecurityProvider.currentUserSession().getLocale().getLanguage() == 'ru') {
-  subject = "Новая задача: ${a.card.description} - ${a.card.locState}"
+  subject = "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: ${a.card.description} - ${a.card.locState}"
 
   body = """
 <html><body>
-Вы получили новую задачу: ${a.card.description} - ${a.card.locState}<br>
-<a href="${link}">Перейти в карточку</a>
+пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: ${a.card.description} - ${a.card.locState}<br>
+<a href="${link}">пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ</a>
 </body></html>
 """
 

@@ -9,6 +9,7 @@
     <import file="${root.dir}/build-script/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
 
+    <property name="bali.build.dir" location="${root.dir}/bali/build"/>
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
     <property name="cuba.build.dir" location="${root.dir}/cuba/build"/>
     <property name="build.dir" location="build"/>
@@ -16,6 +17,7 @@
     <property name="deploy.dir" location="${root.dir}/tomcat/webapps"/>
 
     <property name="app.name" value="workflow"/>
+    <property name="coreapp.name" value="workflow-core"/>
 
 	<target name="delegate">
 		<property name="target" value="noop" />
@@ -60,81 +62,24 @@
 		</antcall>
 	</target>
 
+    <!-- required for testing -->
     <target name="target" depends="build">
-        <property name="webapp.dir" value="${target.dir}/${app.name}"/>
-
-        <mkdir dir="${webapp.dir}"/>
-        <copy todir="${webapp.dir}">
-            <fileset dir="${build.dir}/web-war" includes="**/*"/>
+        <!-- core-conf -->
+        <mkdir dir="${target.dir}/conf/${coreapp.name}"/>
+        <copy todir="${target.dir}/conf/${coreapp.name}">
+            <fileset dir="${cuba.build.dir}/core-conf" includes="**/*"/>
         </copy>
-
-        <mkdir dir="${webapp.dir}/WEB-INF/conf"/>
-        <copy todir="${webapp.dir}/WEB-INF/conf">
-            <fileset dir="${cuba.build.dir}/conf" includes="**/*"/>
+        <copy todir="${target.dir}/conf/${coreapp.name}" overwrite="true">
+            <fileset dir="${build.dir}/core-conf" includes="**/*"/>
         </copy>
-        <copy todir="${webapp.dir}/WEB-INF/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        <!-- web-conf -->
+        <mkdir dir="${target.dir}/conf/${app.name}"/>
+        <copy todir="${target.dir}/conf/${app.name}">
+            <fileset dir="${cuba.build.dir}/web-conf" includes="**/*"/>
         </copy>
-
-        <property name="webapp.dir" value="${target.dir}/${app.name}/WEB-INF/lib"/>
-        <copy todir="${webapp.dir}/WEB-INF/lib">
-            <fileset dir="${chile.build.dir}">
-                <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${cuba.build.dir}">
-                <include name="*.jar"/>
-                <exclude name="cuba-test.jar"/>
-                <exclude name="web-toolkit.jar"/>
-            </fileset>
-            <fileset dir="${build.dir}">
-                <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${lib.common.dir}">
-                <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${lib.server.dir}">
-                <include name="*.jar"/>
-                <exclude name="servlet-api-1.0.jar"/>
-            </fileset>
+        <copy todir="${target.dir}/conf/${app.name}" overwrite="true">
+            <fileset dir="${build.dir}/web-conf" includes="**/*"/>
         </copy>
-    </target>
-
-    <target name="deploy" depends="target">
-        <copy todir="${deploy.dir}">
-            <fileset dir="${target.dir}">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
-        <copy todir="${root.dir}/tomcat/lib">
-            <fileset dir="${lib.jdbc.dir}">
-                <include name="hsqldb-${hsqldb.version}.jar"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="deploy-conf" depends="target">
-        <copy todir="${deploy.dir}/${app.name}/WEB-INF/conf">
-            <fileset dir="${target.dir}/${app.name}/WEB-INF/conf" includes="**/*"/>
-        </copy>
-    </target>
-
-    <!-- TODO: tmp target -->
-    <target name="deploy-wfdesigner">
-        <!--<delete>-->
-            <!--<fileset dir="${deploy.dir}/app/wfdesigner" includes="**/*" excludes="lib/**/*"/>-->
-        <!--</delete>-->
-        <delete dir="${deploy.dir}/app/wfdesigner/lib"/>
-        <delete dir="${deploy.dir}/app/wfdesigner/common"/>
-        <delete dir="${deploy.dir}/app/wfdesigner/workflow"/>
-
-        <mkdir dir="${deploy.dir}/app/wfdesigner"/>
-        <copy todir="${deploy.dir}/app/wfdesigner">
-            <fileset dir="modules/web-war/web/wfdesigner" includes="**/*"/>
-        </copy>
-    </target>
-
-    <target name="undeploy">
-        <delete dir="${deploy.dir}/${app.name}"/>
     </target>
 
     <target name="start">
@@ -151,49 +96,7 @@
         </exec>
     </target>
 
-    <target name="restart">
-        <parallel>
-            <antcall target="stop"/>
-            <antcall target="deploy"/>
-        </parallel>
-        <waitfor maxwait="10" maxwaitunit="second" checkevery="2" checkeveryunit="second">
-            <not>
-                <socket server="localhost" port="8787"/>
-            </not>
-        </waitfor>
-        <antcall target="start"/>
-    </target>
-
     <target name="clean-build" depends="clean,build">
-    </target>
-
-    <target name="output">
-        <!--<mkdir dir="${output.replace.dir}/deploy"/>-->
-        <!--<mkdir dir="${output.replace.dir}/conf"/>-->
-        <!--<mkdir dir="${output.merge.dir}/deploy"/>-->
-        <!--<mkdir dir="${output.merge.dir}/conf"/>-->
-
-        <!--<copy todir="${output.replace.dir}/deploy">-->
-            <!--<fileset dir="build">-->
-                <!--<include name="*.jar"/>-->
-                <!--<include name="*.war"/>-->
-                <!--<include name="31workflow-core-service.xml"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-
-        <!--<delete file="${output.replace.dir}/deploy/24cuba.war"/>-->
-
-        <!--<copy todir="${output.merge.dir}/deploy">-->
-            <!--<fileset dir="build">-->
-                <!--<include name="adbins-ds.xml"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-
-        <!--<copy todir="${output.replace.dir}/conf">-->
-            <!--<fileset dir="build/conf">-->
-                <!--<include name="**/*"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
     </target>
 
 </project>

@@ -26,7 +26,7 @@ import com.haulmont.cuba.core.SecurityProvider;
 import java.util.LinkedList;
 import java.util.List;
 
-@Service(MailService.JNDI_NAME)
+@Service(MailService.NAME)
 public class MailServiceBean implements MailService  {
 
     protected Log log = LogFactory.getLog(MailServiceBean.class);

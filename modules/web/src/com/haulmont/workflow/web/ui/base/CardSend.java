@@ -166,7 +166,7 @@ public class CardSend extends AbstractWindow {
                 if (commentStr != null && commentStr.length() > 0) {
                     List<User> users = new LinkedList<User>();
                     if (tmpUserDs.size() > 0) {
-                        MailService mailService = ServiceLocator.lookup(MailService.JNDI_NAME);
+                        MailService mailService = ServiceLocator.lookup(MailService.NAME);
                         for (UUID uuid : tmpUserDs.getItemIds()) {
                             users.add(tmpUserDs.getItem(uuid));
                         }

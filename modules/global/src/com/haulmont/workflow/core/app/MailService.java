@@ -12,12 +12,12 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
-import javax.ejb.Local;
+
 import java.util.List;
 
-@Local
 public interface MailService {
-    public static String JNDI_NAME = "worckflow_common_MailService";
+
+    public static String NAME = "workflow_MailService";
 
     void sendCardMail(Card card, String comment, List<User> users, String script);
 

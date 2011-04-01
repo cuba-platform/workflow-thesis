@@ -11,33 +11,24 @@
 package com.haulmont.workflow.core;
 
 import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.testsupport.TestContext;
-import com.haulmont.cuba.testsupport.TestDataSource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class WfTestCase extends CubaTestCase {
 
     @Override
-    protected List<String> getTestAppContextFiles() {
-        List<String> files = super.getTestAppContextFiles();
-        files.add("workflow-spring.xml");
-        return files;
+    protected List<String> getTestAppProperties() {
+        String[] files = {
+                "/target/conf/workflow-core/app.properties",
+                "/modules/core/test/wf-test-app.properties",
+        };
+        return Arrays.asList(files);
     }
 
     @Override
-    protected List<String> getPersistenceSourceFiles() {
-        List<String> list = super.getPersistenceSourceFiles();
-        list.add("workflow-persistence.xml");
-        return list;
-    }
-
-    @Override
-    protected InputStream getTestAppProperties() {
-        return WfTestCase.class.getResourceAsStream("/wf-test-app.properties");
+    protected String getTestSpringConfig() {
+        return "../cuba/modules/core/test/test-spring.xml";
     }
 }

@@ -53,7 +53,7 @@
         <java classpathref="enhance-cp"
               classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
             <arg value="-properties"/>
-            <arg value="${project.dir}/modules/core/src/workflow-persistence.xml"/>
+            <arg value="${project.dir}/modules/core/src-conf/workflow/workflow-persistence.xml"/>
             <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"/>-->
         </java>
         <java classpathref="enhance-cp"

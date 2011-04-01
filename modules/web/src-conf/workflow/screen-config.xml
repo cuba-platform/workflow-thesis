@@ -1,0 +1,108 @@
+<screen-config>
+
+    <include file="/cuba/screen-config.xml"/>
+
+    <screen id="wf$WorkCalendar.browse"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-browse.xml"/>
+    <screen id="wf$WorkCalendarWorkDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-workday-edit.xml"/>
+    <screen id="wf$WorkCalendarExceptionDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-exceptionday-edit.xml"/>
+
+    <screen id="wf$AttachClipboard"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-clipboard.xml"/>
+
+    <screen id="wf$AttachUploader"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-uploader.xml"/>
+
+    <screen id="wf$AttachTypes.browse"
+            template="workflow/client/web/ui/attachmenttypes/type-browse.xml"/>
+
+    <screen id="wf$AttachmentType.edit"
+            template="workflow/client/web/ui/attachmenttypes/type-edit.xml"/>
+
+    <screen id="wf$Proc.browse"
+            template="workflow/client/web/ui/proc/proc-browse.xml"/>
+
+    <screen id="wf$Proc.edit"
+            template="workflow/client/web/ui/proc/proc-edit.xml"/>
+
+    <screen id="wf$ProcRole.edit"
+            template="workflow/client/web/ui/proc/proc-role-edit.xml"/>
+
+    <screen id="wf$ProcRole.lookup"
+            template="workflow/client/web/ui/proc/proc-role-lookup.xml"/>
+
+    <screen id="wf$ProcStage.edit"
+            template="workflow/client/web/ui/proc/proc-stage-edit.xml"/>
+
+    <screen id="wf$ProcStageType.edit"
+            template="workflow/client/web/ui/proc/proc-stage-type-edit.xml"/>
+
+    <screen id="wf$ProcStageType.browse"
+            template="workflow/client/web/ui/proc/proc-stage-type-browse.xml"/>
+
+    <screen id="wf$DefaultProcActor.edit"
+            template="workflow/client/web/ui/proc/defaultprocactor-edit.xml"/>
+
+    <screen id="wf$ProcRolePermission.edit"
+            template="workflow/client/web/ui/proc/proc-role-permission-edit.xml"/>
+
+    <screen id="wf$Card.browse"
+            template="workflow/client/web/ui/card/card-browse.xml"/>
+
+    <screen id="wf$Card.edit"
+            template="workflow/client/web/ui/card/card-edit.xml"/>
+
+    <screen id="wf$CardRole.edit"
+            template="workflow/client/web/ui/card/card-role-edit.xml"/>
+
+    <screen id="wf$CardAttachment.edit"
+            template="workflow/client/web/ui/attachment/card-attachment-edit.xml"/>
+
+    <screen id="wf$AssignmentAttachment.edit"
+            template="workflow/client/web/ui/attachment/assignment-attachment-edit.xml"/>
+
+    <screen id="wf$Assignment.browse"
+            template="workflow/client/web/ui/assignment/assignment-browse.xml"/>
+
+    <screen id="wf$Assignment.edit"
+            template="/com/haulmont/workflow/web/ui/base/resolution-edit.xml"/>
+
+    <screen id="resolution.form"
+            template="/com/haulmont/workflow/web/ui/base/resolution-form.xml"/>
+
+    <screen id="transition.form"
+            template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>
+    
+    <screen id="wf$Card.send"
+            template="workflow/web/ui/base/card-send.xml"/>
+
+    <screen id="wf$UserGroup.browse"
+            template="workflow/client/web/ui/usergroup/usergroup-browse.xml"/>
+
+    <screen id="wf$UserGroup.edit"
+            template="workflow/client/web/ui/usergroup/usergroup-edit.xml"/>
+
+    <screen id="wf$UserGroup.add"
+            template="workflow/client/web/ui/usergroup/usergroup-add.xml"/>
+
+    <screen id="wf$Design.browse"
+            template="/workflow/client/web/ui/design/design-browse.xml"/>
+
+    <screen id="wf$Design.edit"
+            template="/workflow/client/web/ui/design/design-edit.xml"/>
+
+    <screen id="wf$Design.notificationMatrix"
+            template="/workflow/client/web/ui/design/notification-matrix.xml"/>
+
+    <screen id="wf$Design.localize"
+            template="/workflow/client/web/ui/design/localize-design.xml"/>
+
+    <screen id="wf$Design.deploy"
+            template="/workflow/client/web/ui/design/deploy-design.xml"/>
+
+    <screen id="wf$DesignScript.browse"
+            template="/workflow/client/web/ui/designscript/design-scripts.xml"/>
+
+</screen-config>

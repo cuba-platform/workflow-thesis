@@ -22,4 +22,7 @@ public interface WfConfig extends Config {
 
     @Default("wfdesigner/workflow/main.ftl")
     String getDesignerUrl();
+
+    @Default("AttachmentType.attachment")
+    String getDefaultAttachmentType();
 }

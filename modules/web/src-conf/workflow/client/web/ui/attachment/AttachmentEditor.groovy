@@ -38,6 +38,8 @@ import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHe
 import com.haulmont.workflow.core.entity.CardAttachment
 import java.text.DecimalFormat
 import com.haulmont.cuba.core.app.FileUploadService
+import com.haulmont.cuba.core.global.ConfigProvider
+import com.haulmont.workflow.core.global.WfConfig
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -150,7 +152,7 @@ public class AttachmentEditor extends AbstractEditor {
   }
 
   protected AttachmentType getDefaultAttachmentType() {
-    String defaultAttachmentCode = AppContext.getProperty('cuba.defaultAttachmentType')
+    String defaultAttachmentCode = ConfigProvider.getConfig(WfConfig.class).getDefaultAttachmentType()
     AttachmentType defaultAttachmentType = null
     if (defaultAttachmentCode != null) {
       attachTypesDs.getItemIds().each{UUID itemId ->

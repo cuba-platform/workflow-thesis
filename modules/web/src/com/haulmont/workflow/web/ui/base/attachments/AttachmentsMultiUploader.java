@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
+import com.haulmont.workflow.core.global.WfConfig;
 import com.vaadin.ui.Select;
 
 import java.util.*;
@@ -250,7 +252,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     }
 
     private AttachmentType getDefaultAttachmentType() {
-        String defaultAttachmentCode = AppContext.getProperty("cuba.defaultAttachmentType");
+        String defaultAttachmentCode = ConfigProvider.getConfig(WfConfig.class).getDefaultAttachmentType();
 
         AttachmentType defaultAttachmentType = null;
         if (defaultAttachmentCode != null) {

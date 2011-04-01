@@ -16,8 +16,8 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.Design;
@@ -57,7 +57,7 @@ public class DesignDeployer {
 
             Proc proc = procId != null ? em.find(Proc.class, procId) : null;
 
-            File dir = new File(ConfigProvider.getConfig(ServerConfig.class).getServerConfDir(), "process/" + procKey);
+            File dir = new File(ConfigProvider.getConfig(GlobalConfig.class).getConfDir(), "process/" + procKey);
             if (dir.exists()) {
                 backupExisting(dir);
             }
@@ -166,7 +166,7 @@ public class DesignDeployer {
     }
 
     private void backupExisting(File dir) throws IOException {
-        String tmpDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        String tmpDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File backupDir = new File(tmpDir, dir.getName() + ".backup");
         int i = 0;
         while (backupDir.exists()) {
