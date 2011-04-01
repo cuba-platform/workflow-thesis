@@ -14,30 +14,34 @@
     </dsContext>
 
     <layout>
-        <vbox id="tablePanel" expand="designTable">
+        <vbox id="tablePanel" expand="table">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="designTable.refresh" icon="icons/refresh.png"/>
                 <button action="designTable.create" icon="icons/create.png"/>
-                <button action="designTable.copy"/>
-                <button action="designTable.import" icon="icons/import.png"/>
-                <button action="designTable.export" icon="icons/export.png"/>
                 <button action="designTable.design" icon="icons/edit.png"/>
                 <button action="designTable.remove" icon="icons/remove.png"/>
-                <button action="designTable.scripts"/>
-                <popupButton id="notificationMatrix" caption="msg://notificationMatrix"/>
-                <button action="designTable.localize"/>
-                <button action="designTable.compile"/>
-                <button action="designTable.deploy"/>
+                <button action="designTable.refresh" icon="icons/refresh.png"/>
+                <button action="designTable.copy" icon="icons/copy.png"/>
             </hbox>
-            <table id="designTable">
-                <columns>
-                    <column id="name"/>
-                    <column id="createTs"/>
-                    <column id="notificationMatrixUploaded"/>
-                    <column id="compileTs"/>
-                </columns>
-                <rows datasource="designDs"/>
-            </table>
+            <hbox id="table" spacing="true" margin="true" width="100%" expand="designTable">
+                <table id="designTable">
+                    <columns>
+                        <column id="name"/>
+                        <column id="createTs"/>
+                        <column id="notificationMatrixUploaded"/>
+                        <column id="compileTs"/>
+                    </columns>
+                    <rows datasource="designDs"/>
+                </table>
+                <vbox id="rightPanel" width="180px" margin="true" spacing="true">
+                    <button width="100%" action="designTable.import" icon="icons/import.png"/>
+                    <button width="100%" action="designTable.export" icon="icons/export.png"/>
+                    <button width="100%" action="designTable.scripts" icon="icons/scripts.png"/>
+                    <popupButton width="100%" id="notificationMatrix" caption="msg://notificationMatrix"/>
+                    <button width="100%" action="designTable.localize"/>
+                    <button width="100%" action="designTable.compile" icon="icons/compile.png"/>
+                    <button width="100%" action="designTable.deploy" icon="icons/deploy.png"/>
+                </vbox>
+            </hbox>
         </vbox>
     </layout>
 </window>
