@@ -131,7 +131,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
             var lab = this.outputLabels[output.name];
             if (!lab) {
-                var labText = WireIt.cn('span',null,{backgroundColor:"#FFF" },output.name)
+                var labText = WireIt.cn('span',null,{backgroundColor:"#FFF" },output.name);
                 lab = WireIt.cn('div', null, style, null);
                 lab.appendChild(labText);
                 this.bodyEl.appendChild(lab);
