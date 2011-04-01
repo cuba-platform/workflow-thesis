@@ -100,27 +100,40 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
     renderOutputs: function() {
         var outputs = this.getOutputs();
-        var offset = Math.round((this.width - 30) / (outputs.length + 1));
+        var offset;
+        var margin=Math.round(20/Math.sqrt((outputs.length-1.9)));
+        if(outputs.length==1)
+            offset = Math.round((this.width)/2);
+        else
+            offset = Math.round((this.width-margin*2) / (outputs.length-1));
 
         for (var i = 0; i < outputs.length; i++) {
             var output = outputs[i];
 
             var style;
-            output.offsetPosition.left = offset * (i+1);
+            if (outputs.length == 1) {
+                output.offsetPosition.left = offset;
+            }
+            else
+                output.offsetPosition.left = offset * (i)+margin;
             if (this.direction=="down"){
-                output.setPosition({left: output.offsetPosition.left, bottom:-15});
-                style = {position: "absolute", left: output.offsetPosition.left+20+"px", bottom: "-15px", top: "auto"};
+                output.setPosition({left: output.offsetPosition.left-14, bottom:-15});
+                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+"px", bottom: "-25px",
+                    top: "auto",textAlign:"center", width:offset+"px" };
                 output.direction= [0,1];
             }
             else if(this.direction=="up"){
-                output.setPosition({left: output.offsetPosition.left, top:-15});
-                style = {position: "absolute", left: output.offsetPosition.left+20+"px", top:"-15px",bottom: "auto"};
+                output.setPosition({left: output.offsetPosition.left-14, top:-15});
+                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+"px",
+                    top:"-25px",bottom: "auto", textAlign:"center", width:offset+"px"};
                 output.direction= [0,-1];
             }
 
             var lab = this.outputLabels[output.name];
             if (!lab) {
-                lab = WireIt.cn('div', null, style, output.name);
+                var labText = WireIt.cn('span',null,{backgroundColor:"#FFF" },output.name)
+                lab = WireIt.cn('div', null, style, null);
+                lab.appendChild(labText);
                 this.bodyEl.appendChild(lab);
                 this.outputLabels[output.name] = lab;
             } else {
