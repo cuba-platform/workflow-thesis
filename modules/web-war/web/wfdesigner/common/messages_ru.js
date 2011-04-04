@@ -23,8 +23,6 @@ var i18nDict = {
     "name": "Наименование",
     "description": "Описание",
     "role": "Роль",
-    "noRole" : "Нет",
-    "roleExist" : "Есть",
 
     output: "Интерактивность на выходе",
 

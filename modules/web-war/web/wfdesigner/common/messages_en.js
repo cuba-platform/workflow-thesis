@@ -16,8 +16,6 @@ var i18nDict = {
     "name": "Name",
     "description": "Description",
     "role": "Role",
-    "noRole" : "No",
-    "roleExist" : "Exist",
 
     output: "Output Interactions",
 
