@@ -18,6 +18,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,7 +102,8 @@ public class DesignCompiler {
             String forms = compileForms(modules);
             saveDesignFile(design, "", "forms", forms, null);
 
-            if (design.getNotificationMatrixUploaded() != null && design.getNotificationMatrix().length > 0)
+            if (BooleanUtils.isTrue(design.getNotificationMatrixUploaded())
+                    && design.getNotificationMatrix().length > 0)
                 saveDesignFile(design, "", "notification", null, design.getNotificationMatrix());
 
             design.setCompileTs(TimeProvider.currentTimestamp());

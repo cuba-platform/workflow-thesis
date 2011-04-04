@@ -40,6 +40,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -850,7 +851,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private Set<String> getRequiredRolesCodes(boolean isAll) {
-        if (requiredRolesCodesStr != null) {
+        if (StringUtils.isNotEmpty(requiredRolesCodesStr)) {
             String[] s = requiredRolesCodesStr.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
             return new LinkedHashSet<String>(Arrays.asList(s));
         }
