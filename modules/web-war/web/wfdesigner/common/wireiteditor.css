@@ -239,6 +239,11 @@ div.WireIt-Container div.body {
     border-top: 0;
     color: #000;
 }
+
+div.WireIt-ImageContainer div.body div.terminalLabel {
+    background-color:#FFF;
+}
+
 div.WireIt-Container-focused div.body{
     border-color: #EB5B54;
 }

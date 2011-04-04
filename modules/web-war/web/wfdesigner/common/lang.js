@@ -420,7 +420,50 @@ var wfLanguage = {
                     }
                 ]
             }
-        }
+        },
+
+        {
+            "name": "IsRoleAssigned",
+            "label": "msg://IsRoleAssigned",
+            "category": "common",
+            "container": {
+                "xtype":"Wf.ImageContainer",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-Decision",
+                "icon": "../common/res/icons/isRoleAssigned_icon.png",
+                "image": "../common/res/icons/isRoleAssigned.png",
+                "selectedImage": "../common/res/icons/isRoleAssigned-selected.png",
+                "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "value": "msg://IsRoleAssigned"
+                    },
+                    {
+                        "type": "string",
+                        "label": "msg://role",
+                        "name": "roleKey",
+                        "value": "msg://role"
+                    }
+                ],
+                "terminals": [
+                    {
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in",
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    },
+                    {
+                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "no",
+                        "label": "msg://Decision.no", "labelPosition": {"left": -18, "top": 25},
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    },
+                    {
+                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "yes",
+                        "label": "msg://Decision.yes", "labelPosition": {"left": 45, "top": 25},
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    }
+                ]
+            }
+        },
 
     ]
 };

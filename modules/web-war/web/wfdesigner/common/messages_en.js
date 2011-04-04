@@ -10,9 +10,14 @@
  */
 
 var i18nDict = {
+    "Save": "Save",
+    "Help": "Help",
+
     "name": "Name",
     "description": "Description",
     "role": "Role",
+    "noRole" : "No",
+    "roleExist" : "Exist",
 
     output: "Output Interactions",
 
@@ -79,6 +84,7 @@ var i18nDict = {
     "Decision.no": "No",
     "Fork" : "Fork",
     "Join" : "Join",
+    "IsRoleAssigned" : "Is role assigned",
     ////////////////////////////////
     ///Messages
 

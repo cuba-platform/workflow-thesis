@@ -23,6 +23,8 @@ var i18nDict = {
     "name": "Наименование",
     "description": "Описание",
     "role": "Роль",
+    "noRole" : "Нет",
+    "roleExist" : "Есть",
 
     output: "Интерактивность на выходе",
 
@@ -89,6 +91,7 @@ var i18nDict = {
     "Decision.no": "Нет",
     "Fork" : "Ветвление",
     "Join" : "Объединение",
+    "IsRoleAssigned" : "Роль назначена",
 
     ////////////////////////////////
     ///Messages
