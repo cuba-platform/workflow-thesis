@@ -137,6 +137,17 @@ Wf.Editor = function(options) {
 };
 
 YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
+
+    render: function() {
+        WireIt.WiringEditor.superclass.render.call(this);
+	    this.layer = new Wf.Layer(this.options.layerOptions);
+		this.layer.eventChanged.subscribe(this.onLayerChanged, this, true);
+        // Left Accordion
+		this.renderModulesAccordion();
+        // Render module list
+	    this.buildModulesList();
+  	},
+    
     renderButtons : function() {
     var toolbar = YAHOO.util.Dom.get('toolbar');
 

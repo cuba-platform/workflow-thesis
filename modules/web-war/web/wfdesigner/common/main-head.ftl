@@ -93,3 +93,4 @@
 <script type="text/javascript" src="../common/image-container.js"></script>
 <script type="text/javascript" src="../common/multiout-container.js"></script>
 <script type="text/javascript" src="../common/bezierarrowwire.js"></script>
+<script type="text/javascript" src="../common/layer.js"></script>

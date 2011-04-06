@@ -4,7 +4,9 @@ body {
 	padding:0;
 	/*font-size: 10px;*/
 }
-
+div.WireIt-Layer{
+    overflow : hidden;
+}
 
 /* YUI layout */
 .yui-skin-sam .yui-layout .yui-layout-hd {
@@ -154,8 +156,70 @@ div.savedStatus {
 
 #center {
 	height: 100%;
+    width: 100%;
+    overflow:auto;  
 }
 
+/**
+ * BUTTONS
+ */
+
+#center div.heightArrows{
+  position: absolute;
+  bottom: 20px;
+  left:50%;
+}
+
+#center div.widthArrows{
+    position:absolute;
+    right:30px;
+    top:50%;
+}
+
+#center div.heightArrows div{
+    height:8px;
+    width:16px;
+    display:block;
+}
+#center div.widthArrows div{
+    height:16px;
+    width:8px;
+    display:block;
+}
+
+#center div.heightArrows div.arrowUp{
+    background-image: url("res/icons/arrow-up.png");
+
+
+}
+#center div.heightArrows div.arrowUp:hover{
+    background-image: url("res/icons/arrow-up-selected.png");
+}
+
+#center div.heightArrows div.arrowDown{
+    background-image: url("res/icons/arrow-down.png");
+    float:right;
+    margin-left:16px;
+}
+#center div.heightArrows div.arrowDown:hover{
+    background-image: url("res/icons/arrow-down-selected.png");
+}
+
+#center div.widthArrows div.arrowRight{
+    background-image: url("res/icons/arrow-right.png");
+
+
+}
+#center div.widthArrows div.arrowRight:hover{
+    background-image: url("res/icons/arrow-right-selected.png");
+}
+
+#center div.widthArrows div.arrowLeft{
+    background-image: url("res/icons/arrow-left.png");
+}
+#center div.widthArrows div.arrowLeft:hover{
+    background-image: url("res/icons/arrow-left-selected.png");
+}
 
 /**
  * RIGHT

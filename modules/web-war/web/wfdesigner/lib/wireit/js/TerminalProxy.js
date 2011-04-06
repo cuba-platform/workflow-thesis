@@ -20,6 +20,16 @@ WireIt.TerminalProxy = function(terminal, options) {
 	 */
 	this.terminal = terminal;
 
+    //Add for correct scrolling
+    this.xy = YAHOO.util.Dom.getXY(terminal.container.layer.parentEl);
+    this.scrollHeight = terminal.container.layer.parentEl.scrollHeight;
+    this.scrollWidth = terminal.container.layer.parentEl.scrollWidth;
+    this.clientHeight = terminal.container.layer.parentEl.clientHeight;
+    this.clientWidth = terminal.container.layer.parentEl.clientWidth;
+    this.xy = YAHOO.util.Dom.getXY(terminal.container.layer.parentEl);
+    this.setYConstraint();
+    this.setXConstraint();
+
 	/**
 	 * Object containing the configuration object
 	 * <ul>
@@ -43,7 +53,9 @@ WireIt.TerminalProxy = function(terminal, options) {
 	WireIt.TerminalProxy.superclass.constructor.call(this,this.terminal.el, undefined, {
 	   dragElId: "WireIt-TerminalProxy",
 	   resizeFrame: false,
-	   centerFrame: true
+	   centerFrame: true,
+       //Add for correct scrolling
+       scroll: false
 	});
 	
 };
@@ -52,6 +64,17 @@ WireIt.TerminalProxy = function(terminal, options) {
 util.DDM.mode = util.DDM.INTERSECT;
 
 lang.extend(WireIt.TerminalProxy, YAHOO.util.DDProxy, {
+    //Add variables for correct scrollingg
+    goingUp: false,
+    goingLeft: false,
+    lastY: 0,
+    lastX: 0,
+    overFlow: 5,
+    dragger: null,
+    scrollBy: 0,
+    scrollByW: 0,
+    scrollInt: null,
+    scrollIntW:null,
 
 	/**
 	 * Took this method from the YAHOO.util.DDProxy class
@@ -138,10 +161,69 @@ lang.extend(WireIt.TerminalProxy, YAHOO.util.DDProxy, {
    
 	   // Prevention when the editing wire could not be created (due to nMaxWires)
 	   if(!this.editingWire) { return; }
-   
-	   if(this.terminal.container) {
-			var obj = this.terminal.container.layer.el;
-         var curleft = 0;
+
+       //Add for correct scrolling
+       if (this.terminal.container) {
+            var layer = this.terminal.container.layer;
+            var obj = layer.el;
+
+            var y = YAHOO.util.Event.getPageY(e);
+            var x = YAHOO.util.Event.getPageX(e);
+
+            if (y < this.lastY)
+                this.goingUp = true;
+            else if (y > this.lastY)
+                this.goingUp = false;
+            this.lastY = y;
+
+            if (x < this.lastX)
+                this.goingLeft = true;
+            else if (x > this.lastX)
+                this.goingLeft = false;
+
+            this.lastX = x;
+
+            var pageY = YAHOO.util.Event.getPageY(e);
+            var ch = this.getDragEl().clientHeight;
+            var scrollTop = false;
+
+            var pageX = YAHOO.util.Event.getPageX(e);
+            var cw = this.getDragEl().clientWidth;
+            var scrollLeft = false;
+
+            this.scrollBy = ((ch * 2) + this.overFlow);
+
+            this.scrollByW = ((cw * 2) + this.overFlow);
+
+            if (this.goingUp) {
+                var deltaTop = this.xy[1] + (ch + this.overFlow);
+                if (pageY < deltaTop) {
+                    scrollTop = layer.parentEl.scrollTop - this.scrollBy;
+                }
+            } else {
+                var deltaBottom = this.clientHeight + this.xy[1] - (ch + this.overFlow);
+                if ((pageY > deltaBottom)) {
+                    scrollTop = layer.parentEl.scrollTop + this.scrollBy;
+                }
+            }
+
+            if (this.goingLeft) {
+                var deltaLeft = this.xy[0] + (cw + this.overFlow);
+                if (pageX < deltaLeft) {
+                    scrollLeft = layer.parentEl.scrollLeft - this.scrollByW;
+                }
+            } else {
+                var deltaRight = this.clientWidth + this.xy[0] - (cw + this.overFlow);
+                if (pageX > deltaRight) {
+                    scrollLeft = layer.parentEl.scrollLeft + this.scrollByW;
+                }
+            }
+
+            this.scrollTo(scrollTop, scrollLeft, layer.parentEl);
+
+            //end of add
+
+            var curleft = 0;
          // Applied patch from http://github.com/neyric/wireit/issues/#issue/27
          // Fixes issue with Wire arrow being drawn offset to the mouse pointer
          var curtop = 0;
@@ -159,9 +241,50 @@ lang.extend(WireIt.TerminalProxy, YAHOO.util.DDProxy, {
 	   }
 	   this.editingWire.redraw();
 	},
+    //Add for correct scrolling
+    scrollTo: function(scrollTop, scrollLeft, element) {
+        this.currentScrollTop = scrollTop;
+        this.currentScrollLeft = scrollLeft;
+        if (this.scrollInt) {
+            clearInterval(this.scrollInt);
+        }
+        if (this.scrollIntW) {
+            clearInterval(this.scrollIntW);
+        }
+        if (scrollTop) {
+            var self = this;
+            this.scrollInt = setInterval(function() {
+                if ((self.currentScrollTop < 0) || (self.currentScrollTop > self.scrollHeight)) {
+                    clearInterval(self.scrollInt);
+                }
+                element.scrollTop = self.currentScrollTop;
+                YAHOO.util.DragDropMgr.refreshCache();
+                if (self.goingUp) {
+                    self.currentScrollTop = self.currentScrollTop - self.scrollBy;
+                } else {
+                    self.currentScrollTop = self.currentScrollTop + self.scrollBy;
+                }
+            }, 10);
+        }
+        if (scrollLeft) {
+            var self = this;
+            this.scrollIntW = setInterval(function() {
+                if ((self.currentScrollLeft < 0) || (self.currentScrollLeft > self.scrollWidth)) {
+                    clearInterval(self.scrollIntW);
+                }
+                element.scrollLeft = self.currentScrollLeft;
+                YAHOO.util.DragDropMgr.refreshCache();
+                if (self.goingLeft) {
+                    self.currentScrollLeft = self.currentScrollLeft - self.scrollByW;
+                }
+                else {
+                    self.currentScrollLeft = self.currentScrollLeft + self.scrollByW;
+                }
+            }, 10);
+        }
+    },
 
-
-	/**
+    /**
 	 * @method endDrag
 	 */
 	endDrag: function(e) {
