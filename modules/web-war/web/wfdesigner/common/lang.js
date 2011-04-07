@@ -386,6 +386,11 @@ var wfLanguage = {
                         "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "out2",
 
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    },
+                    {
+                        "direction": [0,1], "offsetPosition": {"left": 8, "top": 30 }, "name": "out3",
+
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]
             }

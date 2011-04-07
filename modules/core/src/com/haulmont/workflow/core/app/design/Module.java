@@ -48,9 +48,9 @@ public abstract class Module {
     }
 
     protected static class Transition {
-        String srcTerminal;
-        String dstName;
-        String dstTerminal;
+        public String srcTerminal;
+        public String dstName;
+        public String dstTerminal;
     }
 
     protected Context context;

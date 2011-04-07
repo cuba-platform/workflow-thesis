@@ -33,6 +33,13 @@ public class ForkModule extends Module {
         }
     }
 
+    protected void writeJpdlTransitions(Element parentEl) {
+        for (Transition transition : transitions) {
+            Element trEl = parentEl.addElement("transition");
+            trEl.addAttribute("to", transition.dstName);
+        }
+    }
+
     @Override
     public Element writeJpdlMainEl(Element parentEl) {
         Element el = parentEl.addElement("fork");
