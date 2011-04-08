@@ -31,6 +31,7 @@
                 <entry key="Fork" value="com.haulmont.workflow.core.app.design.modules.ForkModule"/>
                 <entry key="Join" value="com.haulmont.workflow.core.app.design.modules.JoinModule"/>
                 <entry key="IsRoleAssigned" value="com.haulmont.workflow.core.app.design.modules.IsRoleAssignedModule"/>
+                <entry key="EmptyModule" value="com.haulmont.workflow.core.app.design.modules.EmptyModule" />
             </map>
         </property>
         <property name="formCompiler" ref="workflow_FormCompiler"/>

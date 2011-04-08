@@ -63,7 +63,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
    },
 
    onUpdateForm : function(type, args) {
-      
+
       if(!this.optionsValue){
           this.optionsValue = this.optionsForm.getValue();
       }
@@ -165,8 +165,12 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     },
 
     changeDirection : function() {
-        if(this.direction=="down"){this.direction="up";}
-        else if(this.direction="up"){this.direction="down";}
+        if (this.direction == "down")
+            this.direction = "up";
+
+        else if (this.direction == "up")
+            this.direction = "down";
+
         this.renderInput();
         this.renderOutputs();
         this.layer.eventChanged.fire();

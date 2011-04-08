@@ -47,7 +47,8 @@ div.inputEx-Group div.inputEx-label {
 }
 
 div.WireIt-ImageContainer {
-    width: auto;
+    width: 45px;
+    height: 46px;
 }
 
 div.Bubble div.body {
@@ -88,27 +89,15 @@ div.Wf-MultiOutContainer-link {
     margin-right:auto;
 }
 
-
-div.Wf-Decision {
-    width: 80px;
-}
-
-div.Wf-Decision div.body {
-	width: 60px;
-	height: 50px;
-	background-color: transparent;
+div.WireIt-ImageContainer div.body{
+    width:65px;
+    height:45px;
+    background-color: transparent;
 	background-repeat: no-repeat;
 	border: 0;
 	cursor: move;
 }
-div.Wf-Fork div.body {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    border: 0 none;
-    cursor: move;
-    height: 50px;
-    width: 70px;
-}
+
 div.Wf-Container-change {
     background-image: url("res/icons/change_direction.png");
     cursor: pointer;
@@ -117,6 +106,7 @@ div.Wf-Container-change {
     right: 20px;
     top: 4px;
     width: 16px;
+    z-index: 7;
 }
 
 .yui-accordion-content, .yui-accordion-content #optionsForm,.yui-accordion-content #propertiesForm{

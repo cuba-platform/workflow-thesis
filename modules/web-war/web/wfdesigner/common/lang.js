@@ -347,8 +347,8 @@ var wfLanguage = {
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "no",
-                        "label": "msg://Decision.no", "labelPosition": {"left": 45, "top": 25},
+                        "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "no",
+                        "label": "msg://Decision.no", "labelPosition": {"right": -20, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]
@@ -383,12 +383,12 @@ var wfLanguage = {
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "out2",
+                        "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "out2",
 
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [0,1], "offsetPosition": {"left": 8, "top": 30 }, "name": "out3",
+                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "out3",
 
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
@@ -401,7 +401,7 @@ var wfLanguage = {
             "category" : "common",
             "container" : {
                 "xtype":"Wf.ImageContainer",
-                "className": "WireIt-Container WireIt-ImageContainer Wf-Fork",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-Join",
                 "icon": "../common/res/icons/join_icon.png",
                 "image": "../common/res/icons/join.png",
                 "selectedImage": "../common/res/icons/join-selected.png",
@@ -416,7 +416,7 @@ var wfLanguage = {
                 ],
                 "terminals": [
                     {
-                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": 0 }, "name": "out",
+                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "out",
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
@@ -433,7 +433,7 @@ var wfLanguage = {
             "category": "common",
             "container": {
                 "xtype":"Wf.ImageContainer",
-                "className": "WireIt-Container WireIt-ImageContainer Wf-Decision",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-IsRoleAssigned",
                 "icon": "../common/res/icons/isRoleAssigned_icon.png",
                 "image": "../common/res/icons/isRoleAssigned.png",
                 "selectedImage": "../common/res/icons/isRoleAssigned-selected.png",
@@ -457,18 +457,49 @@ var wfLanguage = {
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     },
                     {
-                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "no",
+                        "direction": [-1,0], "offsetPosition": {"left": -14, "bottom": 8 }, "name": "no",
                         "label": "msg://Decision.no", "labelPosition": {"left": -18, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [1,0], "offsetPosition": {"left": 30, "top": 8 }, "name": "yes",
-                        "label": "msg://Decision.yes", "labelPosition": {"left": 45, "top": 25},
+                        "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "yes",
+                        "label": "msg://Decision.yes", "labelPosition": {"right": -20, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]
             }
         },
+        {
+            "name": "EmptyModule",
+            "label": "msg://EmptyModule",
+            "category": "common",
+            "container": {
+                "xtype":"Wf.ImageContainer",
+                "className": "WireIt-Container WireIt-ImageContainer Wf-EmptyModule",
+                "icon": "../common/res/icons/emptyModule_icon.png",
+                "image": "../common/res/icons/emptyModule.png",
+                "selectedImage": "../common/res/icons/emptyModule-selected.png",
+                "optFields": [
+                    {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "value": "msg://EmptyModule"
+                    },
+
+                ],
+                "terminals": [
+                    {
+                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "in",
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    },
+                    {
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "out",
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                    }
+                ]
+            }
+        }
 
     ]
 };

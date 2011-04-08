@@ -157,7 +157,7 @@ div.savedStatus {
 #center {
 	height: 100%;
     width: 100%;
-    overflow:auto;  
+    overflow:auto;
 }
 
 /**
@@ -325,6 +325,30 @@ div.WiringEditor-module-Start div.body,div.WiringEditor-module-End div.body{
 div.WireIt-Container-closebutton {
     background-image: url("./res/icons/cancel.png");
 }
+
+div.WireIt-ImageContainer div.WireIt-Container-closebutton {
+    top:-4px;
+    right:-30px;
+}
+
+div.WireIt-ImageContainer-turnbutton {
+    background-image: url("./res/icons/change_direction.png");
+    cursor:pointer;
+    height: 16px;
+    width: 16px;
+    position:absolute;
+    right:-14px;
+    top:-4px;
+}
+
+div.WireIt-ImageContainer div.WireIt-ImageContainer-turnbutton{
+    display:none;
+}
+
+div.WireIt-ImageContainer:hover div.WireIt-ImageContainer-turnbutton{
+    display:block;
+}
+
 
 .Wf-MultiOutContainer-link{
     text-align: center;

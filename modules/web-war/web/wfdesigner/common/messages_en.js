@@ -83,6 +83,8 @@ var i18nDict = {
     "Fork" : "Fork",
     "Join" : "Join",
     "IsRoleAssigned" : "Is role assigned",
+    "EmptyModule" : "Empty Module",
+    
     ////////////////////////////////
     ///Messages
 
