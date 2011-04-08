@@ -10,8 +10,10 @@
  */
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -29,6 +31,10 @@ public class DecisionModule extends Module {
     public void init(Context context) throws DesignCompilationException {
         super.init(context);
         jsOptions = jsValue.optJSONObject("options");
+
+        String name = jsOptions.optString("name");
+        if (!StringUtils.isBlank(name))
+            this.name = WfUtils.encodeKey(name);
 
         String script = null;
         this.scriptFileName = null;
