@@ -320,15 +320,82 @@ public class DesignCompiler {
         }
 
         JSONArray jsWires = jsWorking.getJSONArray("wires");
+        addTransitions(modules,jsModules,jsWires);
+    }
+
+    private void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires) throws JSONException {
+        Map<Integer, Module> otherModules = new HashMap<Integer, Module>();
+        for (int i = 0; i < modules.size(); i++) {
+            //Key - terminal name
+            Map<String, List<TransitionParams>> moduleTransitionsParams = getModuleTransitionsParams(modules.get(i), i, jsWires);
+            JSONObject jsModule = jsModules.getJSONObject(i);
+            JSONArray outputs;
+            try {
+                outputs = jsModule.getJSONObject("value").getJSONArray("outputs");
+            }
+            catch (JSONException e) {
+                //If module haven't outputs array
+                otherModules.put(i, modules.get(i));
+                continue;
+            }
+
+            for (int j = 0; j < outputs.length(); j++) {
+                String terminalName = outputs.getJSONObject(j).getString("name");
+                List<TransitionParams> currParamsList = moduleTransitionsParams.get(terminalName);
+                for (TransitionParams currParams : currParamsList) {
+                    modules.get(i).addTransition(terminalName,
+                            modules.get(currParams.dstModuleId),
+                            currParams.dstModuleTerminal);
+                }
+                moduleTransitionsParams.remove(currParamsList);
+            }
+        }
+        //Other modules(without outputs array)
+        Set<Map.Entry<Integer, Module>> otherModulesSet = otherModules.entrySet();
+        for (Map.Entry<Integer, Module> entry : otherModulesSet) {
+            Map<String, List<TransitionParams>> moduleTransitionsParams = getModuleTransitionsParams(entry.getValue(), entry.getKey(), jsWires);
+
+            Set<Map.Entry<String, List<TransitionParams>>> set = moduleTransitionsParams.entrySet();
+            for (Map.Entry<String, List<TransitionParams>> transitionParamsEntry : set) {
+                for (TransitionParams currentParams : transitionParamsEntry.getValue()) {
+                    entry.getValue().addTransition(transitionParamsEntry.getKey(),
+                            modules.get(currentParams.dstModuleId),
+                            currentParams.dstModuleTerminal);
+                }
+            }
+        }
+    }
+
+    private Map<String, List<TransitionParams>> getModuleTransitionsParams(Module module, int moduleId, JSONArray jsWires) throws JSONException {
+        Map<String, List<TransitionParams>> wires = new HashMap<String, List<TransitionParams>>();
+
         for (int i = 0; i < jsWires.length(); i++) {
             JSONObject jsWire = jsWires.getJSONObject(i);
             JSONObject jsWireSrc = jsWire.getJSONObject("src");
-            JSONObject jsWireDst = jsWire.getJSONObject("tgt");
-
-            Module srcModule = modules.get(jsWireSrc.getInt("moduleId"));
-            Module dstModule = modules.get(jsWireDst.getInt("moduleId"));
-            srcModule.addTransition(jsWireSrc.getString("terminal"), dstModule, jsWireDst.getString("terminal"));
+            if (moduleId == jsWireSrc.getInt("moduleId")) {
+                JSONObject jsWireDst = jsWire.getJSONObject("tgt");
+                if (wires.containsKey(jsWireSrc.getString("terminal"))) {
+                    wires.get(jsWireSrc.getString("terminal")).add(
+                            new TransitionParams(jsWireDst.getInt("moduleId"),jsWireDst.getString("terminal")));
+                } else {
+                    TransitionParams params = new TransitionParams(jsWireDst.getInt("moduleId"), jsWireDst.getString("terminal"));
+                    List<TransitionParams> list = new LinkedList<TransitionParams>();
+                    list.add(params);
+                    wires.put(jsWireSrc.getString("terminal"), list);
+                }
+            }
         }
+
+        return wires;
+    }
+
+    private class TransitionParams {
+        TransitionParams(int dstModuleId, String dstModuleTerminal) {
+            this.dstModuleId = dstModuleId;
+            this.dstModuleTerminal = dstModuleTerminal;
+        }
+        int dstModuleId;
+        String dstModuleTerminal;
     }
 
     private void cleanup(Design design) {
