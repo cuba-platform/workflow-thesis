@@ -33,7 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.*;
 
 public class DesignCompiler {
@@ -167,7 +166,7 @@ public class DesignCompiler {
         return rolesList;
     }
 
-    private Map<String, String> parseStates(Document document) throws UnsupportedEncodingException {
+    private Map<String, String> parseStates(Document document,Properties properties) throws UnsupportedEncodingException {
         Map<String, String> states = new HashMap<String, String>();
         List<Element> elements = document.getRootElement().elements("custom");
         for (Element element : elements) {
@@ -175,12 +174,10 @@ public class DesignCompiler {
             List<Element> transitions = element.elements("transition");
             for (Element transition : transitions) {
                 String stateKey = transition.attributeValue("to");
-                String stateName = URLDecoder.decode(elementKey + '.' + stateKey, "UTF-8");
+                String stateName =properties.getProperty(elementKey) +'.'+ properties.getProperty(stateKey);
                 states.put(elementKey+", "+elementKey + '.' + stateKey, stateName);
             }
-
         }
-
         return states;
     }
 
@@ -266,33 +263,67 @@ public class DesignCompiler {
     }
 
 
-
     public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException, DesignCompilationException {
-        String jpdl = compileDesignJpdl(designId);
+        Transaction tx = Locator.createTransaction();
+        List<DesignFile> files = null;
         try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query q = em.createQuery();
+            q.setQueryString("select  df from wf$DesignFile df where df.design.id=?1 and (df.type='messages' or df.type='jpdl' )");
+            q.setParameter(1, designId);
+            files = q.getResultList();
+            tx.commit();
+        }
+        finally {
+            tx.end();
+        }
+        try {
+
+            Locale locale = SecurityProvider.currentUserSession().getLocale();
+            String lang = locale.getLanguage();
+            String fileName = "messages" + ("en".equals(lang) ? ("") : ("_" + lang)) + ".properties";
+            //Find current locale messages
+            String messages = null;
+            for (DesignFile file : files) {
+                if (file.getName().equals(fileName)) {
+                    messages = file.getContent();
+                    break;
+                }
+            }
+
+            Properties properties = new Properties();
+            properties.load(new StringReader(messages));
+
+            String jpdl = null;
+            for (DesignFile file : files) {
+                if ("jpdl".equals(file.getType())) {
+                    jpdl = file.getContent();
+                    break;
+                }
+            }
 
             Document document = DocumentHelper.parseText(jpdl);
             String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
             Workbook wb = new HSSFWorkbook(new FileInputStream(confDir + "/workflow/" + "NotificationMatrixTemplate.xls"));
 
             List<String> rolesList = parseRoles(document);
-            Map<String, String> states = parseStates(document);
+            Map<String, String> states = parseStates(document, properties);
             createRolesSheet(wb, rolesList);
             createStatesSheet(wb, states);
-            createNotificationSheet(wb, rolesList, states.values(),"Mail");
-            createNotificationSheet(wb, rolesList, states.values(),"Tray");
-
+            createNotificationSheet(wb, rolesList, states.values(), "Mail");
+            createNotificationSheet(wb, rolesList, states.values(), "Tray");
 
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             wb.write(buffer);
             return buffer.toByteArray();
-
         } catch (DocumentException e) {
             throw new TemplateGenerationException(e);
         } catch (IOException e) {
             throw new TemplateGenerationException(e);
         }
-
+        finally {
+            tx.end();
+        }
     }
 
 
