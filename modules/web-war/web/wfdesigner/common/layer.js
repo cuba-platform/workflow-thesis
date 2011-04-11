@@ -59,6 +59,38 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
 
     },
 
+    addContainer: function(containerConfig) {
+        var currNumber = 0;
+        for (var i = 0; i < this.containers.length; i++) {
+            var cont = this.containers[i];
+            if (cont.moduleName == containerConfig.moduleName) {
+                if (cont.number > currNumber) {
+                    currNumber = cont.number;
+                }
+            }
+        }
+        var klass = WireIt.containerClassFromXtype(containerConfig.xtype);
+
+        var container = new klass(containerConfig, this);
+        if (containerConfig.moduleName != 'Start') {
+            container.number = currNumber + 1;
+            var optField;
+            for (var j = 0; j < containerConfig.optFields.length; j++) {
+                if (containerConfig.optFields[j].name == 'name') {
+                    optField = containerConfig.optFields[j];
+                    break;
+                }
+            }
+            if (container.form) {
+
+                container.form.setValue({name:optField.value + container.number}, false);
+            }
+            container.optionsValue = {name: optField.value + container.number};
+        }
+
+        return this.addContainerDirect(container);
+    },
+
     scrollDown : function(type, args) {
         args['height'] += 300;
         WireIt.sn(args['el'], null, {height: args['height'] + 'px'});
