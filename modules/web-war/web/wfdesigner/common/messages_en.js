@@ -54,6 +54,7 @@ var i18nDict = {
     "Timer.script": "Script",
     "Timer.dueDate": "Due date",
     "Timer.business": "business",
+    "Timer.calendar" : "calendar",
     "Timer.minute": "minute",
     "Timer.hour": "hour",
     "Timer.day": "day",

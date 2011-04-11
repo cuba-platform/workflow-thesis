@@ -83,7 +83,7 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
                 type: 'combine', label: i18n.get('Timer.dueDate'), name: 'dueDate', fields: [
                     {type: 'integer', name: 'qty', className: 'Wf-TimerSelect-dueDate-qty'},
                     {type: 'select', name: 'calendar', choices: [
-                        '',
+                        {value: '', label: i18n.get('Timer.calendar')},
                         {value: 'business', label: i18n.get('Timer.business')}
                     ]},
                     {type: 'select', name: 'interval', choices: [

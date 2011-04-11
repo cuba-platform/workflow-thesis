@@ -61,6 +61,7 @@ var i18nDict = {
     "Timer.script": "Скрипт",
     "Timer.dueDate": "Через",
     "Timer.business": "рабочих",
+    "Timer.calendar" : "календарных",
     "Timer.minute": "минут",
     "Timer.hour": "часов",
     "Timer.day": "дней",
