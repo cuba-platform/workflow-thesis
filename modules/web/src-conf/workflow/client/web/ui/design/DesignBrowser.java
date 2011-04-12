@@ -420,18 +420,16 @@ public class DesignBrowser extends AbstractWindow {
             try {
                 if (!selected.isEmpty()) {
                     final Design design = (Design) selected.iterator().next();
-                    WebExportDisplay export = new WebExportDisplay(true, false);
+                    if (design.getCompileTs() != null) {
+                        WebExportDisplay export = new WebExportDisplay(true, false);
 
-                    byte[] bytes = service.getNotificationMatrixTemplate(design.getUuid());
-                    ByteArrayDataProvider array = new ByteArrayDataProvider(bytes);
-                    export.show(array, "NotificationMatrix", ExportFormat.XLS);
+                        byte[] bytes = service.getNotificationMatrixTemplate(design.getUuid());
+                        ByteArrayDataProvider array = new ByteArrayDataProvider(bytes);
+                        export.show(array, "NotificationMatrix", ExportFormat.XLS);
+                    } else {
+                        showNotification(getMessage("notification.CompileDesignBefore"), NotificationType.HUMANIZED);
+                    }
                 }
-            } catch (DesignCompilationException e) {
-                showNotification(
-                        getMessage("notification.createTemplateFailed"),
-                        e.getMessage(),
-                        NotificationType.ERROR
-                );
             } catch (TemplateGenerationException e) {
                 showNotification(
                         getMessage("notification.createTemplateFailed"),

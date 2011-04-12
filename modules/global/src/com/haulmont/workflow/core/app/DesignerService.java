@@ -32,11 +32,13 @@ public interface DesignerService {
 
     void deployDesign(UUID designId, UUID procId) throws DesignDeploymentException;
 
-    byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException,TemplateGenerationException;
+    byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException;
 
     Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages) throws DesignCompilationException;
 
     byte[] exportDesign(Design design) throws IOException, FileStorageException;
 
     Design importDesign(byte[] bytes) throws IOException, FileStorageException;
+
+    void saveNotificationMatrixFile(Design design);
 }

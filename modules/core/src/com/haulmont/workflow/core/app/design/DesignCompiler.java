@@ -263,7 +263,7 @@ public class DesignCompiler {
     }
 
 
-    public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException, DesignCompilationException {
+    public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException {
         Transaction tx = Locator.createTransaction();
         List<DesignFile> files = null;
         try {

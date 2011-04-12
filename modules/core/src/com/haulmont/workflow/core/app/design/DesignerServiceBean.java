@@ -19,10 +19,12 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.workflow.core.DesignImportExportHelper;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
+import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -125,7 +127,28 @@ public class DesignerServiceBean implements DesignerService {
         return DesignImportExportHelper.importDesign(bytes);
     }
 
-    public byte[] getNotificationMatrixTemplate(UUID designId) throws DesignCompilationException, TemplateGenerationException {
+    public byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException {
         return this.compiler.compileXlsTemplate(designId);
+    }
+
+    public void saveNotificationMatrixFile(Design design) {
+        if (BooleanUtils.isTrue(design.getNotificationMatrixUploaded()) &&
+                (design.getNotificationMatrix().length > 0)) {
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                DesignFile df = new DesignFile();
+                df.setDesign(design);
+                df.setContent(null);
+                df.setBinaryContent(design.getNotificationMatrix());
+                df.setName("");
+                df.setType("notification");
+                em.persist(df);
+
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
     }
 }

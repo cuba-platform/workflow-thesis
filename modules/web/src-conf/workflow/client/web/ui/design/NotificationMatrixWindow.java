@@ -11,8 +11,10 @@
 package workflow.client.web.ui.design;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 
 import java.util.Map;
@@ -49,6 +51,9 @@ public class NotificationMatrixWindow extends AbstractEditor {
                     public void uploadSucceeded(Event event) {
                         ds.getItem().setNotificationMatrix(uploadField.getBytes());
                         ds.getItem().setNotificationMatrixUploaded(true);
+
+                        DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
+                        service.saveNotificationMatrixFile(ds.getItem());
 
                         fileNameField.setEditable(true);
                         fileNameField.setValue(uploadField.getFilePath());
