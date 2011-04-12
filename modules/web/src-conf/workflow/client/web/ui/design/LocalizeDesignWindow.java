@@ -15,6 +15,7 @@ import com.google.common.collect.HashBiMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.AbstractEditor;
@@ -29,6 +30,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignLocKey;
 import com.haulmont.workflow.core.entity.DesignLocValue;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -49,6 +51,25 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private BiMap<Element, DesignLocKey> keysMap;
     private BiMap<Element, DesignLocValue> valuesMap;
 
+    private enum type {
+
+        ACTION("action"),
+        STATE("state"),
+        TRANSITION("transition"),
+        RESULT("result"),
+        DESCRIPTION("description");
+
+        private String aType;
+
+        type(String result) {
+            this.aType = result;
+        }
+
+        public String type(){
+            return this.aType;
+        }
+    }
+
     public LocalizeDesignWindow(IFrame frame) {
         super(frame);
         keysMap = HashBiMap.create();
@@ -63,7 +84,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
         keysDs = getDsContext().get("keysDs");
         valuesDs = getDsContext().get("valuesDs");
 
-        Map<String,Locale> locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
+        Map<String,Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
         List<String> languages = new ArrayList<String>(locales.size());
         for (Locale locale : locales.values()) {
             languages.add(locale.toString());
@@ -177,14 +198,29 @@ public class LocalizeDesignWindow extends AbstractEditor {
         for (Element keyEl : Dom4j.elements(element, "key")) {
             String id = keyEl.attributeValue("id");
             String propName = getKeyPath(parent, id);
+            String description = "";
 
+            if (WfConstants.ACTION_START.equals(id) ||
+                    WfConstants.ACTION_SAVE_AND_CLOSE.equals(id) ||
+                    WfConstants.ACTION_SAVE.equals(id) ||
+                    WfConstants.ACTION_CANCEL.equals(id)) {
+                description = type.ACTION.type();
+            } else if (id.equals("description")) {
+                description = type.DESCRIPTION.type();
+            } else if (id.equals("Result")) {
+                description = type.RESULT.type();
+            } else if (parent == null) {
+                description = type.STATE.type();
+            } else if (parent.getParentKey() == null) {
+                description = type.TRANSITION.type();
+            }
             String property = properties.getProperty(propName);
             DesignLocKey designLocKey = null;
             if (property != null) {
                 designLocKey = new DesignLocKey();
                 designLocKey.setKey(id);
                 designLocKey.setParentKey(parent);
-                designLocKey.setCaption(property);
+                designLocKey.setCaption(property+' '+ '('+getMessage(description)+')');
 
                 keysMap.put(keyEl, designLocKey);
             }
@@ -206,6 +242,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
             String[] parts = propName.split("\\.");
             Element element = rootEl;
             StringBuilder path = new StringBuilder();
+            int level=0;
             for (String part : parts) {
                 Element partEl = null;
                 if (path.length() > 0)
@@ -218,6 +255,24 @@ public class LocalizeDesignWindow extends AbstractEditor {
                         break;
                     }
                 }
+
+                String description = "";
+
+                if (WfConstants.ACTION_START.equals(part) ||
+                        WfConstants.ACTION_SAVE_AND_CLOSE.equals(part) ||
+                        WfConstants.ACTION_SAVE.equals(part) ||
+                        WfConstants.ACTION_CANCEL.equals(part)) {
+                    description = type.ACTION.type();
+                } else if (part.equals("description")) {
+                    description = type.DESCRIPTION.type();
+                } else if (part.equals("Result")) {
+                    description = type.RESULT.type();
+                } else if (level == 0) {
+                    description = type.STATE.type();
+                } else if (level == 1) {
+                    description = type.TRANSITION.type();
+                }
+
                 if (partEl == null) {
                     partEl = element.addElement("key");
                     partEl.addAttribute("id", part);
@@ -225,11 +280,12 @@ public class LocalizeDesignWindow extends AbstractEditor {
                     DesignLocKey designLocKey = new DesignLocKey();
                     designLocKey.setKey(part);
                     designLocKey.setParentKey(keysMap.get(element));
-                    designLocKey.setCaption(properties.getProperty(path.toString(), part));
+                    designLocKey.setCaption(properties.getProperty(path.toString(), part)+' '+ '('+getMessage(description)+')');
 
                     keysMap.put(partEl, designLocKey);
                 }
                 element = partEl;
+                level++;
             }
         }
     }
