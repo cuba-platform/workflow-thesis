@@ -56,6 +56,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     private Set<Listener> listeners = new LinkedHashSet<Listener>();
 
+    private final String PARALLEL_ASSIGMENT_CLASS = "workflow.activity.ParallelAssigner";
+
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {
         this.jbpmConfiguration = jbpmConfiguration;
@@ -174,6 +176,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
         RepositoryService rs = getProcessEngine().getRepositoryService();
         Set<String> resourceNames = rs.getResourceNames(deploymentId);
+        List<String> multiUserRoles = new ArrayList<String>();
         for (String resourceName : resourceNames) {
             if (resourceName.endsWith(".jpdl.xml")) {
                 InputStream is = rs.getResourceAsStream(deploymentId, resourceName);
@@ -181,6 +184,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Element root = doc.getRootElement();
                 for (Element stateElem : Dom4j.elements(root)) {
                     String state = stateElem.attributeValue("name");
+                    String clazz=stateElem.attributeValue("class");
+
                     if ("custom".equals(stateElem.getName())) {
                         if (StringUtils.isNotBlank(state))
                         states += state + ",";
@@ -195,6 +200,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                                     String[] strings = role.split(",");
                                     for (String string : strings) {
                                         roles.add(string.trim());
+                                        if (PARALLEL_ASSIGMENT_CLASS.equals(clazz)) {
+                                            multiUserRoles.add(string.trim());
+                                        }
                                     }
                                 }
                             }
@@ -220,7 +228,13 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     procRole.setProc(proc);
                     procRole.setCode(role);
                     procRole.setName(role);
-                    if (WfConstants.CARD_CREATOR.equals(role)) procRole.setInvisible(true);
+                    if (WfConstants.CARD_CREATOR.equals(role)){
+                        procRole.setInvisible(true);
+                        procRole.setAssignToCreator(true);
+                    }
+                    if(multiUserRoles.contains(role)){
+                        procRole.setMultiUser(true);
+                    }
                     em.persist(procRole);
                 }
             }
