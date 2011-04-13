@@ -225,12 +225,27 @@ public class WfServiceBean implements WfService {
 
     public boolean isCurrentUserContainsRole(Role role) {
         boolean isRoleContains = false;
-        Set<UserRole> userRoles =  SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser().getUserRoles();
-        for (UserRole userRole : userRoles) {
-            if (userRole.getRole().equals(role)) {
-                isRoleContains = true;
+        User user = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query q = em.createQuery();
+
+            q.setQueryString("select r from sec$UserRole r where r.user.id=:userId");
+            q.setParameter("userId", user.getId());
+            List<UserRole> userRoles = q.getResultList();
+
+            for (UserRole userRole : userRoles) {
+                if (userRole.getRole().equals(role)) {
+                    isRoleContains = true;
+                }
             }
+            tx.commit();
+            return isRoleContains;
+
+        } finally {
+            tx.end();
         }
-        return isRoleContains;
     }
 }
