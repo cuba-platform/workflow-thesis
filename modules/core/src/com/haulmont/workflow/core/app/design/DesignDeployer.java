@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
@@ -41,7 +42,7 @@ public class DesignDeployer {
 
     private Log log = LogFactory.getLog(DesignDeployer.class);
 
-    public void deployDesign(UUID designId, UUID procId) {
+    public void deployDesign(UUID designId, UUID procId, Role role) {
         Preconditions.checkArgument(designId != null, "designId is null");
 
         log.info("Deploying design " + designId + " into process " + procId);
@@ -69,7 +70,10 @@ public class DesignDeployer {
                     .setParameter(1, designId)
                     .getResultList();
 
-            deployJpdl(design, designFiles, procKey, proc, dir);
+            proc = deployJpdl(design, designFiles, procKey, proc, dir);
+
+            if (role!=null)
+                proc.setAvailableRole(role);
 
             deployMessages(designFiles, dir);
 
@@ -89,7 +93,7 @@ public class DesignDeployer {
         }
     }
 
-    private void deployJpdl(Design design, List<DesignFile> designFiles, String procKey, Proc proc, File dir) throws IOException {
+    private Proc deployJpdl(Design design, List<DesignFile> designFiles, String procKey, Proc proc, File dir) throws IOException {
         DesignFile jpdlDf = null;
         for (DesignFile df : designFiles) {
             if (df.getType().equals("jpdl")) {
@@ -117,6 +121,7 @@ public class DesignDeployer {
         if (proc.getName().equals(proc.getJbpmProcessKey())) {
             proc.setName(design.getName());
         }
+        return proc;
     }
 
     private void deployMessages(List<DesignFile> designFiles, File dir) throws IOException {

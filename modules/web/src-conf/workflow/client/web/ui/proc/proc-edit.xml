@@ -17,6 +17,11 @@
             </collectionDatasource>
             <collectionDatasource id="stagesDs" property="stages"/>
         </datasource>
+        <collectionDatasource id="secRoles" class="com.haulmont.cuba.security.entity.Role" view="_local">
+                <query>
+                     select r from sec$Role r
+                </query>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width = 400>
@@ -61,6 +66,14 @@
                                     <label value="msg://permissionsEnabled"/>
                                     <checkBox id="permissionsEnabled" datasource="procDs"
                                               property="permissionsEnabled"/>
+                                </row>
+                                <row>
+                                    <label value="msg://availableOnlyForRole"/>
+                                    <lookupField id="availableRole"
+                                                 datasource="procDs"
+                                                 property="availableRole"
+                                                 optionsDatasource="secRoles"
+                                                 width="${width}"/>
                                 </row>
                             </rows>
                         </grid>

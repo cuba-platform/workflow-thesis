@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
@@ -24,6 +25,8 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.log.LogItem;
@@ -314,10 +317,14 @@ public class CardProcFrame extends AbstractFrame {
         Preconditions.checkArgument(card != null, "Card is null");
         this.card = card;
 
-        Map<String, Object> params = Collections.<String, Object>singletonMap(
-                "cardType",
-                "%," + card.getMetaClass().getName() + ",%"
-        );
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("cardType", "%," + card.getMetaClass().getName() + ",%");
+        User u = procDs.getDataService().reload(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser(), "user.edit");
+        List<UUID> roles = new ArrayList<UUID>();
+        for (UserRole role : u.getUserRoles()) {
+            roles.add(role.getRole().getId());
+        }
+        params.put("availableRole", roles);
         procDs.refresh(params);
 
         initCreateProcLookup();

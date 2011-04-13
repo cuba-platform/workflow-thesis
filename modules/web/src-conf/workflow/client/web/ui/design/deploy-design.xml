@@ -6,10 +6,15 @@
         >
 
     <dsContext>
-        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local">
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="proc-deploy">
             <query>
                 select p from wf$Proc p order by p.name
             </query>
+        </collectionDatasource>
+        <collectionDatasource id="secRoles" class="com.haulmont.cuba.security.entity.Role" view="_local">
+                <query>
+                     select r from sec$Role r
+                </query>
         </collectionDatasource>
     </dsContext>
 
@@ -27,6 +32,10 @@
                 <row>
                     <label value="msg://newProc"/>
                     <checkBox id="newProcField"/>
+                </row>
+                <row>
+                    <label value="msg://availableOnlyForRole"/>
+                    <lookupField id="roleField" optionsDatasource="secRoles" width="300" />
                 </row>
                 <row>
                     <label value="msg://existingProc"/>

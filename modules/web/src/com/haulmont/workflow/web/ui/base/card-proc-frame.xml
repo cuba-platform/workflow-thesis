@@ -7,7 +7,8 @@
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local">
             <query>
                 select p from wf$Proc p
-                where p.cardTypes is null or p.cardTypes = '' or p.cardTypes like :custom$cardType
+                where (p.cardTypes is null or p.cardTypes = '' or p.cardTypes like :custom$cardType) and
+                (p.availableRole is null or p.availableRole.id in (:custom$availableRole))
                 order by p.name
             </query>
         </collectionDatasource>

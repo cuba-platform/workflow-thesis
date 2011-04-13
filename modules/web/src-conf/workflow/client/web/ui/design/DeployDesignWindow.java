@@ -13,6 +13,7 @@ package workflow.client.web.ui.design;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.Proc;
@@ -25,7 +26,7 @@ public class DeployDesignWindow extends AbstractWindow {
 
     private Design design;
     private LookupField procField;
-
+    private LookupField roleField;
     private String errorMsg;
 
     public DeployDesignWindow(IFrame frame) {
@@ -41,6 +42,8 @@ public class DeployDesignWindow extends AbstractWindow {
 
         procField = getComponent("procField");
 
+        roleField = getComponent("roleField");
+
         CheckBox newProcField = getComponent("newProcField");
         newProcField.setValue(true);
         newProcField.addListener(
@@ -49,8 +52,10 @@ public class DeployDesignWindow extends AbstractWindow {
                         if (BooleanUtils.isTrue((Boolean) value)) {
                             procField.setValue(null);
                             procField.setEnabled(false);
+                            roleField.setEnabled(true);
                         } else {
                             procField.setEnabled(true);
+                            roleField.setEnabled(false);
                         }
                     }
                 }
@@ -62,7 +67,7 @@ public class DeployDesignWindow extends AbstractWindow {
                     public void actionPerform(Component component) {
                         final Proc proc = procField.getValue();
                         if (proc == null) {
-                            deploy(null);
+                            deploy(null, roleField.<Role>getValue());
                         } else {
                             showOptionDialog(
                                     getMessage("confirmDeploy.title"),
@@ -72,7 +77,7 @@ public class DeployDesignWindow extends AbstractWindow {
                                             new DialogAction(DialogAction.Type.YES) {
                                                 @Override
                                                 public void actionPerform(Component component) {
-                                                    deploy(proc);
+                                                    deploy(proc, null);
                                                 }
                                             },
                                             new DialogAction(DialogAction.Type.NO)
@@ -94,10 +99,10 @@ public class DeployDesignWindow extends AbstractWindow {
         );
     }
 
-    void deploy(Proc proc) {
+    void deploy(Proc proc, Role role) {
         DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
         try {
-            service.deployDesign(design.getId(), proc == null ? null : proc.getId());
+            service.deployDesign(design.getId(), proc == null ? null : proc.getId(), role);
             close("ok");
         } catch (DesignDeploymentException e) {
             errorMsg = e.getMessage();

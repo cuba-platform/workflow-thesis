@@ -15,6 +15,9 @@
     <view class="com.haulmont.workflow.core.entity.Proc" name="browse" extends="_local">
         <property name="design" view="_minimal"/>
     </view>
+    <view class="com.haulmont.workflow.core.entity.Proc" name="proc-deploy" extends="_local">
+        <property name="availableRole" view="_local"/>
+    </view>
 
     <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
         <property name="roles" view="edit"/>
@@ -28,6 +31,7 @@
         <property name="roles" view="_minimal"/>
         <property name="stages" view="proc-edit"/>
         <property name="design" view="_minimal"/>
+        <property name="availableRole" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="edit" extends="_local">

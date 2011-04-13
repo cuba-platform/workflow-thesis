@@ -69,10 +69,12 @@ create table WF_PROC (
     STATES varchar(500),
     PERMISSIONS_ENABLED boolean,
     DESIGN_ID uuid,
+    AVAILABLE_ROLE_ID uuid,
     primary key (ID)
 )^
 
 alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
+alter table WF_PROC add constraint WF_PROC_AVAILABLE_ROLE_ID foreign key (AVAILABLE_ROLE_ID) references SEC_ROLE(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.security.entity.Role;
 
 import javax.persistence.*;
 import java.util.List;
@@ -54,6 +55,10 @@ public class Proc extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
     private Design design;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "AVAILABLE_ROLE_ID")
+    private Role availableRole;
 
     public String getName() {
         return name;
@@ -125,5 +130,13 @@ public class Proc extends StandardEntity {
 
     public void setDesign(Design design) {
         this.design = design;
+    }
+
+    public Role getAvailableRole() {
+        return availableRole;
+    }
+
+    public void setAvailableRole(Role availableRole) {
+        this.availableRole = availableRole;
     }
 }

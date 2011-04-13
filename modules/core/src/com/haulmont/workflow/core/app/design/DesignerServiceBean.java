@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.DesignImportExportHelper;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
@@ -99,7 +100,7 @@ public class DesignerServiceBean implements DesignerService {
         compiler.compileDesign(designId);
     }
 
-    public void deployDesign(UUID designId, UUID procId) throws DesignDeploymentException {
+    public void deployDesign(UUID designId, UUID procId,Role role) throws DesignDeploymentException {
         ProcessMigrator.Result result = null;
         if (procId != null) {
             result = migrator.checkMigrationPossibility(designId, procId);
@@ -107,7 +108,7 @@ public class DesignerServiceBean implements DesignerService {
                 throw new DesignDeploymentException(result.getMessage());
         }
 
-        deployer.deployDesign(designId, procId);
+        deployer.deployDesign(designId, procId, role);
 
         if (result != null && result.getOldJbpmProcessKey() != null) {
             migrator.migrate(designId, procId, result.getOldJbpmProcessKey());

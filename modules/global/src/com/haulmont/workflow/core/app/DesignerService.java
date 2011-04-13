@@ -11,6 +11,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
@@ -30,7 +31,7 @@ public interface DesignerService {
     
     void compileDesign(UUID designId) throws DesignCompilationException;
 
-    void deployDesign(UUID designId, UUID procId) throws DesignDeploymentException;
+    void deployDesign(UUID designId, UUID procId, Role role) throws DesignDeploymentException;
 
     byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException;
 
