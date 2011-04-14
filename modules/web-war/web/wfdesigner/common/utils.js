@@ -151,12 +151,33 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
     renderButtons : function() {
     var toolbar = YAHOO.util.Dom.get('toolbar');
 
-    var saveButton = new YAHOO.widget.Button({ label:i18nDict.Save, id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
+    var saveButton = new YAHOO.widget.Button({ label:i18nDict.Save + '&nbsp;', id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
     saveButton.on("click", this.onSave, this, true);
+    saveButton.isSaved=true;
+    this.saveButton = saveButton;
 
     var helpButton = new YAHOO.widget.Button({ label:i18nDict.Help, id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
     helpButton.on("click", this.onHelp, this, true);
     },
+
+    renderSavedStatus: function() {
+		
+	},
+
+    markSaved: function() {
+        this.saveButton.set("label" , i18nDict.Save + '&nbsp;');
+        this.saveButton.isSaved=true;
+    },
+
+	markUnsaved: function() {
+        this.saveButton.set("label" , i18nDict.Save + '*');
+        this.saveButton.isSaved=false;
+    },
+
+    isSaved: function() {
+		return this.saveButton.isSaved;
+	},
+
 
     onSave : function(){
       var value = this.getValue();
