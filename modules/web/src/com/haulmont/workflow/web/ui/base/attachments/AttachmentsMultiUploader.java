@@ -14,19 +14,16 @@ import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
-import com.haulmont.workflow.core.global.WfConfig;
 import com.vaadin.ui.Select;
 
 import java.util.*;
@@ -96,7 +93,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     protected void init(Map<String, Object> params) {
         super.init(params);
 
-        defaultAttachType = (AttachmentType)params.get("attachType");
+        defaultAttachType = (AttachmentType) params.get("attachType");
 
         creator = (AttachmentCreator) params.get("creator");
 
@@ -130,7 +127,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     UUID fileId = descriptors.get(fDesc);
                     try {
                         uploadService.deleteFile(fileId);
-                    } catch (FileStorageException ignored) { }
+                    } catch (FileStorageException ignored) {
+                    }
                     descriptors.remove(fDesc);
                 }
                 uploadsTable.refresh();
@@ -238,7 +236,12 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     @Override
     public boolean close(String actionId) {
-        if (!COMMIT_ACTION_ID.equals(actionId)) {
+        uploadField.setEnabled(false);
+        boolean closeResult = super.close(actionId);
+        if (!closeResult)
+            uploadField.setEnabled(true);
+
+        if (closeResult && !COMMIT_ACTION_ID.equals(actionId)) {
             FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
                 try {
@@ -248,11 +251,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 }
             }
         }
-        return super.close(actionId);
+        return closeResult;
     }
 
     private AttachmentType getDefaultAttachmentType() {
-        String defaultAttachmentCode = ConfigProvider.getConfig(WfConfig.class).getDefaultAttachmentType();
+        String defaultAttachmentCode = AppContext.getProperty("cuba.defaultAttachmentType");
 
         AttachmentType defaultAttachmentType = null;
         if (defaultAttachmentCode != null) {
