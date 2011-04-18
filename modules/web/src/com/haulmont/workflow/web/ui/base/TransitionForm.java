@@ -152,7 +152,8 @@ public class TransitionForm extends AbstractForm {
             Assignment assignment = ServiceLocator.getDataService().load(ctx);
             assignmentDs.setItem(assignment);
             outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + "." + transition));
-            commentText.setDatasource(assignmentDs, "comment");
+            if (commentText != null)
+                commentText.setDatasource(assignmentDs, "comment");
         } else {
             outcomeText.setValue(MessageProvider.getMessage(messagesPack, WfConstants.ACTION_START));
         }
