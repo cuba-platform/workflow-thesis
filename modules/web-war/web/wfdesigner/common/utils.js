@@ -352,7 +352,7 @@ inputEx.ListField.prototype.renderSubField = function(value) {
     var lang = YAHOO.lang, Event = YAHOO.util.Event, Dom = YAHOO.util.Dom;
 
     // Div that wraps the deleteButton + the subField
-    var newDiv = inputEx.cn('div'), delButton;
+     var newDiv = inputEx.cn('div',{className:'container'}), delButton;
 
     // Delete button
     if(this.options.useButtons) {

@@ -241,6 +241,18 @@ div.savedStatus {
 	width: 100%;
 }
 
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {
+    background-color:#FFF;
+    overflow-y:auto;
+}
+
+div.inputEx-ListField-childContainer div.container{
+    border-top:1px solid;
+    margin-bottom:2px;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
 /**
  * Dialogs
  */
@@ -270,9 +282,6 @@ div.savedStatus {
 
 #alertPanelBody {
 	padding: 10px 0;
-}
-.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {
-    background-color:#FFF;
 }
 div.WireIt-Container-ddhandle {
     background-color:#FBF7E3;
