@@ -243,6 +243,9 @@ div.savedStatus {
 
 .yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {
     background-color:#FFF;
+}
+
+.yui-skin-sam .yui-layout .yui-layout-unit-right div.yui-layout-bd {
     overflow-y:auto;
 }
 
