@@ -490,12 +490,12 @@ var wfLanguage = {
                 ],
                 "terminals": [
                     {
-                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "in",
+                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in",
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     },
                     {
-                        "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "out",
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "out",
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true
                     }
                 ]
             }
