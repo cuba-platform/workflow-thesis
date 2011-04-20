@@ -103,6 +103,9 @@ public class FormManagerChain {
                     if (style == null && ("Ok".equals(transition) || "START_PROCESS_ACTION".equals(actionName))) {
                         style = "wf-success";
                     }
+                    if (style == null && ("NotOk".equals(transition) || "CANCEL_PROCESS_ACTION".equals(actionName))){
+                       style = "wf-failure"; 
+                    }
                     if (style != null) {
                         commonParams.put("style", style);
                     }
