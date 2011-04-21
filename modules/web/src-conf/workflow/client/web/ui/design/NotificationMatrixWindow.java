@@ -10,21 +10,22 @@
  */
 package workflow.client.web.ui.design;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.app.FileUploadService;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.workflow.core.app.DesignerService;
-import com.haulmont.workflow.core.entity.Design;
+import org.apache.commons.io.IOUtils;
 
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class NotificationMatrixWindow extends AbstractEditor {
 
-    private Datasource<Design> ds;
     private FileUploadField uploadField;
-    private Button okBtn;
-    private TextField fileNameField;
+    private byte[] bytes;
 
     public NotificationMatrixWindow(IFrame frame) {
         super(frame);
@@ -32,13 +33,7 @@ public class NotificationMatrixWindow extends AbstractEditor {
 
     @Override
     protected void init(Map<String, Object> params) {
-        ds = getDsContext().get("designDs");
-
-        okBtn = getComponent("windowActions.windowCommit");
-        okBtn.setEnabled(false);
-
-        fileNameField = getComponent("fileNameField");
-
+        super.init(params);
         uploadField = getComponent("uploadField");
         uploadField.addListener(
                 new FileUploadField.Listener() {
@@ -49,17 +44,20 @@ public class NotificationMatrixWindow extends AbstractEditor {
                     }
 
                     public void uploadSucceeded(Event event) {
-                        ds.getItem().setNotificationMatrix(uploadField.getBytes());
-                        ds.getItem().setNotificationMatrixUploaded(true);
+                        //bytes = uploadField.getBytes();
+                        try {
+                            FileUploadService fileService = ServiceLocator.lookup(FileUploadService.NAME);
 
-                        DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
-                        service.saveNotificationMatrixFile(ds.getItem());
-
-                        fileNameField.setEditable(true);
-                        fileNameField.setValue(uploadField.getFilePath());
-                        fileNameField.setEditable(false);
-
-                        okBtn.setEnabled(true);
+                            InputStream inputFile = new FileInputStream(fileService.getFile(uploadField.getFileId()));
+                            bytes = IOUtils.toByteArray(inputFile);
+                            inputFile.close();
+                            fileService.deleteFile(uploadField.getFileId());
+                            close(Window.COMMIT_ACTION_ID);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (FileStorageException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
 
                     public void uploadFailed(Event event) {
@@ -71,10 +69,7 @@ public class NotificationMatrixWindow extends AbstractEditor {
         );
     }
 
-    @Override
-    public void setItem(Entity item) {
-        super.setItem(item);
-
-        okBtn.setEnabled(false);
+    public byte[] getBytes(){
+        return bytes;
     }
 }

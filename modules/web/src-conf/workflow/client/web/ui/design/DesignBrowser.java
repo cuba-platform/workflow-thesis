@@ -23,8 +23,8 @@ import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
@@ -125,7 +125,7 @@ public class DesignBrowser extends AbstractWindow {
                                     new Button.ClickListener() {
                                         public void buttonClick(Button.ClickEvent event) {
                                             Design d = getDsContext().getDataService().reload(design, "_local");
-                                            WebExportDisplay export = new WebExportDisplay(true, false);
+                                            WebExportDisplay export = new WebExportDisplay(true, true);
                                             export.show(
                                                     new ByteArrayDataProvider(d.getNotificationMatrix()),
                                                     "NotificationMatrix",
@@ -360,13 +360,20 @@ public class DesignBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             Set selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
-                Window window = openEditor("wf$Design.notificationMatrix", design, WindowManager.OpenType.DIALOG);
+                Design selectedDesign = (Design) selected.iterator().next();
+                final Design design = ds.getDataService().reload(selectedDesign,"_local");
+                final NotificationMatrixWindow window = openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
                         new CloseListener() {
                             public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId))
+                                if (Window.COMMIT_ACTION_ID.equals(actionId)){
+                                    design.setNotificationMatrix(window.getBytes());
+                                    design.setNotificationMatrixUploaded(true);
+                                    ds.getDataService().commit(new CommitContext(Collections.singleton(design)));
+                                    DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
+                                    service.saveNotificationMatrixFile(design);
                                     ds.refresh();
+                                }
                             }
                         }
                 );

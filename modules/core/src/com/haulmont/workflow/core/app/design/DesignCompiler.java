@@ -18,6 +18,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
+import com.haulmont.workflow.core.global.WfConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -304,7 +305,8 @@ public class DesignCompiler {
 
             Document document = DocumentHelper.parseText(jpdl);
             String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
-            Workbook wb = new HSSFWorkbook(new FileInputStream(confDir + "/workflow/" + "NotificationMatrixTemplate.xls"));
+            String templatePath = ConfigProvider.getConfig(WfConfig.class).getNotificationTemplatePath();
+            Workbook wb = new HSSFWorkbook(new FileInputStream(confDir + templatePath));
 
             List<String> rolesList = parseRoles(document);
             Map<String, String> states = parseStates(document, properties);

@@ -25,12 +25,12 @@ public class GroovyNotificationMessageBuilder implements NotificationMessageBuil
     }
 
     public String getSubject() {
-        String subject = (String) binding.getVariable("subject");
+        String subject = binding.getVariable("subject").toString();
         return subject;
     }
 
     public String getBody() {
-        String body = (String) binding.getVariable("body");
+        String body = binding.getVariable("body").toString();
         return body;
     }
 

@@ -188,7 +188,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
         HSSFRow statesRow = sheet.getRow(1);
 
-        for (int i = 2; i < sheet.getLastRowNum(); i++) {
+        for (int i = 2; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
 
             if (row == null) {
@@ -352,7 +352,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         //tray && notificationPanel
         if (!trayList.contains(user) && BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
                 ((type = matrix.get(key + "_" + TRAY_SHEET)) != null)) {
-            variables.put("script", getScriptByNotificationType(processPath, type));
+            NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
+            if (notificationMessage != null) {
+                variables.put("messagetemplate", notificationMessage);
+            } else {
+                variables.put("script", getScriptByNotificationType(processPath, type));
+            }
             createNotificationCardInfo(card, assignment, cardRole.getUser(), getCardInfoTypeByState(type), messageGenerator.generateMessage(variables));
             trayList.add(user);
         }

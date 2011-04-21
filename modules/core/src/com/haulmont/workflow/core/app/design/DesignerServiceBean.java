@@ -10,10 +10,7 @@
  */
 package com.haulmont.workflow.core.app.design;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.Role;
@@ -138,6 +135,12 @@ public class DesignerServiceBean implements DesignerService {
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
+                //Delete previos notifications file
+                Query query = em.createQuery();
+                query.setQueryString("delete from wf$DesignFile df where df.type='notification' and df.design.id=:design");
+                query.setParameter("design",design);
+                query.executeUpdate();
+
                 DesignFile df = new DesignFile();
                 df.setDesign(design);
                 df.setContent(null);
