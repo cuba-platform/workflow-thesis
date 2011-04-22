@@ -24,6 +24,7 @@ import com.haulmont.workflow.core.WfHelper
 import org.jbpm.api.ExecutionService
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import com.haulmont.cuba.core.global.TimeProvider
 
 class SequentialAssigner extends MultiAssigner {
 
@@ -68,6 +69,7 @@ class SequentialAssigner extends MultiAssigner {
     Assignment assignment = (Assignment) parameters.get("assignment")
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
+      assignment.setFinished(TimeProvider.currentTimestamp());
       execution.take(signalName)
       if (timersFactory) {
         timersFactory.removeTimers(execution)

@@ -13,16 +13,12 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
-import com.haulmont.workflow.core.global.TimeUnit;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -57,6 +53,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     private Set<Listener> listeners = new LinkedHashSet<Listener>();
 
     private final String PARALLEL_ASSIGMENT_CLASS = "workflow.activity.ParallelAssigner";
+    private final String SEQUENTIAL_ASSIGNER_CLASS = "workflow.activity.SequentialAssigner";
 
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {
@@ -200,7 +197,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                                     String[] strings = role.split(",");
                                     for (String string : strings) {
                                         roles.add(string.trim());
-                                        if (PARALLEL_ASSIGMENT_CLASS.equals(clazz)) {
+                                        if (checkMultyUserRole(clazz)) {
                                             multiUserRoles.add(string.trim());
                                         }
                                     }
@@ -245,6 +242,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         }
     }
 
+    private boolean checkMultyUserRole(String className) {
+        Class parallelClass = ScriptingProvider.loadClass(PARALLEL_ASSIGMENT_CLASS);
+        Class currentClass = ScriptingProvider.loadClass(className);
+        if (parallelClass.isAssignableFrom(currentClass))
+            return true;
+        else {
+            Class sequentialClass = ScriptingProvider.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
+            if (sequentialClass.isAssignableFrom(currentClass))
+                return true;
+            else return false;
+        }
+    }
 
     public String printDeployments() {
         Transaction tx = Locator.createTransaction();

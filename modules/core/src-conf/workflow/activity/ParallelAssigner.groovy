@@ -27,6 +27,7 @@ import org.jbpm.api.activity.ActivityExecution
 
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
+import com.haulmont.cuba.core.global.TimeProvider
 
 public class ParallelAssigner extends MultiAssigner {
 
@@ -99,6 +100,7 @@ public class ParallelAssigner extends MultiAssigner {
 
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
+      assignment.setFinished(TimeProvider.currentTimestamp());
       execution.take(signalName)
       if (timersFactory) {
         timersFactory.removeTimers(execution)

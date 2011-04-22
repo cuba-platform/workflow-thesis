@@ -32,7 +32,7 @@
                     </columns>
                     <rows datasource="designDs"/>
                 </table>
-                <vbox id="rightPanel" width="180px" margin="true" spacing="true">
+                <vbox id="rightPanel" width="190px" margin="true" spacing="true">
                     <button width="100%" action="designTable.import" icon="icons/import.png"/>
                     <button width="100%" action="designTable.export" icon="icons/export.png"/>
                     <button width="100%" action="designTable.scripts" icon="icons/scripts.png"/>
