@@ -94,6 +94,9 @@ public class WfUtils {
             charTable['\u042E'] = "U";
             charTable['\u042F'] = "YA";
             charTable['\u0020'] = "_";
+            charTable['\u0022'] = "_";
+            charTable['\u002C'] = "_";
+            charTable['\u002E'] = "_";
 
             for (int i = 0; i < charTable.length; i++) {
                 char idx = (char) i;
