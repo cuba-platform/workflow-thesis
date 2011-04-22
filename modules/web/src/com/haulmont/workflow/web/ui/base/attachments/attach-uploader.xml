@@ -17,7 +17,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <#assign width = 630>
+    <#assign width = 560>
     <#assign height = 300>
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
