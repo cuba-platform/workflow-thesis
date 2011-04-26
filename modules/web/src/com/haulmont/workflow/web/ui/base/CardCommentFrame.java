@@ -136,7 +136,7 @@ public class CardCommentFrame extends AbstractWindow {
                         }
                     }
                 });
-                labelComment.setRows(3);
+                labelComment.setRows(5);
                 labelComment.setEditable(false);
                 buttonComment.setAlignment(Alignment.MIDDLE_RIGHT);
                 hLayoutComment.add(labelComment);
