@@ -112,6 +112,12 @@ public class ResolutionEditor extends AbstractEditor {
             action.setEnabled(editable);
         }
 
+        PopupButton createPopup = getComponent("createAttachBtn");
+        for (Action action : createPopup.getActions()) {
+            action.setEnabled(editable);
+        }
+        createPopup.setEnabled(editable);
+
         Button pasteAttachBtn = getComponent("pasteAttach");
         pasteAttachBtn.setEnabled(editable);
         if (attachmentsTable != null)
