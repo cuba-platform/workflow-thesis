@@ -187,6 +187,8 @@ public class CardCommentFrame extends AbstractWindow {
 
     protected void openCardSend(Card card) {
         Map paramsCard = new HashMap();
+        CollectionDatasource tmpCardRolesDs = ((IFrame) getComponent("cardRolesFrame")).getDsContext().get("tmpCardRolesDs");
+        paramsCard.put("tmpCardRolesDs", tmpCardRolesDs);
         paramsCard.put("item", card);
         paramsCard.put("rootFrame", this.<IFrame>getFrame());
         Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
