@@ -68,11 +68,11 @@ public class CardSend extends AbstractWindow {
             throw new RuntimeException("Card is new");
         if (card == null)
             throw new RuntimeException("Card null");
-        CollectionDatasource tmpCardRolesDs = (CollectionDatasource) params.get("tmpCardRolesDs");
-        if (tmpCardRolesDs != null) {
+        CollectionDatasource cardRolesDs = (CollectionDatasource) params.get("cardRolesDs");
+        if (cardRolesDs != null) {
             roles = new ArrayList<CardRole>();
-            for (Object o : tmpCardRolesDs.getItemIds()) {
-                CardRole cardRole = (CardRole) tmpCardRolesDs.getItem(o);
+            for (Object o : cardRolesDs.getItemIds()) {
+                CardRole cardRole = (CardRole) cardRolesDs.getItem(o);
                 roles.add(cardRole);
             }
         } else {
