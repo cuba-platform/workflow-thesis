@@ -64,6 +64,8 @@ public class AttachmentActionsHelper {
     public static Action createPasteAction(Table attachmentsTable, AttachmentCreator creator) {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
+        final CollectionDatasource attachDs = attachmentsTable.getDatasource();
+        final UserSession userSession = UserSessionClient.getUserSession();
         return new AbstractAction("actions.Paste") {
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
@@ -97,6 +99,11 @@ public class AttachmentActionsHelper {
                     String info = MessageProvider.getMessage(getClass(), "messages.bufferEmptyInfo");
                     attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return super.isEnabled() && userSession.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE );
             }
         };
     }
