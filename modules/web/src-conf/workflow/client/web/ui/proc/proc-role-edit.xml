@@ -51,11 +51,6 @@
                                       width="${width}"/>
                         </row>
                         <row>
-                            <label value="msg://invisible"/>
-                            <checkBox id="invisible" datasource="roleDs" property="invisible"
-                                      width="${width}"/>
-                        </row>
-                        <row>
                             <label value="msg://role"/>
                             <lookupField id="role" datasource="roleDs" property="role" optionsDatasource="secRolesDs"
                                       width="${width}"/>

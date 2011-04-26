@@ -210,7 +210,8 @@ public class ProcEditor extends AbstractEditor {
     Proc proc = (Proc)getItem()
     CollectionDatasource rolesDs = rolesTable.getDatasource()
     DataService dataService = rolesDs.getDataService()
-    List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
+    java.util.List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
+    roles.removeAll({ProcRole role -> role.invisible })
     proc.roles = roles
     procDs.setItem(proc)
   }
