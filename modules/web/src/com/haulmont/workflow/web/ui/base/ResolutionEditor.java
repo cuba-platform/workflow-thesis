@@ -87,8 +87,9 @@ public class ResolutionEditor extends AbstractEditor {
             public Map<String, Object> getParameters() {
                 return Collections.emptyMap();
             }
-        }, WindowManager.OpenType.THIS_TAB, "actions.New"));
-        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
+        }, WindowManager.OpenType.DIALOG, "actions.New"));
+        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator,
+                WindowManager.OpenType.DIALOG));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
