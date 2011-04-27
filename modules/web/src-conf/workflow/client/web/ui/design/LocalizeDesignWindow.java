@@ -164,6 +164,8 @@ public class LocalizeDesignWindow extends AbstractEditor {
     }
 
     private Collection<DesignLocValue> getValues(DesignLocKey designLocKey) {
+        if (designLocKey == null)
+            return null;
         ArrayList<DesignLocValue> result = new ArrayList<DesignLocValue>();
 
         Element keyEl = keysMap.inverse().get(designLocKey);
