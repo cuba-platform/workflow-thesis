@@ -21,6 +21,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
 
     xtype: "Wf.MultiOutContainer",
+    preventSelfWiring: false,
 
 
     render: function() {
