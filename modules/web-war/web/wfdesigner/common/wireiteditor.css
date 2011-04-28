@@ -61,7 +61,7 @@ div.WireIt-Layer{
     padding-left: 10px;
     padding-top: 4px;
     color:#FFF;
-    border-bottom: 0px;
+    border-bottom: 0;
     background-color: #373738;
 
 }
@@ -82,17 +82,17 @@ div.WireIt-Layer{
 }
 
 #toolbar .yui-button {
-   margin: 0px;
-   border:0px;
+   margin: 0;
+   border:0;
    border-bottom-style:none;
 
 }
 #toolbar .yui-button button {
     background-color:transparent;
     background:url('./res/images/menu-bg.png') repeat-x top left ;
-    border:0px;
+    border:0;
     margin-top:auto;
-    margin-buttom:auto;
+    margin-bottom:auto;
     min-height: 23px;
     color:#FFF;
     padding-left: 1em;
@@ -127,6 +127,7 @@ div.savedStatus {
    padding: 2px;
    font-size: 9pt;
    -moz-border-radius: 2px;
+   -webkit-border-radius: 2px;
    /*height: 16px;*/
    text-align: left;
    background-color:#FFF;
@@ -318,6 +319,25 @@ div.WireIt-Container div.body {
 
 div.WireIt-ImageContainer div.body div.terminalLabel {
     background-color:#FFF;
+}
+
+div.WireIt-Container div.body div.terminalLabel {
+  width:inherit;
+}
+div.WireIt-Container div.body div.terminalLabel div.inputEx-StringField-wrapper {
+  width:inherit;
+}
+div.WireIt-Container div.body div.terminalLabel input {
+  text-align:center;  
+  width:inherit;
+  border:0 none;
+}
+
+div.WireIt-Container div.body div.terminalLabel input:hover {
+  border:1px inset;
+}
+div.WireIt-Container div.body div.terminalLabel input:focus {
+  border:1px inset;
 }
 
 div.WireIt-Container-focused div.body{

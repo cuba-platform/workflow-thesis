@@ -119,26 +119,31 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
                 output.offsetPosition.left = offset * (i)+margin;
             if (this.direction=="down"){
                 output.setPosition({left: output.offsetPosition.left-14, bottom:-15});
-                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+"px", bottom: "-25px",
-                    top: "auto",textAlign:"center", width:offset+"px" };
+                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+4+"px", bottom: "-25px",
+                    top: "auto", width:offset-8+"px" };
                 output.direction= [0,1];
             }
             else if(this.direction=="up"){
                 output.setPosition({left: output.offsetPosition.left-14, top:-15});
-                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+"px",
-                    top:"-25px",bottom: "auto", textAlign:"center", width:offset+"px"};
+                style = {position: "absolute", left: output.offsetPosition.left-Math.round(offset/2)+4+"px",
+                    top:"-25px",bottom: "auto", width:offset-8+"px"};
                 output.direction= [0,-1];
             }
 
-            var lab = this.outputLabels[output.name];
-            if (!lab) {
-                var labText = WireIt.cn('span',null,{backgroundColor:"#FFF" },output.name);
-                lab = WireIt.cn('div', null, style, null);
-                lab.appendChild(labText);
-                this.bodyEl.appendChild(lab);
-                this.outputLabels[output.name] = lab;
+            var labelEditor = this.outputLabels[output.name];
+            if (!labelEditor) {
+                    labelEditor = new inputEx.StringField({
+                    className: "terminalLabel", parentEl: this.bodyEl , value:output.name});
+                //labelEditor.setValue(output.name);
+                WireIt.sn(labelEditor.getEl(), null, style);
+                labelEditor.updatedEvt.subscribe(function(e, value) {
+                    delete this.outputLabels[output.name];
+                    output.name = value[0];
+                    this.outputLabels[output.name] = labelEditor;
+                }, this, true);
+                this.outputLabels[output.name] = labelEditor;
             } else {
-                WireIt.sn(lab, null, style);
+                WireIt.sn(labelEditor.getEl(), {className:"terminalLabel"}, style);
             }
         }
         this.redrawAllWires();
@@ -191,7 +196,8 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
         var lab = this.outputLabels[name];
         if (lab) {
-            this.bodyEl.removeChild(lab);
+            lab.destroy();
+            //this.bodyEl.removeChild(lab);
             delete this.outputLabels[name];
         }
 
@@ -231,4 +237,4 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         Wf.MultiOutContainer.superclass.setValue.call(this, val);
     }
 
-})
+});
