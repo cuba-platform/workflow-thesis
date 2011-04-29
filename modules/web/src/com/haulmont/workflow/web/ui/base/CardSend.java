@@ -69,7 +69,7 @@ public class CardSend extends AbstractWindow {
         if (card == null)
             throw new RuntimeException("Card null");
         CollectionDatasource cardRolesDs = (CollectionDatasource) params.get("cardRolesDs");
-        if (cardRolesDs != null) {
+        if (cardRolesDs != null && cardRolesDs.getItemIds().size() != 0) {
             roles = new ArrayList<CardRole>();
             for (Object o : cardRolesDs.getItemIds()) {
                 CardRole cardRole = (CardRole) cardRolesDs.getItem(o);
