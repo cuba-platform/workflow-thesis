@@ -243,6 +243,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     private boolean checkMultyUserRole(String className) {
+        if (className==null)
+            return false;
         Class parallelClass = ScriptingProvider.loadClass(PARALLEL_ASSIGMENT_CLASS);
         Class currentClass = ScriptingProvider.loadClass(className);
         if (parallelClass.isAssignableFrom(currentClass))
