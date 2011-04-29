@@ -49,6 +49,10 @@ class UserGroupAdd extends AbstractWindow{
             getStyleName : {Entity item, Object property, boolean selected -> return null}
     ] as StyleProvider
 
+    java.util.List<User> users = (java.util.List<User>) params.get("Users")
+    if (users != null)
+      twinColumn.setValue(users)
+
     addAction(new AbstractAction("windowCommit") {
         public void actionPerform(Component component) {
            Set values = (Set)twinColumn.getValue()

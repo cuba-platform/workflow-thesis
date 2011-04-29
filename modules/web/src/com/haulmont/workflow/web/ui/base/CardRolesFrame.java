@@ -262,6 +262,15 @@ public class CardRolesFrame extends AbstractFrame {
             public void buttonClick(Button.ClickEvent event) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("secRole", cardRole.getProcRole().getRole());
+
+                List<User> users = new ArrayList<User>();
+                for (Object o : tmpCardRolesDs.getItemIds()) {
+                    CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+                    if (cr.getCode().equals(cardRole.getCode()) && cr.getUser() != null) {
+                        users.add(cr.getUser());
+                    }
+                }
+                params.put("Users", users);
                 App.getInstance().getWindowManager().getDialogParams().setWidth(680);
                 final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
@@ -276,6 +285,15 @@ public class CardRolesFrame extends AbstractFrame {
                                 selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
                             } catch (Exception e) {
                                 throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
+                            }
+
+                            cardRole.setUser(null);
+                            tmpCardRolesDs.updateItem(cardRole);
+                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
+                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+                                if (cr.getCode().equals(cardRole.getCode()) && !cardRole.getId().equals(cr.getId())) {
+                                    tmpCardRolesDs.removeItem(cr);
+                                }
                             }
 
                             Role secRole = cardRole.getProcRole().getRole();
