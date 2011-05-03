@@ -25,6 +25,9 @@ public class DesignLocValue extends AbstractNotPersistentEntity implements Compa
     @MetaProperty
     private String message;
 
+    @MetaProperty
+    private Boolean fakeProperty;
+
     public String getLang() {
         return lang;
     }
@@ -39,6 +42,14 @@ public class DesignLocValue extends AbstractNotPersistentEntity implements Compa
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Boolean getFakeProperty() {
+        return fakeProperty;
+    }
+
+    public void setFakeProperty(Boolean property) {
+        this.fakeProperty = property;
     }
 
     public int compareTo(DesignLocValue o) {
