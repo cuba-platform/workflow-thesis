@@ -22,7 +22,8 @@ public class CardAttachmentEntityListener implements BeforeInsertEntityListener<
 
     public void onBeforeDelete(CardAttachment entity) {
         Card card = entity.getCard();
-        if (card.getAttachments().size() == 1) {
+        card.getAttachments().remove(entity);
+        if (card.getAttachments().isEmpty()) {
             boolean hasAttachments = false;
             for (Assignment assignment : card.getAssignments()) {
                 if (assignment.getAttachments().size() > 0) {
