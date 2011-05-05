@@ -10,10 +10,13 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.Listeners;
+
 import javax.persistence.*;
 
 @Entity(name = "wf$AssignmentAttachment")
 @DiscriminatorValue("A")
+@Listeners("com.haulmont.workflow.core.listeners.AssignmentAttachmentEntityListener")
 public class AssignmentAttachment extends Attachment {
 
     private static final long serialVersionUID = 8490471166699968392L;

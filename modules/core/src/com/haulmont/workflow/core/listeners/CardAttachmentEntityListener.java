@@ -11,6 +11,8 @@
 package com.haulmont.workflow.core.listeners;
 
 import com.haulmont.cuba.core.listener.*;
+import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
 
 public class CardAttachmentEntityListener implements BeforeInsertEntityListener<CardAttachment>, BeforeDeleteEntityListener<CardAttachment> {
@@ -19,6 +21,16 @@ public class CardAttachmentEntityListener implements BeforeInsertEntityListener<
     }
 
     public void onBeforeDelete(CardAttachment entity) {
-        if (entity.getCard().getAttachments().size() == 1) entity.getCard().setHasAttachments(false);
+        Card card = entity.getCard();
+        if (card.getAttachments().size() == 1) {
+            boolean hasAttachments = false;
+            for (Assignment assignment : card.getAssignments()) {
+                if (assignment.getAttachments().size() > 0) {
+                    hasAttachments = true;
+                    break;
+                }
+            }
+            if (!hasAttachments) card.setHasAttachments(false);
+        }
     }
 }
