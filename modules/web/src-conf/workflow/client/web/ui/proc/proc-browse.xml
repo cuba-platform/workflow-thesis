@@ -18,6 +18,7 @@
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                 <button action="procTable.refresh" icon="icons/refresh.png"/>
                 <button action="procTable.edit" icon="icons/edit.png"/>
+                <button action="procTable.remove" icon="icons/remove.png" />
             </hbox>
             <table id="procTable" editable="false">
                 <columns>
