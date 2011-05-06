@@ -43,6 +43,8 @@ public class CardCommentFrame extends AbstractWindow {
     protected Card card;
     protected String cardSend;
     protected Boolean justCreated;
+    protected int maxWidthDigit = 70;
+    protected int maxHeightDigit = 3;
 
     public CardCommentFrame(IFrame frame) {
         super(frame);
@@ -136,15 +138,41 @@ public class CardCommentFrame extends AbstractWindow {
                         }
                     }
                 });
-                labelComment.setRows(5);
+                labelComment.setRows(3);
                 labelComment.setEditable(false);
+                labelComment.setStyleName("noborder");
                 buttonComment.setAlignment(Alignment.MIDDLE_RIGHT);
                 hLayoutComment.add(labelComment);
                 hLayoutComment.add(buttonComment);
                 hLayoutComment.setSpacing(true);
                 hLayoutComment.setWidth("100%");
                 labelComment.setWidth("100%");
-                hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment),1.0f);                
+                hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment),1.0f);
+
+                String descr = cardComment.getComment();
+                String[] parts = descr.split("\n");
+                String preview = "<span>";
+                boolean isCroped = (parts.length > maxHeightDigit ? true : false);
+                for (int i=0; i<Math.min(parts.length, maxHeightDigit); i++) {
+                    String part = parts[i];
+                    if (part.length() > maxWidthDigit) {
+                        preview += part.substring(0, maxWidthDigit) + "...</br>";
+                        isCroped = true;
+                    }
+                    else
+                        preview += part + "</br>";
+                }
+                preview += "</span>";
+
+                if (isCroped) {
+                    com.vaadin.ui.TextField content = new com.vaadin.ui.TextField(null, descr);
+                    content.setReadOnly(true);
+                    content.setWidth("500px");
+                    content.setHeight("300px");
+                    com.vaadin.ui.Component component = new com.vaadin.ui.PopupView(preview, content);
+                    component.setStyleName("longtext");
+                    hLayoutComment.replaceComponent((com.vaadin.ui.TextField) WebComponentsHelper.unwrap(labelComment), component);
+                }
                 vLayout.add(hLayoutFrom);
                 vLayout.add(hLayoutTo);
                 vLayout.add(dateLayout);
