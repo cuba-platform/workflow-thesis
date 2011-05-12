@@ -172,6 +172,8 @@ public class CardCommentFrame extends AbstractWindow {
                     com.vaadin.ui.Component component = new com.vaadin.ui.PopupView(preview, content);
                     component.setStyleName("longtext");
                     hLayoutComment.replaceComponent((com.vaadin.ui.TextField) WebComponentsHelper.unwrap(labelComment), component);
+                    component.setWidth("100%");
+                    hLayoutComment.setExpandRatio(component, 1.0f);
                 }
                 vLayout.add(hLayoutFrom);
                 vLayout.add(hLayoutTo);
