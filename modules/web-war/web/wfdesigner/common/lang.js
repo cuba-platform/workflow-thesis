@@ -93,7 +93,7 @@ var wfLanguage = {
             "container": {
                 "xtype": "Wf.Container",
                 "icon": "../common/res/icons/card_state_icon.png",
-                "width": 230,
+                "width": 250,
 
                 "optFields": [
                     {
@@ -118,11 +118,11 @@ var wfLanguage = {
 
                 "terminals": [
                     {
-                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 100, "top": -15},
+                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     },
                     {
-                        "name": "out", "direction": [0,1], "offsetPosition": {"left": 100, "bottom": -15},
+                        "name": "out", "direction": [0,1], "offsetPosition": {"left": 112, "bottom": -15},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]
@@ -136,7 +136,7 @@ var wfLanguage = {
             "container": {
                 "xtype": "Wf.MultiOutContainer",
                 "icon": "../common/res/icons/assignment_icon.png",
-                "width": 230,
+                "width": 250,
 
                 "fields": [
                     {
@@ -209,7 +209,7 @@ var wfLanguage = {
 
                 "terminals": [
                     {
-                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 100, "top": -15},
+                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     }
                 ]
@@ -463,7 +463,7 @@ var wfLanguage = {
                     },
                     {
                         "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "yes",
-                        "label": "msg://Decision.yes", "labelPosition": {"right": -20, "top": 25},
+                        "label": "msg://Decision.yes", "labelPosition": {"right": -18, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]

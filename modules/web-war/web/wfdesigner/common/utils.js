@@ -149,15 +149,39 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
   	},
     
     renderButtons : function() {
-    var toolbar = YAHOO.util.Dom.get('toolbar');
+        var toolbar = YAHOO.util.Dom.get('toolbar');
 
-    var saveButton = new YAHOO.widget.Button({ label:i18nDict.Save + '&nbsp;', id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
-    saveButton.on("click", this.onSave, this, true);
-    saveButton.isSaved=true;
-    this.saveButton = saveButton;
+        var saveButton = new YAHOO.widget.Button({ label:i18nDict.Save + '&nbsp;', id:"WiringEditor-saveButton", container: toolbar, className: "i18n"});
+        saveButton.on("click", this.onSave, this, true);
+        saveButton.isSaved = true;
+        this.saveButton = saveButton;
 
-    var helpButton = new YAHOO.widget.Button({ label:i18nDict.Help, id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
-    helpButton.on("click", this.onHelp, this, true);
+        var helpButton = new YAHOO.widget.Button({ label:i18nDict.Help, id:"WiringEditor-helpButton", container: toolbar, className: "i18n"});
+        helpButton.on("click", this.onHelp, this, true);
+
+        var layoutButton = new YAHOO.widget.Button({label:i18nDict.align,container:toolbar});
+        layoutButton.on("click", this.onLayoutBtn, this, true);
+    },
+
+    onLayoutBtn: function() {
+        var containers = this.layer.containers;
+        for (var i = 0; i < containers.length; i++) {
+            var container = containers[i];
+
+            var newPos = this.calculateGridPosition(container.getXY());
+            container.dd.getDragEl().style.top = newPos[1] + 'px';
+            container.dd.getDragEl().style.left = newPos[0] + 'px';
+            container.redrawAllWires();
+        }
+        this.layer.eventChanged.fire();
+    },
+
+    calculateGridPosition: function(pos) {
+        var width = 130;
+        var height = 80;
+        var xPos = Math.round(pos[0] / width) * width;
+        var yPos = Math.round(pos[1] / height) * height;
+        return new Array(xPos, yPos);
     },
 
     renderSavedStatus: function() {

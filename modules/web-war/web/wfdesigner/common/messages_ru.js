@@ -13,6 +13,7 @@ var i18nDict = {
     "CUBA Workflow Designer" : "Дизайнер процессов CUBA",
     "Save": "Сохранить",
     "Help": "Помощь",
+    "align": "Выровнять",
     "Common": "Общее",
     "Process": "Процесс",
     "Module": "Модуль",
