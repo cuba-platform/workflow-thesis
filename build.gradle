@@ -1,0 +1,147 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+allprojects {
+    artifactGroup = 'com.haulmont.workflow'
+    artifactVersion = '3.0'
+    isSnapshot = true
+    //tomcatDir = rootDir.absolutePath + '/../tomcat'
+}
+
+buildscript {
+    org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials(
+        'Sonatype Nexus Repository Manager',
+        'repository.haulmont.com',
+        System.getenv('HAULMONT_REPOSITORY_USER'),
+        System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+    )
+    repositories {
+            mavenLocal()
+            mavenRepo(urls: "http://repository.haulmont.com:8587/nexus/content/groups/work")
+    }
+    dependencies {
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.0-SNAPSHOT'
+    }
+}
+
+apply(plugin: 'idea')
+apply(plugin: 'cuba')
+
+def sharedLibModule = project(':workflow-shared-lib')
+def globalModule = project(':workflow-global')
+def coreModule = project(':workflow-core')
+def webModule = project(':workflow-web')
+
+def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
+def json = [group: 'org.json', name: 'json', version: '20090211']
+def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
+def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
+
+configure([sharedLibModule, globalModule, coreModule, webModule]) {
+    apply(plugin: 'java')
+    apply(plugin: 'idea')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    dependencies {
+        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: '3.0-SNAPSHOT')
+        testCompile(group: 'junit', name: 'junit', version: '4.5')
+    }
+
+    task sourceJar(type: Jar) {
+        from file('src')
+        classifier = 'sources'
+    } 
+
+    artifacts {
+        archives sourceJar
+    }
+}
+
+configure(sharedLibModule) {
+    dependencies {
+        compile(group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
+    }
+}
+
+configure(globalModule) {
+    task enhance(dependsOn: [compileJava, processResources], type: CubaEnhancing) {
+        persistenceXml = "$globalModule.projectDir/src/workflow-persistence.xml"
+    }
+    classes.dependsOn enhance
+}
+
+configure(coreModule) {
+    dependencies {
+        compile(globalModule)
+        compile(sharedLibModule)
+        compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.0-SNAPSHOT')
+        testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.0-SNAPSHOT', classifier: 'tests')
+        compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.2.20110405')
+        compile(json)
+        runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
+        compile(group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA')
+        runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.5.2')
+        runtime(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.5.2')
+        runtime(group: 'javassist', name: 'javassist', version: '3.4.GA')
+        provided(servletApi)
+        jdbc(postgres)
+        jdbc(hsqldb)
+    }
+
+    assembleDbScripts << {
+        copy {
+            from new File(rootProject.projectDir, 'db')
+            into "$buildDir/db/20-workflow"
+        }
+    }
+}
+
+configure(webModule) {
+    configurations {
+        webcontent
+    }
+
+    dependencies {
+        compile(sharedLibModule)
+        compile(globalModule)
+        compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: '3.0-SNAPSHOT')
+        compile(json)
+        provided(servletApi)
+        webcontent(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
+    }
+
+    jar {
+        manifest {
+            attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
+        }
+    }
+
+    task webArchive(type: Zip) {
+        from file('web')
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task setupYui(description: 'Sets up YUI library') << {
+        configurations.webcontent.files.each { dep ->
+            copy {
+                from zipTree(dep.absolutePath)
+                into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
+            }
+        }
+    }
+    assemble.dependsOn setupYui
+}

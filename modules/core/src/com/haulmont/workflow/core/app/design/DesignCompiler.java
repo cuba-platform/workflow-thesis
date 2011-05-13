@@ -462,7 +462,7 @@ public class DesignCompiler {
         Element onEl = rootEl.addElement("on");
         onEl.addAttribute("event", "end");
         Element listenerEl = onEl.addElement("event-listener");
-        listenerEl.addAttribute("class", "workflow.activity.EndProcessListener");
+        listenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
         return Dom4j.writeDocument(document, true);
     }
 

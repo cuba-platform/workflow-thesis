@@ -15,6 +15,6 @@ import com.haulmont.workflow.core.app.design.Module;
 public class CardStateModule extends Module {
 
     public CardStateModule() {
-        activityClassName = "workflow.activity.CardActivity";
+        activityClassName = "com.haulmont.workflow.core.activity.CardActivity";
     }
 }

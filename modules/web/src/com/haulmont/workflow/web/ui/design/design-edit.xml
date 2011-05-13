@@ -1,0 +1,20 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.design.DesignEditor"
+        messagesPack="com.haulmont.workflow.web.ui.design"
+        caption="msg://editor.caption"
+        datasource="designDs"
+        >
+
+    <dsContext>
+        <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
+    </dsContext>
+
+    <layout>
+        <vbox id="content" stylename="edit-area" margin="true" spacing="true">
+            <label value="msg://com.haulmont.workflow.core.entity/Design.name"/>
+            <textField id="nameField" datasource="designDs" property="name" required="true" width="100%"/>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

@@ -1,0 +1,49 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.proc.DefaultProcActorEditor"
+        datasource="dpaDs"
+        caption="msg://defaultProcActorEditor"
+        >
+
+    <dsContext>
+        <datasource
+                id="dpaDs"
+                class="com.haulmont.workflow.core.entity.DefaultProcActor"
+                view="edit">
+        </datasource>
+
+        <!--todo Prevent duplicate procActors-->
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_minimal"/>
+    </dsContext>
+
+    <#assign width = 400>
+    <layout expand="spring">
+        <hbox stylename="edit-area">
+            <vbox margin="true">
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://user"/>
+                            <lookupField id="userLookup" datasource="dpaDs" property="user"
+                                       optionsDatasource="usersDs" width="${width}"
+                                       required="true" requiredMessage="msg://userMsg"/>
+                        </row>
+                        <row>
+                            <label value="msg://notifyByEmail"/>
+                            <checkBox id="notifyByEmail" datasource="dpaDs" property="notifyByEmail"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+        </hbox>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+        <vbox id="spring"/>
+    </layout>
+</window>

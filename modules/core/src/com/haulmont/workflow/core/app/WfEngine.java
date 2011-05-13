@@ -52,8 +52,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     private Set<Listener> listeners = new LinkedHashSet<Listener>();
 
-    private final String PARALLEL_ASSIGMENT_CLASS = "workflow.activity.ParallelAssigner";
-    private final String SEQUENTIAL_ASSIGNER_CLASS = "workflow.activity.SequentialAssigner";
+    private final String PARALLEL_ASSIGMENT_CLASS = "com.haulmont.workflow.core.activity.ParallelAssigner";
+    private final String SEQUENTIAL_ASSIGNER_CLASS = "com.haulmont.workflow.core.activity.SequentialAssigner";
 
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {

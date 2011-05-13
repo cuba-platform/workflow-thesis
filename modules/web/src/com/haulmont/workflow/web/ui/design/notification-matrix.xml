@@ -1,0 +1,19 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.design.NotificationMatrixWindow"
+        messagesPack="com.haulmont.workflow.web.ui.design"
+        caption="msg://notificationMatrix.caption"
+        >
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+    </dsContext>
+
+    <layout>
+        <vbox spacing="true">
+            <upload id="uploadField"/>
+        </vbox>
+    </layout>
+</window>

@@ -18,7 +18,7 @@ import org.dom4j.Element;
 public class ParallelAssignmentModule extends AssignmentModule {
 
     public ParallelAssignmentModule() {
-        activityClassName = "workflow.activity.ParallelAssigner";
+        activityClassName = "com.haulmont.workflow.core.activity.ParallelAssigner";
     }
 
     @Override

@@ -1,0 +1,17 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<menu-config>
+
+    <menu id="workflow">
+        <item id="wf$Assignment.browse"/>
+        <item id="wf$Design.browse"/>
+        <item id="wf$Proc.browse"/>
+        <item id="wf$ProcStageType.browse"/>
+        <item id="wf$WorkCalendar.browse"/>
+    </menu>
+
+</menu-config>

@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 public class EmptyModule extends Module {
     public EmptyModule(){
-        activityClassName="workflow.activity.EmptyModule";
+        activityClassName="com.haulmont.workflow.core.activity.EmptyModule";
     }
 
     public void init(Context context) throws DesignCompilationException {

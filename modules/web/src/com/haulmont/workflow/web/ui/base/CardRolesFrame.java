@@ -255,7 +255,7 @@ public class CardRolesFrame extends AbstractFrame {
         addUserGroupButton.setIcon("select/img/user-group-button.png");
         addUserGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
         com.vaadin.ui.Button vAddUserGroupButton = (com.vaadin.ui.Button)WebComponentsHelper.unwrap(addUserGroupButton);
-        final Class userGroupAddClass = ScriptingProvider.loadClass("workflow.client.web.ui.usergroup.UserGroupAdd");
+        final Class userGroupAddClass = ScriptingProvider.loadClass("com.haulmont.workflow.web.ui.usergroup.UserGroupAdd");
         vAddUserGroupButton.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = -3820323886456571938L;
 

@@ -37,7 +37,7 @@ public class AssignmentModule extends Module {
     protected JSONObject jsOptions;
 
     public AssignmentModule() {
-        activityClassName = "workflow.activity.Assigner";
+        activityClassName = "com.haulmont.workflow.core.activity.Assigner";
     }
 
     @Override

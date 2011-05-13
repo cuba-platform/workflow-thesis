@@ -21,14 +21,10 @@ public abstract class WfTestCase extends CubaTestCase {
     @Override
     protected List<String> getTestAppProperties() {
         String[] files = {
-                "/target/conf/workflow-core/app.properties",
-                "/modules/core/test/wf-test-app.properties",
+                "classpath:cuba-app.properties",
+                "classpath:test-app.properties",
+                "classpath:wf-test-app.properties"
         };
         return Arrays.asList(files);
-    }
-
-    @Override
-    protected String getTestSpringConfig() {
-        return "../cuba/modules/core/test/test-spring.xml";
     }
 }

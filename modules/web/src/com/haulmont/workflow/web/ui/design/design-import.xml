@@ -1,0 +1,17 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.design.ImportDialog"
+        messagesPack="com.haulmont.workflow.web.ui.design"
+        caption="msg://fileUploadDialog.caption"
+        >
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+    </dsContext>
+
+    <layout>
+        <hbox><upload id="fileUpload"/> <hbox/></hbox>
+    </layout>
+</window>

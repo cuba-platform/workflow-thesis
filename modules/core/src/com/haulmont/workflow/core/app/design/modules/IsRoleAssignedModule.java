@@ -44,7 +44,7 @@ public class IsRoleAssignedModule extends Module {
         property.addAttribute("name", "role");
         Element string = property.addElement("string");
         string.addAttribute("value", roleKey);
-        el.addAttribute("class", "workflow.activity.IsRoleAssignedDecider");
+        el.addAttribute("class", "com.haulmont.workflow.core.activity.IsRoleAssignedDecider");
         return el;
     }
 }

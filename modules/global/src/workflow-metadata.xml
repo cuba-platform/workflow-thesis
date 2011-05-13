@@ -1,0 +1,8 @@
+<metadata>
+
+    <metadata-model>
+        <class>com.haulmont.workflow.core.entity.DesignLocKey</class>
+        <class>com.haulmont.workflow.core.entity.DesignLocValue</class>
+    </metadata-model>
+
+</metadata>

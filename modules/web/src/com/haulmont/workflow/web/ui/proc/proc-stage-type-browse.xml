@@ -1,0 +1,33 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.proc.ProcStageTypeBrowser"
+        messagesPack="com.haulmont.workflow.web.ui.proc"
+        caption="msg://procStageTypeBrowser.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="procStageTypesDs" class="com.haulmont.workflow.core.entity.ProcStageType"
+                              view="_local">
+            <query>
+                select p from wf$ProcStageType p order by p.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table-panel">
+        <vbox id="table-panel" expand="table" spacing="true">
+            <hbox align="MIDDLE_LEFT" spacing="true">
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+            </hbox>
+            <table id="table" editable="false">
+                <columns>
+                    <column id="name"/>
+                    <column id="code"/>
+                </columns>
+                <rows datasource="procStageTypesDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

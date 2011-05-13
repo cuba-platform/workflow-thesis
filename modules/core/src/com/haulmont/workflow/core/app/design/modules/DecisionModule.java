@@ -24,7 +24,7 @@ public class DecisionModule extends Module {
     protected String scriptFileName;
 
     public DecisionModule() {
-        activityClassName = "workflow.activity.Decision";
+        activityClassName = "com.haulmont.workflow.core.activity.Decision";
     }
 
     @Override

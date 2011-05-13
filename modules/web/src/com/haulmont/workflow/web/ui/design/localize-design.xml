@@ -1,0 +1,43 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.design.LocalizeDesignWindow"
+        messagesPack="com.haulmont.workflow.web.ui.design"
+        caption="msg://localize.caption"
+        datasource="designDs"
+        >
+
+    <dsContext>
+        <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
+
+        <hierarchicalDatasource id="keysDs" class="com.haulmont.workflow.core.entity.DesignLocKey" view="_local"
+                hierarchyProperty="parentKey">
+            <datasourceClass>com.haulmont.workflow.web.ui.design.DesignLocKeyDatasource</datasourceClass>
+        </hierarchicalDatasource>
+
+        <collectionDatasource id="valuesDs" class="com.haulmont.workflow.core.entity.DesignLocValue" view="_local">
+            <datasourceClass>com.haulmont.workflow.web.ui.design.DesignLocValueDatasource</datasourceClass>
+        </collectionDatasource>
+
+    </dsContext>
+
+    <layout expand="split">
+        <split id="split" orientation="horizontal" pos="30">
+            <vbox id="treePane" expand="keysTree">
+                <tree id="keysTree">
+                    <treechildren datasource="keysDs" captionProperty="caption"/>
+                </tree>
+            </vbox>
+            <vbox id="tablePane" expand="valuesTable">
+                <table id="valuesTable" editable="true">
+                    <columns>
+                        <column id="lang" editable="false"/>
+                        <column id="message" editable="true"/>
+                        <column id="fakeProperty" />
+                    </columns>
+                    <rows datasource="valuesDs"/>
+                </table>
+            </vbox>
+        </split>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>
