@@ -1,6 +1,6 @@
 <views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
 
-    <include file="/cuba-views.xml"/>
+    <include file="cuba-views.xml"/>
 
     <view class="com.haulmont.workflow.core.entity.Design" name="browse">
         <property name="name"/>
