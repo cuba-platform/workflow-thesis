@@ -7,7 +7,7 @@
         >
 
     <dsContext>
-        <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
+        <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="localize"/>
 
         <hierarchicalDatasource id="keysDs" class="com.haulmont.workflow.core.entity.DesignLocKey" view="_local"
                 hierarchyProperty="parentKey">
