@@ -349,13 +349,13 @@ var wfLanguage = {
                         "ddConfig": {"type": "in","allowedTypes": ["out"]}
                     },
                     {
-                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "yes",
-                        "label": "msg://Decision.yes", "labelPosition": {"left": -18, "top": 25},
+                        "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "yes",
+                        "label": "msg://Decision.yes", "labelPosition": {"right": -18, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     },
                     {
-                        "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "no",
-                        "label": "msg://Decision.no", "labelPosition": {"right": -20, "top": 25},
+                        "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "no",
+                        "label": "msg://Decision.no", "labelPosition": {"left": -18, "top": 25},
                         "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
                     }
                 ]
