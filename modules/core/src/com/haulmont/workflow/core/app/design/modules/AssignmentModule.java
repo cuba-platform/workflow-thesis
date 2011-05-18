@@ -14,6 +14,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -86,7 +87,7 @@ public class AssignmentModule extends Module {
         if (!StringUtils.isBlank(description))
             properties.setProperty(name + ".description", description);
         else
-            properties.setProperty(name + ".description", MessageProvider.getMessage(getClass(), "AssignmentModule.description", locale));
+            properties.setProperty(name + ".description", MessageProvider.getMessage(Assignment.class, "AssignmentModule.description", locale));
 
         for (Map.Entry<String, String> entry : outputs.entrySet()) {
             properties.setProperty(name + "." + entry.getKey(), entry.getValue());

@@ -31,6 +31,7 @@ public class EmptyModule extends Module {
             String name = jsOptions.optString("name");
             if (!StringUtils.isBlank(name)) {
                 this.name = WfUtils.encodeKey(name);
+                this.caption = name;
             }
         }
     }

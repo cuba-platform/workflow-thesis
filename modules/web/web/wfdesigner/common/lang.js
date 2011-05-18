@@ -31,6 +31,13 @@ var wfLanguage = {
                 "selectedImage": "../common/res/icons/start-selected.png",
                 "optFields": [
                     {
+                        "type": "string",
+                        "label": "msg://name",
+                        "name": "name",
+                        "value": "msg://Start",
+                        "readonly":"true"
+                    },
+                    {
                         type: "group",
                         legend: "msg://forms",
                         collapsible: "true",
@@ -101,7 +108,7 @@ var wfLanguage = {
                         "label": "msg://name",
                         "name": "name",
                         "required": false,
-                        "value": "CardState",
+                        "value": "msg://CardState",
                         "readonly":"true"
                     }
                 ],
@@ -482,10 +489,10 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
-                        "label": "msg://name",
                         "name": "name",
+                        "label": "msg://name",
                         "value": "msg://EmptyModule"
-                    },
+                    }
 
                 ],
                 "terminals": [

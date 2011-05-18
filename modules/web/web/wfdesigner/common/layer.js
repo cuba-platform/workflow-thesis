@@ -72,18 +72,20 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
         var klass = WireIt.containerClassFromXtype(containerConfig.xtype);
 
         var container = new klass(containerConfig, this);
-        if (containerConfig.moduleName != 'Start') {
-            container.number = currNumber + 1;
-            var optField;
+        var optField;
             for (var j = 0; j < containerConfig.optFields.length; j++) {
                 if (containerConfig.optFields[j].name == 'name') {
                     optField = containerConfig.optFields[j];
                     break;
                 }
             }
+        if (containerConfig.moduleName == 'Start') {
+            container.optionsValue = {name: optField.value};
+        }
+        else {
+            container.number = currNumber + 1;
             if (container.form) {
-
-                container.form.setValue({name:optField.value + container.number}, false);
+               container.form.setValue({name:optField.value + container.number}, false);
             }
             container.optionsValue = {name: optField.value + container.number};
         }
