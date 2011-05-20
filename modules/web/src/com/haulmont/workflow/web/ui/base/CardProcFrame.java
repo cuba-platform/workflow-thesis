@@ -42,6 +42,7 @@ import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.BooleanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 
@@ -265,7 +266,11 @@ public class CardProcFrame extends AbstractFrame {
 
                 String msg = getMessage("runProcessFailed");
                 App.getInstance().getAppLog().log(new LogItem(LogLevel.ERROR, msg, e));
-                showNotification(msg, e.getMessage(), NotificationType.ERROR);
+                String message;
+                if (e.getCause() instanceof InvocationTargetException) {
+                    message = ((InvocationTargetException) e.getCause()).getTargetException().getMessage();
+                } else message = e.getMessage();
+                showNotification(msg, message, NotificationType.ERROR);
 
                 window.close("cancel", true);
             }

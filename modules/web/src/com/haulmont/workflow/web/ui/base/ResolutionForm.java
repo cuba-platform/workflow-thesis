@@ -89,6 +89,9 @@ public class ResolutionForm extends AbstractForm {
             assignment.setProc(card.getProc());
         } else {
             Object assignmentId = params.get("param$assignmentId");
+            if (assignmentId == null) {
+                throw new RuntimeException(getMessage("resolutionFormFailed"));
+            }
             assignment = reloadAssignment(assignmentId);
         }
 
