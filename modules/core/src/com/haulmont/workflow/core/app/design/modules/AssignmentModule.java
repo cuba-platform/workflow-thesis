@@ -87,7 +87,7 @@ public class AssignmentModule extends Module {
         if (!StringUtils.isBlank(description))
             properties.setProperty(name + ".description", description);
         else
-            properties.setProperty(name + ".description", MessageProvider.getMessage(Assignment.class, "AssignmentModule.description", locale));
+            properties.setProperty(name + ".description", MessageProvider.getMessage(AssignmentModule.class, "AssignmentModule.description", locale));
 
         for (Map.Entry<String, String> entry : outputs.entrySet()) {
             properties.setProperty(name + "." + entry.getKey(), entry.getValue());
