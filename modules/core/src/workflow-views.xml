@@ -125,6 +125,7 @@
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
         <property name="attachments" view="assignment-edit"/>
+        <property name="card" view="_local"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="resolutions">
