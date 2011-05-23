@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.CardAttachmentsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext/>
+
+    <layout expandLayout="true" height="100%" spacing="true">
+        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
+            <buttonsPanel>
+                <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
+                <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                <button id="copyAttach" icon="icons/copy.png"/>
+                <button id="pasteAttach" icon="icons/paste.png"/>
+                <button id="checkAttachSignatures" visible="false"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name" caption="msg://attachName"/>
+                <column id="file.name" caption="msg://fileName"/>
+                <column id="attachType.locName" caption="msg://typeName"/>
+                <column id="file.size" caption="msg://fileSize"/>
+            </columns>
+            <rows datasource="attachmentsDs"/>
+        </table>
+    </layout>
+</window>

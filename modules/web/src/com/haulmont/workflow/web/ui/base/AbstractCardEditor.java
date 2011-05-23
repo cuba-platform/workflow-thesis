@@ -20,6 +20,9 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,6 +50,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     protected CardProcFrame cardProcFrame;
     protected CardRolesFrame cardRolesFrame;
     protected ResolutionsFrame resolutionsFrame;
+    protected CardAttachmentsFrame cardAttachmentsFrame;
 
     public AbstractCardEditor(IFrame frame) {
         super(frame);
@@ -55,10 +59,16 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     protected void initFields() {
         cardDs = getDsContext().get("cardDs");
         cardRolesDs = getDsContext().get("cardRolesDs");
-        attachmentsTable = getComponent("attachmentsTable");
         cardProcFrame = getComponent("cardProcFrame");
         cardRolesFrame = getComponent("cardRolesFrame");
         resolutionsFrame = getComponent("resolutionsFrame");
+        cardAttachmentsFrame = getComponent("cardAttachmentsFrame");
+        if (cardAttachmentsFrame != null)
+            attachmentsTable = getComponent("cardAttachmentsFrame.attachmentsTable");
+        else
+            attachmentsTable = getComponent("attachmentsTable");
+
+
     }
 
     @Override
@@ -67,23 +77,23 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         initFields();
 
-        if (attachmentsTable != null) {
-            TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
-            attachmentsTH.createCreateAction(
-                    new ValueProvider() {
-                        public Map<String, Object> getValues() {
-                            Map<String, Object> values = new HashMap<String, Object>();
-                            values.put("card", cardDs.getItem());
-                            values.put("file", new FileDescriptor());
-                            return values;
-                        }
-                        public Map<String, Object> getParameters() {
-                            return Collections.emptyMap();
-                        }
-                    },
-                    WindowManager.OpenType.DIALOG);
-            attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
-            attachmentsTH.createRemoveAction(false);
+        if (cardAttachmentsFrame != null) {
+            cardAttachmentsFrame.init();
+        } else {
+            //leave table init for editors which don't use cardAttachmentsFrame
+            if (attachmentsTable != null) {
+                attachmentsTable.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
+                    @Override
+                    protected Map<String, Object> getInitialValues() {
+                        HashMap<String, Object> values = new HashMap<String, Object>();
+                        values.put("card", cardDs.getItem());
+                        values.put("file", new FileDescriptor());
+                        return values;
+                    }
+                });
+                attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG));
+                attachmentsTable.addAction(new RemoveAction(attachmentsTable, false));
+            }
         }
 
         if (cardProcFrame != null) {
