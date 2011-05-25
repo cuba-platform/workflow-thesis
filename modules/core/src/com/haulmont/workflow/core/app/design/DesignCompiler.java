@@ -169,17 +169,35 @@ public class DesignCompiler {
 
     private Map<String, String> parseStates(Document document,Properties properties) throws UnsupportedEncodingException {
         Map<String, String> states = new HashMap<String, String>();
-        List<Element> elements = document.getRootElement().elements("custom");
+        List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
             List<Element> transitions = element.elements("transition");
             for (Element transition : transitions) {
+
                 String stateKey = transition.attributeValue("to");
-                String stateName =properties.getProperty(elementKey) +'.'+ properties.getProperty(stateKey);
-                states.put(elementKey+", "+elementKey + '.' + stateKey, stateName);
+                if (checkState(stateKey, document.getRootElement().elements())) {
+                    String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(stateKey);
+                    states.put(elementKey + ", " + elementKey + '.' + stateKey, stateName);
+                }
             }
         }
         return states;
+    }
+
+    private boolean checkState(String stateKey, List<Element> elements) {
+        for (Element element : elements) {
+            Attribute nameAttr = element.attribute("name");
+            if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
+                List<Element> elementProperties = element.elements("property");
+                for (Element property : elementProperties) {
+                    if (property.attribute("name") != null&&"role".equals(property.attribute("name").getValue())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void createStatesSheet(Workbook book, Map<String, String> statesMap) {
