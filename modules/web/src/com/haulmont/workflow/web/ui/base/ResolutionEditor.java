@@ -81,7 +81,9 @@ public class ResolutionEditor extends AbstractEditor {
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
         createPopup.addAction(helper.createCreateAction(new ValueProvider() {
             public Map<String, Object> getValues() {
-                return Collections.emptyMap();
+                Map<String, Object> values = new HashMap<String, Object>();
+                values.put("assignment", assignmentDs.getItem());
+                return values;
             }
 
             public Map<String, Object> getParameters() {
