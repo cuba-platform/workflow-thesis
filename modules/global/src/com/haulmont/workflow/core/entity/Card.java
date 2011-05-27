@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
+@Listeners({"com.haulmont.workflow.core.listeners.CardListener"})
 public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -6180254942462308853L;
