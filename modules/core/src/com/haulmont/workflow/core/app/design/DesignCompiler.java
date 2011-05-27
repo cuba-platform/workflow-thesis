@@ -172,29 +172,61 @@ public class DesignCompiler {
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
-            List<Element> transitions = element.elements("transition");
-            for (Element transition : transitions) {
-
-                String stateKey = transition.attributeValue("to");
-                if (checkState(stateKey, document.getRootElement().elements())) {
-                    String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(stateKey);
-                    states.put(elementKey + ", " + elementKey + '.' + stateKey, stateName);
+            if (elementKey != null && (element.getName().equals("start") || checkState(elementKey, elements))) {
+                List<Element> transitions = element.elements("transition");
+                for (Element transition : transitions) {
+                    String stateKey = transition.attributeValue("to");
+                    String nextStates = getNextAssignmentStates(stateKey, elements, new ArrayList<String>());
+                    String[] statesKeys = StringUtils.split(nextStates, ",");
+                    for (String nextStateKey : statesKeys) {
+                        String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
+                        states.put(nextStateKey + ", " + elementKey + '.' + nextStateKey, stateName);
+                    }
                 }
             }
         }
         return states;
     }
 
+    private String getNextAssignmentStates(String stateKey, List<Element> elements, List<String> previosElements) {
+        for (Element element : elements) {
+            Attribute nameAttr = element.attribute("name");
+            if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
+
+                if (previosElements.contains(stateKey))
+                    return null;
+                if (checkState(stateKey, elements)) {
+                    return stateKey;
+                } else {
+                    previosElements.add(stateKey);
+                    List<Element> transitions = element.elements("transition");
+                    StringBuilder correctStates = new StringBuilder();
+                    for (Element transition : transitions) {
+                        String nextState = transition.attributeValue("to");
+                        String nextCorrectState = getNextAssignmentStates(nextState, elements, previosElements);
+                        if (nextCorrectState != null) {
+                            correctStates.append(nextCorrectState + ",");
+                        }
+                    }
+                    return correctStates.toString();
+                }
+            }
+        }
+        return null;
+    }
+
     private boolean checkState(String stateKey, List<Element> elements) {
         for (Element element : elements) {
             Attribute nameAttr = element.attribute("name");
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
-                List<Element> elementProperties = element.elements("property");
-                for (Element property : elementProperties) {
-                    if (property.attribute("name") != null&&"role".equals(property.attribute("name").getValue())) {
+                Attribute classAttr = element.attribute("class");
+                if (classAttr != null) {
+                    Class assignerClass = ScriptingProvider.loadClass("workflow.activity.Assigner");
+                    Class currentClass = ScriptingProvider.loadClass(classAttr.getValue());
+                    if (assignerClass.isAssignableFrom(currentClass))
                         return true;
-                    }
                 }
+
             }
         }
         return false;

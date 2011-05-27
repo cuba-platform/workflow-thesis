@@ -125,7 +125,7 @@ public class DesignBrowser extends AbstractWindow {
                                     new Button.ClickListener() {
                                         public void buttonClick(Button.ClickEvent event) {
                                             Design d = getDsContext().getDataService().reload(design, "_local");
-                                            WebExportDisplay export = new WebExportDisplay(true, true);
+                                            WebExportDisplay export = new WebExportDisplay();
                                             export.show(
                                                     new ByteArrayDataProvider(d.getNotificationMatrix()),
                                                     "NotificationMatrix",
@@ -423,7 +423,7 @@ public class DesignBrowser extends AbstractWindow {
                 if (!selected.isEmpty()) {
                     final Design design = (Design) selected.iterator().next();
                     if (design.getCompileTs() != null) {
-                        WebExportDisplay export = new WebExportDisplay(true, false);
+                        WebExportDisplay export = new WebExportDisplay();
 
                         byte[] bytes = service.getNotificationMatrixTemplate(design.getUuid());
                         ByteArrayDataProvider array = new ByteArrayDataProvider(bytes);
