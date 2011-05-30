@@ -11,6 +11,9 @@
 
 package com.haulmont.workflow.web.ui.base;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -31,6 +34,7 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,9 +118,12 @@ public class CardCommentFrame extends AbstractWindow {
                 WebLabel dateLabel = new WebLabel();
                 dateLabel.setValue(getMessage("date"));
                 dateLayout.add(dateLabel);
+
                 WebLabel dateValueLabel = new WebLabel();
-                dateValueLabel.setValue(new SimpleDateFormat(MessageUtils.getDateTimeFormat()).format(cardComment.getCreateTs()));
+                Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
+                dateValueLabel.setValue(datatype.format(cardComment.getCreateTs(), UserSessionProvider.getLocale()));
                 dateLayout.add(dateValueLabel);
+
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
                 WebTextField labelComment = new WebTextField();
                 labelComment.setValue(cardComment.getComment());

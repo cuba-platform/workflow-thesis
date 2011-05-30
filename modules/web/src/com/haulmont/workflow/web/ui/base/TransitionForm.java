@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.web.ui.base;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -19,7 +20,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
@@ -172,7 +176,7 @@ public class TransitionForm extends AbstractForm {
         if (StringUtils.isNotBlank(dueDateFormatParam)) {
             if ("dateTimeFormat".equals(dueDateFormatParam)) {
                 dueDate.setResolution(DateField.Resolution.MIN);
-                dueDate.setDateFormat(MessageUtils.getDateTimeFormat());
+                dueDate.setDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
             }
         }
 
