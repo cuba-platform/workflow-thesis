@@ -38,6 +38,7 @@ import java.text.DecimalFormat
 import com.haulmont.cuba.core.app.FileUploadService
 import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.workflow.core.global.WfConfig
+import com.haulmont.workflow.core.entity.Assignment
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -53,6 +54,7 @@ public class AttachmentEditor extends AbstractEditor {
   protected LookupField attachType
   protected AttachmentType defaultAType
   protected CollectionDatasource attachTypesDs
+  protected Assignment assignmnet;
 
   protected boolean needSave
 
@@ -77,6 +79,7 @@ public class AttachmentEditor extends AbstractEditor {
     createDateLab = getComponent("frame.createDate")
     attachType = getComponent("frame.attachType")
     attachTypesDs = attachType.getOptionsDatasource()
+    assignmnet = params.get("assignmnet");
   }
 
   @Override
@@ -84,6 +87,8 @@ public class AttachmentEditor extends AbstractEditor {
     super.setItem(item)
 
     boolean isNew = PersistenceHelper.isNew(fileDs.getItem())
+    if (assignmnet != null && item instanceof CardAttachment)
+        ((CardAttachment)item).setAssignment(assignmnet);
 
     if (isNew) {
       if (attachTypesDs.getState() !=

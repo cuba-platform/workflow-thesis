@@ -27,11 +27,23 @@ public class CardAttachment extends Attachment {
     @JoinColumn(name = "CARD_ID")
     private Card card;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ASSIGNMENT_ID")
+    private Assignment assignment;
+
     public Card getCard() {
         return card;
     }
 
     public void setCard(Card card) {
         this.card = card;
+    }
+
+    public Assignment getAssignment() {
+        return assignment;
+    }
+
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
     }
 }

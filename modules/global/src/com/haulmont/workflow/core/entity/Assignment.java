@@ -73,7 +73,7 @@ public class Assignment extends StandardEntity {
     @OneToMany(mappedBy = "assignment")
     @OrderBy("name")
     @Aggregation
-    private List<AssignmentAttachment> attachments;
+    private List<CardAttachment> attachments;
 
     @Column(name = "ITERATION")
     private Integer iteration;
@@ -174,11 +174,11 @@ public class Assignment extends StandardEntity {
         this.comment = comment;
     }
 
-    public List<AssignmentAttachment> getAttachments() {
+    public List<CardAttachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<AssignmentAttachment> attachments) {
+    public void setAttachments(List<CardAttachment> attachments) {
         this.attachments = attachments;
     }
 

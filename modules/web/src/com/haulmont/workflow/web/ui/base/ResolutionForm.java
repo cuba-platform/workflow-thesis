@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -142,8 +143,9 @@ public class ResolutionForm extends AbstractForm {
         Button pasteAttachBtn = getComponent("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
             public Attachment createObject() {
-                AssignmentAttachment attachment = new AssignmentAttachment();
+                CardAttachment attachment = EntityFactory.create(CardAttachment.class);
                 attachment.setAssignment((Assignment) assignmentDs.getItem());
+                attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
                 return attachment;
             }
         };
@@ -210,9 +212,9 @@ public class ResolutionForm extends AbstractForm {
         }
     }
 
-    protected List<AssignmentAttachment> copyAttachments() {
-        List<AssignmentAttachment> attachmentList = datasource.getItem().getAttachments();
-        List<AssignmentAttachment> commitList = new ArrayList<AssignmentAttachment>();
+    protected List<CardAttachment> copyAttachments() {
+        List<CardAttachment> attachmentList = datasource.getItem().getAttachments();
+        List<CardAttachment> commitList = new ArrayList<CardAttachment>();
         if (datasource.getItemIds().size() > 1 && attachmentList != null) {
             for (Object key : datasource.getItemIds()) {
                 if (key.equals(assignment.getId())) {
@@ -220,14 +222,15 @@ public class ResolutionForm extends AbstractForm {
                 }
 
                 Assignment item = datasource.getItem((UUID) key);
-                List<AssignmentAttachment> copyAttachmentList = new ArrayList<AssignmentAttachment>();
-                for (AssignmentAttachment attachment : attachmentList) {
-                    AssignmentAttachment assignmentAttachment = new AssignmentAttachment();
-                    assignmentAttachment.setAssignment(item);
-                    assignmentAttachment.setFile(attachment.getFile());
-                    assignmentAttachment.setName(attachment.getName());
-                    copyAttachmentList.add(assignmentAttachment);
-                    commitList.add(assignmentAttachment);
+                List<CardAttachment> copyAttachmentList = new ArrayList<CardAttachment>();
+                for (CardAttachment attachment : attachmentList) {
+                    CardAttachment cardAttachment = EntityFactory.create(CardAttachment.class);
+                    cardAttachment.setAssignment(item);
+                    cardAttachment.setCard(item.getCard());
+                    cardAttachment.setFile(attachment.getFile());
+                    cardAttachment.setName(attachment.getName());
+                    copyAttachmentList.add(cardAttachment);
+                    commitList.add(cardAttachment);
                 }
                 item.setAttachments(copyAttachmentList);
             }

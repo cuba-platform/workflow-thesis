@@ -11,10 +11,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -122,8 +119,9 @@ public class TransitionForm extends AbstractForm {
             Button pasteAttachBtn = getComponent("pasteAttach");
             AttachmentCreator creator = new AttachmentCreator() {
                 public Attachment createObject() {
-                    AssignmentAttachment attachment = new AssignmentAttachment();
+                    CardAttachment attachment = EntityFactory.create(CardAttachment.class);
                     attachment.setAssignment((Assignment) assignmentDs.getItem());
+                    attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
                     return attachment;
                 }
             };

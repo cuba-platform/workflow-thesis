@@ -10,28 +10,43 @@
  */
 package com.haulmont.workflow.core.listeners;
 
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.*;
-import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
+import org.apache.commons.lang.BooleanUtils;
 
 public class CardAttachmentEntityListener implements BeforeInsertEntityListener<CardAttachment>, BeforeDeleteEntityListener<CardAttachment> {
     public void onBeforeInsert(CardAttachment entity) {
-        entity.getCard().setHasAttachments(true);
+        if (!BooleanUtils.isTrue(entity.getCard().getHasAttachments())) {
+            entity.getCard().setHasAttachments(true);
+            if(!PersistenceHelper.isNew(entity.getCard()))
+                setHasAttachmentsInCard(entity.getCard(), true);
+        }
     }
 
     public void onBeforeDelete(CardAttachment entity) {
         Card card = entity.getCard();
         card.getAttachments().remove(entity);
         if (card.getAttachments().isEmpty()) {
-            boolean hasAttachments = false;
-            for (Assignment assignment : card.getAssignments()) {
-                if (assignment.getAttachments().size() > 0) {
-                    hasAttachments = true;
-                    break;
-                }
-            }
-            if (!hasAttachments) card.setHasAttachments(false);
+            card.setHasAttachments(false);
+            setHasAttachmentsInCard(card, false);
+        }
+    }
+
+    private void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("update wf$Card c set c.hasAttachments = ?1 " +
+                    "where c.id = ?2");
+            query.setParameter(1, hasAttachments);
+            query.setParameter(2, card);
+            query.executeUpdate();
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 }
