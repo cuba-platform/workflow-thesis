@@ -224,6 +224,8 @@ public class WfServiceBean implements WfService {
     }
 
     public boolean isCurrentUserContainsRole(Role role) {
+        if (role == null)
+            return true;
         boolean isRoleContains = false;
         User user = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
 
