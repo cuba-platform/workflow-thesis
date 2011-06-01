@@ -12,10 +12,8 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.app.EmailerConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -52,8 +50,6 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
     private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
     private Map<String, Map<NotificationType, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<NotificationType, NotificationMessageBuilder>>();
-
-    private ExecutorService mailExecutorService = Executors.newFixedThreadPool(3);
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -335,16 +331,14 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            mailExecutorService.submit(new Runnable() {
-                public void run() {
-                    EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
-                    try {
-                        emailer.sendEmail(user.getEmail(), message.getSubject(), message.getBody());
-                    } catch (EmailException e) {
-                        log.warn(e);
-                    }
-                }
-            });
+            EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
+            try {
+                EmailInfo emailInfo = new EmailInfo(user.getEmail(), message.getSubject(),
+                        ConfigProvider.getConfig(EmailerConfig.class).getFromAddress(), null, null, message.getBody(), null);
+                emailer.sendEmail(emailInfo, false);
+            } catch (EmailException e) {
+                log.warn(e);
+            }
 
             mailList.add(user);
         }
