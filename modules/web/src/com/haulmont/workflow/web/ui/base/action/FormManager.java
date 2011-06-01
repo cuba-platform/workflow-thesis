@@ -242,7 +242,7 @@ public abstract class FormManager implements Serializable {
             try {
                 Boolean result = runnable.call();
                 if (!BooleanUtils.isFalse(result)) {
-                    chain.doManagerBefore("");
+                    chain.doManagerBefore("", params);
                 } else {
                     chain.fail();
                 }
