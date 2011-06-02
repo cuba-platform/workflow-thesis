@@ -107,6 +107,9 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
     @OneToMany(mappedBy = "card")
     protected Set<Assignment> assignments;
 
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    protected Set<CardInfo> cardInfos;
+
     @Column(name = "HAS_ATTACHMENTS")
     protected Boolean hasAttachments;
 
@@ -286,5 +289,13 @@ public class Card extends BaseUuidEntity implements Updatable, SoftDelete {
 
     public void setHasAttachments(Boolean hasAttachments) {
         this.hasAttachments = hasAttachments;
+    }
+
+    public Set<CardInfo> getCardInfos() {
+        return cardInfos;
+    }
+
+    public void setCardInfos(Set<CardInfo> cardInfos) {
+        this.cardInfos = cardInfos;
     }
 }
