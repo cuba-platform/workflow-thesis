@@ -199,7 +199,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     private Date startTime;
     private ListIterator<CalendarItem> ciIterator;
 
-    private void loadCaches() {
+    private synchronized void loadCaches() {
         if (exceptionDays == null) {
             synchronized (this) {
                 if (exceptionDays == null) {
@@ -691,6 +691,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
     public boolean isDateWorkDay(Calendar day) {
         day = DateUtils.truncate(day, Calendar.DATE);
+        loadCaches();
         List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
         if (currentDayCalendarItems == null)
             currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
