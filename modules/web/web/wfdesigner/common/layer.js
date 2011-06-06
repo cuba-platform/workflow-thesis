@@ -14,7 +14,7 @@ Wf.Layer = function(options) {
     Wf.Layer.superclass.constructor.call(this, options);
     this.eventContainerDragged.subscribe(this.onContainersMoved, this);
     this.eventAddContainer.subscribe(this.onContainersMoved, this);
-}
+};
 
 YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
 
@@ -31,7 +31,7 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
     },
 
     height:1000,
-    width:1200,
+    width:1400,
 
     heightArrows: WireIt.cn('div', {class: 'heightArrows'}),
     widthArrows: WireIt.cn('div', {class: 'widthArrows'}),
@@ -120,7 +120,7 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
         WireIt.sn(args['el'], null, { width:args['width'] + 'px' });
     }
 
-})
+});
 
 
 

@@ -73,6 +73,11 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
     createOutput: function(e, params) {
         var i;
         var name = params[0];
+        var pattern = /\S+/;
+        if (!pattern.test(name)) {
+            this.closeNewOutEditor();
+            return;
+        }
         var bottomPos=-15;
         var topPos=undefined;
         if (this.getOutputs()[0]){
@@ -137,6 +142,11 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
                 //labelEditor.setValue(output.name);
                 WireIt.sn(labelEditor.getEl(), null, style);
                 labelEditor.updatedEvt.subscribe(function(e, value) {
+                    var pattern = /\S+/;
+                    if (!pattern.test(value[0])) {
+                        labelEditor.setValue(output.name);
+                        return;
+                    }
                     delete this.outputLabels[output.name];
                     output.name = value[0];
                     this.outputLabels[output.name] = labelEditor;
