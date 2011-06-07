@@ -21,7 +21,25 @@ WireIt.ModuleProxy = function(el, WiringEditor) {
     this.isTarget = false; 
 };
 lang.extend(WireIt.ModuleProxy,YAHOO.util.DDProxy, {
-   
+
+    onDrag: function(e) {
+        var layer = this._WiringEditor.layer;
+        var clientWidth = layer.parentEl.clientWidth + YAHOO.util.Dom.get("left").clientWidth;
+        var clientHeight = layer.parentEl.clientHeight + YAHOO.util.Dom.get("top").clientHeight;
+        var clientRects = this.getDragEl().getClientRects()[0];
+        var elPosX = clientRects.left;
+        var elPosY = clientRects.top;
+        var width = clientRects.width;
+        var height = clientRects.height;
+
+        if (elPosX + width > clientWidth) {
+            WireIt.sn(this.getDragEl(), null, { left:clientWidth - width + 'px' });
+        }
+        if (elPosY + height > clientHeight) {
+            WireIt.sn(this.getDragEl(), null, {top: clientHeight - height + 'px'});
+        }
+    },
+
    /**
     * copy the html and apply selected classes
     * @method startDrag
