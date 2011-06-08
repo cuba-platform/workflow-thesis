@@ -40,7 +40,7 @@ window.onbeforeunload=(function(){
             while(value.name === "") {
        	        value.name = prompt(i18nDict.ChooseName);
                 if (value.name==null){
-                    valee.name="Unnamed "+ new Date()
+                    value.name="Unnamed "+ new Date()
                 }
             }
             value.working.properties.name=value.name;
