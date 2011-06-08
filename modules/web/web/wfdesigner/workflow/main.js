@@ -33,23 +33,4 @@ YAHOO.util.Event.onDOMReady(function() {
 window.onload = (function() {
     i18n.translateNodes();
 });
-window.onbeforeunload=(function(){
-	if (!Wf.editor.isSaved()){
-        if(window.confirm(i18nDict.SaveChanges)){
-            var value = Wf.editor.getValue();
-            while(value.name === "") {
-       	        value.name = prompt(i18nDict.ChooseName);
-                if (value.name==null){
-                    value.name="Unnamed "+ new Date()
-                }
-            }
-            value.working.properties.name=value.name;
-
-		Wf.editor.tempSavedWiring = {name: value.name, working: value.working, language: Wf.editor.options.languageName };
-        Wf.editor.adapter.saveWiring(Wf.editor.tempSavedWiring, {
-       	    scope: Wf.editor
-    	});
-        }
-    }
-});
 

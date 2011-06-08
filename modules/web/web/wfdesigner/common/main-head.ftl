@@ -94,3 +94,11 @@
 <script type="text/javascript" src="../common/multiout-container.js"></script>
 <script type="text/javascript" src="../common/bezierarrowwire.js"></script>
 <script type="text/javascript" src="../common/layer.js"></script>
+
+<!--confirm-to-leave-page-->
+<script type="text/javascript"> window.onbeforeunload = (function() {
+    if (!Wf.editor.isSaved()) {
+        return i18nDict.SaveChanges;
+    }
+});</script>
+

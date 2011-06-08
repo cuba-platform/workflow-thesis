@@ -96,6 +96,6 @@ var i18nDict = {
     "Unsaved" : "Save failure",
     "AlertMessage" : "Message",
     "ChooseName" : "Please choose a name",
-    "SaveChanges" : "Warning!\nThere are unsaved changes. Press \"OK\" to save. \nIf you press \"Cancel\" or close this message all changes will be lost",
+    "SaveChanges" : "Warning!\nThe designer has unsaved changes.\nDo you want to leave the page and discard your changes?",
     "NotSupportedBrowser" : "Sorry, your browser does not supported.Please use Google Chrome or Mozilla Firefox"
 };
