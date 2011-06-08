@@ -54,6 +54,37 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
         this.renderTimerParams(false);
     },
 
+    renderDueDateField: function() {
+        var dueDateField = {
+            type: 'combine', label: i18n.get('Timer.dueDate'), name: 'dueDate', fields: [
+                {type: 'integer', name: 'qty', className: 'Wf-TimerSelect-dueDate-qty'},
+                {type: 'select', name: 'calendar', choices: [
+                    {value: '', label: i18n.get('Timer.calendar')},
+                    {value: 'business', label: i18n.get('Timer.business')}
+                ]},
+                {type: 'select', name: 'interval', choices: [
+                    {value: 'minute', label: i18n.get('Timer.minute')},
+                    {value: 'hour', label: i18n.get('Timer.hour')},
+                    {value: 'day', label: i18n.get('Timer.day')}
+                ]}
+            ]
+        };
+        this.timerParamsGroup.addField(dueDateField);
+    } ,
+
+    onDueDateTypeChanged: function(e, params) {
+        var dueDateType = params[0];
+        if (dueDateType == 'manual') {
+            this.renderDueDateField();
+        }
+        else {
+            var dueDateField = this.timerParamsGroup.getFieldByName('dueDate')
+            if (dueDateField) {
+                dueDateField.destroy();
+            }
+        }
+    },
+
     renderTimerParams: function(useScriptsCache) {
         try {
             if (this.timerParamsGroup) {
@@ -79,23 +110,18 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
                 needScripts = true;
             }
 
-            var dueDateField = {
-                type: 'combine', label: i18n.get('Timer.dueDate'), name: 'dueDate', fields: [
-                    {type: 'integer', name: 'qty', className: 'Wf-TimerSelect-dueDate-qty'},
-                    {type: 'select', name: 'calendar', choices: [
-                        {value: '', label: i18n.get('Timer.calendar')},
-                        {value: 'business', label: i18n.get('Timer.business')}
-                    ]},
-                    {type: 'select', name: 'interval', choices: [
-                        {value: 'minute', label: i18n.get('Timer.minute')},
-                        {value: 'hour', label: i18n.get('Timer.hour')},
-                        {value: 'day', label: i18n.get('Timer.day')}
-                    ]}
-                ]
-            };
-            fields.push(dueDateField);
+            var dueDateChoices = [
+                {value: null, label: ""},
+                {value: 'form', label: i18n.get('Timer.fromProcess')},
+                {value: 'manual', label: i18n.get('Timer.manual')}
+            ];
+
+            var timerDueDateChooser = {
+                type: 'select', label: i18n.get('Timer.dueDateType'), name: 'dueDateType', choices:dueDateChoices};
+            fields.push(timerDueDateChooser);
 
             this.timerParamsGroup = inputEx({type: "group", fields: fields}, this);
+            this.timerParamsGroup.getFieldByName('dueDateType').updatedEvt.subscribe(this.onDueDateTypeChanged,this,true);
             if (needScripts) {
                 var scriptsSelect = this.getScriptsSelect();
                 if (scriptsSelect) {
@@ -141,6 +167,7 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
             val = {};
             val.type = this.timerType;
             val.properties = this.timerParamsGroup.getValue();
+
         }
         return val;
     },
@@ -154,7 +181,9 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
 
             this.timerType = val.type;
             this.renderTimerParams(true);
-
+            if ('manual' == val.properties.dueDateType) {
+                this.renderDueDateField();
+            }
             this.timerParamsGroup.setValue(val.properties);
         } catch(e) {
             console.log(e)

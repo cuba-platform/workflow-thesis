@@ -137,6 +137,7 @@ public class AssignmentModule extends Module {
             Element element = writeJpdlObjectPropertyEl(
                     parentEl, "timersFactory", "com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory");
 
+            String dueDateType;
             StringBuilder dueDates = new StringBuilder();
             StringBuilder transitions = new StringBuilder();
             StringBuilder scripts = new StringBuilder();
@@ -144,10 +145,14 @@ public class AssignmentModule extends Module {
                 JSONObject jsTimer = jsTimersList.getJSONObject(i);
 
                 JSONObject jsProps = jsTimer.getJSONObject("properties");
-
-                JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
-                String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
-                dueDates.append(dueDate);
+                dueDateType = jsProps.getString("dueDateType");
+                if ("manual".equals(dueDateType)) {
+                    JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
+                    String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
+                    dueDates.append(dueDate);
+                } else {
+                    dueDates.append("process");
+                }
 
                 String type = jsTimer.getString("type");
                 if (type.equals("script")) {

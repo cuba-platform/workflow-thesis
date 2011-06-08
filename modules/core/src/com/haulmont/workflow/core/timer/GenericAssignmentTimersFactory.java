@@ -36,9 +36,14 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
     public void createTimers(ActivityExecution execution, Assignment assignment) {
         for (int i = 0; i < dueDatesArr.length; i++) {
             String dueDate = dueDatesArr[i];
-
-            Date d = new Date(TimeProvider.currentTimestamp().getTime() + WfHelper.getTimeMillis(dueDate));
-
+            Date d;
+            if ("process".equals(StringUtils.trimToNull(dueDate))) {
+                d = (Date) execution.getVariable("dueDate");
+                if (d == null)
+                    continue;
+            } else {
+                d = new Date(TimeProvider.currentTimestamp().getTime() + WfHelper.getTimeMillis(dueDate));
+            }
             EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
 
             Map<String, String> params = new HashMap<String, String>();
