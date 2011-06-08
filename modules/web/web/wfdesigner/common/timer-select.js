@@ -40,11 +40,21 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
         this.fieldset.appendChild(this.timerTypeField.getEl());
 
         this.timerTypeField.updatedEvt.subscribe(this.onTimerTypeChanged, this, true);
+        this.timerTypeField.updatedEvt.subscribe(this.markUnsaved, this, true);
 
         this.divEl.appendChild(this.fieldset);
 
         if(this.options.disabled) {
             this.disable();
+        }
+    },
+
+    markUnsaved: function(e) {
+        if (!this.initialized) {
+            this.initialized = true;
+        }
+        else {
+            this.options.container.layer.eventChanged.fire();
         }
     },
 
@@ -78,7 +88,7 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
             this.renderDueDateField();
         }
         else {
-            var dueDateField = this.timerParamsGroup.getFieldByName('dueDate')
+            var dueDateField = this.timerParamsGroup.getFieldByName('dueDate');
             if (dueDateField) {
                 dueDateField.destroy();
             }
@@ -135,6 +145,7 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
                     }
                 }
             }
+            this.timerParamsGroup.updatedEvt.subscribe(this.markUnsaved,this,true);
             this.fieldset.appendChild(this.timerParamsGroup.getEl());
         } catch(e) {
             console.log(e)
