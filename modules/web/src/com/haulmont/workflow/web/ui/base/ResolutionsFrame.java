@@ -10,10 +10,7 @@
  */
 package com.haulmont.workflow.web.ui.base;
 
-import com.google.common.base.Preconditions;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -22,12 +19,9 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
-import com.haulmont.cuba.web.filestorage.FileDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.AssignmentAttachment;
 import com.haulmont.workflow.core.entity.Card;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;

@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.filestorage.FileDisplay;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import java.util.*;
@@ -122,8 +122,7 @@ public class AttachmentActionsHelper {
                 if (selected.size() == 1) {
                     FileDescriptor fd = ((Attachment) selected.iterator().next()).getFile();
 
-                    FileDisplay fileDisplay = new FileDisplay(true);
-                    fileDisplay.show(fd.getName(), fd, true);
+                    new WebExportDisplay().show(fd);
                 }
             }
         });
