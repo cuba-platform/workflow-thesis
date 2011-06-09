@@ -212,6 +212,11 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         roles.add(WfConstants.CARD_CREATOR);
 
         if (!roles.isEmpty()) {
+            Set<ProcRole> deletedRoles = findDeletedRoles(proc.getRoles(), roles);
+            for (ProcRole deletedRole : deletedRoles) {
+                em.remove(deletedRole);
+            }
+            proc.getRoles().removeAll(deletedRoles);
             for (String role : roles) {
                 boolean exists = false;
                 for (ProcRole procRole : proc.getRoles()) {
@@ -240,6 +245,16 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         if (StringUtils.isNotBlank(states)) {
             proc.setStates(states);
         }
+    }
+
+    private Set<ProcRole> findDeletedRoles(List<ProcRole> oldRoles, Set<String> newRoles) {
+        Set<ProcRole> deleted = new HashSet<ProcRole>();
+        for (ProcRole oldRole : oldRoles) {
+            if (!newRoles.contains(oldRole.getCode()))
+
+                deleted.add(oldRole);
+        }
+        return deleted;
     }
 
     private boolean checkMultyUserRole(String className) {
