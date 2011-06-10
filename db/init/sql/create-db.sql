@@ -95,6 +95,7 @@ create table WF_CARD (
     PARENT_CARD_ID varchar(36),
     SUBSTITUTED_CREATOR_ID varchar(36),
     HAS_ATTACHMENTS boolean,
+    CATEGORY_ID varchar(36),
     primary key (ID)
 );
 
@@ -102,6 +103,7 @@ alter table WF_CARD add constraint FK_WF_CARD_PROC foreign key (PROC_ID) referen
 alter table WF_CARD add constraint FK_WF_CARD_USER foreign key (CREATOR_ID) references SEC_USER (ID);
 alter table WF_CARD add constraint FK_WF_CARD_CARD foreign key (PARENT_CARD_ID) references WF_CARD (ID);
 alter table WF_CARD add constraint FK_WF_CARD_SUBSTITUTED_CREATOR foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER (ID);
+alter table WF_CARD add constraint FK_WF_CARD_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID);
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_RELATION (
