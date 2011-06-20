@@ -167,20 +167,22 @@ public class DesignCompiler {
         return rolesList;
     }
 
-    private Map<String, String> parseStates(Document document,Properties properties) throws UnsupportedEncodingException {
+    private Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
         Map<String, String> states = new HashMap<String, String>();
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
-            if (elementKey != null && (element.getName().equals("start") || checkState(elementKey, elements))) {
+            if (elementKey != null && (element.getName().equals("start") || (element.getName().equals("join")) || checkState(elementKey, elements))) {
                 List<Element> transitions = element.elements("transition");
                 for (Element transition : transitions) {
                     String stateKey = transition.attributeValue("to");
                     String nextStates = getNextAssignmentStates(stateKey, elements, new ArrayList<String>());
-                    String[] statesKeys = StringUtils.split(nextStates, ",");
-                    for (String nextStateKey : statesKeys) {
-                        String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
-                        states.put(nextStateKey + ", " + elementKey + '.' + nextStateKey, stateName);
+                    if (nextStates != null) {
+                        String[] statesKeys = StringUtils.split(nextStates, ",");
+                        for (String nextStateKey : statesKeys) {
+                            String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
+                            states.put(nextStateKey + ", " + elementKey + '.' + nextStateKey, stateName);
+                        }
                     }
                 }
             }
@@ -188,12 +190,14 @@ public class DesignCompiler {
         return states;
     }
 
-    private String getNextAssignmentStates(String stateKey, List<Element> elements, List<String> previosElements) {
+    private String getNextAssignmentStates(String stateKey, List<Element> elements, List<String> previosElements) throws TemplateGenerationException {
         for (Element element : elements) {
             Attribute nameAttr = element.attribute("name");
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
 
                 if (previosElements.contains(stateKey))
+                    return null;
+                if (checkJoin(stateKey, elements))
                     return null;
                 if (checkState(stateKey, elements)) {
                     return stateKey;
@@ -231,6 +235,20 @@ public class DesignCompiler {
         }
         return false;
     }
+
+    private boolean checkJoin(String elementName, List<Element> elements) throws TemplateGenerationException {
+        for (Element element : elements) {
+            if (elementName.equals(element.attributeValue("name"))) {
+                if ("join".equals(element.getName())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        throw new TemplateGenerationException("Element with name " + elementName + " not found in jpdl xml");
+    }
+
 
     private void createStatesSheet(Workbook book, Map<String, String> statesMap) {
         Sheet statesSheet = book.getSheet("States");
