@@ -11,6 +11,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.Emailer;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.EmailerConfig;
 import com.haulmont.cuba.core.global.*;
@@ -334,7 +335,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
             try {
                 EmailInfo emailInfo = new EmailInfo(user.getEmail(), message.getSubject(),
-                        ConfigProvider.getConfig(EmailerConfig.class).getFromAddress(), null, null, message.getBody(), null);
+                        null, null, null, message.getBody(), null);
                 emailer.sendEmail(emailInfo, false);
             } catch (EmailException e) {
                 log.warn(e);
