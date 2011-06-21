@@ -160,12 +160,9 @@ public class WfServiceBean implements WfService {
         }
         if (card.getRoles() != null) {
             for (CardRole cardRole : card.getRoles()) {
-                if (cardRole.getCode().equals(procRoleCode)) {
-                    appropCardRole = cardRole;
+                if (cardRole.getCode().equals(procRoleCode) && cardRole.getUser() != null && cardRole.getUser().equals(user)) {
+                    return true;
                 }
-            }
-            if ((appropCardRole != null) && (appropCardRole.getUser() != null)) {
-                return appropCardRole.getUser().equals(user);
             }
         }
         return false;
