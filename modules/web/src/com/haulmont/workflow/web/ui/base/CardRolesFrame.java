@@ -478,6 +478,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (PersistenceHelper.isNew(card)) {
             if (card.getRoles() != null) {
                 ArrayList<CardRole> list = (ArrayList<CardRole>) card.getRoles();
+                Collections.sort(list, tmpCardRolesDs.createEntityComparator());
                 tmpCardRolesDs.fill = true;
                 if (list != null)
                     for (CardRole cardRole : list) {
