@@ -327,6 +327,11 @@ div.WireIt-Container div.body div.terminalLabel {
 div.WireIt-Container div.body div.terminalLabel div.inputEx-StringField-wrapper {
   width:inherit;
 }
+
+div.WireIt-ImageContainer div.body div.terminalLabel {
+    width: auto;
+}
+
 div.WireIt-Container div.body div.terminalLabel input {
   text-align:center;  
   width:inherit;

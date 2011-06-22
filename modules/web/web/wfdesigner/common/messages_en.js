@@ -12,6 +12,7 @@
 var i18nDict = {
     "Save": "Save",
     "Help": "Help",
+    "align": "Align",
 
     "name": "Name",
     "description": "Description",
