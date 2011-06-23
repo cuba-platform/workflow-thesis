@@ -28,12 +28,13 @@
 
             <split id="split" orientation="horizontal" pos="30">
                 <vbox id="table-panel" expand="userGroupsTable" spacing="true" margin="false;true;false;false;">
-                    <buttonsPanel>
-                        <button action="userGroupsTable.create" icon="icons/create.png"/>
-                        <button action="userGroupsTable.edit" icon="icons/edit.png"/>
-                        <button action="userGroupsTable.remove" icon="icons/remove.png"/>
-                    </buttonsPanel>
                     <table id="userGroupsTable" editable="false">
+                        <buttonsPanel>
+                            <button action="userGroupsTable.create" icon="icons/create.png"/>
+                            <button action="userGroupsTable.edit" icon="icons/edit.png"/>
+                            <button action="userGroupsTable.remove" icon="icons/remove.png"/>
+                        </buttonsPanel>
+                        <rowsCount/>
                         <columns>
                             <column id="name" caption="msg://name"/>
                         </columns>
