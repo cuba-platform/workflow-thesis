@@ -37,6 +37,10 @@ public class JoinModule extends Module {
     public Element writeJpdlMainEl(Element parentEl) {
         Element el = parentEl.addElement("join");
         el.addAttribute("name", name);
+        Element onElement = el.addElement("on");
+        onElement.addAttribute("event","end");
+        Element eventListener = onElement.addElement("event-listener");
+        eventListener.addAttribute("class","workflow.activity.CardStateListener");
         return el;
     }
 
