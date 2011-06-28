@@ -11,7 +11,7 @@
 package com.haulmont.workflow.web.wfdesigner;
 
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.controllers.StaticContentController;
 import freemarker.cache.WebappTemplateLoader;
 import freemarker.template.Configuration;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -62,7 +61,7 @@ public class ContentController extends StaticContentController {
 
         private Map<String, Object> createTemplateParams() {
             HashMap<String, Object> params = new HashMap<String, Object>();
-            UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
+            UserSession userSession = ControllerUtils.getUserSession(req);
             params.put("locale", userSession == null ? "en" : userSession.getLocale().toString());
             return params;
         }
@@ -135,8 +134,8 @@ public class ContentController extends StaticContentController {
     }
 
     protected boolean checkUserSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("userSessionId") != null) {
+        UserSession userSession = ControllerUtils.getUserSession(request);
+        if (userSession != null) {
             return true;
         } else {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);

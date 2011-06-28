@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -148,7 +149,9 @@ public class DesignBrowser extends AbstractWindow {
         StringBuilder url = new StringBuilder();
         url.append(ControllerUtils.getControllerURL(designerUrl))
                 .append("?id=")
-                .append(id);
+                .append(id)
+                .append("&s=")
+                .append(UserSessionProvider.getUserSession().getId());
         String target = String.valueOf(Math.round(Math.random() * 100));
         App.getInstance().getAppWindow().open(new ExternalResource(url.toString()), target);
     }

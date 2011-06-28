@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
@@ -149,7 +149,7 @@ public class ActionController {
     }
 
     protected boolean auth(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UserSession userSession = (UserSession) request.getSession().getAttribute(App.USER_SESSION_ATTR);
+        UserSession userSession = ControllerUtils.getUserSession(request);
         if (userSession == null) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return false;
