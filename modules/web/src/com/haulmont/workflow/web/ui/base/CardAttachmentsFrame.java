@@ -57,7 +57,10 @@ public class CardAttachmentsFrame extends AbstractFrame {
         };
 
         PopupButton createPopup = getComponent("createAttachBtn");
-        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, attachmentCreator));
+        createPopup.addAction(
+                AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this,
+                        attachmentCreator, WindowManager.OpenType.DIALOG)
+        );
 
         attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit"));
         attachmentsTable.addAction(new RemoveAction(attachmentsTable, false, "remove"));
