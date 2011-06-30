@@ -148,6 +148,9 @@ public class CardCommentFrame extends AbstractWindow {
                 buttonComment.setAlignment(Alignment.MIDDLE_RIGHT);
                 hLayoutComment.add(labelComment);
                 hLayoutComment.add(buttonComment);
+                WebLabel spaceLabel = new WebLabel();
+                spaceLabel.setWidth("5px");
+                hLayoutComment.add(spaceLabel);
                 hLayoutComment.setSpacing(true);
                 hLayoutComment.setWidth("100%");
                 labelComment.setWidth("100%");
