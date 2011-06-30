@@ -111,7 +111,8 @@ public class CardRolesFrame extends AbstractFrame {
 
         rolesTH.createRemoveAction(false);
 
-        rolesTable.addAction(new AbstractAction("moveUp") {
+        WebButton moveUp = (WebButton) getComponent("moveUp");
+        moveUp.setAction(new AbstractAction("moveUp") {
             private static final long serialVersionUID = 3616849995887047615L;
 
             public void actionPerform(Component component) {
@@ -133,7 +134,8 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        rolesTable.addAction(new AbstractAction("moveDown") {
+        WebButton moveDown = (WebButton) getComponent("moveDown");
+        moveDown.setAction(new AbstractAction("moveUp") {
             private static final long serialVersionUID = 6060776970724140731L;
 
             public void actionPerform(Component component) {
