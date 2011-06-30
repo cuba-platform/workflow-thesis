@@ -90,9 +90,15 @@ public class CardCommentFrame extends AbstractWindow {
                         openUser(cardComment.getSender(), buttonFrom);
                     }
                 });
+                WebLabel dateValueLabel = new WebLabel();
+                Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
+                dateValueLabel.setValue(" (" + datatype.format(cardComment.getCreateTs(), UserSessionProvider.getLocale()) + ") ");
                 hLayoutFrom.add(labelFrom);
                 hLayoutFrom.add(buttonFrom);
+                hLayoutFrom.add(dateValueLabel);
                 hLayoutFrom.setSpacing(true);
+ 	            ((com.vaadin.ui.Component)WebComponentsHelper.unwrap(hLayoutFrom)).addStyleName("minsize");
+
                 WebHBoxLayout hLayoutTo = new WebHBoxLayout();
                 WebLabel labelTo = new WebLabel();
                 labelTo.setValue(getMessage("toUser"));
@@ -113,16 +119,7 @@ public class CardCommentFrame extends AbstractWindow {
                     }
                 }
                 hLayoutTo.setSpacing(true);
-                WebHBoxLayout dateLayout = new WebHBoxLayout();
-                dateLayout.setSpacing(true);
-                WebLabel dateLabel = new WebLabel();
-                dateLabel.setValue(getMessage("date"));
-                dateLayout.add(dateLabel);
-
-                WebLabel dateValueLabel = new WebLabel();
-                Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
-                dateValueLabel.setValue(datatype.format(cardComment.getCreateTs(), UserSessionProvider.getLocale()));
-                dateLayout.add(dateValueLabel);
+                ((com.vaadin.ui.Component)WebComponentsHelper.unwrap(hLayoutTo)).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
                 WebTextField labelComment = new WebTextField();
@@ -184,7 +181,6 @@ public class CardCommentFrame extends AbstractWindow {
                 }
                 vLayout.add(hLayoutFrom);
                 vLayout.add(hLayoutTo);
-                vLayout.add(dateLayout);
                 vLayout.add(hLayoutComment);
                 return vLayout;
             }
