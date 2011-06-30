@@ -49,7 +49,7 @@
                     </buttonsPanel>
                     <table id="usersTable" editable="false">
                         <columns>
-                            <column id="name" caption="msg://name"/>
+                            <column id="name" caption="msg://user"/>
                             <column id="position" caption="msg://position"/>
                         </columns>
                         <rows datasource="usersDs"/>
