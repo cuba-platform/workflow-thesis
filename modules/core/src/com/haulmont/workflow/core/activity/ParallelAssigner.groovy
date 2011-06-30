@@ -106,6 +106,9 @@ public class ParallelAssigner extends MultiAssigner {
         timersFactory.removeTimers(execution)
       }
     } else {
+      if (timersFactory) {
+        timersFactory.removeTimers(execution, assignment)
+      }
       log.debug("Trying to finish assignment with success outcome")
 
       onSuccess(execution, signalName, assignment)

@@ -14,12 +14,15 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ManagementBean;
+import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 import com.haulmont.workflow.core.timer.TimerAction;
@@ -86,6 +89,31 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
         q.setParameter(1, execution.getId());
         q.setParameter(2, execution.getActivityName());
         q.executeUpdate();
+    }
+
+    public void removeTimers(ActivityExecution execution, Assignment assignment) {
+        checkArgument(execution != null, "execution is null");
+        checkArgument(assignment != null, "assignment is null");
+
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery("select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2");
+        q.setParameter(1, execution.getId());
+        q.setParameter(2, execution.getActivityName());
+        List<TimerEntity> timers =  q.getResultList();
+
+        for (TimerEntity timerEntity : timers) {
+            Map<String, String> params = getTimerActionParams(timerEntity.getActionParams());
+
+            EntityLoadInfo entityLoadInfo = EntityLoadInfo.parse(params.get("user"));
+            if (entityLoadInfo == null)
+                throw new IllegalStateException("No user load info in the parameters map");
+            User user = (User) em.find(entityLoadInfo.getMetaClass().getJavaClass(), entityLoadInfo.getId());
+            if (user.getId().equals(assignment.getUser().getId())) {
+                Query query = em.createQuery("delete from wf$Timer t where t.id = ?1");
+                query.setParameter(1, timerEntity.getId());
+                query.executeUpdate();
+            }
+        }
     }
 
     public void processTimers() {

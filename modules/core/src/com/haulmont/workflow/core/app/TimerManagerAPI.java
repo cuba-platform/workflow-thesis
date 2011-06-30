@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.timer.TimerAction;
 import org.jbpm.api.activity.ActivityExecution;
@@ -25,4 +26,6 @@ public interface TimerManagerAPI {
                   Class<? extends TimerAction> taskClass, Map<String, String> taskParams);
 
     void removeTimers(ActivityExecution execution);
+
+    void removeTimers(ActivityExecution execution, Assignment assignment);
 }

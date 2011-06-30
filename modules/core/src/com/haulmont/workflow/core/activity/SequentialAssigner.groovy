@@ -75,6 +75,9 @@ class SequentialAssigner extends MultiAssigner {
         timersFactory.removeTimers(execution)
       }
     } else {
+      if (timersFactory) {
+        timersFactory.removeTimers(execution, assignment)
+      }
       ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
       Map<String, Object> params = new HashMap<String, Object>()
       params.put("assignment", assignment.getMasterAssignment())

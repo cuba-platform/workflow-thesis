@@ -18,4 +18,6 @@ public interface AssignmentTimersFactory {
     void createTimers(ActivityExecution execution, Assignment assignment);
 
     void removeTimers(ActivityExecution execution);
+
+    void removeTimers(ActivityExecution execution, Assignment assignment);
 }

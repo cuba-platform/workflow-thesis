@@ -34,6 +34,14 @@ public class MainAssignmentTimersFactory implements AssignmentTimersFactory{
 
     public void removeTimers(ActivityExecution execution) {
         WfHelper.getTimerManager().removeTimers(execution);
+        removeTimers(execution, null);
+    }
+
+    public void removeTimers(ActivityExecution execution, Assignment assignment) {
+        if (assignment == null)
+            WfHelper.getTimerManager().removeTimers(execution);
+        else
+            WfHelper.getTimerManager().removeTimers(execution, assignment);
 
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery("delete from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2 " +
