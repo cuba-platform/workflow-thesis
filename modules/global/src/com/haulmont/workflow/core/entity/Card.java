@@ -112,7 +112,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
     protected Set<CardInfo> cardInfos;
 
     @Column(name = "HAS_ATTACHMENTS")
-    protected Boolean hasAttachments;
+    protected Boolean hasAttachments = false;
 
     @Transient
     protected Map<String, Object> initialProcessVariables;
