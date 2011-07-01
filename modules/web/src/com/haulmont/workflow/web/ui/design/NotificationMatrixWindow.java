@@ -10,10 +10,11 @@
  */
 package com.haulmont.workflow.web.ui.design;
 
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
 
 
@@ -46,12 +47,12 @@ public class NotificationMatrixWindow extends AbstractEditor {
                     public void uploadSucceeded(Event event) {
                         //bytes = uploadField.getBytes();
                         try {
-                            FileUploadService fileService = ServiceLocator.lookup(FileUploadService.NAME);
+                            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
 
-                            InputStream inputFile = new FileInputStream(fileService.getFile(uploadField.getFileId()));
+                            InputStream inputFile = new FileInputStream(fileUploading.getFile(uploadField.getFileId()));
                             bytes = IOUtils.toByteArray(inputFile);
                             inputFile.close();
-                            fileService.deleteFile(uploadField.getFileId());
+                            fileUploading.deleteFile(uploadField.getFileId());
                             close(Window.COMMIT_ACTION_ID);
                         } catch (IOException e) {
                             throw new RuntimeException(e);

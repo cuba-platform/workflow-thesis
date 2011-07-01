@@ -10,13 +10,14 @@
  */
 package com.haulmont.workflow.web.ui.design;
 
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -45,15 +46,15 @@ public class ImportDialog extends AbstractWindow {
             }
 
             public void uploadSucceeded(Event event) {
-                FileUploadService service = ServiceLocator.lookup(FileUploadService.NAME);
-                File file = service.getFile(fileUploadField.getFileId());
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                File file = fileUploading.getFile(fileUploadField.getFileId());
 
                 InputStream fileInput = null;
                 try {
                     fileInput = new FileInputStream(file);
                     bytes = IOUtils.toByteArray(fileInput);
                     fileInput.close();
-                    service.deleteFile(fileUploadField.getFileId());
+                    fileUploading.deleteFile(fileUploadField.getFileId());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (FileStorageException e) {

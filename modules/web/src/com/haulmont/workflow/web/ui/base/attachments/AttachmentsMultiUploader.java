@@ -10,18 +10,16 @@
  */
 package com.haulmont.workflow.web.ui.base.attachments;
 
-import com.haulmont.cuba.core.app.FileStorageService;
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
 import com.vaadin.ui.Select;
@@ -117,7 +115,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         delBtn = getComponent("removeAttachBtn");
         delBtn.setAction(new AbstractAction("actions.Remove") {
             public void actionPerform(Component component) {
-                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
                 for (Object item : uploadsTable.getSelected()) {
                     attachDs.excludeItem((Entity) item);
 
@@ -126,7 +124,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
                     UUID fileId = descriptors.get(fDesc);
                     try {
-                        uploadService.deleteFile(fileId);
+                        fileUploading.deleteFile(fileId);
                     } catch (FileStorageException ignored) {
                     }
                     descriptors.remove(fDesc);
@@ -177,11 +175,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 okBtn.setEnabled(true);
                 delBtn.setEnabled(true);
 
-                FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
 
                 for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
-                    FileDescriptor fDesc = uploader.getFileDescriptor(upload.getKey(), upload.getValue());
+                    FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
                     filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
                     attach.setComment("");
@@ -242,10 +240,10 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             uploadField.setEnabled(true);
 
         if (closeResult && !COMMIT_ACTION_ID.equals(actionId)) {
-            FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
                 try {
-                    uploadService.deleteFile(upload.getValue());
+                    fileUploading.deleteFile(upload.getValue());
                 } catch (FileStorageException e) {
                     throw new RuntimeException(e);
                 }
@@ -277,16 +275,14 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = attachDs.getItemIds();
             for (Object id : ids) {
                 Attachment attach = (Attachment) attachDs.getItem(id);
                 UUID fileId = descriptors.get(attach.getFile());
-                fss.putFile(attach.getFile(), uploader.getFile(fileId));
-                uploader.deleteFile(fileId);
+                fileUploading.putFileIntoStorage(fileId, attach.getFile());
                 attachments.add(attach);
             }
         } catch (FileStorageException e) {

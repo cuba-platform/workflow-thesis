@@ -35,10 +35,11 @@ import java.text.NumberFormat
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 import com.haulmont.workflow.core.entity.CardAttachment
 import java.text.DecimalFormat
-import com.haulmont.cuba.core.app.FileUploadService
 import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.workflow.core.global.WfConfig
 import com.haulmont.workflow.core.entity.Assignment
+import com.haulmont.cuba.core.sys.AppContext
+import com.haulmont.cuba.web.jmx.FileUploadingAPI
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -123,8 +124,8 @@ public class AttachmentEditor extends AbstractEditor {
 
                 DecimalFormat formatter = new DecimalFormat("###,###,###,###");
 
-                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
-                File tmpFile = uploadService.getFile(uploadField.getFileId());
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                File tmpFile = fileUploading.getFile(uploadField.getFileId());
 
                 extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()))
                 sizeLab.setValue(formatSize(tmpFile.length(), 0) + " (" + formatter.format(tmpFile.length()) +
@@ -196,12 +197,12 @@ public class AttachmentEditor extends AbstractEditor {
 
   protected void saveFile() {
     FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME)
-    FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+    FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
     try {
         UUID fileId = uploadField.getFileId();
-        File file = uploadService.getFile(fileId);
+        File file = fileUploading.getFile(fileId);
         fss.putFile(fileDs.getItem(), file);
-        uploadService.deleteFile(fileId);
+        fileUploading.deleteFile(fileId);
     } catch (FileStorageException e) {
       throw new RuntimeException(e)
     }
