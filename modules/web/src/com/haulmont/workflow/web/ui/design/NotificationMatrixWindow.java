@@ -12,11 +12,9 @@ package com.haulmont.workflow.web.ui.design;
 
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.jmx.FileUploadingAPI;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
-
 
 import java.io.FileInputStream;
 import java.io.IOException;

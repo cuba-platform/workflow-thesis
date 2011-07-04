@@ -39,7 +39,7 @@ import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.workflow.core.global.WfConfig
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.cuba.core.sys.AppContext
-import com.haulmont.cuba.web.jmx.FileUploadingAPI
+import com.haulmont.cuba.gui.upload.FileUploadingAPI
 
 public class AttachmentEditor extends AbstractEditor {
 
