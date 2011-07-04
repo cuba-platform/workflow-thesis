@@ -62,7 +62,7 @@ public class ContentController extends StaticContentController {
         private Map<String, Object> createTemplateParams() {
             HashMap<String, Object> params = new HashMap<String, Object>();
             UserSession userSession = ControllerUtils.getUserSession(req);
-            params.put("locale", userSession == null ? "en" : userSession.getLocale().toString());
+            params.put("locale", userSession == null ? "en" : userSession.getLocale().getLanguage());
             return params;
         }
 
