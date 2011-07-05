@@ -1,4 +1,4 @@
--- $Id: 01-180-AddCardComment.sql 2010-08-06 15:04:35Z novikov $
+-- $Id$
 -- Description: WF_CARD_COMMENT, WF_CARD_COMMENT_USER
 create table WF_CARD_COMMENT (
     ID uuid,

@@ -100,7 +100,7 @@ configure(coreModule) {
 
     assembleDbScripts << {
         copy {
-            from new File(rootProject.projectDir, 'db')
+            from new File(projectDir, 'db')
             into "$buildDir/db/20-workflow"
         }
     }
