@@ -356,7 +356,7 @@ public class CardRolesFrame extends AbstractFrame {
         Role secRole = cardRole.getProcRole().getRole();
         Set<User> addedUsersOfProcRole = getUsersByProcRole(cardRole.getProcRole());
         if (cardRole.getUser() != null) {
-            addedUsersOfProcRole.remove(cardRole.getUser().getId());
+            addedUsersOfProcRole.remove(cardRole.getUser());
         }
 
         Collection<User> dsItems;
