@@ -100,6 +100,9 @@
     <screen id="wf$Design.notificationMatrix"
             template="/com/haulmont/workflow/web/ui/design/notification-matrix.xml"/>
 
+    <screen id="wf$Design.import"
+            template="/com/haulmont/workflow/web/ui/design/design-import.xml"/>
+
     <screen id="wf$Design.localize"
             template="/com/haulmont/workflow/web/ui/design/localize-design.xml"/>
 
