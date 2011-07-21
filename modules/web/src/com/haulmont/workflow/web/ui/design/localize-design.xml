@@ -32,7 +32,6 @@
                     <columns>
                         <column id="lang" editable="false"/>
                         <column id="message" editable="true"/>
-                        <column id="fakeProperty" />
                     </columns>
                     <rows datasource="valuesDs"/>
                 </table>

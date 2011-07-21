@@ -13,7 +13,6 @@ package com.haulmont.workflow.web.ui.design;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -21,21 +20,16 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignLocKey;
 import com.haulmont.workflow.core.entity.DesignLocValue;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -55,7 +49,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private Element rootEl;
     private BiMap<Element, DesignLocKey> keysMap;
     private BiMap<Element, DesignLocValue> valuesMap;
-    private Table table;
 
     private enum type {
 
@@ -89,8 +82,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
         designDs = getDsContext().get("designDs");
         keysDs = getDsContext().get("keysDs");
         valuesDs = getDsContext().get("valuesDs");
-
-        table = getComponent("valuesTable");
 
         Map<String,Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
         List<String> languages = new ArrayList<String>(locales.size());
@@ -126,8 +117,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
             document = DocumentHelper.createDocument();
             rootEl = document.addElement("localization");
         }
-
-        initSaveColumn();
 
         fillKeys();
         ArrayList keys = new ArrayList(keysMap.values());
@@ -166,23 +155,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
         );
 
         keysDs.refresh(keysDsParams);
-    }
-
-    private void initSaveColumn() {
-        com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-        MetaPropertyPath fakeProperty = table.getDatasource().getMetaClass().getPropertyPath("fakeProperty");
-        vTable.removeGeneratedColumn(fakeProperty);
-        vTable.addGeneratedColumn(fakeProperty,
-                new com.vaadin.ui.Table.ColumnGenerator() {
-                    public Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
-                        Button button = new Button();
-                        button.setStyleName("link");
-                        button.setIcon(new ThemeResource("icons/ok.png"));
-                        button.addStyleName("icon");
-                        button.setImmediate(true);
-                        return button;
-                    }
-                });
     }
 
     private void fillKeys() {
