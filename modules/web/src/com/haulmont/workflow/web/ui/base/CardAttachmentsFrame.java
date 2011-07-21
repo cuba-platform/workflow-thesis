@@ -16,10 +16,13 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 
 import java.util.Collections;
@@ -77,6 +80,16 @@ public class CardAttachmentsFrame extends AbstractFrame {
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
         AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
+
+        attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
+            @Override
+            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                if (state == Datasource.State.VALID) {
+                    FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+                    AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+                }
+            }
+        });
     }
 
     public AttachmentCreator getAttachmentCreator() {
