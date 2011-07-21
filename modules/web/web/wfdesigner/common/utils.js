@@ -206,7 +206,7 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
     onSave : function(){
       var value = this.getValue();
 
-    	if(value.name === "") {
+    	if(!value.name.match(/\S+/)) {
        	    this.alert(i18nDict.ChooseName);
        	    return;
     	}
