@@ -113,10 +113,10 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
 
-        if (attachmentsTable != null) {
-            FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
-            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
-        }
+//        if (attachmentsTable != null) {
+//            FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+//            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+//        }
 
         if (cardProcFrame != null) {
             cardProcFrame.setCard((Card) getItem());
