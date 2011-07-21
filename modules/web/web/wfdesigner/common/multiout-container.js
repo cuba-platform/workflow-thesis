@@ -150,6 +150,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
                     delete this.outputLabels[output.name];
                     output.name = value[0];
                     this.outputLabels[output.name] = labelEditor;
+                    this.layer.eventChanged.fire();
                 }, this, true);
                 this.outputLabels[output.name] = labelEditor;
             } else {
