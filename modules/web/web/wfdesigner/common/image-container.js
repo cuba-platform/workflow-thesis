@@ -47,8 +47,8 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
             var terminal = this.terminals[i];
             var offsetPosition = terminal.offsetPosition;
             var newOffsetPosition = {};
-            newOffsetPosition.left = terminal.offsetPosition.left;
-            newOffsetPosition.right = terminal.offsetPosition.right;
+            newOffsetPosition.left = terminal.offsetPosition.left ? terminal.offsetPosition.left : "";
+            newOffsetPosition.right = terminal.offsetPosition.right ? terminal.offsetPosition.right : "";
             if (offsetPosition.top) {
                 newOffsetPosition.bottom = offsetPosition.top;
             }

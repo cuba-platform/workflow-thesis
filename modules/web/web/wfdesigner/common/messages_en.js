@@ -98,5 +98,5 @@ var i18nDict = {
     "AlertMessage" : "Message",
     "ChooseName" : "Please choose a name",
     "SaveChanges" : "Warning!\nThe designer has unsaved changes.\nDo you want to leave the page and discard your changes?",
-    "NotSupportedBrowser" : "Sorry, your browser does not supported.Please use Google Chrome or Mozilla Firefox"
+    "TurnTheChromeFrame" : "Please, turn the ChromeFrame plugin \nand reopen browser"
 };

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title><#if locale == "ru">Дизайнер процессов CUBA<#else>CUBA Workflow Designer</#if></title>
 
     <#include "../common/main-head.ftl">

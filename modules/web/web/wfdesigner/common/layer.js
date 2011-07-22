@@ -33,12 +33,12 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
     height:1000,
     width:1400,
 
-    heightArrows: WireIt.cn('div', {class: 'heightArrows'}),
-    widthArrows: WireIt.cn('div', {class: 'widthArrows'}),
-    arrowDown: WireIt.cn('div', {class: 'arrowDown'}),
-    arrowUp: WireIt.cn('div', {class: 'arrowUp'}),
-    arrowRight: WireIt.cn('div', {class: 'arrowRight'}),
-    arrowLeft: WireIt.cn('div', {class: 'arrowLeft'}),
+    heightArrows: WireIt.cn('div', {'class': 'heightArrows'}),
+    widthArrows: WireIt.cn('div', {'class': 'widthArrows'}),
+    arrowDown: WireIt.cn('div', {'class': 'arrowDown'}),
+    arrowUp: WireIt.cn('div', {'class': 'arrowUp'}),
+    arrowRight: WireIt.cn('div', {'class': 'arrowRight'}),
+    arrowLeft: WireIt.cn('div', {'class': 'arrowLeft'}),
 
     render: function() {
         this.el = WireIt.cn('div', {className: this.className}, {height: this.height + 'px', width: this.width + 'px'});

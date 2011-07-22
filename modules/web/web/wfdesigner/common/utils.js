@@ -27,7 +27,7 @@ Wf = {
 
     createProcIdParam: function() {
             var s = window.location.search;
-            if (s && s[0] == "?") {
+            if (s && s.charAt(0) == "?") {
                 var re = new RegExp("[\\?&]id=([^&#]*)");
                 var res = re.exec(s);
                 if (!res || !res[1])
@@ -244,12 +244,11 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
 	},
 
     criticalAlert: function(txt) {
-		if(!this.criticalAlertPanel){ this.renderCriticalAlertPanel(); }
-		YAHOO.util.Dom.get('alertPanelBody').innerHTML = txt;
+		if(!this.criticalAlertPanel){ this.renderCriticalAlertPanel(txt); }
 		this.criticalAlertPanel.show();
 	},
 
-	renderCriticalAlertPanel: function(){
+	renderCriticalAlertPanel: function(txt){
 	    	this.criticalAlertPanel = new YAHOO.widget.Panel('WiringEditor-alertPanel', {
          fixedcenter: true,
          draggable: true,
@@ -261,16 +260,17 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
       this.criticalAlertPanel.setHeader(i18nDict.AlertMessage);
       this.criticalAlertPanel.setBody("<div id='alertPanelBody'></div>");
       this.criticalAlertPanel.render(document.body);
+      YAHOO.util.Dom.get('alertPanelBody').innerHTML = txt;
 	},
 
       /**
 	  * Start the loading of the pipes using the adapter
 	  * @method load
 	  */
-	 load: function() {
-        if ( (navigator.appName.indexOf("Explorer")) != -1 ){
-            this.criticalAlert(i18nDict.NotSupportedBrowser);
-
+    load: function() {
+        if ((navigator.appName.indexOf("Explorer")) != -1) {
+            this.criticalAlert(i18nDict.TurnTheChromeFrame);
+            CFInstall.check({mode: "inline", node: "alertPanelBody", preventInstallDetection:"true"});
             return;
         }
 
@@ -284,7 +284,7 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
 			scope: this
 		});
 
-	 }
+    }
 
 });
 

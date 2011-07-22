@@ -102,3 +102,6 @@
     }
 });</script>
 
+<!--[if IE]>
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+<![endif]-->
