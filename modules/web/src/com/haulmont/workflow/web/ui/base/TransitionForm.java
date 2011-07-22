@@ -212,7 +212,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected boolean doCommit() {
-        if (!validate()) return false;
+        if (!validated()) return false;
 //                getDsContext().commit();
         if (commentText != null) {
             if (Datasource.State.VALID.equals(assignmentDs.getState()))
@@ -234,7 +234,7 @@ public class TransitionForm extends AbstractForm {
         return true;
     }
 
-    protected boolean validate() {
+    protected boolean validated() {
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;
