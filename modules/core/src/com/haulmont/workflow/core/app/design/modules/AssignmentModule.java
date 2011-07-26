@@ -46,7 +46,9 @@ public class AssignmentModule extends Module {
         super.init(context);
         try {
             role = jsValue.getString("role");
-
+            if (StringUtils.trimToNull(role) == null) {
+                throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noRole", caption));
+            }
             jsOptions = jsValue.optJSONObject("options");
             if (jsOptions != null)
                 description = jsOptions.optString("description");
@@ -56,16 +58,20 @@ public class AssignmentModule extends Module {
             throw new DesignCompilationException(e);
         }
         if (outputs.isEmpty())
-            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noOutputs", name));
+            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noOutputs", caption));
     }
 
-    protected void initOutputs() throws JSONException {
+    protected void initOutputs() throws DesignCompilationException {
         JSONArray jsOutputs = jsValue.optJSONArray("outputs");
         if (jsOutputs != null) {
-            for (int i = 0; i < jsOutputs.length(); i++) {
-                JSONObject jsOut = jsOutputs.getJSONObject(i);
-                String outName = jsOut.getString("name");
-                outputs.put(WfUtils.encodeKey(outName), outName);
+            try {
+                for (int i = 0; i < jsOutputs.length(); i++) {
+                    JSONObject jsOut = jsOutputs.getJSONObject(i);
+                    String outName = jsOut.getString("name");
+                    outputs.put(WfUtils.encodeKey(outName), outName);
+                }
+            } catch (JSONException e) {
+                throw new DesignCompilationException(e);
             }
         }
     }
@@ -146,21 +152,30 @@ public class AssignmentModule extends Module {
 
                 JSONObject jsProps = jsTimer.getJSONObject("properties");
                 dueDateType = jsProps.getString("dueDateType");
+                if(StringUtils.trimToNull(dueDateType)==null||"null".equals(dueDateType)){
+                    throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.dueDateTypeNotDefined", caption));
+                }
                 if ("manual".equals(dueDateType)) {
                     JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
-                    String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
-                    dueDates.append(dueDate);
-                } else {
+                    try {
+                        String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
+                        dueDates.append(dueDate);
+                    } catch (JSONException e) {
+                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.dueDateInvalid", caption));
+                    }
+                } else if ("form".equals(dueDateType)) {
                     dueDates.append("process");
                 }
 
                 String type = jsTimer.getString("type");
                 if (type.equals("script")) {
                     String script = jsProps.getString("name");
+                    if (StringUtils.trimToNull(script) == null) {
+                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.timerScriptNotDefined", caption));
+                    }
                     String fileName = scriptNamesMap.get(script);
                     if (fileName == null)
-                        throw new DesignCompilationException("Unable to compile timers for module " + caption
-                                + ": script '" + script + "' not found");
+                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.timerScriptNotFound", caption, script));
                     scripts.append(fileName);
                 } else {
                     String transition = WfUtils.encodeKey(jsProps.getString("name"));
@@ -179,7 +194,7 @@ public class AssignmentModule extends Module {
             writeJpdlStringPropertyEl(element, "scripts", scripts.toString());
 
         } catch (JSONException e) {
-            throw new DesignCompilationException("Unable to compile timers for module " + caption, e);
+            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.compileTimersError", caption));
         }
     }
 

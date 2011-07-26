@@ -93,8 +93,8 @@ public class DesignerServiceBean implements DesignerService {
         }
     }
 
-    public void compileDesign(UUID designId) throws DesignCompilationException {
-        compiler.compileDesign(designId);
+    public String compileDesign(UUID designId) throws DesignCompilationException {
+        return compiler.compileDesign(designId);
     }
 
     public void deployDesign(UUID designId, UUID procId,Role role) throws DesignDeploymentException {

@@ -29,7 +29,7 @@ public interface DesignerService {
 
     UUID copyDesign(UUID srcId);
     
-    void compileDesign(UUID designId) throws DesignCompilationException;
+    String compileDesign(UUID designId) throws DesignCompilationException;
 
     void deployDesign(UUID designId, UUID procId, Role role) throws DesignDeploymentException;
 

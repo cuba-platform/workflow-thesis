@@ -11,6 +11,7 @@
 package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -41,7 +42,7 @@ public class FormCompiler {
         return builderClasses;
     }
 
-    public void writeFormEl(Element parentEl, String formName, JSONObject jsProperties) {
+    public void writeFormEl(Element parentEl, String formName, JSONObject jsProperties) throws DesignCompilationException {
         Class<? extends FormBuilder> cls = getBuilderClasses().get(formName);
         if (cls == null) {
             throw new RuntimeException("Unsupported form name: " + formName);

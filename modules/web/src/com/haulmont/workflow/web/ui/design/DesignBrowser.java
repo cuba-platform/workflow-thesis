@@ -35,6 +35,7 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -259,9 +260,12 @@ public class DesignBrowser extends AbstractWindow {
         private void compile(Design design) {
             DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
             try {
-                service.compileDesign(design.getId());
+                String warning = service.compileDesign(design.getId());
                 ds.refresh();
-                showNotification(getMessage("notification.compileSuccess"), NotificationType.HUMANIZED);
+                if (StringUtils.trimToNull(warning) == null)
+                    showNotification(getMessage("notification.compileSuccess"), NotificationType.HUMANIZED);
+                else
+                    showNotification(getMessage("notification.compileWithWarnings"), warning, NotificationType.WARNING);
             } catch (DesignCompilationException e) {
                 showNotification(
                         getMessage("notification.compileFailed"),

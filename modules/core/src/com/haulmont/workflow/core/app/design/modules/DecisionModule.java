@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
@@ -33,18 +34,22 @@ public class DecisionModule extends Module {
         jsOptions = jsValue.optJSONObject("options");
 
         String name = jsOptions.optString("name");
-        if (!StringUtils.isBlank(name))
+        if (!StringUtils.isBlank(name)) {
             this.name = WfUtils.encodeKey(name);
+            caption = name;
+        }
 
         String script = null;
         this.scriptFileName = null;
         if (jsOptions != null) {
             script = jsOptions.optString("script");
+            if (StringUtils.trimToNull(script) == null) {
+                throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.decisionScriptNotDefined", caption));
+            }
             this.scriptFileName = scriptNamesMap.get(script);
         }
         if (this.scriptFileName == null)
-            throw new DesignCompilationException("Unable to compile DecisionModule " + caption
-                    + ": script '" + script + "' not found");
+            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.decisionScriptNotFound", caption, script));
     }
 
     @Override
