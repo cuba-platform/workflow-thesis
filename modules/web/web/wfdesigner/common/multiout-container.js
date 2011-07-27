@@ -156,10 +156,11 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         var output = scope[1];
         var outputLabels = scope[2];
         var layer = scope[3];
-        if (!pattern.test(args[0])) {
+        if (!pattern.test(args[0])||outputLabels[args[0]]) {
             labelEditor.setValue(output.name);
             return;
         }
+
         delete outputLabels[output.name];
         output.name = args[0];
         outputLabels[output.name] = labelEditor;
