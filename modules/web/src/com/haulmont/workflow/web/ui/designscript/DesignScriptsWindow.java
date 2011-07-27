@@ -18,9 +18,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class DesignScriptsWindow extends AbstractWindow {
 
@@ -94,6 +92,12 @@ public class DesignScriptsWindow extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
+            if (!table.getSelected().isEmpty()) {
+                DesignScript script = (DesignScript) table.getSelected().iterator().next();
+                if (script.getName() == null) {
+                    return;
+                }
+            }
             DesignScript designScript = new DesignScript();
             designScript.setDesign(design);
 
@@ -124,11 +128,19 @@ public class DesignScriptsWindow extends AbstractWindow {
 
         public void actionPerform(Component component) {
             Collection<UUID> designIds = ds.getItemIds();
+            Set<String> designScriptNames = new HashSet<String>();
             for (UUID id : designIds) {
                 DesignScript designScript = ds.getItem(id);
                 if (StringUtils.trimToNull(designScript.getName()) == null) {
                     showNotification(getMessage("emptyScriptName"), NotificationType.TRAY);
                     return;
+                }
+                if (designScriptNames.contains(designScript.getName())) {
+                    showNotification(getMessage("duplicateScriptName") + " " +
+                            designScript.getName(), NotificationType.TRAY);
+                    return;
+                } else {
+                    designScriptNames.add(designScript.getName());
                 }
             }
             ds.commit();

@@ -29,7 +29,7 @@
                 </table>
             </vbox>
             <vbox id="contentPane" expand="contentField" spacing="true" margin="true">
-                <textField id="nameField" datasource="scriptsDs" property="name" rows="1" width="100%" height="25"
+                <textField id="nameField" datasource="scriptsDs" property="name" width="100%"
                            editable="false" caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
                 <textField id="contentField" datasource="scriptsDs" property="content"
                            editable="false" caption="msg://com.haulmont.workflow.core.entity/DesignScript.content" />
