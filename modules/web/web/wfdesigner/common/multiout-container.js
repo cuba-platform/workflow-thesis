@@ -29,7 +29,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
         var className = "Wf-MultiOutContainer-link";
 
-        var buttonsDiv = WireIt.cn('div', {className: className}, {float : "none"}, null);
+        var buttonsDiv = WireIt.cn('div', {className: className}, {'float' : 'none'}, null);
         this.bodyEl.appendChild(buttonsDiv);
 
         var addBtn = WireIt.cn('div', {className: 'addButton'}, null, null);
@@ -141,17 +141,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
                     className: "terminalLabel", parentEl: this.bodyEl , value:output.name});
                 //labelEditor.setValue(output.name);
                 WireIt.sn(labelEditor.getEl(), null, style);
-                labelEditor.updatedEvt.subscribe(function(e, value) {
-                    var pattern = /\S+/;
-                    if (!pattern.test(value[0])) {
-                        labelEditor.setValue(output.name);
-                        return;
-                    }
-                    delete this.outputLabels[output.name];
-                    output.name = value[0];
-                    this.outputLabels[output.name] = labelEditor;
-                    this.layer.eventChanged.fire();
-                }, this, true);
+                labelEditor.updatedEvt.subscribe(this.onLabelChanged, [labelEditor,output,this.outputLabels, this.layer], true);
                 this.outputLabels[output.name] = labelEditor;
             } else {
                 WireIt.sn(labelEditor.getEl(), {className:"terminalLabel"}, style);
@@ -160,6 +150,21 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.redrawAllWires();
     },
 
+    onLabelChanged: function(type, args, scope) {
+        var pattern = /\S+/;
+        var labelEditor = scope[0];
+        var output = scope[1];
+        var outputLabels = scope[2];
+        var layer = scope[3];
+        if (!pattern.test(args[0])) {
+            labelEditor.setValue(output.name);
+            return;
+        }
+        delete outputLabels[output.name];
+        output.name = args[0];
+        outputLabels[output.name] = labelEditor;
+        layer.eventChanged.fire();
+    },
 
     deleteOutput: function(e) {
         YAHOO.util.Event.stopEvent(e);
