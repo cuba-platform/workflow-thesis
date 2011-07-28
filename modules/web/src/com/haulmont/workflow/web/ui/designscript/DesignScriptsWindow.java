@@ -11,9 +11,8 @@
 package com.haulmont.workflow.web.ui.designscript;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import org.apache.commons.lang.StringUtils;
@@ -25,9 +24,6 @@ public class DesignScriptsWindow extends AbstractWindow {
     private Design design;
     private CollectionDatasource<DesignScript, UUID> ds;
     private Table table;
-    private Component actionsPane;
-    private TextField nameField;
-    private TextField contentField;
 
     public DesignScriptsWindow(IFrame frame) {
         super(frame);
@@ -42,47 +38,11 @@ public class DesignScriptsWindow extends AbstractWindow {
         ds = getDsContext().get("scriptsDs");
 
         table = getComponent("table");
-        TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createRemoveAction();
+        table.addAction(new RemoveAction(table,false));
         table.addAction(new NewAction());
-        table.addAction(new ModifyAction());
-
-        ds.addListener(new DsListenerAdapter<DesignScript>() {
-            public void itemChanged(Datasource<DesignScript> ds, DesignScript prevItem, DesignScript item) {
-                if (prevItem == null && item != null) {
-                    enableScriptEdit();
-                } else if (item == null) {
-                    disableScriptEdit();
-                }
-            }
-        });
-
-        nameField = getComponent("nameField");
-        contentField = getComponent("contentField");
-        actionsPane = getComponent("actionsPane");
 
         addAction(new SaveAction());
         addAction(new CancelAction());
-    }
-
-    private void enableControls() {
-        actionsPane.setVisible(true);
-        enableScriptEdit();
-    }
-
-    private void disableControls() {
-        actionsPane.setVisible(false);
-        disableScriptEdit();
-    }
-
-    private void disableScriptEdit() {
-        nameField.setEditable(false);
-        contentField.setEditable(false);
-    }
-
-    private void enableScriptEdit() {
-        nameField.setEditable(true);
-        contentField.setEditable(true);
     }
 
     private class NewAction extends AbstractAction {
@@ -92,31 +52,19 @@ public class DesignScriptsWindow extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            if (!table.getSelected().isEmpty()) {
-                DesignScript script = (DesignScript) table.getSelected().iterator().next();
-                if (script.getName() == null) {
+            Collection<UUID> designIds = ds.getItemIds();
+            for (UUID id : designIds) {
+                DesignScript designScript = ds.getItem(id);
+                if (StringUtils.trimToNull(designScript.getName()) == null) {
                     return;
                 }
             }
+
             DesignScript designScript = new DesignScript();
             designScript.setDesign(design);
 
             ds.addItem(designScript);
             table.setSelected(designScript);
-            enableControls();
-        }
-    }
-
-    private class ModifyAction extends AbstractAction {
-
-        protected ModifyAction() {
-            super("modify");
-        }
-
-        public void actionPerform(Component component) {
-            if (!table.getSelected().isEmpty()) {
-                enableControls();
-            }
         }
     }
 
@@ -144,7 +92,6 @@ public class DesignScriptsWindow extends AbstractWindow {
                 }
             }
             ds.commit();
-            disableControls();
         }
     }
 
@@ -156,7 +103,6 @@ public class DesignScriptsWindow extends AbstractWindow {
 
         public void actionPerform(Component component) {
             ds.refresh();
-            disableControls();
         }
     }
 }

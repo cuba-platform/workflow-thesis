@@ -19,7 +19,6 @@
                 <table id="table">
                     <buttonsPanel>
                         <button action="table.new" icon="icons/create.png"/>
-                        <button action="table.modify" icon="icons/edit.png"/>
                         <button action="table.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
                     <columns>
@@ -30,16 +29,16 @@
             </vbox>
             <vbox id="contentPane" expand="contentField" spacing="true" margin="true">
                 <textField id="nameField" datasource="scriptsDs" property="name" width="100%"
-                           editable="false" caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
+                           caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
                 <textField id="contentField" datasource="scriptsDs" property="content"
-                           editable="false" caption="msg://com.haulmont.workflow.core.entity/DesignScript.content" />
-                <vbox id="actionsPane" visible="false">
-                    <hbox align="MIDDLE_LEFT" spacing="true" expandable="false">
-                        <button id="saveBtn" action="save" icon="icons/ok.png"/>
-                        <button id="cancelBtn" action="cancel" icon="icons/cancel.png"/>
-                    </hbox>
-                </vbox>
+                           caption="msg://com.haulmont.workflow.core.entity/DesignScript.content"/>
             </vbox>
         </split>
+        <vbox id="actionsPane">
+            <hbox align="MIDDLE_LEFT" spacing="true" expandable="false">
+                <button id="saveBtn" action="save" icon="icons/ok.png"/>
+                <button id="cancelBtn" action="cancel" icon="icons/cancel.png"/>
+            </hbox>
+        </vbox>
     </layout>
 </window>
