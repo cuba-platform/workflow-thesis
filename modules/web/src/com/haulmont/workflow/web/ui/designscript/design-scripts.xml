@@ -28,9 +28,9 @@
                 </table>
             </vbox>
             <vbox id="contentPane" expand="contentField" spacing="true" margin="true">
-                <textField id="nameField" datasource="scriptsDs" property="name" width="100%"
+                <textField id="nameField" editable="false" datasource="scriptsDs" property="name" width="100%"
                            caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
-                <textField id="contentField" datasource="scriptsDs" property="content"
+                <textField id="contentField" editable="false" datasource="scriptsDs" property="content"
                            caption="msg://com.haulmont.workflow.core.entity/DesignScript.content"/>
             </vbox>
         </split>
