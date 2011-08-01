@@ -37,7 +37,7 @@ public class ProcBrowser extends AbstractWindow {
 
     protected class RemoveProc extends RemoveAction {
 
-        public RemoveProc(List owner, boolean autocommit) {
+        public RemoveProc(ListComponent owner, boolean autocommit) {
             super(owner, autocommit);
         }
 
