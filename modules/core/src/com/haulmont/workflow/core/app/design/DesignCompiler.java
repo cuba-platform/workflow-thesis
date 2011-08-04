@@ -636,6 +636,7 @@ public class DesignCompiler {
         compileMessage(properties, locale, "SAVE_AND_CLOSE_ACTION", mp);
         compileMessage(properties, locale, "START_PROCESS_ACTION", mp);
         compileMessage(properties, locale, "CANCEL_PROCESS_ACTION", mp);
+        compileMessage(properties, locale, "Canceled",mp);
 
         for (Module module : modules) {
             module.writeMessages(properties, lang);
