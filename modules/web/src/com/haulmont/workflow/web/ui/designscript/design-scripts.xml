@@ -19,6 +19,7 @@
                 <table id="table">
                     <buttonsPanel>
                         <button action="table.new" icon="icons/create.png"/>
+                        <button action="table.modify" icon="icons/edit.png"/>
                         <button action="table.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
                     <columns>
@@ -32,13 +33,13 @@
                            caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
                 <textField id="contentField" editable="false" datasource="scriptsDs" property="content"
                            caption="msg://com.haulmont.workflow.core.entity/DesignScript.content"/>
+                <vbox id="actionsPane" visible="false">
+                    <hbox align="MIDDLE_LEFT" spacing="true" expandable="false">
+                        <button id="saveBtn" action="save" icon="icons/ok.png"/>
+                        <button id="cancelBtn" action="cancel" icon="icons/cancel.png"/>
+                    </hbox>
+                </vbox>
             </vbox>
         </split>
-        <vbox id="actionsPane">
-            <hbox align="MIDDLE_LEFT" spacing="true" expandable="false">
-                <button id="saveBtn" action="save" icon="icons/ok.png"/>
-                <button id="cancelBtn" action="cancel" icon="icons/cancel.png"/>
-            </hbox>
-        </vbox>
     </layout>
 </window>

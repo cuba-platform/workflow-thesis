@@ -13,8 +13,6 @@ package com.haulmont.workflow.web.ui.designscript;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import org.apache.commons.lang.StringUtils;
@@ -26,8 +24,10 @@ public class DesignScriptsWindow extends AbstractWindow {
     private Design design;
     private CollectionDatasource<DesignScript, UUID> ds;
     private Table table;
+    private Component actionsPane;
     private TextField nameField;
     private TextField contentField;
+
 
     public DesignScriptsWindow(IFrame frame) {
         super(frame);
@@ -40,26 +40,33 @@ public class DesignScriptsWindow extends AbstractWindow {
             throw new IllegalArgumentException("Design instance must be passed in params");
 
         ds = getDsContext().get("scriptsDs");
-        ds.addListener(new DsListenerAdapter<DesignScript>() {
-            public void itemChanged(Datasource<DesignScript> ds, DesignScript prevItem, DesignScript item) {
-                if (item == null) {
-                    nameField.setEditable(false);
-                    contentField.setEditable(false);
-                } else {
-                    nameField.setEditable(true);
-                    contentField.setEditable(true);
-                }
-            }
-        });
+
+        table = getComponent("table");
+        table.addAction(new RemoveAction(table));
+        table.addAction(new NewAction());
+        table.addAction(new ModifyAction());
 
         nameField = getComponent("nameField");
         contentField = getComponent("contentField");
-        table = getComponent("table");
-        table.addAction(new RemoveAction(table,false));
-        table.addAction(new NewAction());
+        actionsPane = getComponent("actionsPane");
 
         addAction(new SaveAction());
         addAction(new CancelAction());
+    }
+
+    private void enableControls() {
+        actionsPane.setVisible(true);
+        nameField.setEditable(true);
+        contentField.setEditable(true);
+        table.setEnabled(false);
+        table.getButtonsPanel().setEnabled(true);
+    }
+
+    private void disableControls() {
+        actionsPane.setVisible(false);
+        nameField.setEditable(false);
+        contentField.setEditable(false);
+        table.setEnabled(true);
     }
 
     private class NewAction extends AbstractAction {
@@ -82,6 +89,20 @@ public class DesignScriptsWindow extends AbstractWindow {
 
             ds.addItem(designScript);
             table.setSelected(designScript);
+            enableControls();
+        }
+    }
+
+    private class ModifyAction extends AbstractAction {
+
+        protected ModifyAction() {
+            super("modify");
+        }
+
+        public void actionPerform(Component component) {
+            if (!table.getSelected().isEmpty()) {
+                enableControls();
+            }
         }
     }
 
@@ -109,6 +130,7 @@ public class DesignScriptsWindow extends AbstractWindow {
                 }
             }
             ds.commit();
+            disableControls();
         }
     }
 
@@ -120,6 +142,7 @@ public class DesignScriptsWindow extends AbstractWindow {
 
         public void actionPerform(Component component) {
             ds.refresh();
+            disableControls();
         }
     }
 }
