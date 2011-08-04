@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.design.modules.EndModule;
 import com.haulmont.workflow.core.app.design.modules.StartModule;
 import com.haulmont.workflow.core.entity.Design;
@@ -71,8 +72,9 @@ public class DesignCompiler {
         this.formCompiler = formCompiler;
     }
 
-    public String compileDesign(UUID designId) throws DesignCompilationException {
-        StringBuilder warning = new StringBuilder();
+    public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
+        List<String> errors = new LinkedList<String>();
+        List<String> warnings = new LinkedList<String>();
         Preconditions.checkArgument(designId != null, "designId is null");
         log.info("Compiling design " + designId);
 
@@ -83,19 +85,31 @@ public class DesignCompiler {
 
             List<Module> modules = new ArrayList<Module>();
 
-            createModules(design, modules);
+            errors.addAll(createModules(design, modules));
 
-            if (!isEndModuleExist(modules)){
-                throw new DesignCompilationException(MessageProvider.getMessage(getClass(),"exception.EndModuleNotExist"));
-            }
+            errors.addAll(checkRequiredModules(modules));
 
             cleanup(design);
 
-            String jpdl = compileJpdl(modules);
+            String jpdl = compileJpdl(modules, errors);
 
-            warning.append(checkUnusedModules(jpdl, modules));
+            Collection<String> unusedModules = checkUnusedModules(jpdl, modules);
+            if (unusedModules.size() > 0) {
+                StringBuilder modulesList = new StringBuilder();
+                for (String moduleName : unusedModules) {
+                    modulesList.append("<li>" + moduleName + "</li>");
+                }
+                warnings.add(MessageProvider.formatMessage(getClass(), "warning.unusedModules", modulesList.toString()));
+            }
+
+            String forms = compileForms(modules, errors);
+
+            if (errors.size() > 0 || warnings.size() > 0) {
+                return new CompilationMessage(errors, warnings);
+            }
 
             saveDesignFile(design, "", "jpdl", jpdl, null);
+            saveDesignFile(design, "", "forms", forms, null);
 
             Element localization = null;
             if (!StringUtils.isBlank(design.getLocalization())) {
@@ -109,9 +123,6 @@ public class DesignCompiler {
             String messagesRu = compileMessages(modules, "ru", localization);
             saveDesignFile(design, "messages_ru.properties", "messages", messagesRu, null);
 
-            String forms = compileForms(modules);
-            saveDesignFile(design, "", "forms", forms, null);
-
             if (BooleanUtils.isTrue(design.getNotificationMatrixUploaded())
                     && design.getNotificationMatrix().length > 0)
                 saveDesignFile(design, "", "notification", null, design.getNotificationMatrix());
@@ -122,30 +133,39 @@ public class DesignCompiler {
 
             log.info("Design " + designId + " succesfully compiled");
         } catch (JSONException e) {
-            throw new DesignCompilationException(e);
+            errors.add(e.getMessage());
+            return new CompilationMessage(errors, warnings);
         } finally {
             tx.end();
         }
-        return warning.toString();
+        return new CompilationMessage(errors, warnings);
     }
 
-    private boolean isEndModuleExist(List<Module> modules) {
+    private List<String> checkRequiredModules(List<Module> modules) {
+        boolean endExist = false;
+        boolean startExist = false;
+        List<String> errors = new LinkedList<String>();
         for (Module module : modules) {
             if (EndModule.class.isAssignableFrom(module.getClass())) {
-                return true;
+                endExist = true;
+            } else if(StartModule.class.isAssignableFrom(module.getClass())){
+                 startExist = true;
             }
         }
-        return false;
+        if (!startExist)
+            errors.add(MessageProvider.getMessage(getClass(), "exception.StartModuleNotExist"));
+        if (!endExist)
+            errors.add(MessageProvider.getMessage(getClass(), "exception.EndModuleNotExist"));
+
+        return errors;
     }
 
-    private String checkUnusedModules(String jpdl, List<Module> modules) {
-        Document document = null;
-
+    private List<String> checkUnusedModules(String jpdl, List<Module> modules) {
+        List<String> errors = new LinkedList<String>();
+        Document document;
+        Map<String, Element> modulesByName = new HashMap<String, Element>();
         Map<String, String> modulesNames = new HashMap<String, String>();
         for (Module module : modules) {
-            if (StartModule.class.isAssignableFrom(module.getClass())) {
-                continue;
-            }
             modulesNames.put(module.getName(), module.getCaption());
         }
         try {
@@ -154,52 +174,39 @@ public class DesignCompiler {
             throw new RuntimeException(e);
         }
         List<Element> modulesEl = document.getRootElement().elements();
-        for (Element module : modulesEl) {
-            List<Element> transitions = module.elements("transition");
-            for (Element transition : transitions) {
-                String moduleName = transition.attributeValue("to");
-                modulesNames.remove(moduleName);
+        //Find start module
+        Element startElement = null;
+        for (Element moduleEl : modulesEl) {
+            String name = moduleEl.attributeValue("name");
+            if (name != null)
+                modulesByName.put(name, moduleEl);
+            if ("start".equals(moduleEl.getName())) {
+                startElement = moduleEl;
             }
         }
-        if (!modulesNames.isEmpty()) {
-            StringBuilder unusedModulesString = new StringBuilder();
-            for (String moduleName : modulesNames.values()) {
-                unusedModulesString.append("<li>" + moduleName + "</li>");
-            }
-            return (MessageProvider.formatMessage(getClass(), "warning.unusedModules", unusedModulesString.toString()));
+
+        if (startElement != null) {
+            modulesNames.remove(startElement.attributeValue("name"));
+            modulesByName.remove(startElement.attributeValue("name"));
+            findNext(startElement, modulesByName, modulesNames);
+            errors.addAll(modulesNames.values());
         }
-        return "";
+        return errors;
     }
 
-    /**
-     * Method for compile jpdl of Design without saving in DataBase
-     *
-     * @param designId
-     * @return jpdl in String format
-     * @throws DesignCompilationException
-     */
-    private String compileDesignJpdl(UUID designId) throws DesignCompilationException {
-        Preconditions.checkArgument(designId != null, "designId is null");
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Design design = em.find(Design.class, designId);
-
-            List<Module> modules = new ArrayList<Module>();
-
-            createModules(design, modules);
-
-            cleanup(design);
-
-            String jpdl = compileJpdl(modules);
-            return jpdl;
-        } catch (JSONException e) {
-            throw new DesignCompilationException(e);
-        } finally {
-            tx.end();
+    private void findNext(Element element, Map<String, Element> modulesByName, Map<String, String> modulesNames) {
+        List<Element> transitionsEl = element.elements("transition");
+        for (Element transitionEl : transitionsEl) {
+            String moduleName = transitionEl.attributeValue("to");
+            if (modulesNames.containsKey(moduleName)) {
+                modulesNames.remove(moduleName);
+                Element nextModuleEl = modulesByName.get(moduleName);
+                if (nextModuleEl != null) {
+                    findNext(nextModuleEl, modulesByName, modulesNames);
+                }
+                modulesByName.remove(moduleName);
+            }
         }
-
-
     }
 
     private List<String> parseRoles(Document document) {
@@ -450,14 +457,19 @@ public class DesignCompiler {
     }
 
 
-    private void createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
+    private List<String> createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
+        List<String> errors = new LinkedList<String>();
         List<String> modulesNames = new ArrayList<String>();
 
         JSONObject json = new JSONObject(design.getSrc());
 
         JSONObject jsWorking = json.getJSONObject("working");
-
-        JSONArray jsModules = jsWorking.getJSONArray("modules");
+        JSONArray jsModules = null;
+        try {
+            jsModules = jsWorking.getJSONArray("modules");
+        } catch (JSONException e) {
+            return errors;
+        }
         for (int i = 0; i < jsModules.length(); i++) {
             JSONObject jsModule = jsModules.getJSONObject(i);
             String name = jsModule.getString("name");
@@ -471,20 +483,29 @@ public class DesignCompiler {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            module.init(new Module.Context(design, jsModule, formCompiler));
-            if(modulesNames.contains(module.getName())){
-                   throw new DesignCompilationException(MessageProvider.formatMessage(getClass(),"exception.duplicateModuleName",module.getCaption()));
+            try {
+                module.init(new Module.Context(design, jsModule, formCompiler));
+            } catch (DesignCompilationException e) {
+                errors.add(e.getMessage());
             }
-            else
-            modulesNames.add(module.getName());
+            if (module.getName() != null && modulesNames.contains(module.getName())) {
+                errors.add(MessageProvider.formatMessage(getClass(), "exception.duplicateModuleName", module.getCaption()));
+
+            } else
+                modulesNames.add(module.getName());
             modules.add(module);
         }
 
         JSONArray jsWires = jsWorking.getJSONArray("wires");
-        addTransitions(modules,jsModules,jsWires);
+        try {
+            addTransitions(modules, jsModules, jsWires, errors);
+        } catch (DesignCompilationException e) {
+            errors.add(e.getMessage());
+        }
+        return errors;
     }
 
-    private void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires)throws JSONException, DesignCompilationException {
+    private void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires, List<String> errors) throws JSONException, DesignCompilationException {
         Map<Integer, Module> otherModules = new HashMap<Integer, Module>();
         List<String> notUsedModules = new ArrayList<String>();
 
@@ -506,8 +527,9 @@ public class DesignCompiler {
                 String terminalName = outputs.getJSONObject(j).getString("name");
                 List<TransitionParams> currParamsList = moduleTransitionsParams.get(terminalName);
                 if (currParamsList == null) {
-                    throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.emptyTransition",
-                            terminalName, jsModule.getJSONObject("value").getString("name")));
+                    errors.add(MessageProvider.formatMessage(getClass(), "exception.emptyTransition",
+                            jsModule.getJSONObject("value").getString("name")));
+                    continue;
                 }
                 for (TransitionParams currParams : currParamsList) {
                     modules.get(i).addTransition(terminalName,
@@ -585,12 +607,16 @@ public class DesignCompiler {
         em.persist(df);
     }
 
-    private String compileJpdl(List<Module> modules) throws DesignCompilationException {
+    private String compileJpdl(List<Module> modules,List<String> compileErrors) throws DesignCompilationException {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("process", "http://jbpm.org/4.2/jpdl");
 
         for (Module module : modules) {
-            module.writeJpdlXml(rootEl);
+            try {
+                module.writeJpdlXml(rootEl);
+            } catch (DesignCompilationException e) {
+                compileErrors.add(e.getMessage());
+            }
         }
 
         Element onEl = rootEl.addElement("on");
@@ -635,12 +661,16 @@ public class DesignCompiler {
         properties.setProperty(key, MessageProvider.getMessage(messagePack, key, locale));
     }
 
-    private String compileForms(List<Module> modules) throws DesignCompilationException {
+    private String compileForms(List<Module> modules, List<String> errors) {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("forms", "http://www.haulmont.com/schema/cuba/workflow/forms.xsd");
 
         for (Module module : modules) {
-            module.writeFormsXml(rootEl);
+            try {
+                module.writeFormsXml(rootEl);
+            } catch (DesignCompilationException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return Dom4j.writeDocument(document, true);

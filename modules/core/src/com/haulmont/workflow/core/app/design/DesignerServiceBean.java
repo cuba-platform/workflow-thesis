@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.DesignImportExportHelper;
+import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
@@ -93,7 +94,7 @@ public class DesignerServiceBean implements DesignerService {
         }
     }
 
-    public String compileDesign(UUID designId) throws DesignCompilationException {
+    public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
         return compiler.compileDesign(designId);
     }
 

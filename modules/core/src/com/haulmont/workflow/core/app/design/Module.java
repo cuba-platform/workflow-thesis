@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.app.design;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
@@ -72,16 +73,15 @@ public abstract class Module {
             this.context = context;
             this.jsValue = context.getJson().getJSONObject("value");
 
+            initScriptNamesMap();
             String name = jsValue.optString("name");
             if (!StringUtils.isBlank(name)) {
                 this.name = WfUtils.encodeKey(name);
                 this.caption = name;
             } else {
-                this.name = context.getJson().getString("name");
-                this.caption = this.name;
+                throw new DesignCompilationException(
+                        MessageProvider.getMessage(getClass(), "exception.emptyName"));
             }
-
-            initScriptNamesMap();
         } catch (JSONException e) {
             throw new DesignCompilationException(e);
         }

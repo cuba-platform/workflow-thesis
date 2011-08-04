@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
@@ -35,12 +36,8 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class DesignBrowser extends AbstractWindow {
 
@@ -260,12 +257,22 @@ public class DesignBrowser extends AbstractWindow {
         private void compile(Design design) {
             DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
             try {
-                String warning = service.compileDesign(design.getId());
+                CompilationMessage message = service.compileDesign(design.getId());
                 ds.refresh();
-                if (StringUtils.trimToNull(warning) == null)
+                if (message.getErrors().size() == 0 && message.getWarnings().size() == 0)
                     showNotification(getMessage("notification.compileSuccess"), NotificationType.HUMANIZED);
-                else
-                    showNotification(getMessage("notification.compileWithWarnings"), warning, NotificationType.WARNING);
+                else if (message.getErrors().size() == 0 && message.getWarnings().size() > 0)
+                    showOptionDialog(getMessage("notification.compileWithWarnings"), prepareCompilationMessage(message), IFrame.MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new DialogAction(DialogAction.Type.OK)
+                            });
+                else {
+                    showOptionDialog(getMessage("notification.compileFailed"), prepareCompilationMessage(message), IFrame.MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new DialogAction(DialogAction.Type.OK)
+                            });
+                }
+
             } catch (DesignCompilationException e) {
                 showNotification(
                         getMessage("notification.compileFailed"),
@@ -273,6 +280,25 @@ public class DesignBrowser extends AbstractWindow {
                         NotificationType.ERROR
                 );
             }
+        }
+
+        private String prepareCompilationMessage(CompilationMessage message) {
+            StringBuilder result = new StringBuilder();
+            if (message.getErrors().size() > 0) {
+                result.append("<b>" + getMessage("notification.errors") + "</b><br />");
+            }
+            for (String error : message.getErrors()) {
+                result.append(error);
+                result.append("<br />");
+            }
+            if (message.getWarnings().size() > 0) {
+                result.append("<b>" + getMessage("notification.warnings") + "</b><br />");
+            }
+            for (String warning : message.getWarnings()) {
+                result.append(warning);
+                result.append("<br />");
+            }
+            return result.toString();
         }
     }
 
@@ -346,15 +372,19 @@ public class DesignBrowser extends AbstractWindow {
             Set selected = table.getSelected();
             if (!selected.isEmpty()) {
                 final Design design = (Design) selected.iterator().next();
-                Window window = openEditor("wf$Design.localize", design, WindowManager.OpenType.THIS_TAB);
-                window.addListener(
-                        new CloseListener() {
-                            public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId))
-                                    ds.refresh();
+                if (design.getCompileTs() == null) {
+                    showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
+                } else {
+                    Window window = openEditor("wf$Design.localize", design, WindowManager.OpenType.THIS_TAB);
+                    window.addListener(
+                            new CloseListener() {
+                                public void windowClosed(String actionId) {
+                                    if (Window.COMMIT_ACTION_ID.equals(actionId))
+                                        ds.refresh();
+                                }
                             }
-                        }
-                );
+                    );
+                }
             }
         }
     }

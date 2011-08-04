@@ -43,11 +43,15 @@ public class AssignmentModule extends Module {
 
     @Override
     public void init(Context context) throws DesignCompilationException {
+        StringBuilder error = new StringBuilder();
+
         super.init(context);
         try {
             role = jsValue.getString("role");
             if (StringUtils.trimToNull(role) == null) {
-                throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noRole", caption));
+                if (error.length() != 0)
+                    error.append("<br />");
+                error.append(MessageProvider.formatMessage(getClass(), "exception.noRole", caption));
             }
             jsOptions = jsValue.optJSONObject("options");
             if (jsOptions != null)
@@ -57,8 +61,16 @@ public class AssignmentModule extends Module {
         } catch (JSONException e) {
             throw new DesignCompilationException(e);
         }
-        if (outputs.isEmpty())
-            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noOutputs", caption));
+        if (outputs.isEmpty()) {
+            if (error.length() != 0)
+                error.append("<br />");
+
+            error.append(MessageProvider.formatMessage(getClass(), "exception.noOutputs", caption));
+        }
+
+        if (StringUtils.trimToNull(error.toString()) != null) {
+            throw new DesignCompilationException(error.toString());
+        }
     }
 
     protected void initOutputs() throws DesignCompilationException {
@@ -106,6 +118,8 @@ public class AssignmentModule extends Module {
         if (jsOptions == null)
             return;
 
+        StringBuilder error = new StringBuilder();
+
         try {
             JSONObject jsForms = jsOptions.optJSONObject("forms");
             if (jsForms == null)
@@ -120,11 +134,18 @@ public class AssignmentModule extends Module {
                 String formName = jsForm.getString("name");
                 String transition = WfUtils.encodeKey(jsForm.getString("transition"));
                 JSONObject jsProperties = jsForm.getJSONObject("properties");
-                context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName, jsProperties);
+                try {
+                    context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName, jsProperties);
+                } catch (DesignCompilationException e) {
+                    if (error.length() != 0)
+                        error.append("<br />");
+                    error.append(e.getMessage());
+                }
             }
         } catch (JSONException e) {
             throw new DesignCompilationException("Unable to compile forms for module " + caption, e);
         }
+        if (error.length() > 0) throw new DesignCompilationException(error.toString());
     }
 
     protected void writeJpdlTimers(Element parentEl) throws DesignCompilationException {

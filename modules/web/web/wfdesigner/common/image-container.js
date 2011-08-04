@@ -104,9 +104,27 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
       };
    },
 
+    getOutputs: function() {
+        var outputs = [];
+        for (var i = 0; i < this.terminals.length; i++) {
+            var terminal = this.terminals[i];
+            if (terminal.ddConfig.type == "out")
+                outputs.push(terminal);
+        }
+        return outputs;
+    },
+
     getValue: function() {
         var value = Wf.ImageContainer.superclass.getValue.call(this);
         value.options = Wf.OptionFieldsHelper.getValue(this);
+        value.name=value.options['name'];
+        value.outputs = [];
+
+        var outputs = this.getOutputs();
+        for (var i = 0; i < outputs.length; i++) {
+            var out = outputs[i];
+            value.outputs.push({name: out.name, position: out.offsetPosition});
+        }
         return value;
     },
 
