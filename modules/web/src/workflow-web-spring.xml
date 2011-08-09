@@ -15,7 +15,7 @@
     <!-- Remote stubs -->
 
     <bean id="workflow_proxyCreator" class="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator">
-        <property name="baseUrl" value="${cuba.connectionUrl}/remoting"/>
+        <property name="clusterInvocationSupport" ref="cuba_clusterInvocationSupport"/>
         <property name="remoteServices">
             <map>
                 <entry key="workflow_WfService" value="com.haulmont.workflow.core.app.WfService"/>
