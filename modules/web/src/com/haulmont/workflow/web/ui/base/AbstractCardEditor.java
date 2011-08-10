@@ -172,7 +172,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
     protected abstract boolean isCommentVisible();
 
-    protected void reopen(Map<String, Object> parameters) {
+    public void reopen(Map<String, Object> parameters) {
         WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
         switch (App.getInstance().getAppWindow().getMode()) {
             case SINGLE:
