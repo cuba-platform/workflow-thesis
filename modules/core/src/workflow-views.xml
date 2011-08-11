@@ -147,6 +147,7 @@
         <property name="card" view="_local"/>
         <property name="file" view="_local"/>
         <property name="attachType" view="_local"/>
+        <property name="versionOf" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="assignment-edit" extends="_local">

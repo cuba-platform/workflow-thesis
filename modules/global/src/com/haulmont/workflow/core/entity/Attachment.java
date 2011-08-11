@@ -46,6 +46,13 @@ public class Attachment extends StandardEntity {
     @Column(name = "SIGNATURES")
     private String signatures;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "VERSION_OF_ID")
+    private Attachment versionOf;
+
+    @Column(name = "VERSION_NUM")
+    private Integer versionNum;
+
     public FileDescriptor getFile() {
         return file;
     }
@@ -89,5 +96,21 @@ public class Attachment extends StandardEntity {
     @MetaProperty
     public String getClassName() {
         return this.getClass().getSimpleName();
+    }
+
+    public Attachment getVersionOf() {
+        return versionOf;
+    }
+
+    public void setVersionOf(Attachment versionOf) {
+        this.versionOf = versionOf;
+    }
+
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
     }
 }

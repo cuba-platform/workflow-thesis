@@ -12,7 +12,7 @@
                 class="com.haulmont.workflow.core.entity.Card"
                 view="edit">
             <collectionDatasource id="cardRolesDs" property="roles"/>
-            <collectionDatasource id="attachmentsDs" property="attachments"/>
+            <hierarchicalDatasource id="attachmentsDs" property="attachments" hierarchyProperty="versionOf"/>
         </datasource>
 
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local"/>
@@ -27,7 +27,7 @@
                     <accessControl data="com.haulmont.workflow.web.ui.card.CardAccessData" param="accessData">
                         <editable property="notStarted"/>
 
-                        <vbox margin="true" expand="attachmentsPane">
+                        <vbox margin="true" spacing="true" expand="cardAttachmentsFrame">
                             <hbox spacing="true">
                                 <hbox stylename="edit-area">
                                     <vbox margin="true">
@@ -59,23 +59,8 @@
                                 </hbox>
                             </hbox>
 
-                            <vbox id="attachmentsPane" expand="attachmentsTable">
-                                <label value="msg://attachments"/>
-                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                                    <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
-                                    <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
-                                    <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
-                                </hbox>
-                                <table id="attachmentsTable" editable="false" sortable="true">
-                                    <columns>
-                                        <column id="name" caption="msg://attachName"/>
-                                        <column id="file.name" caption="msg://fileName"/>
-                                        <column id="file.size" caption="msg://fileSize"/>
-                                    </columns>
-                                    <rows datasource="attachmentsDs"/>
-                                </table>
+                            <iframe id="cardAttachmentsFrame" src="/com/haulmont/workflow/web/ui/base/card-attachments-frame.xml"/>
                             </vbox>
-                        </vbox>
                     </accessControl>
                 </tab>
 

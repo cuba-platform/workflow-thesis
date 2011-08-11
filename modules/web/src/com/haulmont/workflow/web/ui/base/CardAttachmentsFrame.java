@@ -6,13 +6,12 @@
 
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -24,8 +23,9 @@ import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
+import com.haulmont.workflow.web.ui.base.attachments.NewVersionAction;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,6 +65,20 @@ public class CardAttachmentsFrame extends AbstractFrame {
                         attachmentCreator, WindowManager.OpenType.DIALOG)
         );
 
+
+        NewVersionAction newVersionAction = new NewVersionAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
+            @Override
+            protected Map<String, Object> getInitialValues() {
+                Map<String, Object> initialValues = new HashMap();
+                initialValues.put("card", cardDs.getItem());
+                initialValues.put("file", new FileDescriptor());
+                return initialValues;
+            }
+        };
+
+        createPopup.addAction(newVersionAction);
+
+        attachmentsTable.addAction(newVersionAction);
         attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit"));
         attachmentsTable.addAction(new RemoveAction(attachmentsTable, false, "remove"));
 

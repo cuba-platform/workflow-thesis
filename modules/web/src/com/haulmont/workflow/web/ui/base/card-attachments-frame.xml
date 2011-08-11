@@ -12,7 +12,7 @@
     <dsContext/>
 
     <layout expandLayout="true" height="100%" spacing="true">
-        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
+        <treeTable id="attachmentsTable" editable="false" sortable="true" multiselect="true">
             <buttonsPanel>
                 <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
                 <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
@@ -24,10 +24,16 @@
             <columns>
                 <column id="name" caption="msg://attachName"/>
                 <column id="file.name" caption="msg://fileName"/>
+                <column id="createTs" caption="msg://createTs">
+                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                               format="msg://dateTimeFormat"/>
+                </column>
+                <column id="createdBy" caption="msg://createdBy"/>
                 <column id="attachType.locName" caption="msg://typeName"/>
                 <column id="file.size" caption="msg://fileSize"/>
+                <column id="versionNum"/>
             </columns>
             <rows datasource="attachmentsDs"/>
-        </table>
+        </treeTable>
     </layout>
 </window>

@@ -214,6 +214,8 @@ create table WF_ATTACHMENT (
     SIGNATURES longvarchar,
     CARD_ID varchar(36),
     ASSIGNMENT_ID varchar(36),
+    VERSION_OF_ID varchar(36),
+    VERSION_NUM integer,
     primary key (ID)
 );
 
@@ -224,6 +226,8 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key (ASSIGNMENT_ID) references WF_ASSIGNMENT (ID);
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE_ID) references WF_ATTACHMENTTYPE (ID);
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key (VERSION_OF_ID) references WF_ATTACHMENT (ID)^
 
 insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
 values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','AttachmentType.attachment',true);

@@ -8,7 +8,7 @@
     <dsContext>
         <collectionDatasource id="cardDs" class="com.haulmont.workflow.core.entity.Card" view="browse">
             <query>
-                select c from wf$Card c order by c.createTs
+                select c from wf$Card c order by c.createTs desc
             </query>
         </collectionDatasource>
     </dsContext>
@@ -29,6 +29,7 @@
                     <button action="cardTable.remove" icon="icons/remove.png"/>
                 </hbox>
                 <table id="cardTable" editable="false">
+                    <rowsCount/>
                     <columns>
                         <column id="description" caption="msg://description"/>
                         <column id="proc.name" caption="msg://procName"/>
