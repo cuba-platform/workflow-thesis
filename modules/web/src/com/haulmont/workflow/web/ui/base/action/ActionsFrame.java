@@ -39,7 +39,7 @@ public class ActionsFrame extends AbstractFrame {
 
     public void initActions(Card card, boolean commentVisible) {
         buttonContainer =  getComponent("buttonContainer");
-        List<Button> buttons = new ArrayList<Button>();
+        List<Component> buttons = new ArrayList<Component>();
         for (int i = 0; i < 7; i++) {
             Button btn = getComponent("actionBtn" + i);
             btn.setVisible(false);
@@ -84,11 +84,13 @@ public class ActionsFrame extends AbstractFrame {
         if (visibleActions != null)
             actions.retainAll(visibleActions);
         for (int i = 0; i < buttons.size(); i++) {
-            Button btn = buttons.get(i);
+            Component btn = buttons.get(i);
             if (i <= actions.size() - 1) {
                 btn.setVisible(true);
                 String actionName = actions.get(i);
-                btn.setAction(new ProcessAction(card, actionName, this));
+                if (btn instanceof Button) {
+                    ((Button) btn).setAction(new ProcessAction(card, actionName, this));
+                }
 
                 FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
                 String style = (String) managerChain.getCommonParams().get("style");
@@ -101,7 +103,7 @@ public class ActionsFrame extends AbstractFrame {
         }
     }
 
-    public void addButton(Button button) {
+    public void addButton(Component button) {
         if (button == null) {
             return;
         }
@@ -109,7 +111,7 @@ public class ActionsFrame extends AbstractFrame {
         buttonContainer.add(button);
     }
 
-    public void removeButton(Button button) {
+    public void removeButton(Component button) {
         if (button == null) {
             return;
         }
