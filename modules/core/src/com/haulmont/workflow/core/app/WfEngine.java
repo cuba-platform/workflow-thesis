@@ -94,17 +94,17 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         RepositoryService rs = getProcessEngine().getRepositoryService();
 
         NewDeployment deployment = rs.createDeployment();
-        File file = new File(fileName);
-        if (!file.exists())
-            throw new IllegalArgumentException("File doesn't exist: " + fileName);
 
-        deployment.addResourceFromFile(file);
-        deployment.setName(file.getName());
-        deployment.setTimestamp(file.lastModified());
+        String resource = ScriptingProvider.getResourceAsString(fileName);
+        if (resource == null)
+            throw new IllegalArgumentException("Resource not found: " + fileName);
+
+        deployment.addResourceFromString(fileName, resource);
+        deployment.setName(fileName.substring(fileName.lastIndexOf('/')));
+        deployment.setTimestamp(TimeProvider.currentTimestamp().getTime());
         deployment.deploy();
 
-        int dot = file.getName().indexOf(".jpdl.xml");
-        String pName = StringUtils.substring(file.getName(), 0, dot);
+        String pName = StringUtils.substring(fileName, 0, fileName.indexOf(".jpdl.xml"));
 
         ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
         ProcessDefinition pd = pdq.uniqueResult();
@@ -146,8 +146,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         try {
             login();
 
-            String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
-            String fileName = confDir + "/process/" + name + "/" + name + ".jpdl.xml";
+            String fileName = "/process/" + name + "/" + name + ".jpdl.xml";
             Proc proc = deployJpdlXml(fileName);
 
             tx.commit();

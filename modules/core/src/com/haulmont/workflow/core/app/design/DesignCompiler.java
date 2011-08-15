@@ -285,7 +285,7 @@ public class DesignCompiler {
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
                 Attribute classAttr = element.attribute("class");
                 if (classAttr != null) {
-                    Class assignerClass = ScriptingProvider.loadClass("workflow.activity.Assigner");
+                    Class assignerClass = ScriptingProvider.loadClass("com.haulmont.workflow.core.activity.Assigner");
                     Class currentClass = ScriptingProvider.loadClass(classAttr.getValue());
                     if (assignerClass.isAssignableFrom(currentClass))
                         return true;

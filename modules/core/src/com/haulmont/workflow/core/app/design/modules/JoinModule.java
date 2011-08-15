@@ -40,7 +40,7 @@ public class JoinModule extends Module {
         Element onElement = el.addElement("on");
         onElement.addAttribute("event","end");
         Element eventListener = onElement.addElement("event-listener");
-        eventListener.addAttribute("class","workflow.activity.CardStateListener");
+        eventListener.addAttribute("class","com.haulmont.workflow.core.activity.CardStateListener");
         return el;
     }
 
