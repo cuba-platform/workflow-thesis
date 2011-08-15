@@ -25,27 +25,27 @@ public class CardRole extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ROLE_ID")
-    private ProcRole procRole;
+    protected ProcRole procRole;
 
     @Column(name = "CODE")
-    private String code;
+    protected String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @Column(name = "NOTIFY_BY_EMAIL")
-    private Boolean notifyByEmail = true;
+    protected Boolean notifyByEmail = true;
 
     @Column(name = "NOTIFY_BY_CARD_INFO")
-    private Boolean notifyByCardInfo = true;
+    protected Boolean notifyByCardInfo = true;
 
     @Column(name = "SORT_ORDER")
-    private Integer sortOrder;
+    protected Integer sortOrder;
 
     public Card getCard() {
         return card;

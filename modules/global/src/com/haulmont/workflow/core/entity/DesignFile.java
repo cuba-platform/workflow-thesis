@@ -22,19 +22,19 @@ public class DesignFile extends BaseUuidEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
-    private Design design;
+    protected Design design;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    protected String name;
 
     @Column(name = "TYPE", length = 20)
-    private String type;
+    protected String type;
 
     @Column(name = "CONTENT", length = 0)
-    private String content;
+    protected String content;
 
     @Column(name = "BINARY_CONTENT")
-    private byte[] binaryContent;
+    protected byte[] binaryContent;
 
     public Design getDesign() {
         return design;

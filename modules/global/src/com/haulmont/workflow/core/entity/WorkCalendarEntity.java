@@ -31,19 +31,19 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     protected String updatedBy;
 
     @Column(name = "WORK_DAY")
-    private Date day;
+    protected Date day;
 
     @Column(name = "WORK_DAY_OF_WEEK")
-    private Integer dayOfWeek;
+    protected Integer dayOfWeek;
 
     @Column(name = "WORK_START")
-    private String start;
+    protected String start;
 
     @Column(name = "WORK_END")
-    private String end;
+    protected String end;
 
     @Column(name = "COMMENT")
-    private String comment;
+    protected String comment;
 
     public String getUpdatedBy() {
         return updatedBy;

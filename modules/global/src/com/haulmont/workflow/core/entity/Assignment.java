@@ -31,52 +31,52 @@ public class Assignment extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
-    private Proc proc;
+    protected Proc proc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MASTER_ASSIGNMENT_ID")
-    private Assignment masterAssignment;
+    protected Assignment masterAssignment;
 
     @Column(name = "NAME", length = 255)
-    private String name;
+    protected String name;
 
     @Column(name = "DESCRIPTION", length = 1000)
-    private String description;
+    protected String description;
 
     @Column(name = "JBPM_PROCESS_ID", length = 255)
-    private String jbpmProcessId;
+    protected String jbpmProcessId;
 
     @Column(name = "DUE_DATE")
-    private Date dueDate;
+    protected Date dueDate;
 
     @Column(name = "FINISHED")
-    private Date finished;
+    protected Date finished;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FINISHED_BY")
-    private User finishedByUser;
+    protected User finishedByUser;
 
     @Column(name = "OUTCOME", length = 255)
-    private String outcome;
+    protected String outcome;
 
     @Column(name = "COMMENT", length = 100000)
-    private String comment;
+    protected String comment;
 
     @OneToMany(mappedBy = "assignment")
     @OrderBy("name")
     @Aggregation
-    private List<CardAttachment> attachments;
+    protected List<CardAttachment> attachments;
 
     @Column(name = "ITERATION")
-    private Integer iteration;
+    protected Integer iteration;
 
     public String getName() {
         return name;

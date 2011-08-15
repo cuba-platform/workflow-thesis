@@ -30,28 +30,28 @@ public class Attachment extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FILE_ID")
-    private FileDescriptor file;
+    protected FileDescriptor file;
 
     @Column(name = "NAME", length = 500)
-    private String name;
+    protected String name;
 
     @Column(name = "COMMENT", length = 1000)
-    private String comment;
+    protected String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE_ID")
     @OnDeleteInverse(value = DeletePolicy.DENY)
-    private AttachmentType attachType;
+    protected AttachmentType attachType;
 
     @Column(name = "SIGNATURES")
-    private String signatures;
+    protected String signatures;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VERSION_OF_ID")
-    private Attachment versionOf;
+    protected Attachment versionOf;
 
     @Column(name = "VERSION_NUM")
-    private Integer versionNum;
+    protected Integer versionNum;
 
     public FileDescriptor getFile() {
         return file;

@@ -23,24 +23,24 @@ public class CardStage extends StandardEntity {
     private static final long serialVersionUID = 7689780973392226763L;
 
     @Column(name = "START_DATE")
-    private Date startDate;
+    protected Date startDate;
 
     @Column(name = "END_DATE_PLAN")
-    private Date endDatePlan;
+    protected Date endDatePlan;
 
     @Column(name = "END_DATE_FACT")
-    private Date endDateFact;
+    protected Date endDateFact;
 
     @Column(name = "NOTIFIED")
-    private Boolean notified = false;
+    protected Boolean notified = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_STAGE_ID")
-    private ProcStage procStage;
+    protected ProcStage procStage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     public Date getStartDate() {
         return startDate;

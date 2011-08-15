@@ -25,11 +25,11 @@ public class CardAttachment extends Attachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ASSIGNMENT_ID")
-    private Assignment assignment;
+    protected Assignment assignment;
 
     public Card getCard() {
         return card;

@@ -26,23 +26,23 @@ public class CardProc extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
-    private Proc proc;
+    protected Proc proc;
 
     @Column(name = "IS_ACTIVE")
-    private Boolean active;
+    protected Boolean active;
 
     @Column(name = "START_COUNT")
-    private Integer startCount = 0;
+    protected Integer startCount = 0;
 
     @Column(name = "STATE", length = 255)
-    private String state;
+    protected String state;
 
     @Column(name = "SORT_ORDER")
-    private Integer sortOrder;
+    protected Integer sortOrder;
 
     public Card getCard() {
         return card;

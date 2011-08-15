@@ -29,48 +29,48 @@ public class ProcStage extends StandardEntity {
     private static final long serialVersionUID = 6943011386558120006L;
 
     @Column(name = "NAME", length = 255)
-    private String name;
+    protected String name;
 
     @Column(name = "START_ACTIVITY", length = 200)
-    private String startActivity;
+    protected String startActivity;
 
     @Column(name = "END_ACTIVITY", length = 200)
-    private String endActivity;
+    protected String endActivity;
 
     @Column(name = "END_TRANSITION", length = 200)
-    private String endTransition;
+    protected String endTransition;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_STAGE_TYPE_ID")
-    private ProcStageType type;
+    protected ProcStageType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
-    private Proc proc;
+    protected Proc proc;
 
     @Column(name = "TIME_UNIT")
-    private String timeUnit = "D";
+    protected String timeUnit = "D";
 
     @Column(name = "DURATION", length = 3)
-    private Integer duration;
+    protected Integer duration;
 
     @Column(name = "NOTIFICATION_SCRIPT")
-    private String notificationScript;
+    protected String notificationScript;
 
     @Column(name = "DURATION_SCRIPT_ENABLED")
-    private Boolean durationScriptEnabled = false;
+    protected Boolean durationScriptEnabled = false;
 
     @Column(name = "DURATION_SCRIPT")
-    private String durationScript;
+    protected String durationScript;
 
     @Column(name = "NOTIFY_CURRENT_ACTOR")
-    private Boolean notifyCurrentActor = true;
+    protected Boolean notifyCurrentActor = true;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "WF_PROC_STAGE_PROC_ROLE",
         joinColumns = @JoinColumn(name = "PROC_STAGE_ID", referencedColumnName = "ID"),
         inverseJoinColumns = @JoinColumn(name = "PROC_ROLE_ID", referencedColumnName = "ID"))
-    private List<ProcRole> procRoles;
+    protected List<ProcRole> procRoles;
 
     @MetaProperty
     public String getLocStartActivity() {

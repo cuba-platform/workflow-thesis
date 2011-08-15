@@ -27,34 +27,34 @@ public class ProcRole extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
-    private Proc proc;
+    protected Proc proc;
 
     @Column(name = "CODE", length = 50)
-    private String code;
+    protected String code;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    protected String name;
 
     @Column(name = "IS_MULTI_USER")
-    private Boolean multiUser = false;
+    protected Boolean multiUser = false;
 
     @Column(name = "INVISIBLE")
-    private Boolean invisible = false;
+    protected Boolean invisible = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID")
-    private Role role;
+    protected Role role;
 
     @OneToMany(mappedBy = "procRole")
     @Aggregation
-    private List<DefaultProcActor> defaultProcActors;
+    protected List<DefaultProcActor> defaultProcActors;
 
     @Column(name = "ASSIGN_TO_CREATOR")
-    private Boolean assignToCreator = false;
+    protected Boolean assignToCreator = false;
 
     @OneToMany(mappedBy = "procRoleFrom")
     @Aggregation
-    private List<ProcRolePermission> permissions;
+    protected List<ProcRolePermission> permissions;
 
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;

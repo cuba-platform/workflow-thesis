@@ -26,39 +26,39 @@ public class Proc extends StandardEntity {
     private static final long serialVersionUID = 7588775221603325166L;
 
     @Column(name = "NAME", length = 255)
-    private String name;
+    protected String name;
 
     @Column(name = "JBPM_PROCESS_KEY", length = 255)
-    private String jbpmProcessKey;
+    protected String jbpmProcessKey;
 
     @Column(name = "MESSAGES_PACK", length = 200)
-    private String messagesPack;
+    protected String messagesPack;
 
     @OneToMany(mappedBy = "proc")
     @Aggregation
     @OrderBy("code")
-    private List<ProcRole> roles;
+    protected List<ProcRole> roles;
 
     @Column(name = "CARD_TYPES")
-    private String cardTypes;
+    protected String cardTypes;
 
     @Column(name = "PERMISSIONS_ENABLED")
-    private Boolean permissionsEnabled = false;
+    protected Boolean permissionsEnabled = false;
 
     @Column(name = "STATES", length = 500)
-    private String states;
+    protected String states;
 
     @OneToMany(mappedBy = "proc")
     @Aggregation
-    private List<ProcStage> stages;
+    protected List<ProcStage> stages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
-    private Design design;
+    protected Design design;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AVAILABLE_ROLE_ID")
-    private Role availableRole;
+    protected Role availableRole;
 
     public String getName() {
         return name;

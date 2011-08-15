@@ -23,7 +23,7 @@ public class AssignmentAttachment extends Attachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ASSIGNMENT_ID")
-    private Assignment assignment;
+    protected Assignment assignment;
 
     public Assignment getAssignment() {
         return assignment;

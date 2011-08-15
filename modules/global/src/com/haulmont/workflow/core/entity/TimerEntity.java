@@ -22,23 +22,23 @@ public class TimerEntity extends BaseUuidEntity {
     private static final long serialVersionUID = 4721435849536800174L;
 
     @Column(name = "DUE_DATE")
-    private Date dueDate;
+    protected Date dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @Column(name = "JBPM_EXECUTION_ID", length = 255)
-    private String jbpmExecutionId;
+    protected String jbpmExecutionId;
 
     @Column(name = "ACTIVITY", length = 255)
-    private String activity;
+    protected String activity;
 
     @Column(name = "ACTION_CLASS", length = 200)
-    private String actionClass;
+    protected String actionClass;
 
     @Column(name = "ACTION_PARAMS", length = 1000)
-    private String actionParams;
+    protected String actionParams;
 
     public Card getCard() {
         return card;

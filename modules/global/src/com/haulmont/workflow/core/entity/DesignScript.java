@@ -24,13 +24,13 @@ public class DesignScript extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
-    private Design design;
+    protected Design design;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    protected String name;
 
     @Column(name = "CONTENT", length = 0)
-    private String content;
+    protected String content;
 
     public Design getDesign() {
         return design;

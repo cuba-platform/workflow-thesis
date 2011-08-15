@@ -20,13 +20,13 @@ public class DesignLocValue extends AbstractNotPersistentEntity implements Compa
     private static final long serialVersionUID = -999308806151427161L;
 
     @MetaProperty
-    private String lang;
+    protected String lang;
 
     @MetaProperty
-    private String message;
+    protected String message;
 
     @MetaProperty
-    private Boolean fakeProperty;
+    protected Boolean fakeProperty;
 
     public String getLang() {
         return lang;

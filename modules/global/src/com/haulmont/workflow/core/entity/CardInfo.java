@@ -53,23 +53,23 @@ public class CardInfo extends BaseUuidEntity implements SoftDelete {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @Column(name = "TYPE")
-    private Integer type;
+    protected Integer type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @Column(name = "JBPM_EXECUTION_ID", length = 255)
-    private String jbpmExecutionId;
+    protected String jbpmExecutionId;
 
     @Column(name = "ACTIVITY", length = 255)
-    private String activity;
+    protected String activity;
 
     @Column(name = "DESCRIPTION", length = 100000)
-    private String description;
+    protected String description;
 
     public String getDeletedBy() {
         return deletedBy;

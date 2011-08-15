@@ -24,10 +24,10 @@ public class ProcStageType extends StandardEntity {
     private static final long serialVersionUID = -4894528040675569985L;
 
     @Column(name = "CODE", length = 200)
-    private String code;
+    protected String code;
 
     @Column(name = "NAME", length = 200)
-    private String name;
+    protected String name;
 
     public String getCode() {
         return code;

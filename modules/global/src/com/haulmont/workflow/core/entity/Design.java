@@ -27,26 +27,26 @@ public class Design extends StandardEntity {
     private static final long serialVersionUID = 4822453489596189614L;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    protected String name;
 
     @Column(name = "SRC", length = 0)
-    private String src;
+    protected String src;
 
     @Column(name = "NOTIFICATION_MATRIX")
-    private byte[] notificationMatrix;
+    protected byte[] notificationMatrix;
 
     @Column(name = "NOTIFICATION_MATRIX_UPLOADED")
-    private Boolean notificationMatrixUploaded;
+    protected Boolean notificationMatrixUploaded;
 
     @Column(name = "LOCALIZATION")
-    private String localization;
+    protected String localization;
 
     @OneToMany(mappedBy = "design", fetch = FetchType.LAZY)
     @OnDelete(DeletePolicy.CASCADE)
-    private Set<DesignScript> scripts;
+    protected Set<DesignScript> scripts;
 
     @Column(name = "COMPILE_TS")
-    private Date compileTs;
+    protected Date compileTs;
 
     public String getName() {
         return name;

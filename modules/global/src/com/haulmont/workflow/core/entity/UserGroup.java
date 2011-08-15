@@ -23,13 +23,13 @@ import java.util.Set;
 public class UserGroup extends StandardEntity {
 
     @Column(name = "NAME")
-    private String name;
+    protected String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "WF_USER_GROUP_USER",
         joinColumns = @JoinColumn(name = "USER_GROUP_ID", referencedColumnName = "ID"),
         inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"))
-    private Set<User> users;
+    protected Set<User> users;
 
     public String getName() {
         return name;

@@ -23,14 +23,14 @@ public class DefaultProcActor extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ROLE_ID")
-    private ProcRole procRole;
+    protected ProcRole procRole;
 
     @Column(name = "NOTIFY_BY_EMAIL")
-    private Boolean notifyByEmail = true;
+    protected Boolean notifyByEmail = true;
 
     public User getUser() {
         return user;

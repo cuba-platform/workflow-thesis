@@ -10,36 +10,27 @@
  */
 package com.haulmont.workflow.web.ui.attachment
 
-import com.haulmont.cuba.gui.components.*
-import com.haulmont.cuba.gui.data.Datasource
-import com.haulmont.cuba.gui.ServiceLocator
-import com.haulmont.cuba.core.global.PersistenceHelper
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.cuba.core.global.FileStorageException
-import com.haulmont.cuba.core.app.FileStorageService
-import com.haulmont.cuba.core.entity.FileDescriptor
 import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.web.app.FileDownloadHelper
-import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
-import com.haulmont.cuba.gui.components.FileUploadField.Listener
-import org.apache.commons.lang.StringUtils
-import com.haulmont.workflow.core.entity.Attachment
-
-import com.haulmont.workflow.core.entity.AttachmentType
-import com.haulmont.cuba.core.global.MessageProvider
-
-import com.haulmont.cuba.gui.data.CollectionDatasource
-
-import com.haulmont.cuba.gui.UserSessionClient
-import java.text.NumberFormat
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
-import com.haulmont.workflow.core.entity.CardAttachment
-import java.text.DecimalFormat
-import com.haulmont.cuba.core.global.ConfigProvider
-import com.haulmont.workflow.core.global.WfConfig
-import com.haulmont.workflow.core.entity.Assignment
+import com.haulmont.cuba.core.entity.FileDescriptor
 import com.haulmont.cuba.core.sys.AppContext
+import com.haulmont.cuba.gui.UserSessionClient
+import com.haulmont.cuba.gui.components.FileUploadField.Listener
+import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.upload.FileUploadingAPI
+import com.haulmont.cuba.web.app.FileDownloadHelper
+import com.haulmont.workflow.core.entity.Assignment
+import com.haulmont.workflow.core.entity.Attachment
+import com.haulmont.workflow.core.entity.AttachmentType
+import com.haulmont.workflow.core.entity.CardAttachment
+import com.haulmont.workflow.core.global.WfConfig
+import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.gui.components.*
 
 public class AttachmentEditor extends AbstractEditor {
 
@@ -196,13 +187,9 @@ public class AttachmentEditor extends AbstractEditor {
     }
 
   protected void saveFile() {
-    FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME)
     FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
     try {
-        UUID fileId = uploadField.getFileId();
-        File file = fileUploading.getFile(fileId);
-        fss.putFile(fileDs.getItem(), file);
-        fileUploading.deleteFile(fileId);
+        fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
     } catch (FileStorageException e) {
       throw new RuntimeException(e)
     }

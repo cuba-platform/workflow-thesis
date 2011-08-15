@@ -23,26 +23,26 @@ import java.util.List;
 public class CardComment extends StandardEntity {
 
     @Column(name = "COMMENT", length = 100000)
-    private String comment;
+    protected String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User sender;
+    protected User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
-    private CardComment parent;
+    protected CardComment parent;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "WF_CARD_COMMENT_USER",
             joinColumns = @JoinColumn(name = "CARD_COMMENT_ID", referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"))
     @Aggregation
-    private List<User> addressees;
+    protected List<User> addressees;
 
     public String getComment() {
         return comment;

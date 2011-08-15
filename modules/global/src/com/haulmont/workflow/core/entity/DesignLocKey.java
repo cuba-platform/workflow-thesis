@@ -24,13 +24,13 @@ public class DesignLocKey extends AbstractNotPersistentEntity implements Compara
     private static final long serialVersionUID = -4717104012289213679L;
 
     @MetaProperty
-    private String key;
+    protected String key;
 
     @MetaProperty
-    private String caption;
+    protected String caption;
 
     @MetaProperty
-    private DesignLocKey parentKey;
+    protected DesignLocKey parentKey;
 
     public String getKey() {
         return key;

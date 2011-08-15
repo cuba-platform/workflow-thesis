@@ -35,11 +35,11 @@ public class CardRelation extends BaseUuidEntity implements SoftDelete, Updatabl
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
-    private Card card;
+    protected Card card;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "RELATED_CARD_ID")
-    private Card relatedCard;
+    protected Card relatedCard;
 
     public Date getUpdateTs() {
         return updateTs;

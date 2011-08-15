@@ -26,20 +26,20 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
     private static final long serialVersionUID = -7892781327440916914L;
 
     @Column(name = "NAME", length = 500)
-    private String name;
+    protected String name;
 
     @Column(name = "COMMENT", length = 1000)
-    private String comment;
+    protected String comment;
 
     //Localization code
     @Column(name = "CODE", length = 200)
-    private String code;
+    protected String code;
 
     @Column(name = "ISDEFAULT")
-    private Boolean isDefault = false;
+    protected Boolean isDefault = false;
 
     @Column(name = "ISSYSTEM")
-    private Boolean isSystem = false;
+    protected Boolean isSystem = false;
 
     public String getName() {
         return name;
