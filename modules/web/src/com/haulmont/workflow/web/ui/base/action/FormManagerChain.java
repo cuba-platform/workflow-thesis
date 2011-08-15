@@ -11,7 +11,8 @@
 package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.app.ResourceService;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +57,8 @@ public class FormManagerChain {
             cached.reset();
             return cached.clone();
         } else {
-            String xml = ScriptingProvider.getResourceAsString(resourceName);
+            ResourceService resourceService = ServiceLocator.lookup(ResourceService.NAME);
+            String xml = resourceService.getResourceAsString(resourceName);
             if (xml != null) {
                 Document doc = Dom4j.readDocument(xml);
                 Element root = doc.getRootElement();
