@@ -90,21 +90,19 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         return name == null ? DEF_JBPM_CFG_NAME : name;
     }
 
-    public Proc deployJpdlXml(String fileName, Proc proc) {
+    public Proc deployJpdlXml(String resourcePath, Proc proc) {
         RepositoryService rs = getProcessEngine().getRepositoryService();
 
         NewDeployment deployment = rs.createDeployment();
 
-        String resource = ScriptingProvider.getResourceAsString(fileName);
+        String resource = ScriptingProvider.getResourceAsString(resourcePath);
         if (resource == null)
-            throw new IllegalArgumentException("Resource not found: " + fileName);
+            throw new IllegalArgumentException("Resource not found: " + resourcePath);
 
-        deployment.addResourceFromString(fileName, resource);
-        deployment.setName(fileName.substring(fileName.lastIndexOf('/')));
+        deployment.addResourceFromString(resourcePath, resource);
+        deployment.setName(resourcePath.substring(resourcePath.lastIndexOf('/')));
         deployment.setTimestamp(TimeProvider.currentTimestamp().getTime());
         deployment.deploy();
-
-        String pName = StringUtils.substring(fileName, 0, fileName.indexOf(".jpdl.xml"));
 
         ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
         ProcessDefinition pd = pdq.uniqueResult();
@@ -129,16 +127,20 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         } else {
             proc.setJbpmProcessKey(pd.getKey());
         }
-        proc.setMessagesPack("process." + pName);
 
-            deployProcessStuff(pd.getDeploymentId(), proc);
+        String mp = StringUtils.substring(resourcePath, 0, resourcePath.lastIndexOf('/')).replace('/', '.');
+        if (mp.startsWith("."))
+            mp = mp.substring(1);
+        proc.setMessagesPack(mp);
+
+        deployProcessStuff(pd.getDeploymentId(), proc);
 
         log.info("Deployed: key=" + pd.getKey() + ", name=" + proc.getName() + ", id=" + proc.getId());
         return proc;
     }
 
-    public Proc deployJpdlXml(String fileName) {
-        return deployJpdlXml(fileName, null);
+    public Proc deployJpdlXml(String resourcePath) {
+        return deployJpdlXml(resourcePath, null);
     }
 
     public String deployProcess(String name) {
@@ -146,8 +148,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         try {
             login();
 
-            String fileName = "/process/" + name + "/" + name + ".jpdl.xml";
-            Proc proc = deployJpdlXml(fileName);
+            String resourcePath = "/process/" + name + "/" + name + ".jpdl.xml";
+            Proc proc = deployJpdlXml(resourcePath);
 
             tx.commit();
             return "Deployed process " + proc.getJbpmProcessKey();

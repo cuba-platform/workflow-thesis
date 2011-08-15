@@ -115,7 +115,7 @@ public class DesignDeployer {
         FileUtils.writeStringToFile(jpdlFile, Dom4j.writeDocument(document, true), "UTF-8");
 
         WfEngineAPI wfEngine = Locator.lookup(WfEngineAPI.NAME);
-        proc = wfEngine.deployJpdlXml(jpdlFile.getAbsolutePath(), proc);
+        proc = wfEngine.deployJpdlXml("/process/" + procKey + "/" + jpdlFile.getName(), proc);
 
         proc.setDesign(design);
         if (proc.getName().equals(proc.getJbpmProcessKey())) {

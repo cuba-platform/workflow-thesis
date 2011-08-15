@@ -27,9 +27,9 @@ public interface WfEngineAPI {
         void onProcessCancel(Card card);
     }
 
-    Proc deployJpdlXml(String fileName, Proc proc);
+    Proc deployJpdlXml(String resourcePath, Proc proc);
 
-    Proc deployJpdlXml(String fileName);
+    Proc deployJpdlXml(String resourcePath);
 
     ProcessEngine getProcessEngine();
 
