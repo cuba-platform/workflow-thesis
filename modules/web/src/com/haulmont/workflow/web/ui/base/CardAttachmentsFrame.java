@@ -38,6 +38,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
     protected Datasource<Card> cardDs;
     protected Table attachmentsTable;
     protected AttachmentCreator attachmentCreator;
+    protected boolean isStarted = false;
 
     public CardAttachmentsFrame(IFrame frame) {
         super(frame);
@@ -98,9 +99,10 @@ public class CardAttachmentsFrame extends AbstractFrame {
         attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (state == Datasource.State.VALID) {
+                if (state == Datasource.State.VALID && !isStarted) {
                     FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
                     AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+                    isStarted = true;
                 }
             }
         });
