@@ -1,0 +1,19 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.StartProcessButtonsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext/>
+
+    <layout expandLayout="true">
+         <vbox id="startButtonsPanel" height="100%" width="220px" spacing="true">
+             <label value="msg://startProc"/>
+        </vbox>
+     </layout>
+</window>
