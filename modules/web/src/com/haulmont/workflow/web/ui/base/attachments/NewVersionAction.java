@@ -72,6 +72,7 @@ public class NewVersionAction extends CreateAction {
         }
 
         attachmentsDs.updateItem(newVersion);
+        attachmentsDs.commit();
         owner.setSelected((Entity) null);
     }
 

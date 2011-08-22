@@ -172,6 +172,7 @@ public class AttachmentActionsHelper {
                             for (Attachment attach : items) {
                                 attachDs.addItem(attach);
                             }
+                            attachments.getDatasource().commit();
                             attachments.refresh();
                         }
                     }

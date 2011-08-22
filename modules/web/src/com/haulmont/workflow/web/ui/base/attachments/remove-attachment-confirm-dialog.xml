@@ -1,0 +1,17 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.attachments.RemoveAttachmentConfirmDialog"
+        messagesPack="com.haulmont.workflow.web.ui.base.attachments"
+        caption="msg://confirmation.caption"
+        >
+    <dsContext/>
+
+    <layout spacing="true">
+        <label value="msg://confirmation.question"/>
+        <optionsGroup id="options"/>
+        <hbox spacing="true" align="TOP_RIGHT">
+            <button action="ok" icon="icons/ok.png"/>
+            <button action="cancel" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>

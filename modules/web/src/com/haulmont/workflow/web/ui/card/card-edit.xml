@@ -12,8 +12,11 @@
                 class="com.haulmont.workflow.core.entity.Card"
                 view="edit">
             <collectionDatasource id="cardRolesDs" property="roles"/>
-            <hierarchicalDatasource id="attachmentsDs" property="attachments" hierarchyProperty="versionOf"/>
         </datasource>
+
+        <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment" view="card-edit" hierarchyProperty="versionOf">
+            <query>select a from wf$CardAttachment a where a.card.id = :ds$cardDs order by a.createTs desc</query>
+        </hierarchicalDatasource>
 
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local"/>
     </dsContext>
