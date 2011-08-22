@@ -25,6 +25,7 @@ import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.web.App
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl
 
 class UserGroupBrowser extends AbstractWindow{
   private Table userGroupsTable
@@ -43,7 +44,7 @@ class UserGroupBrowser extends AbstractWindow{
     userGroupsHelper.createEditAction(WindowManager.OpenType.DIALOG)
     userGroupsHelper.createRemoveAction()
 
-    CollectionDatasource userGroupsDs = getDsContext().get('userGroupsDs')
+    CollectionDatasourceImpl userGroupsDs = getDsContext().get('userGroupsDs')
     CollectionDatasource usersDs = getDsContext().get('usersDs')
 
     userGroupsDs.addListener([collectionChanged:{ ds, operation ->
@@ -62,6 +63,11 @@ class UserGroupBrowser extends AbstractWindow{
               [
                       handleLookup : {Collection<User> items ->
                         UserGroup userGroup = userGroupsDs.getItem()
+                        if (userGroup.users == null) {
+                          boolean modified = userGroupsDs.modified
+                          userGroup.users = new HashSet<UserGroup>();
+                          userGroupsDs.modified = modified
+                        }
                         items.each{user ->
                           userGroup.users << user
                         }
