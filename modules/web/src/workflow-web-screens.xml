@@ -25,6 +25,9 @@
     <screen id="wf$AttachmentType.edit"
             template="/com/haulmont/workflow/web/ui/attachmenttypes/type-edit.xml"/>
 
+    <screen id="wf$RemoveAttachmentConfirmDialog"
+            template="/com/haulmont/workflow/web/ui/base/attachments/remove-attachment-confirm-dialog.xml"/>
+
     <screen id="wf$Proc.browse"
             template="/com/haulmont/workflow/web/ui/proc/proc-browse.xml"/>
 
