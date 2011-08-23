@@ -26,6 +26,13 @@ Wf.Container = function(options, layer) {
     });
     this.form.updatedEvt.subscribe(this.onUpdateForm,this,true);
 
+    var nameField = this.form.getFieldByName('name');
+    
+    nameField.updatedEvt.subscribe(
+            Wf.OptionFieldsHelper.onNameChanged,
+            nameField, true);
+
+
 };
 
 YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
@@ -72,7 +79,10 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
    },
 
     onContainerFocus: function(eventName, containers) {
+
         var container = containers[0];
+        var nameField = container.form.getFieldByName('name');
+        nameField.prevValue = nameField.getValue();
         container.optionsInitialized=false;
         Wf.OptionFieldsHelper.showOptions(container);
     },
@@ -90,6 +100,13 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     getValue: function() {
         var value = Wf.Container.superclass.getValue.call(this);
         value.options = Wf.OptionFieldsHelper.getValue(this);
+         value.outputs = [];
+
+        var outputs = this.getOutputs();
+        for (var i = 0; i < outputs.length; i++) {
+            var out = outputs[i];
+            value.outputs.push({name: out.name});
+        }
         return value;
     },
 

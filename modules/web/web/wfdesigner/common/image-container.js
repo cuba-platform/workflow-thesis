@@ -119,11 +119,10 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
         value.options = Wf.OptionFieldsHelper.getValue(this);
         value.name=value.options['name'];
         value.outputs = [];
-
         var outputs = this.getOutputs();
         for (var i = 0; i < outputs.length; i++) {
             var out = outputs[i];
-            value.outputs.push({name: out.name, position: out.offsetPosition});
+            value.outputs.push({name: out.name});
         }
         return value;
     },

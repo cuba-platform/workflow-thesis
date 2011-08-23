@@ -146,6 +146,8 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
 		this.renderModulesAccordion();
         // Render module list
 	    this.buildModulesList();
+        //render errorMEssagesPanel
+        Wf.Editor.messagePanel = new YAHOO.widget.Panel("messagePanel", {width:"150px", visible:false, draggable:false, close:false, effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.35} } );
   	},
 
     renderButtons : function() {
@@ -335,7 +337,39 @@ Wf.OptionFieldsHelper.showOptions = function(container) {
         if (container.optionsValue) {
             container.optionsForm.setValue(container.optionsValue);
         }
+
+        var nameField = container.optionsForm.getFieldByName('name');
+        nameField.prevValue = nameField.getValue();
+        nameField.updatedEvt.subscribe(
+                Wf.OptionFieldsHelper.onNameChanged,
+                nameField, true);
+
     }
+};
+
+Wf.OptionFieldsHelper.onNameChanged = function(type, args, scope) {
+    var containers = Wf.editor.layer.containers;
+    var newName = args[0];
+    var pattern = /\S+/;
+    if (!pattern.test(args[0])) {
+        scope.setValue(scope.prevValue, false);
+        Wf.Editor.messagePanel.setBody(i18n.get('EmptyName'));
+        Wf.Editor.messagePanel.render("center");
+        Wf.Editor.messagePanel.show();
+        window.setTimeout(function(){Wf.Editor.messagePanel.hide()}, 3000);
+        return;
+    }
+    for (var i = 0; i < containers.length; i++) {
+        if (containers[i].optionsValue.name == newName) {
+            scope.setValue(scope.prevValue, false);
+            Wf.Editor.messagePanel.setBody(i18n.get('DuplicateName'));
+            Wf.Editor.messagePanel.render("center");
+            Wf.Editor.messagePanel.show();
+            window.setTimeout(function(){Wf.Editor.messagePanel.hide()}, 3000);
+            return;
+        }
+    }
+    scope.prevValue=args[0];
 };
 
 Wf.OptionFieldsHelper.hideOptions = function(container) {

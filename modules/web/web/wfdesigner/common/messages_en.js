@@ -98,5 +98,7 @@ var i18nDict = {
     "AlertMessage" : "Message",
     "ChooseName" : "Please choose a name",
     "SaveChanges" : "Warning!\nThe designer has unsaved changes.\nDo you want to leave the page and discard your changes?",
-    "TurnTheChromeFrame" : "Please, turn the ChromeFrame plugin \nand reopen browser"
+    "TurnTheChromeFrame" : "Please, turn the ChromeFrame plugin \nand reopen browser",
+    "DuplicateName" : "Duplicate module name",
+    "EmptyName" : "Empty module name"
 };

@@ -223,6 +223,15 @@ div.savedStatus {
 }
 
 /**
+ * MESSAGE PANEL
+ */
+#center div.yui-panel-container {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
+
+/**
  * RIGHT
  */
 

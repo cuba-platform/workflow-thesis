@@ -93,18 +93,22 @@ public class DesignCompiler {
 
             String jpdl = compileJpdl(modules, errors);
 
+            if (BooleanUtils.isFalse(checkEndReachable(jpdl))) {
+                errors.add(MessageProvider.getMessage(getClass(), "exception.unreachableEndOfTheProcess"));
+            }
+
             Collection<String> unusedModules = checkUnusedModules(jpdl, modules);
             if (unusedModules.size() > 0) {
                 StringBuilder modulesList = new StringBuilder();
                 for (String moduleName : unusedModules) {
-                    modulesList.append("<li>" + moduleName + "</li>");
+                    modulesList.append("<li>" + (moduleName == null ? MessageProvider.getMessage(getClass(), "unnamed") : moduleName) + "</li>");
                 }
                 warnings.add(MessageProvider.formatMessage(getClass(), "warning.unusedModules", modulesList.toString()));
             }
 
             String forms = compileForms(modules, errors);
 
-            if (errors.size() > 0 || warnings.size() > 0) {
+            if (errors.size() > 0) {
                 return new CompilationMessage(errors, warnings);
             }
 
@@ -132,13 +136,13 @@ public class DesignCompiler {
             tx.commit();
 
             log.info("Design " + designId + " succesfully compiled");
+            return new CompilationMessage(errors, warnings);
         } catch (JSONException e) {
             errors.add(e.getMessage());
             return new CompilationMessage(errors, warnings);
         } finally {
             tx.end();
         }
-        return new CompilationMessage(errors, warnings);
     }
 
     private List<String> checkRequiredModules(List<Module> modules) {
@@ -160,30 +164,79 @@ public class DesignCompiler {
         return errors;
     }
 
-    private List<String> checkUnusedModules(String jpdl, List<Module> modules) {
-        List<String> errors = new LinkedList<String>();
-        Document document;
-        Map<String, Element> modulesByName = new HashMap<String, Element>();
-        Map<String, String> modulesNames = new HashMap<String, String>();
-        for (Module module : modules) {
-            modulesNames.put(module.getName(), module.getCaption());
+    private Boolean checkEndReachable(String jpdl) {
+        Map<String, Element> modulesByName = getModulesByName(jpdl);
+        List<String> visitedModules = new ArrayList<String>();
+        List<String> visitingModules = new ArrayList<String>();
+        Element startEl = getStartElement(modulesByName.values());
+        if (startEl == null)
+            return null;
+        List<Element> transitions = startEl.elements("transition");
+        for (Element transition : transitions) {
+            String nextModuleName = transition.attributeValue("to");
+            if (visitNext(nextModuleName, modulesByName, visitedModules, visitingModules))
+                return true;
         }
+        return false;
+    }
+
+    private boolean visitNext(String moduleName, Map<String, Element> modulesByName, List<String> visitedModules, List<String> visitingModules) {
+        if (moduleName == null)
+            return false;
+        visitedModules.add(moduleName);
+        Element el = modulesByName.get(moduleName);
+        if ("end".equals(el.getName())) {
+            return true;
+        }
+        List<Element> transitions = el.elements("transition");
+        for (Element transition : transitions) {
+            String nextModuleName = transition.attributeValue("to");
+            if (!visitedModules.contains(nextModuleName) && !visitingModules.contains(nextModuleName)) {
+                if (visitNext(nextModuleName, modulesByName, visitedModules, visitingModules))
+                    return true;
+            }
+        }
+        visitedModules.add(moduleName);
+        return false;
+    }
+
+    private Map<String, Element> getModulesByName(String jpdl) {
+        Map<String, Element> modulesByName = new HashMap<String, Element>();
+        Document document;
         try {
             document = DocumentHelper.parseText(jpdl);
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
         List<Element> modulesEl = document.getRootElement().elements();
-        //Find start module
-        Element startElement = null;
         for (Element moduleEl : modulesEl) {
             String name = moduleEl.attributeValue("name");
             if (name != null)
                 modulesByName.put(name, moduleEl);
-            if ("start".equals(moduleEl.getName())) {
-                startElement = moduleEl;
+        }
+        return modulesByName;
+    }
+
+    private Element getStartElement(Collection<Element> elements) {
+        for (Element element : elements) {
+            if ("start".equals(element.getName())) {
+                return element;
             }
         }
+        return null;
+    }
+
+    private List<String> checkUnusedModules(String jpdl, List<Module> modules) {
+        List<String> errors = new LinkedList<String>();
+
+        Map<String, Element> modulesByName;
+        Map<String, String> modulesNames = new HashMap<String, String>();
+        for (Module module : modules) {
+            modulesNames.put(module.getName(), module.getCaption());
+        }
+
+        modulesByName = getModulesByName(jpdl);
+        Element startElement = getStartElement(modulesByName.values());
 
         if (startElement != null) {
             modulesNames.remove(startElement.attributeValue("name"));
