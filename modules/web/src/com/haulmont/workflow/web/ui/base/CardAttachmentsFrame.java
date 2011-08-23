@@ -138,7 +138,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         private Action afterPerformAction;
 
-        protected CommitCardAction(String id, Action afterPerformAction) {
+        public CommitCardAction(String id, Action afterPerformAction) {
             super(id);
             this.afterPerformAction = afterPerformAction;
         }
