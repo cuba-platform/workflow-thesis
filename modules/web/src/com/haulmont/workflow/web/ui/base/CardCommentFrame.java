@@ -64,10 +64,10 @@ public class CardCommentFrame extends AbstractWindow {
             card = ServiceLocator.getDataService().load(ctx);
         }
         commentDs = getDsContext().get("commentDs");
-        buttonCreate = (com.haulmont.cuba.gui.components.Button)getComponent("add");
-        treeComment = (WidgetsTree)getComponent("treeComment");
+        buttonCreate = (com.haulmont.cuba.gui.components.Button) getComponent("add");
+        treeComment = (WidgetsTree) getComponent("treeComment");
         commentDs.refresh();
-        commentDs.addListener(new CollectionDsListenerAdapter(){
+        commentDs.addListener(new CollectionDsListenerAdapter() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
                 treeComment.expandTree();
@@ -75,7 +75,7 @@ public class CardCommentFrame extends AbstractWindow {
         });
         treeComment.expandTree();
         treeComment.setWidgetBuilder(new WebWidgetsTree.WidgetBuilder() {
-            public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf){
+            public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf) {
                 final CardComment cardComment = (CardComment) commentDs.getItem(itemId);
                 WebVBoxLayout vLayout = new WebVBoxLayout();
                 WebHBoxLayout hLayoutFrom = new WebHBoxLayout();
@@ -84,7 +84,7 @@ public class CardCommentFrame extends AbstractWindow {
                 final WebButton buttonFrom = new WebButton();
                 buttonFrom.setCaption(getUserNameLogin(cardComment.getSender()));
                 buttonFrom.setStyleName("link");
-                com.vaadin.ui.Button vButtonFrom = (com.vaadin.ui.Button)WebComponentsHelper.unwrap(buttonFrom);
+                com.vaadin.ui.Button vButtonFrom = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(buttonFrom);
                 vButtonFrom.addListener(new com.vaadin.ui.Button.ClickListener() {
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                         openUser(cardComment.getSender(), buttonFrom);
@@ -97,7 +97,7 @@ public class CardCommentFrame extends AbstractWindow {
                 hLayoutFrom.add(buttonFrom);
                 hLayoutFrom.add(dateValueLabel);
                 hLayoutFrom.setSpacing(true);
- 	            ((com.vaadin.ui.Component)WebComponentsHelper.unwrap(hLayoutFrom)).addStyleName("minsize");
+                ((com.vaadin.ui.Component) WebComponentsHelper.unwrap(hLayoutFrom)).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutTo = new WebHBoxLayout();
                 WebLabel labelTo = new WebLabel();
@@ -119,7 +119,7 @@ public class CardCommentFrame extends AbstractWindow {
                     }
                 }
                 hLayoutTo.setSpacing(true);
-                ((com.vaadin.ui.Component)WebComponentsHelper.unwrap(hLayoutTo)).addStyleName("minsize");
+                ((com.vaadin.ui.Component) WebComponentsHelper.unwrap(hLayoutTo)).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
                 WebTextField labelComment = new WebTextField();
@@ -133,7 +133,7 @@ public class CardCommentFrame extends AbstractWindow {
                             Map paramsCard = new HashMap();
                             paramsCard.put("item", card);
                             paramsCard.put("parent", cardComment);
-                            Window window = openWindow(card.getMetaClass().getName()+".send", WindowManager.OpenType.DIALOG, paramsCard);
+                            Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
                             window.addListener(new CloseListener() {
                                 public void windowClosed(String actionId) {
                                     commentDs.refresh();
@@ -154,19 +154,18 @@ public class CardCommentFrame extends AbstractWindow {
                 hLayoutComment.setSpacing(true);
                 hLayoutComment.setWidth("100%");
                 labelComment.setWidth("100%");
-                hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment),1.0f);
+                hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment), 1.0f);
 
                 String descr = cardComment.getComment();
                 String[] parts = descr.split("\n");
                 String preview = "<span>";
                 boolean isCroped = (parts.length > maxHeightDigit ? true : false);
-                for (int i=0; i<Math.min(parts.length, maxHeightDigit); i++) {
+                for (int i = 0; i < Math.min(parts.length, maxHeightDigit); i++) {
                     String part = parts[i];
                     if (part.length() > maxWidthDigit) {
                         preview += part.substring(0, maxWidthDigit) + "...</br>";
                         isCroped = true;
-                    }
-                    else
+                    } else
                         preview += part + "</br>";
                 }
                 preview += "</span>";
@@ -201,13 +200,11 @@ public class CardCommentFrame extends AbstractWindow {
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
-                                                boolean isCommited = true;
-                                                if (getFrame() instanceof WebWindow.Editor)
-                                                    isCommited = ((AbstractEditor)((WebWindow.Editor) getFrame()).getWrapper()).commit(true);
-                                                else
-                                                    getFrame().getDsContext().commit();
-                                                if (isCommited)
+                                                if (getFrame() instanceof WebWindow.Editor && ((WebWindow.Editor) getFrame()).commit(true)) {
+                                                    card = (Card) ((WebWindow.Editor) getFrame()).getItem();
                                                     openCardSend(card);
+                                                }
+
                                             }
                                         },
                                         new DialogAction(DialogAction.Type.NO)

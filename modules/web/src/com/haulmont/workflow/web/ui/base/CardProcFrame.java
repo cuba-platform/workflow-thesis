@@ -230,6 +230,8 @@ public class CardProcFrame extends AbstractFrame {
 
         final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
+            card = (Card) ((Window.Editor) window).getItem();
+
             // starting
             try {
                 final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, WfConstants.ACTION_START);
