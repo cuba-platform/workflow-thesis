@@ -203,6 +203,7 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     public void startProcess(final CardProc cp) {
+        refreshCard();
         final Proc prevProc = card.getProc();
         DataService ds = getDsContext().getDataService();
         final Proc proc = ds.reload(cp.getProc(), "start-process");
@@ -230,7 +231,7 @@ public class CardProcFrame extends AbstractFrame {
 
         final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
-            card = (Card) ((Window.Editor) window).getItem();
+            refreshCard();
 
             // starting
             try {
@@ -419,5 +420,9 @@ public class CardProcFrame extends AbstractFrame {
 
     public CardRolesFrame getCardRolesFrame() {
         return cardRolesFrame;
+    }
+
+    private void refreshCard() {
+        card = (Card) getDsContext().get("cardDs").getItem();
     }
 }

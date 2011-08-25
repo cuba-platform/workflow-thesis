@@ -97,7 +97,7 @@ public class CardCommentFrame extends AbstractWindow {
                 hLayoutFrom.add(buttonFrom);
                 hLayoutFrom.add(dateValueLabel);
                 hLayoutFrom.setSpacing(true);
-                ((com.vaadin.ui.Component) WebComponentsHelper.unwrap(hLayoutFrom)).addStyleName("minsize");
+                WebComponentsHelper.unwrap(hLayoutFrom).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutTo = new WebHBoxLayout();
                 WebLabel labelTo = new WebLabel();
@@ -119,7 +119,7 @@ public class CardCommentFrame extends AbstractWindow {
                     }
                 }
                 hLayoutTo.setSpacing(true);
-                ((com.vaadin.ui.Component) WebComponentsHelper.unwrap(hLayoutTo)).addStyleName("minsize");
+                WebComponentsHelper.unwrap(hLayoutTo).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
                 WebTextField labelComment = new WebTextField();
@@ -190,6 +190,7 @@ public class CardCommentFrame extends AbstractWindow {
 
         buttonCreate.setAction(new AbstractAction("add") {
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                refreshCard();
                 if (card != null) {
                     if (PersistenceHelper.isNew(card) || (justCreated != null)) {
                         showOptionDialog(
@@ -201,7 +202,7 @@ public class CardCommentFrame extends AbstractWindow {
                                             @Override
                                             public void actionPerform(Component component) {
                                                 if (getFrame() instanceof WebWindow.Editor && ((WebWindow.Editor) getFrame()).commit(true)) {
-                                                    card = (Card) ((WebWindow.Editor) getFrame()).getItem();
+                                                    refreshCard();
                                                     openCardSend(card);
                                                 }
 
@@ -259,5 +260,9 @@ public class CardCommentFrame extends AbstractWindow {
                 }
             }
         });
+    }
+
+    private void refreshCard() {
+        card = (Card) getDsContext().get("cardDs").getItem();
     }
 }
