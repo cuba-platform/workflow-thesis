@@ -787,7 +787,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void fillMissingRoles() {
-        Set<String> requiredRolesCodes = getRequiredRolesCodes(cardRolesDs.getItemIds().size() == 0);
+        Set<String> requiredRolesCodes = getRequiredRolesCodes(true/*cardRolesDs.getItemIds().size() == 0*/);
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
             requiredRolesCodes.remove(cardRole.getCode());
