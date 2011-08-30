@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.MailService;
 import com.haulmont.workflow.core.entity.*;
@@ -109,6 +110,7 @@ public class CardSend extends AbstractWindow {
                     return;
                 if (createAnyUserCaption.equals(value)) {
                     Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("multiSelect", "true");
+                    App.getInstance().getWindowManager().getDialogParams().setWidth(750);
                     openLookup("sec$User.lookup", new Lookup.Handler() {
                         public void handleLookup(Collection items) {
                             for (Object item : items) {
