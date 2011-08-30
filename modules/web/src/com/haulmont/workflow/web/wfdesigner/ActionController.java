@@ -12,10 +12,11 @@ package com.haulmont.workflow.web.wfdesigner;
 
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import org.apache.commons.io.IOUtils;
@@ -68,7 +69,7 @@ public class ActionController {
                     out.println("{\"error\": null}");
                     out.close();
                 } finally {
-                    WebSecurityUtils.clearSecurityAssociation();
+                    AppContext.setSecurityContext(null);
                 }
             }
             return null;
@@ -115,7 +116,7 @@ public class ActionController {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
                     }
                 } finally {
-                    WebSecurityUtils.clearSecurityAssociation();
+                    AppContext.setSecurityContext(null);
                 }
             }
             return null;
@@ -154,7 +155,7 @@ public class ActionController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
-        WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+        AppContext.setSecurityContext(new SecurityContext(userSession));
         return true;
     }
 

@@ -17,12 +17,9 @@ import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.*;
-import com.haulmont.workflow.core.timer.TimerActionContext;
 import groovy.lang.Binding;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,69 +34,60 @@ import java.util.*;
 public class ProcStageManager extends ManagementBean implements ProcStageManagerMBean {
     private Log log = LogFactory.getLog(ProcStageManager.class);
 
-    private SecurityContext securityContext;
+    @Inject
     private ClusterManagerAPI clusterManager;
 
-    EmailerAPI emailer;
-
     @Inject
-    public void setClusterManager(ClusterManagerAPI clusterManager) {
-        this.clusterManager = clusterManager;
-    }
+    private EmailerAPI emailer;
 
     public void processOverdueStages() {
-        if (!AppContext.isStarted())
-            return;
-
-        if (!clusterManager.isMaster())
+        if (!AppContext.isStarted() || !clusterManager.isMaster())
             return;
 
         log.info("Notifying about overdue stages");
         try {
-            if (securityContext != null)
-                ServerSecurityUtils.setSecurityAssociation(securityContext.getUser(), securityContext.getSessionId());
             login();
-            securityContext = ServerSecurityUtils.getSecurityAssociation();
+
+            Transaction tx = Locator.getTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                Query query = em.createQuery("select cs from wf$CardStage cs left join cs.procStage ps left join fetch ps.procRoles where cs.endDateFact is null " +
+                        "and cs.endDatePlan < :currentTime and cs.notified <> true");
+                Date currentTime = TimeProvider.currentTimestamp();
+                query.setParameter("currentTime", currentTime);
+
+                List<CardStage> list = query.getResultList();
+                if (list != null) {
+                    for (CardStage cardStage : list) {
+                        Set<User> addressees = new HashSet<User>();
+                        List<ProcRole> procRoles = cardStage.getProcStage().getProcRoles();
+                        if (!CollectionUtils.isEmpty(procRoles)) {
+                            for (ProcRole procRole : procRoles) {
+                                List<User> users = getUsersInProcRole(cardStage.getCard(), procRole);
+                                addressees.addAll(users);
+                            }
+                        }
+                        if (cardStage.getProcStage().getNotifyCurrentActor()) {
+                            Query assignmentQuery = em.createQuery("select u from wf$Assignment a join a.user u where a.card.id = :card and a.finished is null");
+                            assignmentQuery.setParameter("card", cardStage.getCard());
+                            List<User> assignmentUsers = assignmentQuery.getResultList();
+                            addressees.addAll(assignmentUsers);
+                        }
+                        for (User user : addressees) {
+                            createNotifications(cardStage, user);
+                        }
+
+                        cardStage.setNotified(true);
+                    }
+                }
+                tx.commit();
+            } finally {
+                tx.end();
+            }
         } catch (LoginException e) {
             throw new RuntimeException(e);
-        }
-
-        Transaction tx = Locator.getTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("select cs from wf$CardStage cs left join cs.procStage ps left join fetch ps.procRoles where cs.endDateFact is null " +
-                    "and cs.endDatePlan < :currentTime and cs.notified <> true");
-            Date currentTime = TimeProvider.currentTimestamp();
-            query.setParameter("currentTime", currentTime);
-
-            List<CardStage> list = query.getResultList();
-            if (list != null) {
-                emailer = Locator.lookup(EmailerAPI.NAME);
-                for (CardStage cardStage : list) {
-                    Set<User> addressees = new HashSet<User>();
-                    List<ProcRole> procRoles = cardStage.getProcStage().getProcRoles();
-                    if (!CollectionUtils.isEmpty(procRoles)) {
-                        for (ProcRole procRole : procRoles) {
-                            List<User> users = getUsersInProcRole(cardStage.getCard(), procRole);
-                            addressees.addAll(users);
-                        }
-                    }
-                    if (cardStage.getProcStage().getNotifyCurrentActor()) {
-                        Query assignmentQuery = em.createQuery("select u from wf$Assignment a join a.user u where a.card.id = :card and a.finished is null");
-                        assignmentQuery.setParameter("card", cardStage.getCard());
-                        List<User> assignmentUsers = assignmentQuery.getResultList();
-                        addressees.addAll(assignmentUsers);
-                    }
-                    for (User user : addressees) {
-                        createNotifications(cardStage, user);
-                    }
-
-                    cardStage.setNotified(true);
-                }
-            }
-            tx.commit();
         } finally {
-            tx.end();
+            logout();
         }
     }
 
@@ -169,6 +157,4 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
         }
         return list;
     }
-
-
 }

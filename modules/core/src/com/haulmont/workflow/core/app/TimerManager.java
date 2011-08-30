@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -46,16 +45,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 @ManagedBean(TimerManagerAPI.NAME)
 public class TimerManager extends ManagementBean implements TimerManagerAPI, TimerManagerMBean {
 
-    private SecurityContext securityContext;
-
     private Log log = LogFactory.getLog(TimerManager.class);
 
-    private ClusterManagerAPI clusterManager;
-
     @Inject
-    public void setClusterManager(ClusterManagerAPI clusterManager) {
-        this.clusterManager = clusterManager;
-    }
+    private ClusterManagerAPI clusterManager;
 
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
                          Class<? extends TimerAction> taskClass, Map<String, String> taskParams) {
@@ -117,58 +110,54 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
     }
 
     public void processTimers() {
-        if (!AppContext.isStarted())
-            return;
-
-        if (!clusterManager.isMaster())
+        if (!AppContext.isStarted() || !clusterManager.isMaster())
             return;
 
         log.info("Processing timers");
         try {
-            if (securityContext != null)
-                ServerSecurityUtils.setSecurityAssociation(securityContext.getUser(), securityContext.getSessionId());
             login();
-            securityContext = ServerSecurityUtils.getSecurityAssociation();
+
+            List<TimerEntity> timers;
+
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                Query q = em.createQuery("select t from wf$Timer t where t.dueDate <= ?1 order by t.dueDate desc");
+                q.setParameter(1, TimeProvider.currentTimestamp());
+                timers = q.getResultList();
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+
+            for (TimerEntity timer : timers) {
+                try {
+                    Class<? extends TimerAction> taskClass = ScriptingProvider.loadClass(timer.getActionClass());
+                    TimerAction action = taskClass.newInstance();
+
+                    tx = Locator.createTransaction();
+                    try {
+                        EntityManager em = PersistenceProvider.getEntityManager();
+                        TimerEntity t = em.find(TimerEntity.class, timer.getId());
+
+                        TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
+                                t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
+                        action.execute(context);
+
+                        em.remove(t);
+
+                        tx.commit();
+                    } finally {
+                        tx.end();
+                    }
+                } catch (Throwable e) {
+                    log.error("Error firing timer " + timer, e);
+                }
+            }
         } catch (LoginException e) {
             throw new RuntimeException(e);
-        }
-
-        List<TimerEntity> timers;
-
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select t from wf$Timer t where t.dueDate <= ?1 order by t.dueDate desc");
-            q.setParameter(1, TimeProvider.currentTimestamp());
-            timers = q.getResultList();
-            tx.commit();
         } finally {
-            tx.end();
-        }
-
-        for (TimerEntity timer : timers) {
-            try {
-                Class<? extends TimerAction> taskClass = ScriptingProvider.loadClass(timer.getActionClass());
-                TimerAction action = taskClass.newInstance();
-
-                tx = Locator.createTransaction();
-                try {
-                    EntityManager em = PersistenceProvider.getEntityManager();
-                    TimerEntity t = em.find(TimerEntity.class, timer.getId());
-
-                    TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
-                            t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
-                    action.execute(context);
-
-                    em.remove(t);
-
-                    tx.commit();
-                } finally {
-                    tx.end();
-                }
-            } catch (Throwable e) {
-                log.error("Error firing timer " + timer, e);
-            }
+            logout();
         }
     }
 
