@@ -20,9 +20,17 @@ import com.haulmont.cuba.gui.components.IFrame
 class DefaultProcActorEditor extends AbstractEditor{
 
   CollectionDatasource usersDs = getDsContext().get("usersDs")
+  List<UUID> userIds;
 
   public DefaultProcActorEditor(IFrame frame) {
     super(frame)
+  }
+
+  protected void init(Map<String, Object> params) {
+    super.init(params);
+    userIds = params.get("userIds");
+    if (userIds == null)
+      userIds = new ArrayList<UUID>();
   }
 
   public void setItem(Entity item) {
@@ -30,11 +38,11 @@ class DefaultProcActorEditor extends AbstractEditor{
     DefaultProcActor dpa = (DefaultProcActor)getItem()
     Role secRole = dpa.procRole.role
     if (secRole) {
-      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole order by u.name')
+      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole and u.id not in (:custom$userIds) order by u.name')
     } else {
-      usersDs.setQuery('select u from sec$User u order by u.name')
+      usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) order by u.name')
     }
-    usersDs.refresh(['secRole': secRole])
+    usersDs.refresh(['secRole': secRole, 'userIds':userIds])
   }
 
 

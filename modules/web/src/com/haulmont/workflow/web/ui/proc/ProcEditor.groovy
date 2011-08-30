@@ -28,7 +28,8 @@ import com.haulmont.cuba.gui.ServiceLocator
 
 import com.haulmont.cuba.gui.data.DataService
 
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.security.entity.User;
 
 public class ProcEditor extends AbstractEditor {
 
@@ -78,7 +79,15 @@ public class ProcEditor extends AbstractEditor {
     TableActionsHelper dpaHelper = new TableActionsHelper(this, dpaTable)
     def createDpaAction = dpaHelper.createCreateAction(
             [
-                    getParameters: { null },
+                    getParameters: {
+                      List<UUID> userIds = new LinkedList<UUID> ();
+                      for (UUID uuid : dpaDs.getItemIds()) {
+                        DefaultProcActor dpa = dpaDs.getItem(uuid);
+                        User user = dpa.getUser();
+                        if (user)
+                          userIds.add(user.getId());
+                      }
+                      return Collections.singletonMap("userIds", userIds)},
                     getValues: {
                       Map<String, Object> values = new HashMap<String, Object>()
                       values.put("procRole", rolesDs.getItem())
