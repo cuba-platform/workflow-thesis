@@ -12,7 +12,7 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -22,14 +22,16 @@ import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import java.util.*;
-import java.util.List;
 
-// Create copy/paste buttons actions for attachments table
+/**
+ * Create copy/paste buttons actions for attachments table
+ */
 public class AttachmentActionsHelper {
+
     private AttachmentActionsHelper() {
     }
 
-    /* Create copy attachment action for table
+    /** Create copy attachment action for table
      * @param attachmentsTable Table with attachments
      * @return Action
      */
@@ -40,9 +42,8 @@ public class AttachmentActionsHelper {
                 Set descriptors = attachments.getSelected();
                 if (descriptors.size() > 0) {
                     ArrayList<Attachment> selected = new ArrayList<Attachment>();
-                    Iterator iter = descriptors.iterator();
-                    while (iter.hasNext()) {
-                        selected.add((Attachment) iter.next());
+                    for (Object descriptor : descriptors) {
+                        selected.add((Attachment) descriptor);
                     }
                     AttachmentCopyHelper.put(selected);
                     String info;
@@ -56,7 +57,7 @@ public class AttachmentActionsHelper {
         };
     }
 
-    /* Create paste attachment action for table
+    /** Create paste attachment action for table
      * @param attachmentsTable Table with attachments
      * @param creator Custom method for set object properties
      * @return Action
@@ -65,7 +66,7 @@ public class AttachmentActionsHelper {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
-        final UserSession userSession = UserSessionClient.getUserSession();
+        final UserSession userSession = UserSessionProvider.getUserSession();
         return new AbstractAction("actions.Paste") {
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
@@ -80,17 +81,19 @@ public class AttachmentActionsHelper {
 
                         FileDescriptor fd = attach.getFile();
                         if (fd != null) {
+                            CollectionDatasource attachDs = attachments.getDatasource();
+
                             UUID fileUid = fd.getUuid();
-                            Object[] ids = attachments.getDatasource().getItemIds().toArray();
+                            Object[] ids = attachDs.getItemIds().toArray();
                             boolean find = false;
                             int i = 0;
                             while ((i < ids.length) && !find) {
-                                Attachment obj = (Attachment) attachments.getDatasource().getItem(ids[i]);
+                                Attachment obj = (Attachment) attachDs.getItem(ids[i]);
                                 find = obj.getFile().getUuid() == fileUid;
                                 i++;
                             }
                             if (!find) {
-                                attachments.getDatasource().addItem(attachment);
+                                attachDs.addItem(attachment);
                                 attachments.refresh();
                             }
                         }
@@ -108,8 +111,8 @@ public class AttachmentActionsHelper {
         };
     }
 
-    /* Create load attachment context menu for attaghments table
-     * @param attachments Table with attachments
+    /** Create load attachment context menu for attaghments table
+     * @param attachmentsTable Table with attachments
      * @param window Window
      * @return Action
      */
@@ -133,6 +136,7 @@ public class AttachmentActionsHelper {
      * @param attachmentsTable Table with attachments
      * @param window Window
      * @param creator Custom method for set object properties
+     * @return Multifile upload action
      */
     public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator){
         return  createMultiUploadAction(attachmentsTable,window,creator,WindowManager.OpenType.THIS_TAB);
@@ -144,6 +148,8 @@ public class AttachmentActionsHelper {
      * @param window Window
      * @param creator Custom method for set object properties
      * @param openType Window open type
+     * @param params Dialog params
+     * @return Multifile upload action
      */
     public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
                                                  final WindowManager.OpenType openType, final Map<String, Object> params){
@@ -151,7 +157,7 @@ public class AttachmentActionsHelper {
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
         final AttachmentCreator fCreator = creator;
-        final UserSession userSession = UserSessionClient.getUserSession();
+        final UserSession userSession = UserSessionProvider.getUserSession();
 
         return new AbstractAction("actions.MultiUpload") {
             public void actionPerform(Component component) {
