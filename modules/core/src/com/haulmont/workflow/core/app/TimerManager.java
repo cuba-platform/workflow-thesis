@@ -113,7 +113,7 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
         if (!AppContext.isStarted() || !clusterManager.isMaster())
             return;
 
-        log.info("Processing timers");
+        log.debug("Processing timers");
         try {
             login();
 
