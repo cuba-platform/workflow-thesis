@@ -33,6 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import javax.annotation.ManagedBean;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -270,12 +271,11 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         if (matrix != null)
             return;
 
-        String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
-        File file = new File(confDir + "/" + processPath.replace('.', '/') + "/" + "notification.xls");
-        if (!file.exists())
+        InputStream fis = ScriptingProvider.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
+        if (fis == null)
             return;
 
-        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(new FileInputStream(file));
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(fis);
 
         Map<String, String> rolesMap = readRoles(hssfWorkbook);
         Map<String, String> statesMap = readStates(hssfWorkbook);
@@ -560,8 +560,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             if (script != null) {
                 //Old mechanism to run Groovy scripts for create message
                 try {
+                    String scriptStr = ScriptingProvider.getResourceAsString(script);
                     Binding binding = new Binding(parameters);
-                    ScriptingProvider.runGroovyScript(script, binding);
+                    ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, scriptStr, binding);
                     message.setSubject(binding.getVariable("subject").toString());
                     message.setBody(binding.getVariable("body").toString());
                 } catch (Exception e) {
