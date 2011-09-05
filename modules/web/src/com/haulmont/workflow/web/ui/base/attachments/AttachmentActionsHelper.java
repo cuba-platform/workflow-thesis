@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -178,7 +179,10 @@ public class AttachmentActionsHelper {
                             for (Attachment attach : items) {
                                 attachDs.addItem(attach);
                             }
-                            attachments.getDatasource().commit();
+                            CollectionDatasource datasource = attachments.getDatasource();
+                            if (!(datasource instanceof PropertyDatasource)) {
+                                datasource.commit();
+                            }
                             attachments.refresh();
                         }
                     }
