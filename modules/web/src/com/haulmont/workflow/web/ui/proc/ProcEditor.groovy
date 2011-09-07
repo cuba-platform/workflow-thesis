@@ -96,7 +96,20 @@ public class ProcEditor extends AbstractEditor {
             ] as ValueProvider,
             OpenType.DIALOG)
     dpaActions.add(createDpaAction)
-    dpaActions.add(dpaHelper.createEditAction(OpenType.DIALOG))
+    dpaActions.add(dpaHelper.createEditAction(OpenType.DIALOG, [
+                    getParameters: {
+                      List<UUID> userIds = new LinkedList<UUID> ();
+                      for (UUID uuid : dpaDs.getItemIds()) {
+                        DefaultProcActor dpa = dpaDs.getItem(uuid);
+                        User user = dpa.getUser();
+                        if (user && !dpa.equals(dpaDs.getItem()))
+                          userIds.add(user.getId());
+                      }
+                      return Collections.singletonMap("userIds", userIds)},
+                    getValues: {
+                      null
+                    }
+            ] as ValueProvider))
     dpaActions.add(dpaHelper.createRemoveAction(false))
 
     dpaActions.each {
