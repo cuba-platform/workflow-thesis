@@ -81,6 +81,8 @@ public class ActionsFrame extends AbstractFrame {
 
         List<String> visibleActions = (accessData == null) ? null : accessData.getVisibleActions(card);
 
+        List<String> enabledActions = (accessData == null) ? null : accessData.getEnabledActions(card);
+
         if (visibleActions != null)
             actions.retainAll(visibleActions);
         for (int i = 0; i < buttons.size(); i++) {
@@ -91,6 +93,9 @@ public class ActionsFrame extends AbstractFrame {
                 if (btn instanceof Button) {
                     ((Button) btn).setAction(new ProcessAction(card, actionName, this));
                 }
+
+                if (!enabledActions.contains(actionName))
+                    btn.setEnabled(false);
 
                 FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
                 String style = (String) managerChain.getCommonParams().get("style");

@@ -74,4 +74,8 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         }
         return visibleActions;
     };
+
+    public List<String> getEnabledActions(Card card) {
+        return getVisibleActions(card);
+    }
 }
