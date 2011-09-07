@@ -981,6 +981,9 @@ public class CardRolesFrame extends AbstractFrame {
                     Property eventProperty = event.getProperty();
                     User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
                     cardRole.setUser(selectedUser);
+                    CardRole cr = ((CardRole) tmpCardRolesDs.getItem(cardRole.getId()));
+                    if (cr != null)
+                        cr.setUser(selectedUser);
                     refreshFieldsWithRole(cardRole);
                 }
             });
