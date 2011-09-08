@@ -29,12 +29,12 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.jbpm.api.*;
+import org.jbpm.api.Configuration;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,6 +54,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     private final String PARALLEL_ASSIGMENT_CLASS = "com.haulmont.workflow.core.activity.ParallelAssigner";
     private final String SEQUENTIAL_ASSIGNER_CLASS = "com.haulmont.workflow.core.activity.SequentialAssigner";
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {
@@ -80,8 +83,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     @Inject
-    public void setConfigProvider(ConfigProvider configProvider) {
-        if (configProvider.doGetConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
+    public void setConfigProvider(com.haulmont.cuba.core.global.Configuration configuration) {
+        if (configuration.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
             System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getGroovyClassLoader");
     }
 
@@ -442,7 +445,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
             assignment.setFinished(TimeProvider.currentTimestamp());
-            assignment.setFinishedByUser(SecurityProvider.currentUserSession().getUser());
+            assignment.setFinishedByUser(userSessionSource.getUserSession().getUser());
             assignment.setOutcome(outcome);
             assignment.setComment(comment);
 

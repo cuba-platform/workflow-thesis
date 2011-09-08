@@ -11,19 +11,20 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.workflow.core.WfHelper;
-import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardInfo;
+import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.AssignmentInfo;
-import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jbpm.api.ExecutionService;
 import org.jbpm.api.ProcessDefinition;
 import org.jbpm.api.ProcessDefinitionQuery;
 import org.jbpm.api.ProcessInstance;
@@ -41,6 +42,9 @@ public class WfServiceBean implements WfService {
     @Inject
     private WfEngineAPI wfEngine;
 
+    @Inject
+    private UserSessionSource userSessionSource;
+
     private Log log = LogFactory.getLog(WfServiceBean.class);
 
     public AssignmentInfo getAssignmentInfo(Card card) {
@@ -50,7 +54,7 @@ public class WfServiceBean implements WfService {
             String processId = card.getJbpmProcessId();
             if (processId != null) {
                 List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(
-                        SecurityProvider.currentOrSubstitutedUserId(), card);
+                        userSessionSource.currentOrSubstitutedUserId(), card);
                 if (!assignments.isEmpty()) {
                     Assignment assignment = assignments.get(0);
                     info = new AssignmentInfo(assignment);
@@ -141,7 +145,7 @@ public class WfServiceBean implements WfService {
     }
 
     public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
-        User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         return isUserInProcRole(card, currentUser, procRoleCode);
     }
     
@@ -224,7 +228,7 @@ public class WfServiceBean implements WfService {
         if (role == null)
             return true;
         boolean isRoleContains = false;
-        User user = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
 
         Transaction tx = Locator.createTransaction();
         try {

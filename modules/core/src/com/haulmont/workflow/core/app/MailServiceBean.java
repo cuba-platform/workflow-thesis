@@ -14,15 +14,16 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
 import groovy.lang.Binding;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.haulmont.cuba.core.SecurityProvider;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ import java.util.List;
 public class MailServiceBean implements MailService  {
 
     protected Log log = LogFactory.getLog(MailServiceBean.class);
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     public void sendCardMail(Card card, String comment, List<User> users, String script) {
         String subject;
@@ -48,7 +52,7 @@ public class MailServiceBean implements MailService  {
                     Binding binding = new Binding();
                     binding.setVariable("card", card);
                     binding.setVariable("comment", comment);
-                    binding.setVariable("user", SecurityProvider.currentUserSession().getUser());
+                    binding.setVariable("user", userSessionSource.getUserSession().getUser());
                     binding.setVariable("users", users);
                     binding.setVariable("currentUser", user);
                     ScriptingProvider.runGroovyScript(script, binding);

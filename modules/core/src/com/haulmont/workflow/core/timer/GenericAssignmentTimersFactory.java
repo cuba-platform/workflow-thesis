@@ -3,9 +3,9 @@ package com.haulmont.workflow.core.timer;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import org.apache.commons.lang.StringUtils;
@@ -82,7 +82,7 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
                 "and ci.user.id = ?3");
         query.setParameter(1, execution.getId());
         query.setParameter(2, execution.getActivityName());
-        query.setParameter(3, SecurityProvider.currentOrSubstitutedUserId());
+        query.setParameter(3, UserSessionProvider.currentOrSubstitutedUserId());
         query.executeUpdate();
     }
 }

@@ -31,6 +31,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -49,6 +50,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     static final String ACTIONS_SHEET = "Actions";
 
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
     private Map<String, Map<NotificationType, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<NotificationType, NotificationMessageBuilder>>();
@@ -376,7 +380,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
         Transaction tx = Locator.getTransaction();
         try {
-            User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+            User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
 
@@ -408,7 +412,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
         Transaction tx = Locator.getTransaction();
         try {
-            User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+            User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
             List<String> excludeRoleCodes = new ArrayList<String>();
@@ -562,7 +566,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 try {
                     String scriptStr = ScriptingProvider.getResourceAsString(script);
                     Binding binding = new Binding(parameters);
-                    ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, scriptStr, binding);
+                    ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, scriptStr, binding);
                     message.setSubject(binding.getVariable("subject").toString());
                     message.setBody(binding.getVariable("body").toString());
                 } catch (Exception e) {

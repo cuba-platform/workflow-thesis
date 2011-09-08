@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,9 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
     private List<ProcRolePermission> permissions;
 
     private List<Proc> processes;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private void initPermissions() {
         log.debug("initializing ProcRolePermissionService");
@@ -90,7 +94,7 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
             }
         }
 
-        User currentUser = SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser();
+        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         Set<ProcRole> usersProcRolesFrom = new HashSet<ProcRole>();
 
         if (card.getProcs() != null)

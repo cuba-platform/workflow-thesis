@@ -461,7 +461,7 @@ public class DesignCompiler {
         }
         try {
 
-            Locale locale = SecurityProvider.currentUserSession().getLocale();
+            Locale locale = UserSessionProvider.getLocale();
             String lang = locale.getLanguage();
             String fileName = "messages" + ("en".equals(lang) ? ("") : ("_" + lang)) + ".properties";
             //Find current locale messages

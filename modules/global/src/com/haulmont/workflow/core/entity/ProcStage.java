@@ -14,6 +14,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.workflow.core.global.TimeUnit;
 import groovy.lang.Binding;
@@ -198,7 +199,7 @@ public class ProcStage extends StandardEntity {
         if (durationScriptEnabled && (durationScript != null)) {
             Binding binding = new Binding();
             binding.setVariable("card", card);
-            ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, durationScript, binding);
+            ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, durationScript, binding);
             return binding.getVariables();
         }
         Map result = new java.util.HashMap();

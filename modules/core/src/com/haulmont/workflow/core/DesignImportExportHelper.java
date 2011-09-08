@@ -10,9 +10,13 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
@@ -120,7 +124,7 @@ public class DesignImportExportHelper {
     }
 
     private static Design changeAttributes(Design design) {
-        User user = SecurityProvider.currentUserSession().getUser();
+        User user = UserSessionProvider.getUserSession().getUser();
         design.setCreatedBy(user.getName());
         design.setUuid(UUID.randomUUID());
         design.setCompileTs(null);
