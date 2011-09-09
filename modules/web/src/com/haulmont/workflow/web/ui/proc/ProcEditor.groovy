@@ -29,7 +29,18 @@ import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.gui.data.DataService
 
 import com.haulmont.cuba.gui.data.ValueListener
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper
+import com.haulmont.chile.core.model.MetaPropertyPath
+import com.haulmont.cuba.core.global.PersistenceHelper
+import com.vaadin.data.Property.ValueChangeEvent
+import com.vaadin.data.Property.ValueChangeListener
+import com.haulmont.cuba.security.entity.Role
+import com.vaadin.data.Property
+import com.haulmont.cuba.web.gui.components.WebLookupField
+import java.util.*
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.BooleanUtils
 
 public class ProcEditor extends AbstractEditor {
 
@@ -37,6 +48,9 @@ public class ProcEditor extends AbstractEditor {
   private Table permissionsTable;
   private Datasource<Proc> procDs;
   private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>()
+  private CollectionDatasource<DefaultProcActor, UUID> dpaDs
+  private CollectionDatasource<Role, UUID> secRolesDs
+  private Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
 
   public ProcEditor(IFrame frame) {
     super(frame);
@@ -47,7 +61,9 @@ public class ProcEditor extends AbstractEditor {
     super.init(params)
     procDs = getDsContext().get("procDs")
     final CollectionDatasource<ProcRole, UUID> rolesDs = getDsContext().get("rolesDs")
-    final CollectionDatasource<DefaultProcActor, UUID> dpaDs = getDsContext().get("dpaDs")
+    dpaDs  = getDsContext().get("dpaDs")
+    secRolesDs = getDsContext().get("secRoles");
+    secRolesDs.refresh();
 
     final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
     final Component permissionsPane = getComponent("permissionsPane");
@@ -70,7 +86,7 @@ public class ProcEditor extends AbstractEditor {
               return values
             }
     ] as ValueProvider)
-    rolesHelper.createEditAction()
+    //rolesHelper.createEditAction()
     rolesHelper.createRemoveAction(false)
 
     List dpaActions = []
@@ -125,7 +141,17 @@ public class ProcEditor extends AbstractEditor {
 
     dpaDs.addListener(
             [
-                    collectionChanged: { ds, operation -> enableDpaActions() }
+                    collectionChanged: { ds, operation -> enableDpaActions() },
+                    itemChanged:{ds, prevItem, item ->
+                      ProcRole pr = rolesDs.getItem();
+                      if (pr == null)
+                        return;
+                      if (BooleanUtils.isTrue(pr.getMultiUser()) && dpaDs.size() > 1) {
+                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(true);
+                      } else {
+                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
+                      }
+                    }
             ] as CollectionDsListenerAdapter
     )
 
@@ -227,7 +253,150 @@ public class ProcEditor extends AbstractEditor {
   def void setItem(Entity item) {
     super.setItem(item);
     Proc proc = (Proc)getItem()
-    CollectionDatasource rolesDs = rolesTable.getDatasource()
+    final CollectionDatasource rolesDs = rolesTable.getDatasource()
+    final com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(rolesTable);
+    MetaPropertyPath pp = rolesDs.getMetaClass().getPropertyEx('code');
+    vTable.removeGeneratedColumn(pp);
+    final Map codeMap = new HashMap<UUID, com.vaadin.ui.Component>()
+    vTable.addGeneratedColumn pp, [
+            generateCell: {table, itemId, columnId ->
+              if (codeMap.containsKey(itemId))
+                return codeMap.get(itemId);
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null) {
+                if (PersistenceHelper.isNew(pr) && rolesTable.isEditable()) {
+                  final UUID uuid = itemId;
+                  final com.vaadin.ui.TextField textField = new com.vaadin.ui.TextField()
+                  textField.setValue(pr.getCode());
+                  textField.addListener({ValueChangeEvent event ->
+                    ((ProcRole) rolesDs.getItem(uuid)).setCode(textField.getValue());
+                  } as ValueChangeListener);
+                  component = textField
+                } else {
+                  component = StringUtils.isNotBlank(pr.getCode()) ? new com.vaadin.ui.Label(pr.getCode()) : null;
+                }
+              }
+              if (component.getValue() != null)
+                codeMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator;
+
+    pp = rolesDs.getMetaClass().getPropertyEx('name');
+    vTable.removeGeneratedColumn(pp);
+    final Map nameMap = new HashMap<UUID, com.vaadin.ui.Component>();
+    vTable.addGeneratedColumn(pp, [
+            generateCell: {table, itemId, columnId ->
+              if (nameMap.containsKey(itemId))
+                nameMap.get(itemId);
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null) {
+                if (rolesTable.isEditable()) {
+                  final Object uuid = itemId;
+                  final com.vaadin.ui.TextField textField = new com.vaadin.ui.TextField()
+                  textField.setValue(pr.getName());
+                  textField.addListener ( {ValueChangeEvent event ->
+                     ((ProcRole)rolesDs.getItem(uuid)).setName(textField.getValue());
+                  } as ValueChangeListener);
+                  component = textField;
+                } else {
+                  component = StringUtils.isNotBlank(pr.getName()) ? new com.vaadin.ui.Label(pr.getName()) : null;
+                }
+              }
+              nameMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator);
+
+    pp = rolesDs.getMetaClass().getPropertyEx('multiUser');
+    vTable.removeGeneratedColumn(pp);
+    vTable.addGeneratedColumn(pp, [
+            generateCell: {table, itemId, columnId ->
+              if (multiUserMap.containsKey(itemId))
+                return multiUserMap.get(itemId)
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null){
+                final Object uuid = itemId;
+                final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox()
+                checkBox.setValue(pr.getMultiUser())
+                checkBox.setImmediate(true)
+                if (rolesTable.isEditable())
+                  checkBox.setReadOnly(BooleanUtils.isTrue(pr.getMultiUser()) && pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 1);
+                else
+                  checkBox.setReadOnly(!rolesTable.isEditable());
+                checkBox.addListener ( {ValueChangeEvent event ->
+                     ProcRole procRole = rolesDs.getItem(uuid);
+                     rolesTable.setSelected(procRole);
+                     procRole.setMultiUser(checkBox.getValue());
+                  } as ValueChangeListener);
+                component = checkBox;
+              }
+              multiUserMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator);
+
+    pp = rolesDs.getMetaClass().getPropertyEx('assignToCreator');
+    vTable.removeGeneratedColumn(pp);
+    final Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
+    vTable.addGeneratedColumn(pp, [
+            generateCell: {table, itemId, columnId ->
+              if (assignToCreatorMap.containsKey(itemId))
+                return assignToCreatorMap.get(itemId);
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null){
+                final UUID uuid = itemId;
+                final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox()
+                checkBox.setValue(pr.getAssignToCreator())
+                checkBox.setReadOnly(!rolesTable.isEditable());
+                checkBox.setImmediate(true)
+                checkBox.addListener({ValueChangeEvent event ->
+                  ProcRole procRole = rolesDs.getItem(uuid);
+                  //rolesTable.setSelected(procRole);
+                  procRole.setAssignToCreator(checkBox.getValue());
+                } as ValueChangeListener);
+                component = checkBox;
+              }
+              assignToCreatorMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator);
+
+    pp = rolesDs.getMetaClass().getPropertyEx('role');
+    vTable.removeGeneratedColumn(pp);
+    final Map roleMap = new HashMap<UUID, com.vaadin.ui.Component>();
+    vTable.addGeneratedColumn(pp, [
+            generateCell: {table, itemId, columnId ->
+              if (roleMap .containsKey(itemId))
+                return roleMap.get(itemId);
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null) {
+                if (rolesTable.isEditable()) {
+                  final Object uuid = itemId;
+                  WebLookupField usersLookup = new WebLookupField();
+                  usersLookup.setOptionsDatasource(secRolesDs);
+                  usersLookup.setValue(pr.getRole());
+                  usersLookup.setWidth("100%");
+                  usersLookup.setEditable(rolesTable.isEditable());
+                  final com.vaadin.ui.Select rolesSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
+                  rolesSelect.addListener({ValueChangeEvent event ->
+                    Role role = secRolesDs.getItem(rolesSelect.getValue());
+                    ((ProcRole) rolesDs.getItem(uuid)).setRole(role);
+                  } as ValueChangeListener);
+                  return rolesSelect;
+                } else {
+                  component = pr.getRole() != null ? new com.vaadin.ui.Label(pr.getRole().getInstanceName()) : null;
+                }
+              }
+              roleMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator);
     DataService dataService = rolesDs.getDataService()
     java.util.List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
     roles.removeAll({ProcRole role -> role.invisible })

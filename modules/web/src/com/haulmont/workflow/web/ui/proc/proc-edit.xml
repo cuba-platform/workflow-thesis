@@ -19,7 +19,7 @@
         </datasource>
         <collectionDatasource id="secRoles" class="com.haulmont.cuba.security.entity.Role" view="_local">
                 <query>
-                     select r from sec$Role r
+                     select r from sec$Role r order by r.name
                 </query>
         </collectionDatasource>
     </dsContext>
@@ -85,10 +85,9 @@
                         <label value="msg://roles"/>
                         <hbox align="MIDDLE_LEFT" spacing="true">
                             <button action="rolesTable.create" icon="icons/create.png"/>
-                            <button action="rolesTable.edit" icon="icons/edit.png"/>
                             <button action="rolesTable.remove" icon="icons/remove.png"/>
                         </hbox>
-                        <table id="rolesTable" editable="false">
+                        <table id="rolesTable" editable="true">
                             <columns>
                                 <column id="code" caption="msg://code"/>
                                 <column id="name" caption="msg://name"/>
