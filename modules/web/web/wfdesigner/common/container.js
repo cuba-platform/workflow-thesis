@@ -12,6 +12,7 @@
 Wf.Container = function(options, layer) {
     var initialized=false;
     var optionsInitialized=false;
+
     Wf.Container.superclass.constructor.call(this, options, layer);
 
     this.eventFocus.subscribe(this.onContainerFocus, this, true);
@@ -27,7 +28,9 @@ Wf.Container = function(options, layer) {
     this.form.updatedEvt.subscribe(this.onUpdateForm,this,true);
 
     var nameField = this.form.getFieldByName('name');
-    
+
+    this.focused=false;
+
     nameField.updatedEvt.subscribe(
             Wf.OptionFieldsHelper.onNameChanged,
             nameField, true);
@@ -81,6 +84,9 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     onContainerFocus: function(eventName, containers) {
 
         var container = containers[0];
+        if (container.focused == true)
+            return;
+        container.focused = true;
         var nameField = container.form.getFieldByName('name');
         nameField.prevValue = nameField.getValue();
         container.optionsInitialized=false;
@@ -89,6 +95,9 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     onContainerBlur: function(eventName, containers) {
         var container = containers[0];
+        if (container.focused == false)
+            return;
+        container.focused = false;
         Wf.OptionFieldsHelper.hideOptions(container);
     },
 

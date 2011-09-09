@@ -387,6 +387,14 @@ Wf.OptionFieldsHelper.getValue = function(container) {
         optValue = container.optionsForm.getValue();
     } else if (container.optionsValue) {
         optValue = container.optionsValue;
+        if (container.optFields) {
+            for (var i = 0; i < container.optFields.length; i++) {
+                var optFieldValue = container.optFields[i];
+                if (!optValue[optFieldValue.name]) {
+                    optValue[optFieldValue.name] = optFieldValue.value;
+                }
+            }
+        }
     }
     return optValue;
 };

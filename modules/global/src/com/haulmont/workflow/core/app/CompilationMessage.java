@@ -7,6 +7,8 @@
 package com.haulmont.workflow.core.app;
 
 
+import com.haulmont.workflow.core.error.DesignCompilationError;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,15 +19,15 @@ import java.util.List;
  */
 public class CompilationMessage implements Serializable {
 
-    private List<String> errors;
+    private List<DesignCompilationError> errors;
     private List<String> warnings;
 
-    public CompilationMessage(List<String> errors, List<String> warnings) {
+    public CompilationMessage(List<DesignCompilationError> errors, List<String> warnings) {
         this.errors = errors;
         this.warnings = warnings;
     }
 
-    public List<String> getErrors() {
+    public List<DesignCompilationError> getErrors() {
         return errors;
     }
 

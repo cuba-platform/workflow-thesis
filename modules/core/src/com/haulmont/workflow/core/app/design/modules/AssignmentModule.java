@@ -51,7 +51,7 @@ public class AssignmentModule extends Module {
             if (StringUtils.trimToNull(role) == null) {
                 if (error.length() != 0)
                     error.append("<br />");
-                error.append(MessageProvider.formatMessage(getClass(), "exception.noRole", caption));
+                error.append(MessageProvider.formatMessage(AssignmentModule.class, "exception.noRole", caption));
             }
             jsOptions = jsValue.optJSONObject("options");
             if (jsOptions != null)
@@ -65,7 +65,7 @@ public class AssignmentModule extends Module {
             if (error.length() != 0)
                 error.append("<br />");
 
-            error.append(MessageProvider.formatMessage(getClass(), "exception.noOutputs", caption));
+            error.append(MessageProvider.formatMessage(AssignmentModule.class, "exception.noOutputs", caption));
         }
 
         if (StringUtils.trimToNull(error.toString()) != null) {

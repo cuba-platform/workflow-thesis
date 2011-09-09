@@ -55,7 +55,8 @@ public class DecisionModule extends Module {
     @Override
     public Element writeJpdlXml(Element parentEl) throws DesignCompilationException {
         Element element = super.writeJpdlXml(parentEl);
-        writeJpdlStringPropertyEl(element, "scriptName", scriptFileName);
+        if (!StringUtils.isEmpty(scriptFileName))
+            writeJpdlStringPropertyEl(element, "scriptName", scriptFileName);
         return element;
     }
 }

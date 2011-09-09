@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
+import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
@@ -287,8 +288,8 @@ public class DesignBrowser extends AbstractWindow {
             if (message.getErrors().size() > 0) {
                 result.append("<b>" + getMessage("notification.errors") + "</b><br />");
             }
-            for (String error : message.getErrors()) {
-                result.append(error);
+            for (DesignCompilationError error : message.getErrors()) {
+                result.append(error.getMessage());
                 result.append("<br />");
             }
             if (message.getWarnings().size() > 0) {
