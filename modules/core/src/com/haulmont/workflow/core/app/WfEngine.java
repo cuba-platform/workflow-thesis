@@ -58,6 +58,16 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    private Persistence persistence;
+
+    @Inject
+    private NotificationMatrixAPI notificationBean;
+
+    static {
+        System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getClassLoader");
+    }
+
     @Resource(name = "jbpmConfiguration")
     public void setJbpmConfiguration(Configuration jbpmConfiguration) {
         this.jbpmConfiguration = jbpmConfiguration;
@@ -67,7 +77,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         if (processEngine == null) {
             synchronized (this) {
                 if (processEngine == null) {
-                    Transaction tx = Locator.createTransaction();
+                    Transaction tx = persistence.createTransaction();
                     try {
                         if (processEngine == null) {
                             processEngine = jbpmConfiguration.buildProcessEngine();
@@ -80,12 +90,6 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             }
         }
         return processEngine;
-    }
-
-    @Inject
-    public void setConfigProvider(com.haulmont.cuba.core.global.Configuration configuration) {
-        if (configuration.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled())
-            System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getGroovyClassLoader");
     }
 
     public String getJbpmConfigName() {
@@ -110,7 +114,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
         ProcessDefinition pd = pdq.uniqueResult();
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         if (proc == null) {
             Query q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
@@ -147,7 +151,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String deployProcess(String name) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             login();
 
@@ -173,7 +177,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         Set<String> roles = new HashSet<String>();
         String states = "";
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         RepositoryService rs = getProcessEngine().getRepositoryService();
         Set<String> resourceNames = rs.getResourceNames(deploymentId);
@@ -277,7 +281,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String printDeployments() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
@@ -305,7 +309,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String printDeploymentResource(String id) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
@@ -335,7 +339,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String printProcessDefinitions() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             String result;
             RepositoryService rs = getProcessEngine().getRepositoryService();
@@ -368,7 +372,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public String startProcessByKey(String key) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             ProcessEngine pe = getProcessEngine();
             ExecutionService es = pe.getExecutionService();
@@ -390,9 +394,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         checkArgument(!StringUtils.isBlank(userLogin), "userLogin is blank");
 
         User user;
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select u from sec$User u where u.loginLowerCase = ?1");
             q.setParameter(1, userLogin.toLowerCase());
             List<User> list = q.getResultList();
@@ -410,9 +414,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public List<Assignment> getUserAssignments(UUID userId, @Nullable Card card) {
         checkArgument(userId != null, "userId is null");
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             String s = "select a from wf$Assignment a where a.user.id = ?1 and a.finished is null";
             if (card != null)
                 s = s + " and a.card.id = ?2";
@@ -437,9 +441,9 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
         checkArgument(assignmentId != null, "assignmentId is null");
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Assignment assignment = em.find(Assignment.class, assignmentId);
             if (assignment == null)
                 throw new RuntimeException("Assignment not found: " + assignmentId);
@@ -482,7 +486,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public Card startProcess(Card card) {
         Map<String, Object> initialProcessVariables = card.getInitialProcessVariables();
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         card = em.find(Card.class, card.getId());
         if (card.getProc() == null)
             throw new IllegalStateException("Card.proc required");
@@ -500,7 +504,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     public void cancelProcess(Card card) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         Card c = em.merge(card);
 
@@ -527,7 +531,6 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             listener.onProcessCancel(card);
         }
 
-        NotificationMatrixAPI notificationBean = Locator.lookup(NotificationMatrixAPI.NAME);
         notificationBean.notifyByCard(c, WfConstants.CARD_STATE_CANCELED);
     }
 
