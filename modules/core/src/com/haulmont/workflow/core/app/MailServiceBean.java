@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.global.EmailException;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
@@ -55,7 +56,8 @@ public class MailServiceBean implements MailService  {
                     binding.setVariable("user", userSessionSource.getUserSession().getUser());
                     binding.setVariable("users", users);
                     binding.setVariable("currentUser", user);
-                    ScriptingProvider.runGroovyScript(script, binding);
+                    String scriptStr = ScriptingProvider.getResourceAsString(script);
+                    ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, scriptStr, binding);
                     subject = binding.getVariable("subject").toString();
                     body = binding.getVariable("body").toString();
 
