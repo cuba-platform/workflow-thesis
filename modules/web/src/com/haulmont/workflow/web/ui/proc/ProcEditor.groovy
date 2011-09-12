@@ -57,6 +57,10 @@ public class ProcEditor extends AbstractEditor {
     super(frame);
   }
 
+  protected boolean isMultiUserEditable() {
+    return true;
+  }
+
   @Override
   protected void init(Map<String, Object> params) {
     super.init(params)
@@ -149,7 +153,7 @@ public class ProcEditor extends AbstractEditor {
                       if (BooleanUtils.isTrue(pr.getMultiUser()) && dpaDs.size() > 1) {
                         ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(true);
                       } else {
-                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
+                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!isMultiUserEditable() && !rolesTable.isEditable() && false);
                       }
                       if( dpaDs.size() > 0) {
                         ((com.vaadin.ui.Component)assignToCreatorMap.get(pr.getUuid())).setReadOnly(true);
@@ -329,7 +333,7 @@ public class ProcEditor extends AbstractEditor {
                 checkBox.setValue(pr.getMultiUser())
                 checkBox.setImmediate(true)
                 if (rolesTable.isEditable())
-                  checkBox.setReadOnly(BooleanUtils.isTrue(pr.getMultiUser()) && pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 1);
+                  checkBox.setReadOnly(!isMultiUserEditable() && BooleanUtils.isTrue(pr.getMultiUser()) && pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 1);
                 else
                   checkBox.setReadOnly(!rolesTable.isEditable());
                 checkBox.addListener ( {ValueChangeEvent event ->
