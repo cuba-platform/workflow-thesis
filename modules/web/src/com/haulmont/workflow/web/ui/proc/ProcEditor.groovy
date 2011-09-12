@@ -44,14 +44,14 @@ import org.apache.commons.lang.BooleanUtils
 
 public class ProcEditor extends AbstractEditor {
 
-  private Table rolesTable;
-  private Table permissionsTable;
-  private Datasource<Proc> procDs;
-  private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>()
-  private CollectionDatasource<DefaultProcActor, UUID> dpaDs
-  private CollectionDatasource<Role, UUID> secRolesDs
-  private Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
-  private Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
+  protected Table rolesTable;
+  protected Table permissionsTable;
+  protected Datasource<Proc> procDs;
+  protected Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>()
+  protected CollectionDatasource<DefaultProcActor, UUID> dpaDs
+  protected CollectionDatasource<Role, UUID> secRolesDs
+  protected Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
+  protected Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
 
   public ProcEditor(IFrame frame) {
     super(frame);
