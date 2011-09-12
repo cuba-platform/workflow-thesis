@@ -51,6 +51,7 @@ public class ProcEditor extends AbstractEditor {
   private CollectionDatasource<DefaultProcActor, UUID> dpaDs
   private CollectionDatasource<Role, UUID> secRolesDs
   private Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
+  private Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
 
   public ProcEditor(IFrame frame) {
     super(frame);
@@ -86,7 +87,6 @@ public class ProcEditor extends AbstractEditor {
               return values
             }
     ] as ValueProvider)
-    //rolesHelper.createEditAction()
     rolesHelper.createRemoveAction(false)
 
     List dpaActions = []
@@ -136,7 +136,7 @@ public class ProcEditor extends AbstractEditor {
       ProcRole item = rolesDs.getItem()
       dpaActions.each { it.setEnabled(item != null) }
       createDpaAction.setEnabled(createDpaAction.isEnabled() &&
-              (item.getMultiUser() || dpaDs.getItemIds().isEmpty()))
+              (item.getMultiUser() || dpaDs.getItemIds().isEmpty()) && !BooleanUtils.isTrue(item.getAssignToCreator()))
     }
 
     dpaDs.addListener(
@@ -150,6 +150,11 @@ public class ProcEditor extends AbstractEditor {
                         ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(true);
                       } else {
                         ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
+                      }
+                      if( dpaDs.size() > 0) {
+                        ((com.vaadin.ui.Component)assignToCreatorMap.get(pr.getUuid())).setReadOnly(true);
+                      } else if (dpaDs.size() == 0) {
+                        ((com.vaadin.ui.Component)assignToCreatorMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
                       }
                     }
             ] as CollectionDsListenerAdapter
@@ -341,7 +346,6 @@ public class ProcEditor extends AbstractEditor {
 
     pp = rolesDs.getMetaClass().getPropertyEx('assignToCreator');
     vTable.removeGeneratedColumn(pp);
-    final Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
     vTable.addGeneratedColumn(pp, [
             generateCell: {table, itemId, columnId ->
               if (assignToCreatorMap.containsKey(itemId))
@@ -352,11 +356,14 @@ public class ProcEditor extends AbstractEditor {
                 final UUID uuid = itemId;
                 final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox()
                 checkBox.setValue(pr.getAssignToCreator())
-                checkBox.setReadOnly(!rolesTable.isEditable());
+                if (rolesTable.isEditable()) {
+                  checkBox.setReadOnly( pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 0);
+                } else
+                  checkBox.setReadOnly(true);
                 checkBox.setImmediate(true)
                 checkBox.addListener({ValueChangeEvent event ->
                   ProcRole procRole = rolesDs.getItem(uuid);
-                  //rolesTable.setSelected(procRole);
+                  rolesTable.setSelected(procRole);
                   procRole.setAssignToCreator(checkBox.getValue());
                 } as ValueChangeListener);
                 component = checkBox;
