@@ -10,9 +10,10 @@
  */
 package com.haulmont.workflow.core.app;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class NotificationMatrixMessage {
+public class NotificationMatrixMessage implements Serializable {
     private String subject;
     private String body;
 
@@ -37,7 +38,7 @@ public class NotificationMatrixMessage {
         this.body = body;
     }
 
-    public interface MessageGenerator {
+    public interface MessageGenerator extends Serializable {
 
         NotificationMatrixMessage generateMessage(Map<String, Object> parameters);
     }
