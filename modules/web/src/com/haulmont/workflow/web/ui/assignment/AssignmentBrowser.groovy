@@ -20,7 +20,7 @@ public class AssignmentBrowser extends AbstractWindow {
     super(iFrame);
   }
 
-  protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
     super.init(params);
     Table table = getComponent("aTable")
     TableActionsHelper helper = new TableActionsHelper(this, table)

@@ -25,7 +25,7 @@ public class ProcRoleEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         if(!PersistenceHelper.isNew((ProcRole)params.get("item"))){
             getComponent("code").setEnabled(false);
         }

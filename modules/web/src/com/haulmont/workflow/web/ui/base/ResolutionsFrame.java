@@ -12,9 +12,10 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
@@ -24,7 +25,8 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
     private Table table;
@@ -78,7 +80,7 @@ public class ResolutionsFrame extends AbstractFrame {
                                 private static final long serialVersionUID = 8866649082801744357L;
 
                                 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                                    WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo("task.log.dialog");
+                                    WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo("task.log.dialog");
                                     App.getInstance().getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG,
                                             Collections.<String, Object>singletonMap("item", assignment));
                                 }

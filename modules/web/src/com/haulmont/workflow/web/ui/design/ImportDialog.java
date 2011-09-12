@@ -34,7 +34,7 @@ public class ImportDialog extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         final FileUploadField fileUploadField = getComponent("fileUpload");
         fileUploadField.addListener(new FileUploadField.Listener() {

@@ -54,8 +54,7 @@ public class AttachmentEditor extends AbstractEditor {
     super(frame)
   }
 
-  @Override
-  protected void init(Map<String, Object> params) {
+  @Override public void init(Map<String, Object> params) {
     super.init(params)
 
     attachmentDs = getDsContext().get("attachmentDs")

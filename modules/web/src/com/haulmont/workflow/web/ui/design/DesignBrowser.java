@@ -51,7 +51,7 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         ds = getDsContext().get("designDs");
         table = getComponent("designTable");
         service = ServiceLocator.lookup(DesignerService.NAME);

@@ -13,10 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.EntityFactory;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -53,7 +50,7 @@ public class ResolutionForm extends AbstractForm {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         commentText = getComponent("commentText");
@@ -118,7 +115,7 @@ public class ResolutionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
@@ -130,7 +127,7 @@ public class ResolutionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
 
@@ -143,7 +140,7 @@ public class ResolutionForm extends AbstractForm {
         Button pasteAttachBtn = getComponent("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
             public Attachment createObject() {
-                CardAttachment attachment = EntityFactory.create(CardAttachment.class);
+                CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
                 attachment.setAssignment((Assignment) assignmentDs.getItem());
                 attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
                 return attachment;
@@ -224,7 +221,7 @@ public class ResolutionForm extends AbstractForm {
                 Assignment item = datasource.getItem((UUID) key);
                 List<CardAttachment> copyAttachmentList = new ArrayList<CardAttachment>();
                 for (CardAttachment attachment : attachmentList) {
-                    CardAttachment cardAttachment = EntityFactory.create(CardAttachment.class);
+                    CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
                     cardAttachment.setAssignment(item);
                     cardAttachment.setCard(item.getCard());
                     cardAttachment.setFile(attachment.getFile());

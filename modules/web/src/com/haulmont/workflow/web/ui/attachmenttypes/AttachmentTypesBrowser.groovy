@@ -23,7 +23,7 @@ class AttachmentTypesBrowser extends AbstractWindow{
     super(frame);
   }
 
-  protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
     super.init(params);
 
     table = getComponent("table")

@@ -31,7 +31,7 @@ class CardRoleEditor extends AbstractEditor{
     super(frame);
   }
 
-  protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
     super.init(params);
     
     procRole = params['param$procRole']

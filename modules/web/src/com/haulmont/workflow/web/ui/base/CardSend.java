@@ -60,7 +60,7 @@ public class CardSend extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         setHeight("400px");
         card = (Card) params.get("item");
@@ -219,7 +219,7 @@ public class CardSend extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
@@ -230,7 +230,7 @@ public class CardSend extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
     }

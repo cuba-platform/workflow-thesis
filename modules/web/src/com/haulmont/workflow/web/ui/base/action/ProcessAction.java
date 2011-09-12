@@ -46,7 +46,7 @@ public class ProcessAction extends AbstractAction {
         if (card.getProc() != null)
             return MessageProvider.getMessage(card.getProc().getMessagesPack(), getId());
         else
-            return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), getId());
+            return MessageProvider.getMessage(AppConfig.getMessagesPack(), getId());
     }
 
     public void actionPerform(Component component) {

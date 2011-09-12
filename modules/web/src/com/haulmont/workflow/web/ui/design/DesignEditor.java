@@ -30,7 +30,7 @@ public class DesignEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         getDsContext().get("designDs").addListener(
                 new DsListenerAdapter() {
                     @Override

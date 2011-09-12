@@ -13,33 +13,32 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
-import org.apache.commons.collections.CollectionUtils;
+import com.vaadin.ui.TabSheet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public abstract class AbstractCardEditor extends AbstractEditor {
 
@@ -72,7 +71,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         initFields();
@@ -200,7 +199,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
                 break;
         }
 
-        WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(this.getId());
+        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(this.getId());
         WebWindowManager webWindowManager = App.getInstance().getWindowManager();
         webWindowManager.openEditor(windowInfo, getItem(), openType, parameters);
     }

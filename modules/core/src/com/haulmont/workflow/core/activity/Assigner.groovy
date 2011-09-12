@@ -36,6 +36,7 @@ import com.haulmont.cuba.core.global.TimeProvider
 
 import com.haulmont.workflow.core.entity.CardStage
 import com.haulmont.cuba.core.global.ScriptingProvider
+import com.haulmont.cuba.core.global.Scripting.Layer
 import com.haulmont.workflow.core.global.TimeUnit
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {

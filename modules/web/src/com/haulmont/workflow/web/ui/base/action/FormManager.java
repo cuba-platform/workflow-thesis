@@ -18,10 +18,12 @@ import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -38,7 +40,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
 public abstract class FormManager implements Serializable {
@@ -153,6 +154,8 @@ public abstract class FormManager implements Serializable {
         private String screenId;
         private Map<String, Object> params;
 
+        protected WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+
         public ScreenFormManager(Element element, String activity, String transition, FormManagerChain chain) {
             super(element, activity, transition, chain);
             screenId = element.attributeValue("id");
@@ -164,7 +167,7 @@ public abstract class FormManager implements Serializable {
             params.put("before", true);
             params.putAll(this.params);
 
-            WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
             WebWindowManager windowManager = App.getInstance().getWindowManager();
 
             final Window window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
@@ -191,7 +194,7 @@ public abstract class FormManager implements Serializable {
             params.put("after", true);
             params.putAll(this.params);
 
-            WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
             WebWindowManager windowManager = App.getInstance().getWindowManager();
 
             final Window window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);

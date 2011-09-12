@@ -34,7 +34,7 @@ public class DeployDesignWindow extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         design = (Design) params.get("design");
 
         Label designNameLab = getComponent("designNameLab");

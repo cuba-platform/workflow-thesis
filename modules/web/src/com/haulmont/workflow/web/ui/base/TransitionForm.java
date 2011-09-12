@@ -52,7 +52,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         String dueDateRequired = (String) params.get("dueDateRequired");
@@ -123,7 +123,7 @@ public class TransitionForm extends AbstractForm {
             Button pasteAttachBtn = getComponent("pasteAttach");
             AttachmentCreator creator = new AttachmentCreator() {
                 public Attachment createObject() {
-                    CardAttachment attachment = EntityFactory.create(CardAttachment.class);
+                    CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
                     attachment.setAssignment((Assignment) assignmentDs.getItem());
                     attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
                     return attachment;
@@ -189,7 +189,7 @@ public class TransitionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
@@ -201,7 +201,7 @@ public class TransitionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel");
+                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
 

@@ -18,11 +18,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
@@ -30,10 +28,8 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardComment;
-import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +50,7 @@ public class CardCommentFrame extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         card = (Card) params.get("item");
         justCreated = (Boolean) params.get("justCreated");

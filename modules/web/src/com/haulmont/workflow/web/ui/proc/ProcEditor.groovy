@@ -62,7 +62,7 @@ public class ProcEditor extends AbstractEditor {
   }
 
   @Override
-  protected void init(Map<String, Object> params) {
+  public void init(Map<String, Object> params) {
     super.init(params)
     procDs = getDsContext().get("procDs")
     final CollectionDatasource<ProcRole, UUID> rolesDs = getDsContext().get("rolesDs")

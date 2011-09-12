@@ -34,7 +34,7 @@ public class DesignScriptsWindow extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         design = (Design) params.get("design");
         if (design == null)
             throw new IllegalArgumentException("Design instance must be passed in params");

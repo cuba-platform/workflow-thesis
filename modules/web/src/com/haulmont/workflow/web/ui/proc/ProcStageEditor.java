@@ -40,7 +40,7 @@ public class ProcStageEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         startActivity = getComponent("startActivity");

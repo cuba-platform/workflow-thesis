@@ -19,7 +19,7 @@ public class CardBrowser extends AbstractWindow {
     super(iFrame);
   }
 
-  protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
     super.init(params);
     Table table = getComponent("cardTable")
     TableActionsHelper helper = new TableActionsHelper(this, table)
