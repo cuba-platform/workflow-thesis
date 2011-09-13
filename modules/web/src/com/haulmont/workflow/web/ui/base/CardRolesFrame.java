@@ -561,7 +561,7 @@ public class CardRolesFrame extends AbstractFrame {
                         break;
                     }
                 }
-                if (!found) {
+                if (!found || procRole.getMultiUser()) {
                     CardRole cr = new CardRole();
                     cr.setProcRole(procRole);
                     cr.setCode(procRole.getCode());

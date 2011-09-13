@@ -136,30 +136,43 @@ public class ProcEditor extends AbstractEditor {
       it.setEnabled(false)
     }
 
+    def enableCheckBox = {
+      ProcRole pr = rolesDs.getItem();
+      if (pr == null)
+        return;
+      if (BooleanUtils.isTrue(pr.getMultiUser()) && dpaDs.size() > 1) {
+        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(true);
+      } else {
+        if (dpaDs.size() > 0)
+          ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!isMultiUserEditable(pr) || !rolesTable.isEditable() && false || BooleanUtils.isTrue(pr.getAssignToCreator()));
+        else
+          ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!isMultiUserEditable(pr) || !rolesTable.isEditable() && false);
+      }
+      if (!BooleanUtils.isTrue(pr.getMultiUser()) && dpaDs.size() > 0) {
+        ((com.vaadin.ui.Component) assignToCreatorMap.get(pr.getUuid())).setReadOnly(true);
+      } else {
+        ((com.vaadin.ui.Component) assignToCreatorMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
+      }
+    }
+
     def enableDpaActions = {
       ProcRole item = rolesDs.getItem()
+      enableCheckBox()
       dpaActions.each { it.setEnabled(item != null) }
-      createDpaAction.setEnabled(createDpaAction.isEnabled() &&
-              (item.getMultiUser() || dpaDs.getItemIds().isEmpty()) && !BooleanUtils.isTrue(item.getAssignToCreator()))
+      if (item && !BooleanUtils.isTrue(item.getMultiUser()) && (BooleanUtils.isTrue(item.getAssignToCreator() || !dpaDs.getItemIds().isEmpty())))
+        createDpaAction.setEnabled(false);
+      else
+        createDpaAction.setEnabled(createDpaAction.isEnabled() &&
+              (item.getMultiUser() || dpaDs.getItemIds().isEmpty()))
     }
+
+
 
     dpaDs.addListener(
             [
                     collectionChanged: { ds, operation -> enableDpaActions() },
                     itemChanged:{ds, prevItem, item ->
-                      ProcRole pr = rolesDs.getItem();
-                      if (pr == null)
-                        return;
-                      if (BooleanUtils.isTrue(pr.getMultiUser()) && dpaDs.size() > 1) {
-                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(true);
-                      } else {
-                        ((com.vaadin.ui.Component) multiUserMap.get(pr.getUuid())).setReadOnly(!isMultiUserEditable(pr) || !rolesTable.isEditable() && false);
-                      }
-                      if( dpaDs.size() > 0) {
-                        ((com.vaadin.ui.Component)assignToCreatorMap.get(pr.getUuid())).setReadOnly(true);
-                      } else if (dpaDs.size() == 0) {
-                        ((com.vaadin.ui.Component)assignToCreatorMap.get(pr.getUuid())).setReadOnly(!rolesTable.isEditable() && false);
-                      }
+                      enableCheckBox()
                     }
             ] as CollectionDsListenerAdapter
     )
@@ -361,7 +374,10 @@ public class ProcEditor extends AbstractEditor {
                 final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox()
                 checkBox.setValue(pr.getAssignToCreator())
                 if (rolesTable.isEditable()) {
-                  checkBox.setReadOnly( pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 0);
+                  if (pr.getMultiUser())
+                    checkBox.setReadOnly(false);
+                  else
+                    checkBox.setReadOnly( pr.getDefaultProcActors() != null && pr.getDefaultProcActors().size() > 0);
                 } else
                   checkBox.setReadOnly(true);
                 checkBox.setImmediate(true)
