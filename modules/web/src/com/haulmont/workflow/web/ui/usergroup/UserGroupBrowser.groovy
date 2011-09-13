@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.web.App
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl
+import com.haulmont.cuba.core.global.UserSessionProvider
+import com.haulmont.cuba.security.entity.EntityOp
 
 class UserGroupBrowser extends AbstractWindow{
   private Table userGroupsTable
@@ -52,6 +54,7 @@ class UserGroupBrowser extends AbstractWindow{
       }] as CollectionDsListenerAdapter);
 
     usersTable = getComponent('usersTable')
+    final userSession = UserSessionProvider.getUserSession();
     usersTable.addAction(new ActionAdapter("add", [
             actionPerform : {
               if (userGroupsTable.getSelected().size() == 0) {
@@ -84,6 +87,9 @@ class UserGroupBrowser extends AbstractWindow{
             },
             getCaption : {
               return getMessage('actions.Add')
+            },
+            isEnabled: {
+              return super.isEnabled() && userSession.isEntityOpPermitted(usersTable.getDatasource().getMetaClass(), EntityOp.CREATE);
             }
     ]))
 
@@ -137,6 +143,9 @@ class UserGroupBrowser extends AbstractWindow{
             },
             getCaption: {
               return getMessage('actions.Remove')
+            },
+            isEnabled: {
+              return super.isEnabled() && userSession.isEntityOpPermitted(usersTable.getDatasource().getMetaClass(), EntityOp.DELETE);
             }
     ]))
 
