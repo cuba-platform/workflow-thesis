@@ -26,6 +26,6 @@ public interface WfConfig extends Config {
     @Default("AttachmentType.attachment")
     String getDefaultAttachmentType();
     
-    @Default("/workflow/NotificationMatrixTemplate.xls")
+    @Default("/com/haulmont/workflow/core/NotificationMatrixTemplate.xls")
     String getNotificationTemplatePath();
 }
