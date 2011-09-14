@@ -35,6 +35,7 @@
             </map>
         </property>
         <property name="formCompiler" ref="workflow_FormCompiler"/>
+        <property name="postProcessor" ref="workflow_DesignPostProcessor"/>
     </bean>
 
     <bean id="workflow_DesignCompiler" parent="base_workflow_DesignCompiler"/>
@@ -51,6 +52,8 @@
     </bean>
 
     <bean id="workflow_FormCompiler" parent="base_workflow_FormCompiler"/>
+
+    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor"/>
 
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 

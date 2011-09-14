@@ -578,8 +578,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             } else {
                 //New mechanism to create message for user
                 NotificationMessageBuilder notificationMessage = (NotificationMessageBuilder) parameters.get("messagetemplate");
-                notificationMessage.setParameters(parameters);
                 try {
+                    notificationMessage.setParameters(parameters);
                     message.setSubject(notificationMessage.getSubject());
                     message.setBody(notificationMessage.getBody());
                 } catch (Exception e) {

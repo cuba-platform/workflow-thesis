@@ -51,6 +51,8 @@ public class DesignCompiler {
 
     protected FormCompiler formCompiler;
 
+    private DesignPostProcessor postProcessor;
+
     private Log log = LogFactory.getLog(DesignCompiler.class);
 
     // set from spring.xml
@@ -74,6 +76,11 @@ public class DesignCompiler {
     // set from spring.xml
     public void setFormCompiler(FormCompiler formCompiler) {
         this.formCompiler = formCompiler;
+    }
+
+    //set from spring.xml
+    public void setPostProcessor(DesignPostProcessor postProcessor) {
+        this.postProcessor = postProcessor;
     }
 
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
@@ -248,6 +255,13 @@ public class DesignCompiler {
         }
 
         modulesByName = getModulesByName(jpdl);
+        //add to map modules not from JSON
+        for (String moduleName : modulesByName.keySet()) {
+            if (!modulesNames.containsKey(moduleName)) {
+                modulesNames.put(moduleName, moduleName);
+            }
+        }
+
         Element startElement = getStartElement(modulesByName.values());
 
         if (startElement != null) {
@@ -312,6 +326,7 @@ public class DesignCompiler {
                 }
             }
         }
+        postProcessor.processStates(states, document, properties);
         return states;
     }
 
@@ -497,9 +512,8 @@ public class DesignCompiler {
             }
 
             Document document = DocumentHelper.parseText(jpdl);
-            String confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
             String templatePath = ConfigProvider.getConfig(WfConfig.class).getNotificationTemplatePath();
-            Workbook wb = new HSSFWorkbook(new FileInputStream(confDir + templatePath));
+            Workbook wb = new HSSFWorkbook(ScriptingProvider.getResourceAsStream(templatePath));
 
             List<String> rolesList = parseRoles(document);
             Map<String, String> states = parseStates(document, properties);
@@ -674,7 +688,7 @@ public class DesignCompiler {
         em.persist(df);
     }
 
-    private String compileJpdl(List<Module> modules,List<DesignCompilationError> compileErrors) throws DesignCompilationException {
+    private String compileJpdl(List<Module> modules, List<DesignCompilationError> compileErrors) throws DesignCompilationException {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("process", "http://jbpm.org/4.2/jpdl");
 
@@ -690,6 +704,8 @@ public class DesignCompiler {
         onEl.addAttribute("event", "end");
         Element listenerEl = onEl.addElement("event-listener");
         listenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
+
+        postProcessor.processJpdl(rootEl, compileErrors);
         return Dom4j.writeDocument(document, true);
     }
 
@@ -708,6 +724,8 @@ public class DesignCompiler {
         for (Module module : modules) {
             module.writeMessages(properties, lang);
         }
+
+        postProcessor.processMessages(properties, locale);
 
         L10nHelper lh = new L10nHelper(localization);
         for (String propName : properties.stringPropertyNames()) {
@@ -740,7 +758,7 @@ public class DesignCompiler {
                 errors.add(new DesignError(e.getMessage()));
             }
         }
-
+        postProcessor.processForms(rootEl, modules, errors);
         return Dom4j.writeDocument(document, true);
     }
 
