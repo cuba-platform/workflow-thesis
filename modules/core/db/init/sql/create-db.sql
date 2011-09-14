@@ -64,6 +64,7 @@ create table WF_PROC (
     DELETED_BY varchar(50),
     NAME varchar(255),
     JBPM_PROCESS_KEY varchar(255),
+    CODE varchar(255),
     MESSAGES_PACK varchar(200),
     CARD_TYPES varchar(500),
     STATES varchar(500),
@@ -75,6 +76,7 @@ create table WF_PROC (
 
 alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID);
 alter table WF_PROC add constraint WF_PROC_AVAILABLE_ROLE_ID foreign key (AVAILABLE_ROLE_ID) references SEC_ROLE(ID);
+alter table WF_PROC add constraint WF_PROC_UNIQ_CODE unique (CODE);
 
 ------------------------------------------------------------------------------------------------------------
 

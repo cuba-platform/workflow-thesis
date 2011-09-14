@@ -31,6 +31,9 @@ public class Proc extends StandardEntity {
     @Column(name = "JBPM_PROCESS_KEY", length = 255)
     protected String jbpmProcessKey;
 
+    @Column(name = "CODE", length = 255)
+    protected String code;
+
     @Column(name = "MESSAGES_PACK", length = 200)
     protected String messagesPack;
 
@@ -138,5 +141,13 @@ public class Proc extends StandardEntity {
 
     public void setAvailableRole(Role availableRole) {
         this.availableRole = availableRole;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

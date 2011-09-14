@@ -21,9 +21,11 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -124,6 +126,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 proc = new Proc();
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
+                proc.setCode(pd.getKey());
                 proc.setRoles(new ArrayList());
                 em.persist(proc);
             } else {

@@ -48,6 +48,11 @@
                                                width="${width}" editable="false"/>
                                 </row>
                                 <row>
+                                    <label value="msg://code"/>
+                                    <textField id="code" datasource="procDs" property="code"
+                                               width="${width}"/>
+                                </row>
+                                <row>
                                     <label value="msg://design"/>
                                     <textField id="design" datasource="procDs" property="design"
                                                width="${width}" editable="false"/>
