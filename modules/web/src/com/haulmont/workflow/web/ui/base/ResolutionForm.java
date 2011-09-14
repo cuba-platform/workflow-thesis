@@ -11,6 +11,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.config.WorkflowConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
@@ -152,24 +153,27 @@ public class ResolutionForm extends AbstractForm {
 
         PopupButton createPopup = getComponent("createAttachBtn");
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
-        createPopup.addAction(helper.createCreateAction(
-                new ValueProvider() {
-                    public Map<String, Object> getValues() {
-                        Map<String, Object> values = new HashMap<String, Object>();
-                        values.put("assignment", getDsContext().get("assignmentDs").getItem());
-                        values.put("file", new FileDescriptor());
-                        if (attachmentType != null){
-                            values.put("attachType", attachmentType);
+        WorkflowConfig wfConfig = ConfigProvider.getConfig(WorkflowConfig.class);
+        if (wfConfig.getOneAttachmentUploaderEnabled()) {
+            createPopup.addAction(helper.createCreateAction(
+                    new ValueProvider() {
+                        public Map<String, Object> getValues() {
+                            Map<String, Object> values = new HashMap<String, Object>();
+                            values.put("assignment", getDsContext().get("assignmentDs").getItem());
+                            values.put("file", new FileDescriptor());
+                            if (attachmentType != null) {
+                                values.put("attachType", attachmentType);
+                            }
+                            return values;
                         }
-                        return values;
-                    }
 
-                    public Map<String, Object> getParameters() {
-                        return Collections.emptyMap();
-                    }
-                },
-                WindowManager.OpenType.DIALOG,"actions.New"
-        ));
+                        public Map<String, Object> getParameters() {
+                            return Collections.emptyMap();
+                        }
+                    },
+                    WindowManager.OpenType.DIALOG, "actions.New"
+            ));
+        }
 
         Map map = new HashMap<String, Object>();
         if (attachmentType != null) {
