@@ -89,7 +89,7 @@ class UserGroupBrowser extends AbstractWindow{
               return getMessage('actions.Add')
             },
             isEnabled: {
-              return super.isEnabled() && userSession.isEntityOpPermitted(usersTable.getDatasource().getMetaClass(), EntityOp.CREATE);
+              return super.isEnabled() && userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.CREATE);
             }
     ]))
 
@@ -145,7 +145,7 @@ class UserGroupBrowser extends AbstractWindow{
               return getMessage('actions.Remove')
             },
             isEnabled: {
-              return super.isEnabled() && userSession.isEntityOpPermitted(usersTable.getDatasource().getMetaClass(), EntityOp.DELETE);
+              return super.isEnabled() && userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.DELETE);
             }
     ]))
 
