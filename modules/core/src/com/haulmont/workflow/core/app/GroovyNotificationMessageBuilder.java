@@ -38,6 +38,6 @@ public class GroovyNotificationMessageBuilder implements NotificationMessageBuil
     public void setParameters(Map<String, Object> parameters) {
 
         binding = new Binding(parameters);
-        ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, script, binding);
+        ScriptingProvider.evaluateGroovy(script, binding);
     }
 }

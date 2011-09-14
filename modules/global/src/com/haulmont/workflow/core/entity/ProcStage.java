@@ -199,7 +199,7 @@ public class ProcStage extends StandardEntity {
         if (durationScriptEnabled && (durationScript != null)) {
             Binding binding = new Binding();
             binding.setVariable("card", card);
-            ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, durationScript, binding);
+            ScriptingProvider.evaluateGroovy(durationScript, binding);
             return binding.getVariables();
         }
         Map result = new java.util.HashMap();

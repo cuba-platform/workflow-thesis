@@ -38,7 +38,7 @@ public class GroovyNotificationMessage implements NotificationMessage {
     public void setParameters(Map<String, Object> parameters) {
         this.parameters=parameters;
         binding = new Binding(parameters);
-        ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, script, binding);
+        ScriptingProvider.evaluateGroovy(script, binding);
 
     }
 }

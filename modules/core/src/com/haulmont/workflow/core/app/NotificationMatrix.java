@@ -566,7 +566,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 try {
                     String scriptStr = ScriptingProvider.getResourceAsString(script);
                     Binding binding = new Binding(parameters);
-                    ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, scriptStr, binding);
+                    ScriptingProvider.evaluateGroovy(scriptStr, binding);
                     message.setSubject(binding.getVariable("subject").toString());
                     message.setBody(binding.getVariable("body").toString());
                 } catch (Exception e) {
