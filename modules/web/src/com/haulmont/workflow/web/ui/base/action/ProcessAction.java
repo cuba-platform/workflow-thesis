@@ -62,7 +62,7 @@ public class ProcessAction extends AbstractAction {
 
         final Map<String, Object> formManagerParams = new HashMap<String, Object>();
 
-        DsContext dsContext = ((Window.Editor) window).getDsContext();
+        DsContext dsContext = window.getDsContext();
         if(dsContext != null)
             formManagerParams.put("modifed",dsContext.isModified());
 
