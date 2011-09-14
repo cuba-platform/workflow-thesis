@@ -554,14 +554,15 @@ public class CardRolesFrame extends AbstractFrame {
             ProcRole procRole = procRolesDs.getItem(procRoleId);
             if (BooleanUtils.isTrue(procRole.getAssignToCreator()) && wfService.isCurrentUserContainsRole(procRole.getRole())) {
                 boolean found = false;
+                CardRole cardRole = null;
                 for (UUID cardRoleId : tmpCardRolesDs.getItemIds()) {
-                    CardRole cardRole = tmpCardRolesDs.getItem(cardRoleId);
+                    cardRole = tmpCardRolesDs.getItem(cardRoleId);
                     if (procRole.equals(cardRole.getProcRole())) {
                         found = true;
                         break;
                     }
                 }
-                if (!found || procRole.getMultiUser()) {
+                if (!found || procRole.getMultiUser() && !UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(cardRole != null ? cardRole.getUser() : null)) {
                     CardRole cr = new CardRole();
                     cr.setProcRole(procRole);
                     cr.setCode(procRole.getCode());
