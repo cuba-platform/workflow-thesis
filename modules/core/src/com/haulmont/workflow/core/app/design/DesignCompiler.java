@@ -307,7 +307,7 @@ public class DesignCompiler {
     }
 
     private Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
-        Map<String, String> states = new HashMap<String, String>();
+        Map<String, String> states = new LinkedHashMap<String, String>();
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
@@ -364,6 +364,9 @@ public class DesignCompiler {
             Attribute nameAttr = element.attribute("name");
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
                 Attribute classAttr = element.attribute("class");
+                if (element.getName().equals("end")) {
+                    return true;
+                }
                 if (classAttr != null) {
                     Class assignerClass = ScriptingProvider.loadClass("com.haulmont.workflow.core.activity.Assigner");
                     Class currentClass = ScriptingProvider.loadClass(classAttr.getValue());
