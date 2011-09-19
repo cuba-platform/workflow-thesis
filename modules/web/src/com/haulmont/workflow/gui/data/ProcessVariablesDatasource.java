@@ -23,6 +23,7 @@ import com.haulmont.workflow.core.entity.Card;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class ProcessVariablesDatasource extends AbstractDatasource<ProcessVariablesEntity> {
 
@@ -73,7 +74,7 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
         state = State.VALID;
     }
 
-    public void commited(Map<Entity, Entity> map) {
+    public void committed(Set<Entity> entities) {
     }
 
     public DsContext getDsContext() {
