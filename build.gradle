@@ -6,7 +6,7 @@
 
 allprojects {
     artifactGroup = 'com.haulmont.workflow'
-    artifactVersion = '3.0'
+    artifactVersion = '3.1'
     isSnapshot = true
     //tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
@@ -47,10 +47,10 @@ configure([sharedLibModule, globalModule, coreModule, webModule]) {
     apply(plugin: 'cuba')
 
     dependencies {
-        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.0-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.0-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.0-SNAPSHOT')
-        compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: '3.1-SNAPSHOT')
         testCompile(group: 'junit', name: 'junit', version: '4.5')
     }
 
@@ -84,8 +84,8 @@ configure(coreModule) {
     dependencies {
         compile(globalModule)
         compile(sharedLibModule)
-        compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.0-SNAPSHOT')
-        testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.0-SNAPSHOT', classifier: 'tests')
+        compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.1-SNAPSHOT')
+        testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: '3.1-SNAPSHOT', classifier: 'tests')
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.2.20110405')
         compile(json)
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
@@ -114,7 +114,7 @@ configure(webModule) {
     dependencies {
         compile(sharedLibModule)
         compile(globalModule)
-        compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: '3.1-SNAPSHOT')
         compile(json)
         provided(servletApi)
         webcontent(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
