@@ -287,7 +287,7 @@ public class ProcEditor extends AbstractEditor {
               ProcRole pr = rolesDs.getItem(itemId);
               com.vaadin.ui.Component component = null;
               if (pr != null) {
-                if ((PersistenceHelper.isNew(pr) || proc.getDesign() != null) && rolesTable.isEditable()) {
+                if (PersistenceHelper.isNew(pr) && rolesTable.isEditable()) {
                   final UUID uuid = itemId;
                   final com.vaadin.ui.TextField textField = new com.vaadin.ui.TextField()
                   textField.setValue(pr.getCode());

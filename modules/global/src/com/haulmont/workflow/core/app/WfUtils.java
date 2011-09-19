@@ -87,9 +87,9 @@ public class WfUtils {
             charTable['\u0427'] = "CH";
             charTable['\u0428'] = "SH";
             charTable['\u0429'] = "SH";
-            charTable['\u042A'] = "'";
+            charTable['\u042A'] = "";
             charTable['\u042B'] = "Y";
-            charTable['\u042C'] = "'";
+            charTable['\u042C'] = "";
             charTable['\u042D'] = "E";
             charTable['\u042E'] = "U";
             charTable['\u042F'] = "YA";
@@ -113,8 +113,10 @@ public class WfUtils {
             StringBuilder sb = new StringBuilder(text.length());
             for (char symbol : charBuffer) {
                 String replace = charTable[symbol];
-                if((replace==null)&&(!CharUtils.isAscii(symbol))){
-                    replace="_";
+                if ((replace == null) && (!(CharUtils.isAsciiAlphaLower(symbol)
+                        || CharUtils.isAsciiAlphaUpper(symbol)
+                        || CharUtils.isAsciiNumeric(symbol)))) {
+                    replace = "_";
                 }
                 sb.append(replace == null ? symbol : replace);
             }
