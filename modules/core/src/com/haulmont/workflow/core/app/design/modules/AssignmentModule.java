@@ -174,7 +174,7 @@ public class AssignmentModule extends Module {
                 JSONObject jsProps = jsTimer.getJSONObject("properties");
                 dueDateType = jsProps.getString("dueDateType");
                 if(StringUtils.trimToNull(dueDateType)==null||"null".equals(dueDateType)){
-                    throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.dueDateTypeNotDefined", caption));
+                    throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class, "exception.dueDateTypeNotDefined", caption));
                 }
                 if ("manual".equals(dueDateType)) {
                     JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
@@ -182,7 +182,7 @@ public class AssignmentModule extends Module {
                         String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
                         dueDates.append(dueDate);
                     } catch (JSONException e) {
-                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.dueDateInvalid", caption));
+                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class, "exception.dueDateInvalid", caption));
                     }
                 } else if ("form".equals(dueDateType)) {
                     dueDates.append("process");
@@ -192,11 +192,13 @@ public class AssignmentModule extends Module {
                 if (type.equals("script")) {
                     String script = jsProps.getString("name");
                     if (StringUtils.trimToNull(script) == null) {
-                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.timerScriptNotDefined", caption));
+                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
+                                "exception.timerScriptNotDefined", caption));
                     }
                     String fileName = scriptNamesMap.get(script);
                     if (fileName == null)
-                        throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.timerScriptNotFound", caption, script));
+                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
+                                "exception.timerScriptNotFound", caption, script));
                     scripts.append(fileName);
                 } else {
                     String transition = WfUtils.encodeKey(jsProps.getString("name"));
@@ -215,7 +217,8 @@ public class AssignmentModule extends Module {
             writeJpdlStringPropertyEl(element, "scripts", scripts.toString());
 
         } catch (JSONException e) {
-            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.compileTimersError", caption));
+            throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
+                    "exception.compileTimersError", caption));
         }
     }
 

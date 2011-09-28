@@ -80,7 +80,7 @@ public abstract class Module {
                 this.caption = name;
             } else {
                 throw new DesignCompilationException(
-                        MessageProvider.getMessage(getClass(), "exception.emptyName"));
+                        MessageProvider.getMessage(Module.class, "exception.emptyName"));
             }
         } catch (JSONException e) {
             throw new DesignCompilationException(e);
