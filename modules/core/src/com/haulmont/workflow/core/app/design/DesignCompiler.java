@@ -607,6 +607,9 @@ public class DesignCompiler {
                 String terminalName = outputs.getJSONObject(j).getString("name");
                 List<TransitionParams> currParamsList = moduleTransitionsParams.get(terminalName);
                 if (currParamsList == null) {
+                    if (ObjectUtils.equals("Fork", jsModule.get("name"))) {
+                        continue;
+                    }
                     errors.add(new ModuleError(WfUtils.encodeKey(jsModule.getJSONObject("value").getString("name")),
                             MessageProvider.formatMessage(
                                     getClass(),
