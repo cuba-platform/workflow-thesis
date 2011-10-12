@@ -4,6 +4,7 @@
         datasource="procStageTypeDs"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         caption="msg://procStageTypeEditor.caption"
+        focusComponent="fieldGroup"
         >
 
     <dsContext>
@@ -17,7 +18,7 @@
     <#assign width = 250>
     <layout expand="windowActions">
         <vbox margin="true" stylename="edit-area">
-            <fieldGroup datasource="procStageTypeDs">
+            <fieldGroup id="fieldGroup" datasource="procStageTypeDs">
                 <column>
                     <field id="name" width="${width}"/>
                     <field id="code" width="${width}"/>

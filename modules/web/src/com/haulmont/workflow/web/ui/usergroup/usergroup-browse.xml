@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.usergroup.UserGroupBrowser"
         messagesPack="com.haulmont.workflow.web.ui.usergroup"
         caption="msg://userGroupBrowser.caption"
+        focusComponent="genericFilter"
         >
 
     <dsContext>

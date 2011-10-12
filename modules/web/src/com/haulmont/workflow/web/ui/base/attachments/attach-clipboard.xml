@@ -3,7 +3,8 @@
         class="com.haulmont.workflow.web.ui.base.attachments.AttachmentClipboard"
         messagesPack="com.haulmont.workflow.web.ui.base"
         datasource="attachmentsDs"
-        caption="msg://attachClipboard.caption">
+        caption="msg://attachClipboard.caption"
+        focusComponent="attachmentsTable">
     <dsContext>
         <collectionDatasource
                 id="attachmentsDs"

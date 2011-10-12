@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.design"
         caption="msg://localize.caption"
         datasource="designDs"
+        focusComponent="keysTree"
         >
 
     <dsContext>

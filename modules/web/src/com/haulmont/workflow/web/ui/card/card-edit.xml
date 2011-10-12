@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.card"
         datasource="cardDs"
         caption="msg://cardEditor.caption"
+        focusComponent="description"
         >
 
     <dsContext>

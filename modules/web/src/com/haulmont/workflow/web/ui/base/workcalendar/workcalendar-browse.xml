@@ -2,7 +2,8 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.workflow.web.ui.base.workcalendar.WorkCalendarBrowser"
         messagesPack="com.haulmont.workflow.web.ui.base.workcalendar"
-        caption="msg://workCalendarBrowseCaption">
+        caption="msg://workCalendarBrowseCaption"
+        focusComponent="workDaysTable">
 
     <dsContext>
         <collectionDatasource id="workDaysDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity"

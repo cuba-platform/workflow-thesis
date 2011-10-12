@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.design"
         caption="msg://editor.caption"
         datasource="designDs"
+        focusComponent="nameField"
         >
 
     <dsContext>

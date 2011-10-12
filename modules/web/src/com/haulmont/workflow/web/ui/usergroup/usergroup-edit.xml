@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.usergroup"
         datasource="userGroupDs"
         caption="msg://userGroupEditor.caption"
+        focusComponent="name"
         >
 
     <dsContext>

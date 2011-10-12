@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.design.ImportDialog"
         messagesPack="com.haulmont.workflow.web.ui.design"
         caption="msg://fileUploadDialog.caption"
+        focusComponent="fileUpload"
         >
 
     <metadataContext>

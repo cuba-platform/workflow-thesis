@@ -3,7 +3,8 @@
         class="com.haulmont.workflow.web.ui.base.attachments.AttachmentsMultiUploader"
         datasource="attachDs"
         messagesPack="com.haulmont.workflow.web.ui.base.attachments"
-        caption="msg://editorCaption">
+        caption="msg://editorCaption"
+        focusComponent="multiUpload">
 
     <dsContext>
         <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment"

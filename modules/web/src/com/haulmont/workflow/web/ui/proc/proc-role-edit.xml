@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="roleDs"
         caption="msg://roleEditor.caption"
+        focusComponent="code"
         >
 
     <dsContext>

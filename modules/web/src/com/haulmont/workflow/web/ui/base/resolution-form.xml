@@ -2,7 +2,8 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.workflow.web.ui.base.ResolutionForm"
         messagesPack="com.haulmont.workflow.web.ui.base"
-        caption="msg://resolutionEditCaption">
+        caption="msg://resolutionEditCaption"
+        focusComponent="outcomeText">
 
     <dsContext>
         <collectionDatasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment"

@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="permissionDs"
         caption="msg://permissionEditor.caption"
+        focusComponent="state"
         >
 
     <dsContext>

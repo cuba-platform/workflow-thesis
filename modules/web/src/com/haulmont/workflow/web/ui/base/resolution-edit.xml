@@ -3,7 +3,8 @@
         class="com.haulmont.workflow.web.ui.base.ResolutionEditor"
         messagesPack="com.haulmont.workflow.web.ui.base"
         datasource="assignmentDs"
-        caption="msg://resolutionEditCaption">
+        caption="msg://resolutionEditCaption"
+        focusComponent="proc">
 
     <dsContext>
         <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit"/>

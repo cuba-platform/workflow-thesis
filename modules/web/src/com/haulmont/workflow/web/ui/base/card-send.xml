@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.base.CardSend"
         messagesPack="com.haulmont.workflow.web.ui.base"
         caption="msg://cardSend.caption"
+        focusComponent="createUserLookup"
         >
 
     <dsContext>

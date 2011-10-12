@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.proc.ProcStageTypeBrowser"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         caption="msg://procStageTypeBrowser.caption"
+        focusComponent="table"
         >
 
     <dsContext>

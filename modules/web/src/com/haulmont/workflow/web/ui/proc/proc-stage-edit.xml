@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="stageDs"
         caption="msg://stageEditor.caption"
+        focusComponent="name"
         >
 
     <dsContext>

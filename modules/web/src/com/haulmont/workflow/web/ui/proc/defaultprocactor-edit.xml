@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.proc.DefaultProcActorEditor"
         datasource="dpaDs"
         caption="msg://defaultProcActorEditor"
+        focusComponent="userLookup"
         >
 
     <dsContext>

@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.attachmenttypes"
         datasource="typeDs"
         caption="msg://attachType.edit"
+        focusComponent="fieldsTable"
         >
 
     <dsContext>

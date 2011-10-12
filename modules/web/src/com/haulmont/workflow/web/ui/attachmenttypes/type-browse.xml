@@ -3,6 +3,7 @@
         class="com.haulmont.workflow.web.ui.attachmenttypes.AttachmentTypesBrowser"
         messagesPack="com.haulmont.workflow.web.ui.attachmenttypes"
         caption="msg://attachType.browse"
+        focusComponent="table"
         >
 
     <dsContext>
