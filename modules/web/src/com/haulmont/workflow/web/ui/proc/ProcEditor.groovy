@@ -188,7 +188,7 @@ public class ProcEditor extends AbstractEditor {
                           p.cardTypes = p.cardTypes + ','
                       }
                     },
-                    afterCommit: { CommitContext<Entity> context, Map<Entity, Entity> result ->
+                    afterCommit: { CommitContext<Entity> context, Set<Entity> result ->
                     }
             ] as CommitListener
     )
