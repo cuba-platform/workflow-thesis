@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
@@ -26,6 +27,7 @@ import java.util.Map;
 @Entity(name = "wf$ProcStage")
 @Table(name = "WF_PROC_STAGE")
 @NamePattern("%s|name")
+@SystemLevel
 public class ProcStage extends StandardEntity {
     private static final long serialVersionUID = 6943011386558120006L;
 

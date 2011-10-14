@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Entity(name = "wf$CardComment")
 @Table(name = "WF_CARD_COMMENT")
+@SystemLevel
 public class CardComment extends StandardEntity {
 
     @Column(name = "COMMENT", length = 100000)

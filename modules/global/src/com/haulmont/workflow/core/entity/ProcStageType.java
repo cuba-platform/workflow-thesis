@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 @Entity(name = "wf$ProcStageType")
 @Table(name = "WF_PROC_STAGE_TYPE")
 @NamePattern("%s|name")
+@SystemLevel
 public class ProcStageType extends StandardEntity {
     private static final long serialVersionUID = -4894528040675569985L;
 

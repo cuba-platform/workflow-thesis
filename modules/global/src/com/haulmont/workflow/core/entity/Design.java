@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ import java.util.Set;
 @Entity(name = "wf$Design")
 @Table(name = "WF_DESIGN")
 @NamePattern("%s|name")
+@SystemLevel
 public class Design extends StandardEntity {
 
     private static final long serialVersionUID = 4822453489596189614L;

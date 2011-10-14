@@ -11,12 +11,14 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "wf$Timer")
 @Table(name = "WF_TIMER")
+@SystemLevel
 public class TimerEntity extends BaseUuidEntity {
 
     private static final long serialVersionUID = 4721435849536800174L;

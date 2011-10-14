@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageUtils;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
 
 @Entity(name = "wf$CardProc")
 @Table(name = "WF_CARD_PROC")
+@SystemLevel
 public class CardProc extends StandardEntity {
 
     private static final long serialVersionUID = -90039251878415667L;

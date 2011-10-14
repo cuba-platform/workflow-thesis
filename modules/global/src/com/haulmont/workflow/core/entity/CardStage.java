@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.Date;
 @Entity(name = "wf$CardStage")
 @Table(name = "WF_CARD_STAGE")
 @NamePattern("%s|procStage.name")
+@SystemLevel
 public class CardStage extends StandardEntity {
     private static final long serialVersionUID = 7689780973392226763L;
 

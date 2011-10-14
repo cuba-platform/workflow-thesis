@@ -13,6 +13,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
@@ -23,6 +24,7 @@ import javax.persistence.*;
 
 @Entity(name = "wf$ProcRolePermission")
 @Table(name = "WF_PROC_ROLE_PERMISSION")
+@SystemLevel
 public class ProcRolePermission extends StandardEntity {
     private static final long serialVersionUID = -7951136164637586925L;
 

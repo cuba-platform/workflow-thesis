@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
@@ -19,6 +20,7 @@ import javax.persistence.*;
 @DiscriminatorValue("C")
 @Listeners("com.haulmont.workflow.core.listeners.CardAttachmentEntityListener")
 @NamePattern("%s|name")
+@SystemLevel
 public class CardAttachment extends Attachment {
 
     private static final long serialVersionUID = -6196909618841405629L;

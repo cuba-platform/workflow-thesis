@@ -13,12 +13,14 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "wf$CardRelation")
 @Table(name = "WF_CARD_RELATION")
+@SystemLevel
 public class CardRelation extends BaseUuidEntity implements SoftDelete, Updatable {
 
     @Column(name = "UPDATE_TS")

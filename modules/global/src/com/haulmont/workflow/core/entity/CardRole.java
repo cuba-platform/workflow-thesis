@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import javax.persistence.*;
 @Entity(name = "wf$CardRole")
 @Table(name = "WF_CARD_ROLE")
 @NamePattern("%s|code")
+@SystemLevel
 public class CardRole extends StandardEntity {
 
     private static final long serialVersionUID = -2251386967542354599L;

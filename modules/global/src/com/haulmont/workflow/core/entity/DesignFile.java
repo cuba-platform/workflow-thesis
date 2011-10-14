@@ -11,11 +11,13 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
 @Entity(name = "wf$DesignFile")
 @Table(name = "WF_DESIGN_FILE")
+@SystemLevel
 public class DesignFile extends BaseUuidEntity {
 
     private static final long serialVersionUID = -6736255284492025204L;

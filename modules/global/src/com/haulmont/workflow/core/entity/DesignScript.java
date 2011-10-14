@@ -12,12 +12,14 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
 @Entity(name = "wf$DesignScript")
 @Table(name = "WF_DESIGN_SCRIPT")
 @NamePattern("%s|name")
+@SystemLevel
 public class DesignScript extends StandardEntity {
 
     private static final long serialVersionUID = -1279214573901102955L;

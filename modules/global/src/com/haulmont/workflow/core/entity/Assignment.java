@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Entity(name = "wf$Assignment")
 @Table(name = "WF_ASSIGNMENT")
+@SystemLevel
 public class Assignment extends StandardEntity {
 
     private static final long serialVersionUID = 2889343799342063691L;

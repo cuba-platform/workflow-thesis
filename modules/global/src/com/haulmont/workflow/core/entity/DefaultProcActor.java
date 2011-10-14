@@ -11,6 +11,7 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.chile.core.annotations.NamePattern;
 
@@ -18,6 +19,7 @@ import javax.persistence.*;
 
 @Entity(name = "wf$DefaultProcActor")
 @Table(name = "WF_DEFAULT_PROC_ACTOR")
+@SystemLevel
 public class DefaultProcActor extends StandardEntity {
     private static final long serialVersionUID = 1792932805043314692L;
 

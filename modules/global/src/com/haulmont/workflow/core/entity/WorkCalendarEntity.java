@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,7 @@ import java.util.Date;
 
 @Entity(name = "wf$Calendar")
 @Table(name = "WF_CALENDAR")
+@SystemLevel
 public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
 
     private static final long serialVersionUID = 8935633783119746469L;
