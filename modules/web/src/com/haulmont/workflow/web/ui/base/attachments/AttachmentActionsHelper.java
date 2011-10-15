@@ -95,6 +95,9 @@ public class AttachmentActionsHelper {
                             }
                             if (!find) {
                                 attachDs.addItem(attachment);
+                                if (!(attachDs instanceof PropertyDatasource)) {
+                                    attachDs.commit();
+                                }
                                 attachments.refresh();
                             }
                         }

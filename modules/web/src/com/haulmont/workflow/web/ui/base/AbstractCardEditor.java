@@ -30,15 +30,14 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import javax.inject.Inject;
+import java.util.*;
 
 public abstract class AbstractCardEditor extends AbstractEditor {
 
@@ -50,6 +49,9 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     protected CardRolesFrame cardRolesFrame;
     protected ResolutionsFrame resolutionsFrame;
     protected CardAttachmentsFrame cardAttachmentsFrame;
+
+    @Inject
+    protected CollectionDatasource<CardAttachment, UUID> attachmentsDs;
 
     public AbstractCardEditor(IFrame frame) {
         super(frame);
@@ -202,5 +204,21 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(this.getId());
         WebWindowManager webWindowManager = App.getInstance().getWindowManager();
         webWindowManager.openEditor(windowInfo, getItem(), openType, parameters);
+    }
+
+    protected void initAttachments(Card item) {
+        if (attachmentsDs != null) {
+            List<CardAttachment> cas = new LinkedList<CardAttachment>();
+            if (item.getAttachments() != null && !item.getAttachments().isEmpty()) {
+                for (CardAttachment ca : item.getAttachments()) {
+                    if (PersistenceHelper.isNew(ca)) {
+                        cas.add(ca);
+                    }
+                }
+            }
+            for (CardAttachment ca : cas) {
+                attachmentsDs.addItem(ca);
+            }
+        }
     }
 }

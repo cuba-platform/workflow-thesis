@@ -90,8 +90,8 @@ public class CardAttachmentsFrame extends AbstractFrame {
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
-        pasteAttachBtn.setAction(
-                AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator));
+        Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator);
+        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
