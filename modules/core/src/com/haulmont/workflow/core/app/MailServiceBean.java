@@ -13,7 +13,6 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
@@ -29,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service(MailService.NAME)
-public class MailServiceBean implements MailService  {
+public class MailServiceBean implements MailService {
 
     protected Log log = LogFactory.getLog(MailServiceBean.class);
 
@@ -40,15 +39,15 @@ public class MailServiceBean implements MailService  {
         String subject;
         String body;
 
-        if(card == null)
-           return;
-        if(users == null)
-           return;
+        if (card == null)
+            return;
+        if (users == null)
+            return;
 
-        for(User user: new LinkedList<User>(users)){
-            if(StringUtils.trimToNull(user.getEmail()) != null){
-                log.debug("Card " + card.getDescription()+card.getLocState()+" send user "+user.getLogin()+ " by email "
-                        +user.getEmail()+" with comment "+comment);
+        for (User user : new LinkedList<User>(users)) {
+            if (StringUtils.trimToNull(user.getEmail()) != null) {
+                log.debug("Card " + card.getDescription() + card.getLocState() + " send user " + user.getLogin() + " by email "
+                        + user.getEmail() + " with comment " + comment);
                 try {
                     Binding binding = new Binding();
                     binding.setVariable("card", card);
@@ -66,31 +65,13 @@ public class MailServiceBean implements MailService  {
                     subject = String.format("Notification: %1$s - %2$s", card.getDescription(), card.getLocState());
                     body = String.format("Card %1$s has become %2$s \nComment: %3$s", card.getDescription(), card.getLocState(), comment);
                 }
-                Mailer mailer = new Mailer(user.getEmail(), subject, body);
-                Thread t = new Thread(mailer);
-                t.start();
+                try {
+                    EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
+                    emailer.sendEmail(user.getEmail(), subject, body);
+                } catch (EmailException ex) {
+                    log.warn(ex);
+                }
             }
         }
-    }
-    private class Mailer implements Runnable{
-        private String email;
-        private String subject;
-        private String body;
-        
-        public Mailer(String email, String subject, String body) {
-            this.email = email;
-            this.subject = subject;
-            this.body = body;
-        }
-
-        public void run(){
-            try{
-                EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
-                emailer.sendEmail(email, subject, body);
-            }catch(EmailException ex){
-                log.warn("Error send mail", ex);
-            }
-        }
-
     }
 }
