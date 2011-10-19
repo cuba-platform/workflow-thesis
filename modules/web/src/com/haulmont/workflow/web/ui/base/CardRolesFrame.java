@@ -646,18 +646,19 @@ public class CardRolesFrame extends AbstractFrame {
         }
         if (procRole == null)
             return;
-
-        if (BooleanUtils.isTrue(procRole.getMultiUser()) && !procActorExists(procRole, user)) {
-            CardRole cardRole = new CardRole();
-            cardRole.setProcRole(procRole);
-            cardRole.setCode(roleCode);
-            cardRole.setCard(card);
-            cardRole.setNotifyByEmail(notifyByEmail);
-            cardRole.setUser(user);
-            assignNextSortOrder(cardRole);
-            tmpCardRolesDs.addItem(cardRole);
-        } else {
-            setProcActor(proc, procRole, user, notifyByEmail);
+        if (!procActorExists(procRole, user)) {
+            if (BooleanUtils.isTrue(procRole.getMultiUser())) {
+                CardRole cardRole = new CardRole();
+                cardRole.setProcRole(procRole);
+                cardRole.setCode(roleCode);
+                cardRole.setCard(card);
+                cardRole.setNotifyByEmail(notifyByEmail);
+                cardRole.setUser(user);
+                assignNextSortOrder(cardRole);
+                tmpCardRolesDs.addItem(cardRole);
+            } else {
+                setProcActor(proc, procRole, user, notifyByEmail);
+            }
         }
     }
 
