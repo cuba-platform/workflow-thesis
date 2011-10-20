@@ -114,6 +114,11 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
 
+        AbstractWfAccessData accessData = getContext().getParamValue("accessData");
+        if (accessData != null) {
+            accessData.setItem(getItem());
+        }
+
 //        if (attachmentsTable != null) {
 //            FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
 //            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
@@ -121,7 +126,6 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (cardProcFrame != null) {
             cardProcFrame.setCard((Card) getItem());
-            AbstractAccessData accessData = getContext().getParamValue("accessData");
             if (accessData != null) {
                 boolean disabled = (accessData.getDisabledComponents() != null)
                         && accessData.getDisabledComponents().contains(cardProcFrame.getId());
@@ -131,7 +135,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         if (cardRolesFrame != null) {
             cardRolesFrame.setCard((Card) getItem());
-            AbstractAccessData accessData = getContext().getParamValue("accessData");
+            accessData = getContext().getParamValue("accessData");
             if (accessData != null) {
                 boolean disabled = (accessData.getDisabledComponents() != null)
                         && accessData.getDisabledComponents().contains(cardRolesFrame.getId());

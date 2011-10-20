@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.web.ui.base;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.AbstractAccessData;
 import com.haulmont.workflow.core.app.WfService;
@@ -23,8 +24,14 @@ import java.util.Map;
 
 public abstract class AbstractWfAccessData extends AbstractAccessData {
 
+    private Entity item;
+
     public AbstractWfAccessData(Map<String, Object> params) {
         super(params);
+    }
+
+    public void setItem(Entity item) {
+        this.item = item;
     }
 
     public abstract boolean getSaveEnabled();
