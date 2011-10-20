@@ -132,7 +132,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                 if (minutes >= startM) return true;
                 else return false;
             } else if (hour == endH) {
-                if (minutes < endM) return true;
+                if (minutes <= endM) return true;
                 else return false;
             }
             return false;
