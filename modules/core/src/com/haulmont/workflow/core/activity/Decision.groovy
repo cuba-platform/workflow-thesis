@@ -39,7 +39,7 @@ class Decision implements ActivityBehaviour {
     String fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName
 
     log.debug("Running script " + fileName)
-    Object result = ScriptingProvider.runGroovyScript(fileName, params)
+    Object result = ScriptingProvider.evaluateGroovy(ScriptingProvider.getResourceAsString(fileName), params)
     if (result instanceof Boolean) {
       if (result)
         execution.take(YES_TRANSITION)
