@@ -519,8 +519,8 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void initDefaultActors(Proc proc) {
-        if (!tmpCardRolesDs.getItemIds().isEmpty())
-            return;
+        //if (!tmpCardRolesDs.getItemIds().isEmpty())
+        //    return;
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
         ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null")
@@ -528,14 +528,7 @@ public class CardRolesFrame extends AbstractFrame {
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
         for (DefaultProcActor dpa : dpaList) {
-            CardRole cr = new CardRole();
-            cr.setProcRole(dpa.getProcRole());
-            cr.setCode(dpa.getProcRole().getCode());
-            cr.setUser(dpa.getUser());
-            cr.setCard(card);
-            cr.setNotifyByEmail(dpa.getNotifyByEmail());
-            assignNextSortOrder(cr);
-            tmpCardRolesDs.addItem(cr);
+            addProcActor(proc, dpa.getProcRole().getCode(), dpa.getUser(), dpa.getNotifyByEmail());
         }
 
         initAssignedToCreatorActors();
@@ -567,14 +560,7 @@ public class CardRolesFrame extends AbstractFrame {
                     }
                 }
                 if (!found || BooleanUtils.isTrue(procRole.getMultiUser()) && addAssignedActor) {
-                    CardRole cr = new CardRole();
-                    cr.setProcRole(procRole);
-                    cr.setCode(procRole.getCode());
-                    cr.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
-                    cr.setCard(card);
-                    cr.setNotifyByEmail(true);
-                    assignNextSortOrder(cr);
-                    tmpCardRolesDs.addItem(cr);
+                    addProcActor(procRole.getProc(), procRole.getCode(), UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser(), true);
                 }
             }
         }
@@ -676,7 +662,7 @@ public class CardRolesFrame extends AbstractFrame {
         List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
         if (cardRoles != null) {
             for (CardRole cr : cardRoles) {
-                if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user))) {
+                if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user) || user == null)) {
                     return true;
                 }
             }
