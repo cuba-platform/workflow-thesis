@@ -779,7 +779,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void fillMissingRoles() {
-        Set<String> requiredRolesCodes = getRequiredRolesCodes(true/*cardRolesDs.getItemIds().size() == 0*/);
+        Set<String> requiredRolesCodes = getRequiredRolesCodes(false/*cardRolesDs.getItemIds().size() == 0*/);
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
             requiredRolesCodes.remove(cardRole.getCode());
@@ -791,7 +791,27 @@ public class CardRolesFrame extends AbstractFrame {
         for (String roleCode : requiredRolesCodes) {
             if (!roleCode.contains("|"))
                 addProcActor(proc, roleCode, null, true);
+            else {
+                String[] codes = roleCode.split("\\s*[|]\\s*");
+                if (!containsAnyRoleCode(codes)) {
+                    for (String code : codes) {
+                        addProcActor(proc, code, null, true);        
+                    }
+                }
+            }
         }
+    }
+
+    private boolean containsAnyRoleCode(String[] roleCodes) {
+        if (roleCodes != null && tmpCardRolesDs.getItemIds() != null)
+            for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+                CardRole cardRole = tmpCardRolesDs.getItem(uuid);
+                for (String code : roleCodes) {
+                    if (code.equals(cardRole.getCode()))
+                        return true;
+                }
+            }
+        return false;
     }
 
     public Set<String> getEmptyRolesNames() {
