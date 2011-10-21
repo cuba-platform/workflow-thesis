@@ -155,7 +155,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             int day = calendar.get(Calendar.DAY_OF_WEEK);
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minutes = calendar.get(Calendar.MINUTE);
-            if (day < dayOfWeek && (hour < startH) || ((hour == startH) && (minutes < startM))) {
+            if (day < dayOfWeek || (hour < startH) || ((hour == startH) && (minutes < startM))) {
                 return true;
             }
             return false;
