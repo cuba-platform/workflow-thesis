@@ -548,6 +548,7 @@ public class CardRolesFrame extends AbstractFrame {
             if (BooleanUtils.isTrue(procRole.getAssignToCreator()) && wfService.isCurrentUserContainsRole(procRole.getRole())) {
                 boolean found = false;
                 boolean addAssignedActor = true;
+                boolean singleUserIsNull = false;
                 for (UUID cardRoleId : tmpCardRolesDs.getItemIds()) {
                     CardRole cardRole = tmpCardRolesDs.getItem(cardRoleId);
                     if (procRole.equals(cardRole.getProcRole())) {
@@ -555,11 +556,16 @@ public class CardRolesFrame extends AbstractFrame {
                         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
                             if (addAssignedActor)
                                 addAssignedActor = !UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(cardRole != null ? cardRole.getUser() : null);
-                        } else
+                        } else {
+                            if (cardRole.getUser() == null) {
+                                addAssignedActor = !UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(cardRole != null ? cardRole.getUser() : null);
+                                singleUserIsNull  = true;
+                            }
                             break;
+                        }
                     }
                 }
-                if (!found || BooleanUtils.isTrue(procRole.getMultiUser()) && addAssignedActor) {
+                if (!found || (BooleanUtils.isTrue(procRole.getMultiUser()) || singleUserIsNull)&& addAssignedActor) {
                     addProcActor(procRole.getProc(), procRole.getCode(), UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser(), true);
                 }
             }
