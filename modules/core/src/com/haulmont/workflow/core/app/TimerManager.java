@@ -50,6 +50,9 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
     @Inject
     private ClusterManagerAPI clusterManager;
 
+    @Inject
+    private WorkCalendarAPI workCalendarAPI;
+
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
                          Class<? extends TimerAction> taskClass, Map<String, String> taskParams) {
         checkArgument(card != null, "card is null");
@@ -119,11 +122,15 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
 
             List<TimerEntity> timers;
 
+            Date currentTime = TimeProvider.currentTimestamp();
+            if (!workCalendarAPI.isDateWorkDay(currentTime))
+                return;
+
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
                 Query q = em.createQuery("select t from wf$Timer t where t.dueDate <= ?1 order by t.dueDate desc");
-                q.setParameter(1, TimeProvider.currentTimestamp());
+                q.setParameter(1, currentTime);
                 timers = q.getResultList();
                 tx.commit();
             } finally {
