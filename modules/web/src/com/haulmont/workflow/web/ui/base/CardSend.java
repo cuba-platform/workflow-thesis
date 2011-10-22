@@ -133,12 +133,12 @@ public class CardSend extends AbstractWindow {
                         }
                     }
                     User user = card.getCreator();
-                    if (user != null && !alreadyAdded(user)) {
+                    if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
                         tmpUserDs.addItem(user);
                     }
                 } else if (createCreatorUserCaption.equals(value)) {
                     User user = card.getCreator();
-                    if (user != null && !alreadyAdded(user)) {
+                    if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
                         tmpUserDs.addItem(user);
                     }
                 } else {;
@@ -280,7 +280,7 @@ public class CardSend extends AbstractWindow {
             }
             user = card.getCreator();
             if (user != null) {
-                if (!alreadyAdded(user)) {
+                if (!alreadyAdded(user) && user.getCreatedBy() != null) {
                     options.add(createCreatorUserCaption);
                 }
             }
