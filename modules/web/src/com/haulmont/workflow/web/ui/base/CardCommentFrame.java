@@ -218,12 +218,14 @@ public class CardCommentFrame extends AbstractWindow {
     protected void openCardSend(Card card) {
         Map paramsCard = new HashMap();
 
-        CollectionDatasource cardRolesDs;
+        CollectionDatasource cardRolesDs = null;
         CardProcFrame cardProcFrame = (CardProcFrame) getComponent("cardProcFrame");
         if (cardProcFrame != null) {
             cardRolesDs = cardProcFrame.getCardRolesFrame().getDsContext().get("tmpCardRolesDs");
         } else {
-            cardRolesDs = ((IFrame) getComponent("cardRolesFrame")).getDsContext().get("tmpCardRolesDs");
+            IFrame frame = (IFrame) getComponent("cardRolesFrame");
+            if (frame != null)
+                cardRolesDs = frame.getDsContext().get("tmpCardRolesDs");
         }
         paramsCard.put("cardRolesDs", cardRolesDs);
         paramsCard.put("item", card);
