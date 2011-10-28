@@ -32,6 +32,7 @@
                 <column id="attachType.locName" caption="msg://typeName"/>
                 <column id="file.size" caption="msg://fileSize"/>
                 <column id="versionNum"/>
+                <column id="comment" caption="msg://comment"/>
             </columns>
             <rows datasource="attachmentsDs"/>
         </treeTable>
