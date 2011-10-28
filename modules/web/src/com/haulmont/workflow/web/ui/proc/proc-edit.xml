@@ -68,11 +68,11 @@
                                     <textField id="states" datasource="procDs" property="states"
                                                width="${width}"/>
                                 </row>
-                                <row>
-                                    <label value="msg://permissionsEnabled"/>
-                                    <checkBox id="permissionsEnabled" datasource="procDs"
-                                              property="permissionsEnabled"/>
-                                </row>
+                                <!--<row>-->
+                                    <!--<label value="msg://permissionsEnabled"/>-->
+                                    <!--<checkBox id="permissionsEnabled" datasource="procDs"-->
+                                              <!--property="permissionsEnabled"/>-->
+                                <!--</row>-->
                                 <row>
                                     <label value="msg://availableOnlyForRole"/>
                                     <lookupField id="availableRole"
@@ -106,7 +106,7 @@
                     </vbox>
 
                     <vbox margin="false;false;false;true;">
-                        <split orientation="vertical">
+                        <!--<split orientation="vertical">-->
                             <vbox expand="dpaTable" spacing="true">
                                 <label value="msg://dpa"/>
                                 <hbox align="MIDDLE_LEFT" spacing="true">
@@ -122,7 +122,7 @@
                                     <rows datasource="dpaDs"/>
                                 </table>
                             </vbox>
-                            <vbox id="permissionsPane" expand="permissionsTable">
+                            <!--<vbox id="permissionsPane" expand="permissionsTable">
                                 <label value="msg://permissions"/>
                                 <table id="permissionsTable" editable="false">
                                     <buttonsPanel>
@@ -138,8 +138,8 @@
                                     </columns>
                                     <rows datasource="permissionsDs"/>
                                 </table>
-                            </vbox>
-                        </split>
+                            </vbox>-->
+                        <!--</split>-->
                     </vbox>
                 </split>
             </tab>

@@ -70,16 +70,16 @@ public class ProcEditor extends AbstractEditor {
     secRolesDs = getDsContext().get("secRoles");
     secRolesDs.refresh();
 
-    final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
-    final Component permissionsPane = getComponent("permissionsPane");
-    permissionsEnabled.addListener (new ValueListener(){
-
-      void valueChanged(Object source, String property, Object prevValue, Object value) {
-        if(permissionsPane != null)
-          permissionsPane.setVisible(permissionsEnabled.getValue());
-      }
-
-    });
+//    final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
+//    final Component permissionsPane = getComponent("permissionsPane");
+//    permissionsEnabled.addListener (new ValueListener(){
+//
+//      void valueChanged(Object source, String property, Object prevValue, Object value) {
+//        if(permissionsPane != null)
+//          permissionsPane.setVisible(permissionsEnabled.getValue());
+//      }
+//
+//    });
 
     rolesTable = getComponent("rolesTable")
     TableActionsHelper rolesHelper = new TableActionsHelper(this, rolesTable)
@@ -193,41 +193,44 @@ public class ProcEditor extends AbstractEditor {
             ] as CommitListener
     )
 
-    List permissionsActions = []
-    permissionsTable = getComponent("permissionsTable")
-    TableActionsHelper permissionsTableHelper = new TableActionsHelper(this, permissionsTable)
-    Action createPermissionsAction = permissionsTableHelper.createCreateAction(new ValueProvider() {
+      //todo rework mechanism
+      /*List permissionsActions = []
+      permissionsTable = getComponent("permissionsTable")
+      if (permissionsTable != null) {
+          TableActionsHelper permissionsTableHelper = new TableActionsHelper(this, permissionsTable)
+          Action createPermissionsAction = permissionsTableHelper.createCreateAction(new ValueProvider() {
 
-      Map<String, Object> getValues() {
-        return ['procRoleFrom' : rolesDs.getItem()]
-        return null
-      }
+              Map<String, Object> getValues() {
+                  return ['procRoleFrom': rolesDs.getItem()]
+                  return null
+              }
 
-      Map<String, Object> getParameters() {
-        return ['proc' : procDs.getItem()]
-      }
-    }, WindowManager.OpenType.DIALOG)
+              Map<String, Object> getParameters() {
+                  return ['proc': procDs.getItem()]
+              }
+          }, WindowManager.OpenType.DIALOG)
 
-    Action editPermissionsAction = permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc' : params['param$item']])
-    permissionsActions.add(createPermissionsAction)
-    permissionsActions.add(editPermissionsAction)
-    permissionsActions.add(permissionsTableHelper.createRemoveAction(false))
+          Action editPermissionsAction = permissionsTableHelper.createEditAction(WindowManager.OpenType.DIALOG, ['proc': params['param$item']])
+          permissionsActions.add(createPermissionsAction)
+          permissionsActions.add(editPermissionsAction)
+          permissionsActions.add(permissionsTableHelper.createRemoveAction(false))
 
-    permissionsActions.each {
-      it.enabled = false
-    }
+          permissionsActions.each {
+              it.enabled = false
+          }
 
-    def enablePermissionsActions = {
-      ProcRole item = rolesDs.getItem()
-      permissionsActions.each { it.setEnabled(item != null) }
-    }
+          def enablePermissionsActions = {
+              ProcRole item = rolesDs.getItem()
+              permissionsActions.each { it.setEnabled(item != null) }
+          }
 
-    rolesDs.addListener(
-            [
-                    itemChanged: { ds, prevItem, item -> enableDpaActions(); enablePermissionsActions() } ,
-                    valueChanged: { source, property, prevValue, value -> enableDpaActions() }
-            ] as DsListenerAdapter
-    )
+          rolesDs.addListener(
+                  [
+                          itemChanged: { ds, prevItem, item -> enableDpaActions(); enablePermissionsActions() },
+                          valueChanged: { source, property, prevValue, value -> enableDpaActions() }
+                  ] as DsListenerAdapter
+          )
+      }*/
 
     initLazyTabs()    
   }
