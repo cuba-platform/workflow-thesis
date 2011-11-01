@@ -291,6 +291,8 @@ create table WF_PROC_ROLE (
     INVISIBLE boolean,
     ROLE_ID uuid,
     ASSIGN_TO_CREATOR boolean,
+    SORT_ORDER integer,
+    ORDER_FILLING_TYPE varchar(1),
     primary key (ID)
 )^
 

@@ -92,12 +92,15 @@
                         <hbox align="MIDDLE_LEFT" spacing="true">
                             <button action="rolesTable.create" icon="icons/create.png"/>
                             <button action="rolesTable.remove" icon="icons/remove.png"/>
+                            <button id="moveUp" icon="icons/up.png"/>
+                            <button id="moveDown" icon="icons/down.png"/>
                         </hbox>
-                        <table id="rolesTable" editable="true">
+                        <table id="rolesTable" editable="true" sortable="false">
                             <columns>
                                 <column id="code" caption="msg://code"/>
                                 <column id="name" caption="msg://name"/>
                                 <column id="multiUser" caption="msg://multiUser"/>
+                                <column id="orderFillingType" caption="msg://orderFillingType"/>
                                 <column id="assignToCreator" caption="msg://assignToCreator"/>
                                 <column id="role" caption="msg://role"/>
                             </columns>

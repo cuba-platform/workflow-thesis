@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2009 10:11:47
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -16,9 +11,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -30,6 +28,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebActionsField;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
@@ -121,16 +120,14 @@ public class CardRolesFrame extends AbstractFrame {
                     return;
 
                 CardRole curCr = (CardRole) selected.iterator().next();
-                UUID prevId = tmpCardRolesDs.prevItemId(curCr.getId());
-                if (prevId == null)
-                    return;
+                CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
+                if (prevCr != null) {
+                    Integer tmp = curCr.getSortOrder();
+                    curCr.setSortOrder(prevCr.getSortOrder());
+                    prevCr.setSortOrder(tmp);
 
-                Integer tmp = curCr.getSortOrder();
-                CardRole prevCr = tmpCardRolesDs.getItem(prevId);
-                curCr.setSortOrder(prevCr.getSortOrder());
-                prevCr.setSortOrder(tmp);
-
-                tmpCardRolesDs.doSort();
+                    tmpCardRolesDs.doSort();
+                }
             }
         });
 
@@ -144,16 +141,27 @@ public class CardRolesFrame extends AbstractFrame {
                     return;
 
                 CardRole curCr = (CardRole) selected.iterator().next();
-                UUID nextId = tmpCardRolesDs.nextItemId(curCr.getId());
-                if (nextId == null)
-                    return;
+                CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
+                if (nextCr != null) {
+                    Integer tmp = curCr.getSortOrder();
+                    curCr.setSortOrder(nextCr.getSortOrder());
+                    nextCr.setSortOrder(tmp);
 
-                Integer tmp = curCr.getSortOrder();
-                CardRole nextCr = tmpCardRolesDs.getItem(nextId);
-                curCr.setSortOrder(nextCr.getSortOrder());
-                nextCr.setSortOrder(tmp);
+                    tmpCardRolesDs.doSort();
+                }
+            }
+        });
 
-                tmpCardRolesDs.doSort();
+        final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+        final MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
+        final CheckBox checkBox = (CheckBox) getComponent("showSortOrder");
+
+        //todo: need to set right value for checkBox after init vRolesTable
+
+        checkBox.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                vRolesTable.setColumnCollapsed(mpp, !(Boolean) value);
             }
         });
 
@@ -165,7 +173,7 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
                 initCreateRoleLookup();
-                
+                if (operation.equals(Operation.ADD)) tmpCardRolesDs.doSort();
             }
 
             Action editAction = rolesTable.getAction("edit");
@@ -223,6 +231,23 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
+    private CardRole getCardRoleDependsOnSortOrder (CardRole curCr, boolean forward) {
+        UUID id;
+        if (forward)
+            id = tmpCardRolesDs.nextItemId(curCr.getId());
+        else
+            id = tmpCardRolesDs.prevItemId(curCr.getId());
+
+        if (id == null) return null;
+        CardRole cardRole =  tmpCardRolesDs.getItem(id);
+        if (!cardRole.getProcRole().equals(curCr.getProcRole())) return null;
+        if (!cardRole.getSortOrder().equals(curCr.getSortOrder())) {
+            return cardRole;
+        } else {
+            return getCardRoleDependsOnSortOrder(cardRole, forward);
+        }
+    }
+
     private void initRolesTable() {
         final ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
@@ -244,6 +269,33 @@ public class CardRolesFrame extends AbstractFrame {
                 refreshFieldsWithRole(cardRole);
 
                 return cardRoleField;
+            }
+        });
+
+        MetaPropertyPath sortOrderProperty = rolesTableDs.getMetaClass().getPropertyPath("sortOrder");
+        vRolesTable.addGeneratedColumn(sortOrderProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
+                com.vaadin.ui.Component component = null;
+                if (cardRole != null && cardRole.getProcRole().getMultiUser()) {
+                    final UUID uuid = (UUID) itemId;
+                    WebLookupField orderLookup = new WebLookupField();
+                    orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
+                    orderLookup.setValue(cardRole.getSortOrder());
+                    orderLookup.setWidth("100%");
+                    final com.vaadin.ui.Select orderSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(orderLookup);
+                    orderSelect.setNullSelectionAllowed(false);
+
+                    orderLookup.addListener(new ValueListener() {
+                        public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+                            ((CardRole) tmpCardRolesDs.getItem(uuid)).setSortOrder((Integer) orderSelect.getValue());
+                            tmpCardRolesDs.doSort();
+                        }
+                    });
+                    component = orderSelect;
+                }
+                return component;
             }
         });
 
@@ -573,16 +625,63 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private void assignNextSortOrder(CardRole cr) {
-        UUID lastId = tmpCardRolesDs.lastItemId();
-        if (lastId == null)
+        List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
+        if (cardRoles.size() == 0) {
             cr.setSortOrder(1);
-        else {
-            CardRole lastItem = tmpCardRolesDs.getItem(lastId);
-            if (lastItem.getSortOrder() == null)
-                cr.setSortOrder(1);
-            else
-                cr.setSortOrder(tmpCardRolesDs.getItem(lastId).getSortOrder() + 1);
+        } else if (cr.getProcRole().getMultiUser()) {
+            int max = getMaxSortOrderInCardRoles(cardRoles);
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
+                cr.setSortOrder(max);
+            }
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
+                cr.setSortOrder(max + 1);
+            }
         }
+    }
+
+    private List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
+        List<CardRole> cardRoles = new ArrayList<CardRole>();
+        for (UUID id : tmpCardRolesDs.getItemIds()) {
+            CardRole cr = tmpCardRolesDs.getItem(id);
+            if (cr.getProcRole().equals(pr)) {
+                cardRoles.add(cr);
+            }
+        }
+        return cardRoles;
+    }
+
+    private List<Integer> getAllowRangeForProcRole(ProcRole pr) {
+        List<Integer> range = new ArrayList<Integer>();
+        List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
+        if (cardRoles.size() == 1) {
+            range.add(cardRoles.get(0).getSortOrder());
+        } else {
+            int min = getMinSortOrderInCardRoles(cardRoles);
+            int max = getMaxSortOrderInCardRoles(cardRoles);
+            for (int i = min - 1; i <= max + 1; i++) {
+                if (i > 0) range.add(i);
+            }
+        }
+        return range;
+    }
+
+    private int getMaxSortOrderInCardRoles(List<CardRole> roles) {
+        int max = 0;
+        for (CardRole role : roles) {
+            if (role.getSortOrder() != null && role.getSortOrder() > max)
+                max = role.getSortOrder();
+        }
+        return max;
+    }
+
+    private int getMinSortOrderInCardRoles(List<CardRole> roles) {
+        if (roles == null || roles.size() == 1) return 0;
+        int min = roles.get(0).getSortOrder();
+        for (CardRole role : roles) {
+            if (role.getSortOrder() != null && role.getSortOrder() < min)
+                min = role.getSortOrder();
+        }
+        return min;
     }
 
     //todo gorbunkov review and refactor next two methods
@@ -930,8 +1029,18 @@ public class CardRolesFrame extends AbstractFrame {
         protected Comparator<CardRole> createEntityComparator() {
             return new Comparator<CardRole>() {
                 public int compare(CardRole cr1, CardRole cr2) {
-                    int s1 = cr1.getSortOrder() == null ? 0 : cr1.getSortOrder();
-                    int s2 = cr2.getSortOrder() == null ? 0 : cr2.getSortOrder();
+                    int s1 = cr1.getProcRole().getSortOrder() == null ? 0 : cr1.getProcRole().getSortOrder();
+                    int s2 = cr2.getProcRole().getSortOrder() == null ? 0 : cr2.getProcRole().getSortOrder();
+                    if (s1 == s2) {
+                        s1 = cr1.getSortOrder() == null ? 0 : cr1.getSortOrder();
+                        s2 = cr2.getSortOrder() == null ? 0 : cr2.getSortOrder();
+                    }
+                    if (s1 == s2) {
+                        String str1 = ""; String str2 = "";
+                        if (cr1.getUser() != null) str1 = cr1.getUser().getName() == null ? "" : cr1.getUser().getName();
+                        if (cr2.getUser() != null) str2 = cr2.getUser().getName() == null ? "" : cr2.getUser().getName();
+                        return str1.compareTo(str2);
+                    }
                     return s1 - s2;
                 }
             };

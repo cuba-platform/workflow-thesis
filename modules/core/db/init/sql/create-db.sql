@@ -253,6 +253,8 @@ create table WF_PROC_ROLE (
     INVISIBLE smallint,
     ROLE_ID varchar(36),
     ASSIGN_TO_CREATOR smallint,
+    SORT_ORDER integer,
+    ORDER_FILLING_TYPE varchar(1),
     primary key (ID)
 );
 

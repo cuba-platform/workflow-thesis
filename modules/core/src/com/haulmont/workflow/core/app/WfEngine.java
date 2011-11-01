@@ -228,6 +228,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 em.remove(deletedRole);
             }
             proc.getRoles().removeAll(deletedRoles);
+
+            int sortOrder = findMaxSortOrder(proc.getRoles());
             for (String role : roles) {
                 boolean exists = false;
                 for (ProcRole procRole : proc.getRoles()) {
@@ -241,6 +243,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                     procRole.setProc(proc);
                     procRole.setCode(role);
                     procRole.setName(role);
+                    procRole.setSortOrder(++sortOrder);
                     if (WfConstants.CARD_CREATOR.equals(role)){
                         procRole.setInvisible(true);
                         procRole.setAssignToCreator(true);
@@ -256,6 +259,15 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         if (StringUtils.isNotBlank(states)) {
             proc.setStates(states);
         }
+    }
+
+    private int findMaxSortOrder(List<ProcRole> roles) {
+        int max = 0;
+        for (ProcRole role : roles) {
+            if (role.getSortOrder() != null && role.getSortOrder() > max)
+                max = role.getSortOrder();
+        }
+        return max;
     }
 
     private Set<ProcRole> findDeletedRoles(List<ProcRole> oldRoles, Set<String> newRoles) {
@@ -517,7 +529,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         for (Assignment assignment : assignments) {
             if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
                 assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
-            assignment.setFinished(TimeProvider.currentTimestamp());            
+            assignment.setFinished(TimeProvider.currentTimestamp());
         }
 
         WfHelper.getExecutionService().endProcessInstance(c.getJbpmProcessId(), WfConstants.CARD_STATE_CANCELED);

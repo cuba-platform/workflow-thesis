@@ -41,6 +41,11 @@ import com.haulmont.cuba.web.gui.components.WebLookupField
 import java.util.*
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.BooleanUtils
+import com.haulmont.workflow.core.entity.OrderFillingType
+import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.web.gui.components.WebButton
+import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener
 
 public class ProcEditor extends AbstractEditor {
 
@@ -52,6 +57,7 @@ public class ProcEditor extends AbstractEditor {
   protected CollectionDatasource<Role, UUID> secRolesDs
   protected Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
   protected Map assignToCreatorMap = new HashMap<UUID, com.vaadin.ui.Component>();
+  protected Map orderFillingTypeMap = new HashMap<UUID, com.vaadin.ui.Component>();
 
   public ProcEditor(IFrame frame) {
     super(frame);
@@ -88,6 +94,8 @@ public class ProcEditor extends AbstractEditor {
             getValues: {
               Map<String, Object> values = new HashMap<String, Object>()
               values.put("proc", procDs.getItem())
+              int order = findMaxSortOrder() + 1
+              values.put("sortOrder", order)
               return values
             }
     ] as ValueProvider)
@@ -232,7 +240,73 @@ public class ProcEditor extends AbstractEditor {
           )
       }*/
 
+    WebButton moveUp = (WebButton) getComponent("moveUp");
+    moveUp.setAction(new AbstractAction("moveUp") {
+      public void actionPerform(Component component) {
+        Set selected = rolesTable.getSelected();
+        if (selected.isEmpty())
+          return;
+
+        ProcRole curCr = (ProcRole) selected.iterator().next();
+        UUID prevId = ((CollectionPropertyDatasourceImpl)rolesDs).prevItemId(curCr.getId());
+        if (prevId == null)
+          return;
+
+        Integer tmp = curCr.getSortOrder();
+        ProcRole prevCr = rolesDs.getItem(prevId);
+        curCr.setSortOrder(prevCr.getSortOrder());
+        prevCr.setSortOrder(tmp);
+
+        sortRolesDs("sortOrder");
+
+      }
+    });
+
+    WebButton moveDown = (WebButton) getComponent("moveDown");
+    moveDown.setAction(new AbstractAction("moveDown") {
+      public void actionPerform(Component component) {
+        Set selected = rolesTable.getSelected();
+        if (selected.isEmpty())
+          return;
+
+        ProcRole curCr = (ProcRole) selected.iterator().next();
+        UUID nextId = ((CollectionPropertyDatasourceImpl) rolesDs).nextItemId(curCr.getId());
+        if (nextId == null)
+          return;
+
+        Integer tmp = curCr.getSortOrder();
+        ProcRole nextCr = rolesDs.getItem(nextId);
+        curCr.setSortOrder(nextCr.getSortOrder());
+        nextCr.setSortOrder(tmp);
+
+        sortRolesDs("sortOrder");
+      }
+    });
+
     initLazyTabs()    
+  }
+
+  private void sortRolesDs(String property) {
+    CollectionDatasource rolesDs = rolesTable.getDatasource()
+    CollectionDatasource.Sortable.SortInfo sortInfo = new CollectionDatasource.Sortable.SortInfo();
+    sortInfo.setOrder(CollectionDatasource.Sortable.Order.ASC);
+    sortInfo.setPropertyPath(rolesDs.getMetaClass().getPropertyPath(property));
+    def sortInfos = new CollectionDatasource.Sortable.SortInfo[1];
+    sortInfos[0] = sortInfo;
+    ((CollectionPropertyDatasourceImpl) rolesDs).sort(sortInfos);
+    ((CollectionPropertyDatasourceImpl) rolesDs).forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH)
+  }
+
+  def int findMaxSortOrder() {
+    int max = 0;
+    CollectionDatasource rolesDs = rolesTable.getDatasource()
+    for (UUID id: rolesDs.getItemIds()) {
+      ProcRole pr = (ProcRole) rolesDs.getItem(id);
+      if (pr.getSortOrder() != null && pr.getSortOrder() > max) {
+        max = pr.getSortOrder();
+      }
+    }
+    return max;
   }
 
   private void initLazyTabs() {
@@ -356,6 +430,10 @@ public class ProcEditor extends AbstractEditor {
                      ProcRole procRole = rolesDs.getItem(uuid);
                      rolesTable.setSelected(procRole);
                      procRole.setMultiUser(checkBox.getValue());
+                     if (orderFillingTypeMap.containsKey(itemId)) {
+                       com.vaadin.ui.Component c = (com.vaadin.ui.Component) orderFillingTypeMap.get(itemId);
+                       if (c != null) c.setVisible(checkBox.getValue());
+                     }
                   } as ValueChangeListener);
                 component = checkBox;
               }
@@ -427,6 +505,44 @@ public class ProcEditor extends AbstractEditor {
               return component;
             }
     ] as com.vaadin.ui.Table.ColumnGenerator);
+
+    pp = rolesDs.getMetaClass().getPropertyEx('orderFillingType');
+    vTable.removeGeneratedColumn(pp);
+    vTable.addGeneratedColumn(pp, [
+            generateCell: {table, itemId, columnId ->
+              if (orderFillingTypeMap.containsKey(itemId))
+                return orderFillingTypeMap.get(itemId)
+              ProcRole pr = rolesDs.getItem(itemId);
+              com.vaadin.ui.Component component = null;
+              if (pr != null) {
+                final Object uuid = itemId;
+                if (rolesTable.isEditable()) {
+                  WebLookupField orderFillingTypeLookup = new WebLookupField();
+                  Map<String, Object> types = new HashMap<String, Object>();
+                  for (OrderFillingType oft: OrderFillingType.values()) {
+                    types.put(MessageProvider.getMessage(oft), oft.getId());
+                  }
+                  orderFillingTypeLookup.setOptionsMap(types);
+                  orderFillingTypeLookup.setValue(pr.getOrderFillingType());
+                  orderFillingTypeLookup.setWidth("100%");
+                  orderFillingTypeLookup.setVisible(pr.getMultiUser());
+                  orderFillingTypeLookup.setEditable(rolesTable.isEditable());
+
+                  final com.vaadin.ui.Select orderFillingTypeSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(orderFillingTypeLookup);
+                  orderFillingTypeSelect.setNullSelectionAllowed(false);
+                  orderFillingTypeSelect.addListener({ValueChangeEvent event ->
+                    ((ProcRole)rolesDs.getItem(uuid)).setOrderFillingType((String) orderFillingTypeSelect.getValue());
+                  } as ValueChangeListener);
+                  component = orderFillingTypeSelect;
+                } else {
+                  component = StringUtils.isNotBlank(pr.getOrderFillingType()) ? new com.vaadin.ui.Label(MessageProvider.getMessage(OrderFillingType.fromId(pr.getOrderFillingType()))) : null;
+                }
+              }
+              orderFillingTypeMap.put(itemId, component);
+              return component;
+            }
+    ] as com.vaadin.ui.Table.ColumnGenerator);
+
     DataService dataService = rolesDs.getDataService()
     java.util.List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
     roles.removeAll({ProcRole role -> role.invisible })

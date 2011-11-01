@@ -30,6 +30,7 @@
                     <button id="removeRole" action="rolesTable.remove" icon="icons/remove.png"/>
                     <button id="moveUp" icon="icons/up.png"/>
                     <button id="moveDown" icon="icons/down.png"/>
+                    <checkBox id="showSortOrder" caption="msg://showSortOrder"/>
                 </row>
             </rows>
         </grid>
@@ -39,6 +40,7 @@
                 <column id="user" caption="msg://user"/>
                 <column id="notifyByEmail" caption="msg://notifyByEmail" width="45"/>
                 <column id="notifyByCardInfo" caption="msg://notifyByCardInfo" width="45"/>
+                <column id="sortOrder" caption="msg://sortOrder"/>
             </columns>
             <rows datasource="tmpCardRolesDs"/>
         </table>

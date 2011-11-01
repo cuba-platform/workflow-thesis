@@ -39,7 +39,7 @@ public class Proc extends StandardEntity {
 
     @OneToMany(mappedBy = "proc")
     @Aggregation
-    @OrderBy("code")
+    @OrderBy("sortOrder")
     protected List<ProcRole> roles;
 
     @Column(name = "CARD_TYPES")

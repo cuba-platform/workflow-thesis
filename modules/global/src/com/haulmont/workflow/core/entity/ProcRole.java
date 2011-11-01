@@ -56,6 +56,12 @@ public class ProcRole extends StandardEntity {
     @Aggregation
     protected List<ProcRolePermission> permissions;
 
+    @Column(name = "SORT_ORDER")
+    protected Integer sortOrder;
+
+    @Column(name = "ORDER_FILLING_TYPE")
+    protected String orderFillingType = "P";
+
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;
     }
@@ -126,5 +132,21 @@ public class ProcRole extends StandardEntity {
 
     public void setInvisible(Boolean invisible) {
         this.invisible = invisible;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public String getOrderFillingType() {
+        return orderFillingType;
+    }
+
+    public void setOrderFillingType(String orderFillingType) {
+        this.orderFillingType = orderFillingType;
     }
 }
