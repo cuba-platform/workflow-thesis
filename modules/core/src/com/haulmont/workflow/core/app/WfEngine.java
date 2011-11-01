@@ -56,6 +56,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     private final String PARALLEL_ASSIGMENT_CLASS = "com.haulmont.workflow.core.activity.ParallelAssigner";
     private final String SEQUENTIAL_ASSIGNER_CLASS = "com.haulmont.workflow.core.activity.SequentialAssigner";
+    private final String UNIVERSAL_ASSIGNER_CLASS = "com.haulmont.workflow.core.activity.UniversalAssigner";
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -284,15 +285,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         if (className==null)
             return false;
         Class parallelClass = ScriptingProvider.loadClass(PARALLEL_ASSIGMENT_CLASS);
+        Class sequentialClass = ScriptingProvider.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
+        Class universalClass = ScriptingProvider.loadClass(UNIVERSAL_ASSIGNER_CLASS);
         Class currentClass = ScriptingProvider.loadClass(className);
+
         if (parallelClass.isAssignableFrom(currentClass))
             return true;
-        else {
-            Class sequentialClass = ScriptingProvider.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
-            if (sequentialClass.isAssignableFrom(currentClass))
-                return true;
-            else return false;
-        }
+        else if (sequentialClass.isAssignableFrom(currentClass))
+            return true;
+        else if (universalClass.isAssignableFrom(currentClass))
+            return true;
+
+        return false;
     }
 
     public String printDeployments() {
