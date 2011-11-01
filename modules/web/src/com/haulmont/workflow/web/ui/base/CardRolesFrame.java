@@ -155,8 +155,17 @@ public class CardRolesFrame extends AbstractFrame {
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         final MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
         final CheckBox checkBox = (CheckBox) getComponent("showSortOrder");
+        checkBox.setValue(true);
 
-        //todo: need to set right value for checkBox after init vRolesTable
+        rolesTable.addColumnCollapsedListener(new Table.ColumnCollapseListener() {
+            @Override
+            public void columnCollapsed(Table.Column collapsedColumn, boolean collapsed) {
+                MetaPropertyPath m = (MetaPropertyPath) collapsedColumn.getId();
+                if ("sortOrder".equals(m.getMetaProperty().getName())) {
+                    checkBox.setValue(!collapsed);
+                }
+            }
+        } );
 
         checkBox.addListener(new ValueListener() {
             @Override
