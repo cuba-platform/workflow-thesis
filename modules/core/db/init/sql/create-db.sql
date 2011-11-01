@@ -97,6 +97,7 @@ create table WF_CARD (
     PARENT_CARD_ID varchar(36),
     SUBSTITUTED_CREATOR_ID varchar(36),
     HAS_ATTACHMENTS boolean,
+    HAS_ATTRIBUTES boolean,
     CATEGORY_ID varchar(36),
     primary key (ID)
 );

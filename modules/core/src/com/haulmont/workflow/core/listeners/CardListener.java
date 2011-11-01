@@ -6,10 +6,9 @@
 
 package com.haulmont.workflow.core.listeners;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.listener.*;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 
@@ -20,7 +19,7 @@ import java.util.List;
  *
  * @author devyatkin
  */
-public class CardListener implements BeforeDeleteEntityListener<Card> {
+public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpdateEntityListener<Card>, BeforeInsertEntityListener<Card> {
     public void onBeforeDelete(Card card) {
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery();
@@ -29,6 +28,38 @@ public class CardListener implements BeforeDeleteEntityListener<Card> {
         List<TimerEntity> timers = query.getResultList();
         for (TimerEntity timer : timers) {
             em.remove(timer);
+        }
+    }
+
+    public void onBeforeInsert(Card card) {
+        setHasAttributesForCard(card);
+    }
+
+    public void onBeforeUpdate(Card card) {
+        setHasAttributesForCard(card);
+    }
+
+    private void setHasAttributesForCard(Card card) {
+        Category c = getCategory(card);
+        if (c != null && c.getCategoryAttrs() != null && c.getCategoryAttrs().size() > 0)
+            card.setHasAttributes(true);
+        else
+            card.setHasAttributes(false);
+    }
+
+    private Category getCategory(Card card) {
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Card c = em.find(Card.class, card.getId());
+            Category category = null;
+            if (c.getCategory() != null) {
+                category = em.find(Category.class, c.getCategory().getId());
+            }
+            tx.commit();
+            return category;
+        } finally {
+            tx.end();
         }
     }
 }

@@ -10,25 +10,20 @@
  */
 package com.haulmont.workflow.core.entity;
 
-import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.persistence.Entity;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,6 +110,9 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     @Column(name = "HAS_ATTACHMENTS")
     protected Boolean hasAttachments = false;
+
+    @Column(name = "HAS_ATTRIBUTES")
+    protected Boolean hasAttributes = false;
 
     @Transient
     protected Map<String, Object> initialProcessVariables;
@@ -292,6 +290,14 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     public void setHasAttachments(Boolean hasAttachments) {
         this.hasAttachments = hasAttachments;
+    }
+
+    public Boolean getHasAttributes() {
+        return hasAttributes;
+    }
+
+    public void setHasAttributes(Boolean hasAttributes) {
+        this.hasAttributes = hasAttributes;
     }
 
     public Set<CardInfo> getCardInfos() {
