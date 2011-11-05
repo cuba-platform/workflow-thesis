@@ -293,7 +293,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             return true;
         else if (sequentialClass.isAssignableFrom(currentClass))
             return true;
-        else if (universalClass.isAssignableFrom(currentClass))
+        else if (universalClass != null && universalClass.isAssignableFrom(currentClass))
             return true;
 
         return false;
