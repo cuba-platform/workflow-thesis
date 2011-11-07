@@ -116,29 +116,4 @@ class SequentialAssigner extends MultiAssigner {
   protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
   }
 
-  protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
-    EntityManager em = PersistenceProvider.getEntityManager()
-
-    Assignment assignment = new Assignment()
-    assignment.setName(execution.getActivityName())
-
-    if (StringUtils.isBlank(description))
-      assignment.setDescription('msg://' + execution.getActivityName())
-    else
-      assignment.setDescription(description)
-
-    assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-    assignment.setCard(card)
-    assignment.setProc(card.getProc())
-    assignment.setUser(cr.user)
-    assignment.setMasterAssignment(master)
-    assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
-
-    if (timersFactory) {
-      timersFactory.createTimers(execution, assignment)
-    }
-    em.persist(assignment)
-
-    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
-  }
 }
