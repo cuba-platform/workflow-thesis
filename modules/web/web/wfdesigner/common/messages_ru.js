@@ -50,6 +50,8 @@ var i18nDict = {
     dueDateVisible: "Выполнить до",
     refusedOnlyVisible: "Только отклонившим",
     requiredRoles: "Требуемые роли",
+    requiredAttachmentTypes: "Требуемые вложения",
+    formHeight: "Высота формы",
 
     ////////////////////////
     // Timers

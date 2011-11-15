@@ -5,84 +5,81 @@
         caption="msg://confirmationForm.title">
 
     <dsContext>
-        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit">
-            <collectionDatasource id="attachmentsDs" property="attachments"/>
-        </datasource>
+        <!--todo remove view with attachments-->
+        <datasource id="cardDs" class="com.haulmont.workflow.core.entity.Card" view="w-attachments"/>
+
+        <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment"
+                                view="card-edit" hierarchyProperty="versionOf">
+            <query>select a from wf$CardAttachment a where a.card.id = :ds$cardDs order by a.createTs desc</query>
+        </hierarchicalDatasource>
+
+        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="_local"/>
+
         <datasource id="varsDs">
             <datasourceClass>com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource</datasourceClass>
         </datasource>
-        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole"
-                              view="transition-form">
+
+        <hierarchicalDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole"
+                                view="transition-form">
             <query>
                 <![CDATA[select cr from wf$CardRole cr
                 where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
                 order by cr.code]]>
             </query>
-        </collectionDatasource>
+        </hierarchicalDatasource>
     </dsContext>
 
     <#assign width=400>
     <#assign labelWidth=90>
-    <layout expand="mainPane">
-        <vbox id="mainPane" margin="true" stylename="edit-area" expand="attachmentsPane" spacing="true">
-            <hbox>
-                <label value="msg://transition" width="${labelWidth}"/>
-                <textField id="outcomeText" width="${width}"/>
-            </hbox>
-
-            <accessControl id="cardRolesFrameAccessControl"
-                           data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                <visible property="cardRolesVisible"/>
-                <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
-            </accessControl>
-
-            <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
-                           param="accessData">
-                <visible property="refusedOnlyVisible"/>
-                <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly" caption="msg://refusedOnly"/>
-            </accessControl>
-
-            <accessControl id="dueDateAccessControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
-                           param="accessData">
-                <visible property="dueDateVisible"/>
-                <hbox id="dueDatePane">
-                    <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
-                    <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="DAY"
-                               dateFormat="msg://dateFormat"/>
+    <layout expand="tabsheet">
+        <tabsheet id="tabsheet">
+            <tab id="mainTab" caption="msg://mainTab">
+                <vbox id="mainPane" expand="cardRolesFrame" spacing="true" margin="true">
+                <hbox>
+                    <label value="msg://transition" width="${labelWidth}"/>
+                    <textField id="outcomeText" width="${width}"/>
                 </hbox>
-            </accessControl>
 
-            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                <visible property="commentVisible"/>
-                <hbox id="commentTextPane">
-                    <label value="msg://comment" width="${labelWidth}"/>
-                    <textField id="commentText" width="${width}" rows="4"/>
-                </hbox>
-            </accessControl>
+                <accessControl id="cardRolesFrameAccessControl"
+                               data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                    <visible property="cardRolesVisible"/>
+                    <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
+                </accessControl>
 
-            <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                <visible property="attachmentsVisible"/>
-                <vbox id="attachmentsPane" expand="attachmentsTable">
-                    <label value="msg://attachments"/>
-                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                        <button id="createAttach" action="attachmentsTable.create" icon="icons/create.png"/>
-                        <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
-                        <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
-                        <button id="copyAttach" icon="icons/copy.png"/>
-                        <button id="pasteAttach" icon="icons/paste.png"/>
+                <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                               param="accessData">
+                    <visible property="refusedOnlyVisible"/>
+                    <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly" caption="msg://refusedOnly"/>
+                </accessControl>
+
+                <accessControl id="dueDateAccessControl"
+                               data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                               param="accessData">
+                    <visible property="dueDateVisible"/>
+                    <hbox id="dueDatePane">
+                        <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
+                        <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="DAY"
+                                   dateFormat="msg://dateFormat"/>
                     </hbox>
-                    <table id="attachmentsTable" editable="false" sortable="true">
-                        <columns>
-                            <column id="name" caption="msg://attachName"/>
-                            <column id="file.name" caption="msg://fileName"/>
-                            <column id="attachType.locName" caption="msg://typeName"/>
-                            <column id="file.size" caption="msg://fileSize"/>
-                        </columns>
-                        <rows datasource="attachmentsDs"/>
-                    </table>
+                </accessControl>
+
+                <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                    <visible property="commentVisible"/>
+                    <hbox id="commentTextPane">
+                        <label value="msg://comment" width="${labelWidth}"/>
+                        <textField id="commentText" width="${width}" rows="4"/>
+                    </hbox>
+                </accessControl>
                 </vbox>
-            </accessControl>
-        </vbox>
+            </tab>
+            <tab id="attachmentsTab" caption="msg://attachmentsTab" expand="attachmentsFrame" margin="true"
+                 spacing="true">
+                <iframe id="attachmentsFrame"
+                        src="/com/haulmont/workflow/web/ui/base/card-attachments-frame.xml"/>
+                <label value="msg://requiredAttachmentsTypes" stylename="bold"/>
+                <hbox id="requiredAttachmentsPane"/>
+            </tab>
+        </tabsheet>
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>

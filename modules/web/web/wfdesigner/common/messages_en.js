@@ -43,6 +43,8 @@ var i18nDict = {
     dueDateVisible: "Due Date",
     refusedOnlyVisible: "Refused Only",
     requiredRoles: "Required Roles",
+    requiredAttachmentTypes: "Required Attachments",
+    formHeight: "Form Height",
 
     ////////////////////////
     // Timers

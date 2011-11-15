@@ -42,6 +42,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
     protected AttachmentCreator attachmentCreator;
 
     private boolean generatedColumnInited = false;
+    private boolean cardCommitCheckRequired = true;
 
     public CardAttachmentsFrame(IFrame frame) {
         super(frame);
@@ -134,6 +135,14 @@ public class CardAttachmentsFrame extends AbstractFrame {
         return this.attachmentCreator;
     }
 
+    public void setCardCommitCheckRequired(boolean cardCommitCheckRequired) {
+        this.cardCommitCheckRequired = cardCommitCheckRequired;
+    }
+
+    public boolean isCardCommitCheckRequired() {
+        return cardCommitCheckRequired;
+    }
+
     protected class CommitCardAction extends AbstractAction {
 
         private Action afterPerformAction;
@@ -144,7 +153,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         }
 
         public void actionPerform(Component component) {
-            if (PersistenceHelper.isNew(cardDs.getItem())) {
+            if (PersistenceHelper.isNew(cardDs.getItem()) && cardCommitCheckRequired) {
                 showOptionDialog(
                         getMessage("cardAttachmentFrame.dialogHeader"),
                         getMessage("cardAttachmentFrame.dialogMessage"),

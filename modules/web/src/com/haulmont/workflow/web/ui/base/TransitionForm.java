@@ -11,41 +11,89 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Attachment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardAttachment;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
+import com.haulmont.cuba.web.gui.components.WebTabsheet;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ServiceLocator.getDataService;
+
 public class TransitionForm extends AbstractForm {
+
+    @Inject
     private TextField commentText;
-    private Table attachmentsTable;
+    @Inject
+    protected CardRolesFrame cardRolesFrame;
+    @Inject
+    protected CollectionDatasource cardRolesDs;
+    @Inject
+    private DateField dueDate;
+    @Inject
+    private TextField outcomeText;
+    @Inject
+    protected CardAttachmentsFrame attachmentsFrame;
+    @Inject
+    protected Tabsheet.Tab attachmentsTab;
+    @Inject
+    private Tabsheet tabsheet;
+    @Inject
+    private BoxLayout mainPane;
+    @Inject
+    private BoxLayout commentTextPane;
+
+
+    @Inject
+    protected Datasource assignmentDs;
+    @Inject
+    protected Datasource cardDs;
+    @Inject
+    protected CollectionDatasource attachmentsDs;
 
     protected Card card;
-    protected CardRolesFrame cardRolesFrame;
-    protected CollectionDatasource cardRolesDs;
-    protected Datasource assignmentDs;
-    private DateField dueDate;
-    private TextField outcomeText;
-    protected boolean defaultNotifyByEmail = true;
-
+    protected Card cardCopy;
+    protected List<String> requiredAttachmentTypes = new ArrayList<String>();
+    private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>();
     private String requiredRolesCodesStr;
+    private Map<String, AttachmentType> attachmentTypes;
+
+    private final int DEFAULT_FORM_HEIGHT = 500;
+
 
     public TransitionForm(IFrame frame) {
         super(frame);
@@ -55,25 +103,27 @@ public class TransitionForm extends AbstractForm {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        String dueDateRequired = (String) params.get("dueDateRequired");
-        String commentRequired = (String) params.get("param$commentRequired");
-        requiredRolesCodesStr = (String) params.get("param$requiredRoles");
-
-        String additionalRolesCodes = (String) params.get("param$additionalRoles");
-        if (!StringUtils.isEmpty(additionalRolesCodes)) {
-            requiredRolesCodesStr += "," + additionalRolesCodes;
-        }
-
-        commentText = getComponent("commentText");
-        attachmentsTable = getComponent("attachmentsTable");
-        cardRolesFrame = getComponent("cardRolesFrame");
-        dueDate = getComponent("dueDate");
-        outcomeText = getComponent("outcomeText");
-
-        assignmentDs = getDsContext().get("assignmentDs");
-
         card = (Card) params.get("param$card");
+        cardCopy = (Card) InstanceUtils.copy(card);
+        cardDs = getDsContext().get("cardDs");
+        cardDs.setItem(cardCopy);
+
+        String formHeightStr = (String) params.get("formHeight");
+        Integer formHeight = DEFAULT_FORM_HEIGHT;
+        try {
+            formHeight = Integer.valueOf(formHeightStr);
+        } catch (NumberFormatException e) {}
+
+        getDialogParams().setHeight(formHeight);
+
+
         if (cardRolesFrame != null) {
+            requiredRolesCodesStr = (String) params.get("param$requiredRoles");
+            String additionalRolesCodes = (String) params.get("param$additionalRoles");
+            if (!StringUtils.isEmpty(additionalRolesCodes)) {
+                requiredRolesCodesStr += "," + additionalRolesCodes;
+            }
+
             cardRolesFrame.init();
             cardRolesFrame.setCard(card);
             cardRolesDs = getDsContext().get("cardRolesDs");
@@ -88,58 +138,24 @@ public class TransitionForm extends AbstractForm {
                 }
             });
             cardRolesDs.refresh();
+        } else {
+            if (commentTextPane != null) {
+                mainPane.expand(commentTextPane);
+                commentTextPane.expand(commentText);
+            }
         }
 
         if (dueDate != null) {
+            String dueDateRequired = (String) params.get("dueDateRequired");
             dueDate.setRequired(dueDateRequired != null && Boolean.valueOf(dueDateRequired).equals(Boolean.TRUE));
             Datasource varDs = getDsContext().get("varsDs");
             varDs.refresh();
         }
 
-        if (attachmentsTable != null) {
-            TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
-            attachmentsTH.createCreateAction(
-                    new ValueProvider() {
-                        public Map<String, Object> getValues() {
-                            Map<String, Object> values = new HashMap<String, Object>();
-                            values.put("assignment", assignmentDs.getItem());
-                            values.put("file", new FileDescriptor());
-                            return values;
-                        }
+        String requiredAttachmentTypesParam = (String) params.get("requiredAttachmentTypes");
+        if (!StringUtils.isEmpty(requiredAttachmentTypesParam))
+            requiredAttachmentTypes = Arrays.asList(requiredAttachmentTypesParam.split("\\s*,\\s*"));
 
-                        public Map<String, Object> getParameters() {
-                            return Collections.emptyMap();
-                        }
-                    },
-                    WindowManager.OpenType.DIALOG);
-            attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
-            attachmentsTH.createRemoveAction(false);
-
-            // Add attachments handler
-            Button copyAttachBtn = getComponent("copyAttach");
-            copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
-            copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
-
-            Button pasteAttachBtn = getComponent("pasteAttach");
-            AttachmentCreator creator = new AttachmentCreator() {
-                public Attachment createObject() {
-                    CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
-                    attachment.setAssignment((Assignment) assignmentDs.getItem());
-                    attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
-                    return attachment;
-                }
-            };
-            pasteAttachBtn.setAction(
-                    AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
-            pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
-            Button uploadManyBtn = getComponent("uploadMany");
-            uploadManyBtn.setAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator));
-
-            attachmentsTable.addAction(uploadManyBtn.getAction());
-            attachmentsTable.addAction(copyAttachBtn.getAction());
-            attachmentsTable.addAction(pasteAttachBtn.getAction());
-            AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
-        }
 
         String messagesPack = card.getProc().getMessagesPack();
         String activity = (String) params.get("param$activity");
@@ -180,8 +196,28 @@ public class TransitionForm extends AbstractForm {
             }
         }
 
-        addAction(new AbstractAction("windowCommit") {
+        if (commentText != null) {
+            String commentRequired = (String) params.get("param$commentRequired");
+            commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
+        }
 
+        attachmentsTab = tabsheet.getTab("attachmentsTab");
+        attachmentsTab.setCaption(getAttachmentsTabCaption());
+
+        attachmentsDs.addListener(new CollectionDsListenerAdapter() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                attachmentsTab.setCaption(getAttachmentsTabCaption());
+                initRequiredAttachmentsPane();
+            }
+        });
+
+        attachmentsFrame.init();
+        attachmentsFrame.setCardCommitCheckRequired(false);
+        attachmentsTab.setCaption(getAttachmentsTabCaption());
+        initRequiredAttachmentsPane();
+
+        addAction(new AbstractAction("windowCommit") {
             public void actionPerform(Component component) {
                 if (doCommit())
                     close(COMMIT_ACTION_ID, true);
@@ -194,7 +230,6 @@ public class TransitionForm extends AbstractForm {
         });
 
         addAction(new AbstractAction("windowClose") {
-
             public void actionPerform(Component component) {
                 close("cancel");
             }
@@ -204,16 +239,100 @@ public class TransitionForm extends AbstractForm {
                 return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
+    }
 
-        if (commentText != null)
-            commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
-        if (attachmentsTable != null)
-            AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+//    private void initLazyTabs() {
+//        tabsheet.addListener(new Tabsheet.TabChangeListener() {
+//            public void tabChanged(Tabsheet.Tab newTab) {
+//                if ("attachmentsTab".equals(newTab.getName()) && !initedTabs.contains(newTab)) {
+//                    initedTabs.add(newTab);
+//                    attachmentsFrame = getComponent("attachmentsFrame");
+//                    attachmentsFrame.init();
+//                    attachmentsFrame.setCardCommitCheckRequired(false);
+//                    attachmentsTab.setCaption(getAttachmentsTabCaption());
+//                    initRequiredAttachmentsPane();
+//                }
+//            }
+//        });
+//    }
+
+    private String getAttachmentsTabCaption() {
+        Set<String> presentAttachmentTypes = new HashSet<String>();
+        for (Object itemId : attachmentsDs.getItemIds()) {
+            CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
+            if ((attachment.getAttachType() != null) && requiredAttachmentTypes.contains(attachment.getAttachType().getCode()))
+                presentAttachmentTypes.add(attachment.getAttachType().getCode());
+        }
+
+        if (!requiredAttachmentTypes.isEmpty()) {
+            return MessageProvider.formatMessage(getClass(), "attachmentsTabWithRequired",
+                    attachmentsDs.getItemIds().size(), presentAttachmentTypes.size(), requiredAttachmentTypes.size());
+        } else {
+            if (attachmentsDs.getItemIds().size() > 0)
+                return MessageProvider.formatMessage(getClass(), "attachmentsTabWithoutRequired",
+                        attachmentsDs.getItemIds().size(), presentAttachmentTypes.size(), requiredAttachmentTypes.size());
+            else
+                return getMessage("attachments");
+        }
+    }
+
+    private void initRequiredAttachmentsPane() {
+        WebHBoxLayout requiredAttachmentsPane = getComponent("requiredAttachmentsPane");
+        requiredAttachmentsPane.removeAllComponents();
+        requiredAttachmentsPane.add(createRequiredAttachmentsLayout());
+    }
+
+    private GridLayout createRequiredAttachmentsLayout() {
+        final int columnHeight = 3;
+        final GridLayout grid = AppConfig.getFactory().createComponent(GridLayout.NAME);
+        grid.setColumns(1);
+        grid.setRows(columnHeight);
+        int row = 0;
+        int column = 0;
+        List<String> presentAttachmentTypes = new ArrayList<String>();
+        for (Object itemId : attachmentsDs.getItemIds()) {
+            final Attachment attachment = (Attachment) attachmentsDs.getItem(itemId);
+            presentAttachmentTypes.add(attachment.getAttachType().getCode());
+        }
+        for (String attachmentTypeCode : requiredAttachmentTypes) {
+            if (row++ == columnHeight) {
+                row = 0;
+                grid.setColumns(column+2);
+                column++;
+            }
+            final AttachmentType type = getAttachmentType(attachmentTypeCode);
+            Label label = AppConfig.getFactory().createComponent(Label.NAME);
+            label.setValue(type != null ? type.getName() : attachmentTypeCode);
+            grid.add(label, column, row);
+
+            if (presentAttachmentTypes.contains(attachmentTypeCode)) {
+                label.setStyleName("attachment-type-present");
+            } else {
+                label.setStyleName("attachment-type-missing");
+            }
+
+        }
+
+        return grid;
+    }
+
+
+    private AttachmentType getAttachmentType(String code) {
+        if (attachmentTypes == null) attachmentTypes = new HashMap<String, AttachmentType>();
+        if (!attachmentTypes.containsKey(code)) {
+            DataService dataService = getDataService();
+            LoadContext ctx = new LoadContext(AttachmentType.class);
+            ctx.setView("_local");
+            ctx.setQueryString("select att from wf$AttachmentType att where att.code = :code").addParameter("code", code);
+            List list = dataService.loadList(ctx);
+            attachmentTypes.put(code, list.isEmpty() ? null : (AttachmentType)list.get(0));
+        }
+        return attachmentTypes.get(code);
     }
 
     protected boolean doCommit() {
         if (!validated()) return false;
-//                getDsContext().commit();
+
         if (commentText != null) {
             if (Datasource.State.VALID.equals(assignmentDs.getState()))
                 assignmentDs.commit();
@@ -258,6 +377,38 @@ public class TransitionForm extends AbstractForm {
                 return false;
             }
         }
+
+        WebWindow component = getComponent();
+        Collection<com.vaadin.ui.Field> fields = WebComponentsHelper.getComponents((ComponentContainer) component.getComponent(), com.vaadin.ui.Field.class);
+        for (com.vaadin.ui.Field field : fields) {
+            if (!field.isValid()) {
+                showNotification(getMessage("fillRequiredFields"), NotificationType.WARNING);
+                return false;
+            }
+        }
+
+        if (requiredAttachmentTypes != null) {
+            List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
+            for (Object itemId : attachmentsDs.getItemIds()) {
+                CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
+                missingAttachments.remove(attachment.getAttachType().getCode());
+            }
+
+            if (!missingAttachments.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("<ul>");
+                for (String attachmentTypeCode : missingAttachments) {
+                    final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
+                    String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
+                    sb.append("<li>").append(attachmentTypeName).append("</li>");
+                }
+                sb.append("</ul>");
+                showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING);
+                tabsheet.setTab(attachmentsTab);
+                return false;
+            }
+        }
+
         return true;
     }
 
