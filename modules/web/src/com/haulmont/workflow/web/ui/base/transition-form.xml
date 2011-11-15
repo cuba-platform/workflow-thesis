@@ -75,7 +75,7 @@
             <tab id="attachmentsTab" caption="msg://attachmentsTab" expand="attachmentsFrame" margin="true"
                  spacing="true">
                 <iframe id="attachmentsFrame"
-                        src="/com/haulmont/workflow/web/ui/base/card-attachments-frame.xml"/>
+                        src="<#if workflow_transitionFormAttachmentsFramePath??>${workflow_transitionFormAttachmentsFramePath}<#else>/com/haulmont/workflow/web/ui/base/card-attachments-frame.xml</#if>"/>
                 <label value="msg://requiredAttachmentsTypes" stylename="bold"/>
                 <hbox id="requiredAttachmentsPane"/>
             </tab>
