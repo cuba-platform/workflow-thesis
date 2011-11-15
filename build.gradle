@@ -74,10 +74,12 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
-    task enhance(dependsOn: [compileJava, processResources], type: CubaEnhancing) {
+    task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/workflow-persistence.xml"
     }
-    classes.dependsOn enhance
+    compileJava << {
+        enhance.execute()
+    }
 }
 
 configure(coreModule) {
