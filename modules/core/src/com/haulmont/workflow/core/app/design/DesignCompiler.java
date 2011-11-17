@@ -440,12 +440,11 @@ public class DesignCompiler {
         Iterator<Cell> cellIt = statesRow.cellIterator();
         cellIt.next();
         Iterator<String> statesIt = states.iterator();
-        while(cellIt.hasNext()){
+        while (cellIt.hasNext()) {
             Cell cell = cellIt.next();
-            if(statesIt.hasNext()){
+            if (statesIt.hasNext()) {
                 cell.setCellValue(statesIt.next());
-            }
-            else{
+            } else {
                 statesRow.removeCell(cell);
             }
         }
@@ -453,20 +452,19 @@ public class DesignCompiler {
         rowIt.next();
         rowIt.next();
         Iterator<String> roleIt = rolesList.iterator();
-        while(rowIt.hasNext()){
+        while (rowIt.hasNext()) {
             Row row = rowIt.next();
-            if(roleIt.hasNext()){
+            if (roleIt.hasNext()) {
                 row.getCell(0).setCellValue(roleIt.next());
                 Iterator<Cell> cellIterator = row.cellIterator();
                 cellIterator.next();
-                while(cellIterator.hasNext()){
+                while (cellIterator.hasNext()) {
                     row.removeCell(cellIterator.next());
                 }
 
-            }
-            else{
+            } else {
                 Iterator<Cell> cellIterator = row.cellIterator();
-                while(cellIterator.hasNext()){
+                while (cellIterator.hasNext()) {
                     row.removeCell(cellIterator.next());
                 }
             }
@@ -485,8 +483,7 @@ public class DesignCompiler {
             q.setParameter(1, designId);
             files = q.getResultList();
             tx.commit();
-        }
-        finally {
+        } finally {
             tx.end();
         }
         try {
@@ -532,8 +529,7 @@ public class DesignCompiler {
             throw new TemplateGenerationException(e);
         } catch (IOException e) {
             throw new TemplateGenerationException(e);
-        }
-        finally {
+        } finally {
             tx.end();
         }
     }
@@ -596,8 +592,7 @@ public class DesignCompiler {
             JSONArray outputs;
             try {
                 outputs = jsModule.getJSONObject("value").getJSONArray("outputs");
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 //If module haven't outputs array
                 otherModules.put(i, modules.get(i));
                 continue;
@@ -652,7 +647,7 @@ public class DesignCompiler {
                 JSONObject jsWireDst = jsWire.getJSONObject("tgt");
                 if (wires.containsKey(jsWireSrc.getString("terminal"))) {
                     wires.get(jsWireSrc.getString("terminal")).add(
-                            new TransitionParams(jsWireDst.getInt("moduleId"),jsWireDst.getString("terminal")));
+                            new TransitionParams(jsWireDst.getInt("moduleId"), jsWireDst.getString("terminal")));
                 } else {
                     TransitionParams params = new TransitionParams(jsWireDst.getInt("moduleId"), jsWireDst.getString("terminal"));
                     List<TransitionParams> list = new LinkedList<TransitionParams>();
@@ -725,7 +720,7 @@ public class DesignCompiler {
         compileMessage(properties, locale, "SAVE_AND_CLOSE_ACTION", mp);
         compileMessage(properties, locale, "START_PROCESS_ACTION", mp);
         compileMessage(properties, locale, "CANCEL_PROCESS_ACTION", mp);
-        compileMessage(properties, locale, "Canceled",mp);
+        compileMessage(properties, locale, "Canceled", mp);
 
         for (Module module : modules) {
             module.writeMessages(properties, lang);
