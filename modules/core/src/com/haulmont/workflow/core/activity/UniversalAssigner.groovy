@@ -31,7 +31,7 @@ import org.jbpm.api.ExecutionService
  *
  * @author gorbunkov
  */
-class UniversalAssigner extends MultiAssigner {
+public class UniversalAssigner extends MultiAssigner {
 
     private Log log = LogFactory.getLog(Assigner.class)
 
@@ -90,6 +90,7 @@ class UniversalAssigner extends MultiAssigner {
             if (timersFactory) {
                 timersFactory.removeTimers(execution)
             }
+            onSuccess(execution, signalName, assignment)
             afterSignal(execution, signalName, parameters)
         } else {
             if (timersFactory) {
