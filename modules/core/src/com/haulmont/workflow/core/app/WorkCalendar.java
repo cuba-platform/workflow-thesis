@@ -697,6 +697,9 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
         if (currentDayCalendarItems == null)
             currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
+        if (currentDayCalendarItems == null)
+            return false;
+
         for (CalendarItem ci : currentDayCalendarItems) {
             if (ci.getDuration() > 0) return true;
         }
