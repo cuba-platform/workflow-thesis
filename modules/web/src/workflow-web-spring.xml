@@ -28,4 +28,14 @@
         </property>
     </bean>
 
+    <!-- Exception handlers -->
+
+    <bean id="workflow_exceptionHandlersConf" class="com.haulmont.cuba.web.exception.ExceptionHandlersConfiguration">
+        <property name="handlerClasses">
+            <list>
+                <value>com.haulmont.workflow.web.exception.WorkflowExceptionHandler</value>
+            </list>
+        </property>
+    </bean>
+
 </beans>

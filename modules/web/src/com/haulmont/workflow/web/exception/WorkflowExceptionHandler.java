@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 08.01.2010 16:05:27
- *
- * $Id$
  */
 package com.haulmont.workflow.web.exception;
 
@@ -16,29 +11,41 @@ import com.haulmont.cuba.web.exception.AbstractExceptionHandler;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.vaadin.ui.Window;
 
-public class WorkflowExceptionHandler extends AbstractExceptionHandler<WorkflowException> {
+import javax.annotation.Nullable;
+
+/**
+ * Handles {@link WorkflowException}.
+ *
+ * <p>$Id$</p>
+ *
+ * @author gorbunkov
+ */
+public class WorkflowExceptionHandler extends AbstractExceptionHandler {
 
     public WorkflowExceptionHandler() {
-        super(WorkflowException.class);
+        super(WorkflowException.class.getName());
     }
 
     @Override
-    protected void doHandle(WorkflowException e, App app) {
-        switch (e.getType()) {
-            case NO_ACTIVE_EXECUTION:
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+        if (throwable != null && throwable instanceof WorkflowException) {
+            WorkflowException e = (WorkflowException) throwable;
+            if (e.getType().equals(WorkflowException.Type.NO_ACTIVE_EXECUTION)) {
                 String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noExecution");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
                 app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
-                break;
-            case NO_CARD_ROLE:
-                msg = MessageProvider.getMessage(getClass(), "WorkflowException.noCardRole");
+                return;
+            }
+            if (e.getType().equals(WorkflowException.Type.NO_CARD_ROLE)) {
+                String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noCardRole");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
                 app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
-                break;
-            default:
-                throw e;
+                return;
+            }
         }
+        String msg = MessageProvider.getMessage(getClass(), "WorkflowException.undefined");
+        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 }

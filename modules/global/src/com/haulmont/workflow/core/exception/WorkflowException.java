@@ -1,18 +1,26 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 08.01.2010 16:02:17
- *
- * $Id$
  */
 package com.haulmont.workflow.core.exception;
 
+import com.haulmont.cuba.core.sys.ClassesInfo;
+
+/**
+ * Raised in case of various workflow errors.
+ *
+ * <p>$Id$</p>
+ *
+ * @author gorbunkov
+ */
 public class WorkflowException extends RuntimeException {
 
     private static final long serialVersionUID = 5636812930224275069L;
+
+    static {
+        ClassesInfo.addClientSupported(WorkflowException.class);
+    }
 
     private Type type;
     private Object[] params;
