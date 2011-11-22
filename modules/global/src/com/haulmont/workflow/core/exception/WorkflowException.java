@@ -5,7 +5,7 @@
  */
 package com.haulmont.workflow.core.exception;
 
-import com.haulmont.cuba.core.sys.ClassesInfo;
+import com.haulmont.cuba.core.global.SupportedByClient;
 
 /**
  * Raised in case of various workflow errors.
@@ -14,13 +14,10 @@ import com.haulmont.cuba.core.sys.ClassesInfo;
  *
  * @author gorbunkov
  */
+@SupportedByClient
 public class WorkflowException extends RuntimeException {
 
     private static final long serialVersionUID = 5636812930224275069L;
-
-    static {
-        ClassesInfo.addClientSupported(WorkflowException.class);
-    }
 
     private Type type;
     private Object[] params;
