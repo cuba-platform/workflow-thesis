@@ -146,7 +146,7 @@ public class DesignBrowser extends AbstractWindow {
     private void openDesigner(String id) {
         String designerUrl = ConfigProvider.getConfig(WfConfig.class).getDesignerUrl();
         StringBuilder url = new StringBuilder();
-        url.append(ControllerUtils.getControllerURL(designerUrl))
+        url.append(ControllerUtils.getWebControllerURL(designerUrl))
                 .append("?id=")
                 .append(id)
                 .append("&s=")
