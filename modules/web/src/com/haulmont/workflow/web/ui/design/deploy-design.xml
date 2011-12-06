@@ -8,7 +8,7 @@
     <dsContext>
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="proc-deploy">
             <query>
-                select p from wf$Proc p order by p.name
+                select p from wf$Proc p where p.design is not null order by p.name
             </query>
         </collectionDatasource>
         <collectionDatasource id="secRoles" class="com.haulmont.cuba.security.entity.Role" view="_local">
