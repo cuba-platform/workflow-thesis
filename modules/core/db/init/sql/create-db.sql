@@ -360,8 +360,8 @@ create table WF_CALENDAR (
     UPDATED_BY varchar(50),
     WORK_DAY date,
     WORK_DAY_OF_WEEK smallint,
-    WORK_START char(5),
-    WORK_END char(5),
+    WORK_START_TIME timestamp,
+    WORK_END_TIME timestamp,
     primary key (ID)
 );
 

@@ -26,6 +26,7 @@ import org.dom4j.Element;
 
 import javax.annotation.ManagedBean;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,45 +42,27 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         private final int endM;
         private final Integer dayOfWeek;
 
-        private CalendarItem(Date day, String start, String end) {
-            this.day = day;
-            if (StringUtils.isNotBlank(start)) {
-                this.startH = Integer.valueOf(start.substring(0, 2));
-                this.startM = Integer.valueOf(start.substring(3));
+        private CalendarItem(WorkCalendarEntity entity) {
+            this.day = entity.getDay();
+            this.dayOfWeek = entity.getDayOfWeek() == null ? null : entity.getDayOfWeek().getId();
+
+            if (entity.getStart() != null) {
+                this.startH = (int) DateUtils.getFragmentInHours(entity.getStart(), Calendar.DAY_OF_YEAR);
+                this.startM = (int) DateUtils.getFragmentInMinutes(entity.getStart(), Calendar.HOUR_OF_DAY);
             } else {
                 this.startH = 0;
                 this.startM = 0;
             }
 
-            if (StringUtils.isNotBlank(end)) {
-                this.endH = Integer.valueOf(end.substring(0, 2));
-                this.endM = Integer.valueOf(end.substring(3));
+            if (entity.getEnd() != null) {
+                this.endH = (int) DateUtils.getFragmentInHours(entity.getEnd(), Calendar.DAY_OF_YEAR);
+                this.endM = (int) DateUtils.getFragmentInMinutes(entity.getEnd(), Calendar.HOUR_OF_DAY);
             } else {
                 this.endH = 0;
                 this.endM = 0;
             }
-            this.dayOfWeek = null;
         }
 
-        private CalendarItem(Integer dayOfWeek, String start, String end) {
-            this.dayOfWeek = dayOfWeek;
-            if (StringUtils.isNotBlank(start)) {
-                this.startH = Integer.valueOf(start.substring(0, 2));
-                this.startM = Integer.valueOf(start.substring(3));
-            } else {
-                this.startH = 0;
-                this.startM = 0;
-            }
-
-            if (StringUtils.isNotBlank(end)) {
-                this.endH = Integer.valueOf(end.substring(0, 2));
-                this.endM = Integer.valueOf(end.substring(3));
-            } else {
-                this.endH = 0;
-                this.endM = 0;
-            }
-            this.day = null;
-        }
 
         public Date getDay() {
             return day;
@@ -167,7 +150,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             int day = calendar.get(Calendar.DAY_OF_WEEK);
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minutes = calendar.get(Calendar.MINUTE);
-            if (day > dayOfWeek  || (hour > endH) || ((hour == endH) && (minutes > endM))) {
+            if (day > dayOfWeek || (hour > endH) || ((hour == endH) && (minutes > endM))) {
                 return true;
             }
             return false;
@@ -209,17 +192,16 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                     Transaction tx = Locator.createTransaction();
                     try {
                         EntityManager em = PersistenceProvider.getEntityManager();
-                        Query q = em.createQuery("select c.day, c.start, c.end from wf$Calendar c where c.day is not null " +
+                        Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
                                 "order by c.day, c.start");
-                        List<Object[]> list = q.getResultList();
-                        for (Object[] row : list) {
-                            Date date = (Date) row[0];
-                            CalendarItem ci = new CalendarItem(date, (String) row[1], (String) row[2]);
-                            List<CalendarItem> mapValue = exceptionDays.get(date);
+                        List<WorkCalendarEntity> list = q.getResultList();
+                        for (WorkCalendarEntity c : list) {
+                            CalendarItem ci = new CalendarItem(c);
+                            List<CalendarItem> mapValue = exceptionDays.get(c.getDay());
                             if (mapValue == null)
                                 mapValue = new LinkedList<CalendarItem>();
                             mapValue.add(ci);
-                            exceptionDays.put(date, mapValue);
+                            exceptionDays.put(c.getDay(), mapValue);
                         }
 
                         tx.commit();
@@ -235,17 +217,17 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             Transaction tx = Locator.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
-                Query q = em.createQuery("select c.dayOfWeek, c.start, c.end from wf$Calendar c where c.dayOfWeek is not null " +
+                Query q = em.createQuery("select c from wf$Calendar c where c.dayOfWeek is not null " +
                         "order by c.dayOfWeek, c.start");
-                List<Object[]> list = q.getResultList();
-                for (Object[] row : list) {
-                    Integer dayOfWeek = (Integer) row[0];
-                    CalendarItem ci = new CalendarItem(dayOfWeek, (String) row[1], (String) row[2]);
-                    List<CalendarItem> mapValue = defaultDays.get(dayOfWeek);
+                List<WorkCalendarEntity> list = q.getResultList();
+                for (WorkCalendarEntity c : list) {
+
+                    CalendarItem ci = new CalendarItem(c);
+                    List<CalendarItem> mapValue = defaultDays.get(c.getDayOfWeek().getId());
                     if (mapValue == null)
                         mapValue = new LinkedList<CalendarItem>();
                     mapValue.add(ci);
-                    defaultDays.put(dayOfWeek, mapValue);
+                    defaultDays.put(c.getDayOfWeek().getId(), mapValue);
                 }
                 tx.commit();
             } finally {
@@ -355,8 +337,15 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end, Integer dayOfWeek) {
         WorkCalendarEntity calendarEntity = new WorkCalendarEntity();
         calendarEntity.setDay(day);
-        calendarEntity.setStart(start);
-        calendarEntity.setEnd(end);
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm");
+        try {
+            if (!StringUtils.isEmpty(start))
+                calendarEntity.setStart(format.parse(start));
+            if (!StringUtils.isEmpty(end))
+                calendarEntity.setEnd(format.parse(end));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         calendarEntity.setDayOfWeek(DayOfWeek.fromId(dayOfWeek));
 
         return calendarEntity;
@@ -722,7 +711,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
         Calendar endDay = Calendar.getInstance();
         endDay.setTime(endTime);
-        endDay = DateUtils.truncate(endDay, Calendar.DATE); 
+        endDay = DateUtils.truncate(endDay, Calendar.DATE);
 
         while (currentDay.compareTo(endDay) <= 0) {
             if (isDateWorkDay(currentDay))
@@ -731,5 +720,5 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
 
         return workPeriodDuration;
-    }    
+    }
 }

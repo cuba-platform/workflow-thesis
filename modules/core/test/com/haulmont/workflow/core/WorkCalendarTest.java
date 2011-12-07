@@ -141,13 +141,13 @@ public class WorkCalendarTest extends WfTestCase {
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            em.persist(createWorkCalendarEntity(null, "0900", "1300"));
-            em.persist(createWorkCalendarEntity(null, "1400", "1800"));
+            em.persist(createWorkCalendarEntity(null, "09:00", "13:00"));
+            em.persist(createWorkCalendarEntity(null, "14:00", "18:00"));
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(2010, 01, 05);
-            em.persist(createWorkCalendarEntity(calendar.getTime(), "0900", "1300"));
-            em.persist(createWorkCalendarEntity(calendar.getTime(), "1400", "1700"));
+            em.persist(createWorkCalendarEntity(calendar.getTime(), "09:00", "13:00"));
+            em.persist(createWorkCalendarEntity(calendar.getTime(), "14:00", "17:00"));
 
             calendar.set(2010, 01, 06);
             em.persist(createWorkCalendarEntity(calendar.getTime(), null, null));
@@ -162,11 +162,19 @@ public class WorkCalendarTest extends WfTestCase {
     }
 
     private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end) {
+        DateFormat format = new SimpleDateFormat("hh:mm");
         WorkCalendarEntity calendarEntity = new WorkCalendarEntity();
         calendarEntity.setDay(day);
-        calendarEntity.setStart(start);
-        calendarEntity.setEnd(end);
+        try {
 
+        if (start!=null)
+                calendarEntity.setStart(format.parse(start));
+
+        if (end!=null)
+            calendarEntity.setEnd(format.parse(end));
+        } catch (ParseException e) {
+                throw new RuntimeException(e);
+        }
         return calendarEntity;
     }
 
@@ -174,7 +182,7 @@ public class WorkCalendarTest extends WfTestCase {
     @Override
     protected void initDataSources() throws Exception {
         Class.forName("org.postgresql.Driver");
-        TestDataSource ds = new TestDataSource("jdbc:postgresql://localhost/alt239", "root", "root");
+        TestDataSource ds = new TestDataSource("jdbc:postgresql://localhost/refapp", "root", "root");
         TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
     }
 }

@@ -14,9 +14,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "wf$Calendar")
@@ -38,11 +36,13 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     @Column(name = "WORK_DAY_OF_WEEK")
     protected Integer dayOfWeek;
 
-    @Column(name = "WORK_START")
-    protected String start;
+    @Column(name = "WORK_START_TIME")
+    @Temporal(TemporalType.TIME)
+    protected Date start;
 
-    @Column(name = "WORK_END")
-    protected String end;
+    @Column(name = "WORK_END_TIME")
+    @Temporal(TemporalType.TIME)
+    protected Date end;
 
     @Column(name = "COMMENT")
     protected String comment;
@@ -70,19 +70,19 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
         this.day = day;
     }
 
-    public String getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(String end) {
+    public void setEnd(Date end) {
         this.end = end;
     }
 
-    public String getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(String start) {
+    public void setStart(Date start) {
         this.start = start;
     }
 
