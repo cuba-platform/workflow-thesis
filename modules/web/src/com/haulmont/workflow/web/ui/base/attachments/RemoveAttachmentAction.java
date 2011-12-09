@@ -52,7 +52,7 @@ public class RemoveAttachmentAction extends RemoveAction {
             super.confirmAndRemove(selected);
         } else {
             App.getInstance().getWindowManager().getDialogParams().setWidth(500);
-            Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+            Window window = holder.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
 
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {

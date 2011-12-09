@@ -41,8 +41,8 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public void actionPerform(Component component) {
-        prevVersion = owner.getSingleSelected();
-        Collection<Attachment> attachments = owner.getSelected();
+        prevVersion = holder.getSingleSelected();
+        Collection<Attachment> attachments = holder.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
             App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(getClass(), "selectAttachmentForVersion"), IFrame.NotificationType.WARNING);
             return;
@@ -63,7 +63,7 @@ public class NewVersionAction extends CreateAction {
         }
         newVersion.setVersionNum(prevVersion.getVersionNum() + 1);
 
-        CollectionDatasource attachmentsDs = owner.getDatasource();
+        CollectionDatasource attachmentsDs = holder.getDatasource();
         for (Object id : attachmentsDs.getItemIds()) {
             Attachment item = (Attachment) attachmentsDs.getItem(id);
             if (prevVersion.equals(item.getVersionOf())) {
@@ -73,7 +73,7 @@ public class NewVersionAction extends CreateAction {
 
         attachmentsDs.updateItem(newVersion);
         attachmentsDs.commit();
-        owner.setSelected((Entity) null);
+        holder.setSelected((Entity) null);
     }
 
     @Override
