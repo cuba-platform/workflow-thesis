@@ -418,13 +418,19 @@ inputEx.ListField.prototype.renderSubField = function(value) {
     var lang = YAHOO.lang, Event = YAHOO.util.Event, Dom = YAHOO.util.Dom;
 
     // Div that wraps the deleteButton + the subField
-     var newDiv = inputEx.cn('div',{className:'container'}), delButton;
+     var newDiv = inputEx.cn('div',{className:'container'}), delButton, delDiv;
 
     // Delete button
     if(this.options.useButtons) {
         delButton = inputEx.cn('img', {src: inputEx.spacerUrl, className: 'inputEx-ListField-delButton'});
         Event.addListener( delButton, 'click', this.onDelete, this, true);
         newDiv.appendChild( delButton );
+    } else {   // Delete link
+        delDiv = inputEx.cn('div', null, {width:'100%', textAlign:'right'}, null);
+        delButton = inputEx.cn('a', {className: 'inputEx-List-link'}, null, this.options.listRemoveLabel);
+        Event.addListener(delButton, 'click', this.onDelete, this, true);
+        delDiv.appendChild(delButton);
+        newDiv.appendChild(delDiv);
     }
 
     // Instantiate the new subField
@@ -462,12 +468,6 @@ inputEx.ListField.prototype.renderSubField = function(value) {
         newDiv.appendChild( arrowDown );
     }
 
-    // Delete link
-    if(!this.options.useButtons) {
-        delButton = inputEx.cn('a', {className: 'inputEx-List-link'}, null, this.options.listRemoveLabel);
-        Event.addListener( delButton, 'click', this.onDelete, this, true);
-        newDiv.appendChild( delButton );
-    }
 
     // Line breaker
     newDiv.appendChild( inputEx.cn('div', null, {clear: "both"}) );
