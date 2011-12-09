@@ -43,7 +43,7 @@ public class ProcBrowser extends AbstractWindow {
 
         public void actionPerform(Component component) {
             if (!isEnabled()) return;
-            Set selected = holder.getSelected();
+            Set selected = owner.getSelected();
             final Set toRemove = new HashSet();
             for (Object item : selected) {
                 if (((Proc) item).getDesign() != null) {
