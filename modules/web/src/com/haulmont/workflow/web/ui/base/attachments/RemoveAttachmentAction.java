@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -39,6 +40,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     @Override
     protected void confirmAndRemove(final Set selected) {
         boolean versionExists = false;
+        CollectionDatasource datasource = owner.getDatasource();
         for (Object attachment : selected) {
             for (Object id : datasource.getItemIds()) {
                 Attachment versionAttachment = (Attachment) datasource.getItem(id);
@@ -71,6 +73,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         Set allVersions = new HashSet();
         allVersions.addAll(selected);
 
+        CollectionDatasource datasource = owner.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -84,6 +87,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     private void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<Attachment, List<Attachment>>();
+        CollectionDatasource datasource = owner.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();

@@ -72,7 +72,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         NewVersionAction newVersionAction = new NewVersionAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
             @Override
-            protected Map<String, Object> getInitialValues() {
+            public Map<String, Object> getInitialValues() {
                 Map<String, Object> initialValues = new HashMap();
                 initialValues.put("card", cardDs.getItem());
                 initialValues.put("file", new FileDescriptor());

@@ -85,7 +85,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             if (attachmentsTable != null) {
                 attachmentsTable.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
                     @Override
-                    protected Map<String, Object> getInitialValues() {
+                    public Map<String, Object> getInitialValues() {
                         HashMap<String, Object> values = new HashMap<String, Object>();
                         values.put("card", cardDs.getItem());
                         values.put("file", new FileDescriptor());
