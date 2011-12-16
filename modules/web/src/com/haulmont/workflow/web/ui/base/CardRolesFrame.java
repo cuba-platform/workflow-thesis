@@ -1116,10 +1116,11 @@ public class CardRolesFrame extends AbstractFrame {
                 public void valueChange(Property.ValueChangeEvent event) {
                     Property eventProperty = event.getProperty();
                     User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
-                    cardRole.setUser(selectedUser);
                     CardRole cr = ((CardRole) tmpCardRolesDs.getItem(cardRole.getId()));
                     if (cr != null)
                         cr.setUser(selectedUser);
+                    else
+                        cardRole.setUser(selectedUser);
                     refreshFieldsWithRole(cardRole);
                 }
             });
@@ -1154,6 +1155,10 @@ public class CardRolesFrame extends AbstractFrame {
                 addGroupButton.setVisible(editable);
             }
         }
+    }
+
+    public Map<CardRole, CardRoleField> getActorActionsFieldsMap() {
+        return actorActionsFieldsMap;
     }
 
 }
