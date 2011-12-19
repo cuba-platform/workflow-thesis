@@ -9,9 +9,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-    <bean id="jbpmConfiguration" class="org.jbpm.pvm.internal.cfg.SpringConfiguration">
-        <constructor-arg value="wf.jbpm.cfg.xml"/>
-    </bean>
+    <bean id="jbpmConfiguration" class="com.haulmont.workflow.core.sys.CubaJbpmSpringConfiguration"/>
 
     <!-- Various beans -->
 
