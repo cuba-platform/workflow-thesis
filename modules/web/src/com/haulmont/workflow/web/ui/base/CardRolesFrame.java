@@ -887,7 +887,8 @@ public class CardRolesFrame extends AbstractFrame {
         for (CardRole cr : actorActionsFieldsMap.keySet()) {
             if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
                 CardRoleField cardRoleField = actorActionsFieldsMap.get(cr);
-                cardRoleField.initField(cr, cardRoleField.getValue());
+                CardRole role = tmpCardRolesDs.getItem(cr.getId());
+                cardRoleField.initField(role == null ? cr : role, cardRoleField.getValue());
             }
         }
     }
