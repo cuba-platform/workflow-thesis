@@ -35,6 +35,8 @@ create table WF_DESIGN_SCRIPT (
 
 alter table WF_DESIGN_SCRIPT add constraint FK_WF_DESIGN_SCRIPT_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
 
+create index IDX_WF_DESIGN_SCRIPT_DESIGN on WF_DESIGN_SCRIPT (DESIGN_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_DESIGN_FILE (
@@ -50,6 +52,8 @@ create table WF_DESIGN_FILE (
 )^
 
 alter table WF_DESIGN_FILE add constraint FK_WF_DESIGN_FILE_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
+
+create index IDX_WF_DESIGN_FILE_DESIGN on WF_DESIGN_FILE (DESIGN_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -76,7 +80,8 @@ create table WF_PROC (
 
 alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
 alter table WF_PROC add constraint WF_PROC_AVAILABLE_ROLE_ID foreign key (AVAILABLE_ROLE_ID) references SEC_ROLE(ID)^
-alter table WF_PROC add constraint WF_PROC_UNIQ_CODE unique (CODE)^
+
+create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC (CODE) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -130,6 +135,8 @@ alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_USER foreign key (
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_PARENT foreign key (PARENT_ID) references WF_CARD_COMMENT (ID)^
 
+create index IDX_WF_CARD_COMMENT_CARD on WF_CARD_COMMENT (CARD_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_COMMENT_USER (
@@ -159,7 +166,12 @@ create table WF_CARD_RELATION (
 alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD_RELATED foreign key (RELATED_CARD_ID) references WF_CARD (ID)^
 
+create index IDX_WF_CARD_RELATION_CARD on WF_CARD_RELATION (CARD_ID)^
+
+create index IDX_WF_CARD_RELATION_RELATED_CARD on WF_CARD_RELATION (RELATED_CARD_ID)^
+
 ------------------------------------------------------------------------------------------------------------
+
 create table WF_CARD_INFO (
     ID uuid,
     NAME varchar(50),
@@ -179,7 +191,9 @@ create table WF_CARD_INFO (
 alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_CARD foreign key (CARD_ID) references WF_CARD(ID)^
 alter table WF_CARD_INFO add constraint FK_WF_CARD_INFO_USER foreign key (USER_ID) references SEC_USER(ID)^
 
-create index IDX_WF_CARD_INFO_CARD on WF_CARD_INFO(card_id)^
+create index IDX_WF_CARD_INFO_CARD on WF_CARD_INFO (CARD_ID)^
+
+create index IDX_WF_CARD_INFO_USER on WF_CARD_INFO (USER_ID, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -216,6 +230,12 @@ alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 
+create index IDX_WF_ASSIGNMENT_CARD on WF_ASSIGNMENT (CARD_ID)^
+
+create index IDX_WF_ASSIGNMENT_USER on WF_ASSIGNMENT (USER_ID)^
+
+create index IDX_WF_ASSIGNMENT_USER_FINISHED on WF_ASSIGNMENT (USER_ID, FINISHED)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_ATTACHMENTTYPE (
@@ -234,7 +254,8 @@ create table WF_ATTACHMENTTYPE (
     ISSYSTEM boolean,
     primary key (ID)
 )^
-alter table WF_ATTACHMENTTYPE add constraint WF_ATTACHMENTTYPE_UNIQ_CODE unique (CODE, DELETE_TS)^
+
+create unique index IDX_WF_ATTACHMENTTYPE_UNIQ_CODE on WF_ATTACHMENTTYPE (CODE) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -270,8 +291,9 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key (VERSION_OF_ID) references WF_ATTACHMENT (ID)^
 
-insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
-values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','AttachmentType.attachment',true)^
+create index IDX_WF_ATTACHMENT_CARD on WF_ATTACHMENT (CARD_ID)^
+
+create index IDX_WF_ATTACHMENT_ASSIGNMENT on WF_ATTACHMENT (ASSIGNMENT_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -298,6 +320,8 @@ create table WF_PROC_ROLE (
 
 alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE (ID)^
+
+create index IDX_WF_PROC_ROLE_PROC on WF_PROC_ROLE (PROC_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -326,6 +350,10 @@ alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_ROLE foreign key (PROC_R
 
 alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_USER foreign key (USER_ID) references SEC_USER (ID)^
 
+create index IDX_WF_CARD_ROLE_CARD on WF_CARD_ROLE (CARD_ID)^
+
+create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE (USER_ID, CODE)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_PROC (
@@ -350,6 +378,8 @@ alter table WF_CARD_PROC add constraint FK_WF_CARD_PROC_CARD foreign key (CARD_I
 
 alter table WF_CARD_PROC add constraint FK_WF_CARD_PROC_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 
+create index IDX_WF_CARD_PROC_CARD on WF_CARD_PROC (CARD_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_DEFAULT_PROC_ACTOR (
@@ -371,6 +401,8 @@ alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_PROC_R
 
 alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_USER foreign key (USER_ID) references SEC_USER (ID)^
 
+create index IDX_WF_DEFAULT_PROC_ACTOR_PROC_ROLE on WF_DEFAULT_PROC_ACTOR (PROC_ROLE_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_TIMER (
@@ -388,6 +420,12 @@ create table WF_TIMER (
 
 alter table WF_TIMER add constraint FK_WF_TIMER_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 
+create index IDX_WF_TIMER_DUE_DATE on WF_TIMER (DUE_DATE)^
+
+create index IDX_WF_TIMER_CARD on WF_TIMER (CARD_ID)^
+
+create index IDX_WF_TIMER_EXECUTION_ACTIVITY on WF_TIMER (JBPM_EXECUTION_ID, ACTIVITY)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CALENDAR (
@@ -403,6 +441,8 @@ create table WF_CALENDAR (
     COMMENT varchar(500),
     primary key (ID)
 );
+
+create index IDX_WF_CALENDAR_WORK_DAY on WF_CALENDAR (WORK_DAY)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -463,7 +503,7 @@ create table WF_PROC_STAGE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-
+    --
     NAME varchar(255),
     DURATION numeric(3),
     TIME_UNIT varchar(1),
@@ -476,11 +516,13 @@ create table WF_PROC_STAGE (
     PROC_STAGE_TYPE_ID uuid,
     DURATION_SCRIPT_ENABLED boolean,
     DURATION_SCRIPT text,
-
+    --
     primary key (ID)
 )^
 
 alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
+
+create index IDX_WF_PROC_STAGE_PROC on WF_PROC_STAGE (PROC_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -505,6 +547,8 @@ create table WF_CARD_STAGE (
 alter table WF_CARD_STAGE add constraint FK_WF_CARD_STAGE_PROC_STAGE foreign key (PROC_STAGE_ID) references WF_PROC_STAGE (ID)^
 alter table WF_CARD_STAGE add constraint FK_WF_CARD_STAGE_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 
+create index IDX_WF_CARD_STAGE_CARD on WF_CARD_STAGE (CARD_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_PROC_STAGE_PROC_ROLE (
@@ -527,44 +571,18 @@ create table WF_PROC_STAGE_TYPE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-
+    --
     NAME varchar(200),
     CODE varchar(200),
     DURATION_SCRIPT_ENABLED boolean,
     DURATION_SCRIPT text,
-
+    --
     primary key (ID)
 )^
+
 alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
-create index idx_wf_attachment_card on wf_attachment (card_id)^
-
-create index idx_wf_attachment_assignment on wf_attachment (assignment_id)^
-
-create index idx_wf_assignment_card on wf_assignment (card_id)^
-
-create index idx_wf_card_stage_card on wf_card_stage (card_id)^
-
-create index idx_wf_card_role_card on wf_card_role (card_id)^
-
-create index idx_wf_card_proc_card on wf_card_proc (card_id)^
-
-create index idx_wf_assignment_user on wf_assignment (user_id)^
-
-create index idx_wf_assignment_user_finished on wf_assignment (user_id, finished)^
-
-create index idx_wf_card_role_user_code on wf_card_role (user_id, code)^
-
-create index idx_wf_card_info_user on wf_card_info (user_id, delete_ts)^
-
-create index idx_wf_timer_due_date on wf_timer (due_date)^
-
-create index idx_wf_card_comment_card on wf_card_comment (card_id)^
-
-create index idx_wf_card_relation_card on wf_card_relation (card_id)^
-
-create index idx_wf_card_relation_related_card on wf_card_relation (related_card_id)^
-
-create index idx_wf_proc_role_proc on wf_proc_role (proc_id)^
+insert into WF_ATTACHMENTTYPE (ID, CODE, ISDEFAULT)
+values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70', 'AttachmentType.attachment', true)^
