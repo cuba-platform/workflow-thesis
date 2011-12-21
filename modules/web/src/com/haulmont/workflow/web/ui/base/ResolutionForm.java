@@ -57,7 +57,7 @@ public class ResolutionForm extends AbstractForm {
         commentText = getComponent("commentText");
         attachmentsTable = getComponent("attachmentsTable");
 
-        Card card = (Card) params.get("param$card");
+        final Card card = (Card) params.get("param$card");
         String messagesPack = card.getProc().getMessagesPack();
         String activity = (String) params.get("param$activity");
         String transition = (String) params.get("param$transition");
@@ -161,6 +161,7 @@ public class ResolutionForm extends AbstractForm {
                             Map<String, Object> values = new HashMap<String, Object>();
                             values.put("assignment", getDsContext().get("assignmentDs").getItem());
                             values.put("file", new FileDescriptor());
+                            values.put("card", card);
                             if (attachmentType != null) {
                                 values.put("attachType", attachmentType);
                             }
