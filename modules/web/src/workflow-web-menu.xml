@@ -6,7 +6,7 @@
 
 <menu-config>
 
-    <menu id="workflow">
+    <menu id="workflow" insertBefore="administration">
         <item id="wf$Assignment.browse"/>
         <item id="wf$Design.browse"/>
         <item id="wf$Proc.browse"/>
