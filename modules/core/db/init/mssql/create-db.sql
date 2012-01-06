@@ -219,7 +219,7 @@ create table WF_ASSIGNMENT (
     FINISHED datetime,
     FINISHED_BY uniqueidentifier,
     OUTCOME varchar(255),
-    COMMENT varchar(2000),
+    COMMENT text,
     ITERATION integer,
     primary key nonclustered (ID)
 )^

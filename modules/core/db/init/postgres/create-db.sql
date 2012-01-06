@@ -217,7 +217,7 @@ create table WF_ASSIGNMENT (
     FINISHED timestamp,
     FINISHED_BY uuid,
     OUTCOME varchar(255),
-    COMMENT varchar(2000),
+    COMMENT text,
     ITERATION integer,
     primary key (ID)
 )^
