@@ -367,7 +367,7 @@ public class TransitionForm extends AbstractForm {
             return false;
         }
         if (cardRolesFrame != null) {
-            Set<String> emptyRolesNames = cardRolesFrame.getEmptyRolesNames();
+            Set<String> emptyRolesNames = getEmptyRolesNames();
             if (!emptyRolesNames.isEmpty()) {
                 String message = "";
                 for (String emptyRoleName : emptyRolesNames) {
@@ -410,6 +410,10 @@ public class TransitionForm extends AbstractForm {
         }
 
         return true;
+    }
+
+    protected Set<String> getEmptyRolesNames() {
+        return cardRolesFrame.getEmptyRolesNames();
     }
 
     @Override
