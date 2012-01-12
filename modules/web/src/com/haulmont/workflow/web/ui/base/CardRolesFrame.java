@@ -74,7 +74,8 @@ public class CardRolesFrame extends AbstractFrame {
     protected List<User> users;
     protected Map<Role, Collection<User>> roleUsersMap = new HashMap<Role, Collection<User>>();
     private String requiredRolesCodesStr;
-
+    private List deletedEmptyRoleCodes;
+	
     public CardRolesFrame(IFrame frame) {
         super(frame);
     }
@@ -954,7 +955,8 @@ public class CardRolesFrame extends AbstractFrame {
 
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
-            if (cardRole.getUser() == null) {
+            if (cardRole.getUser() == null && deletedEmptyRoleCodes != null &&
+                    !deletedEmptyRoleCodes.contains(cardRole.getCode())) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
@@ -996,6 +998,10 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         return emptyRolesNames;
+    }
+
+    public void setDeletedEmptyRoleCodes(List deletedEmptyRoleCodes) {
+        this.deletedEmptyRoleCodes = deletedEmptyRoleCodes;
     }
 
     private Set<String> getRequiredRolesCodes(boolean isAll) {
