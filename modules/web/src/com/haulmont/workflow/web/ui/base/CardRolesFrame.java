@@ -955,8 +955,8 @@ public class CardRolesFrame extends AbstractFrame {
 
         for (Object itemId : cardRolesDs.getItemIds()) {
             CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID)itemId);
-            if (cardRole.getUser() == null && deletedEmptyRoleCodes != null &&
-                    !deletedEmptyRoleCodes.contains(cardRole.getCode())) {
+            if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
+                    !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
