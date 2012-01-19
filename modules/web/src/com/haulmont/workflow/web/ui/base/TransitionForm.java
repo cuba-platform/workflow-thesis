@@ -63,7 +63,7 @@ public class TransitionForm extends AbstractForm {
     @Inject
     protected CollectionDatasource cardRolesDs;
     @Inject
-    private DateField dueDate;
+    protected DateField dueDate;
     @Inject
     private TextField outcomeText;
     @Inject

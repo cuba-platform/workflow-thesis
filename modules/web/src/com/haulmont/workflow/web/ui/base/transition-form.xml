@@ -58,8 +58,7 @@
                     <visible property="dueDateVisible"/>
                     <hbox id="dueDatePane">
                         <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
-                        <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="DAY"
-                                   dateFormat="msg://dateFormat"/>
+                        <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
                     </hbox>
                 </accessControl>
 
