@@ -52,6 +52,9 @@ var i18nDict = {
     requiredRoles: "Требуемые роли",
     requiredAttachmentTypes: "Требуемые вложения",
     formHeight: "Высота формы",
+    transitionStyle : "Вид перехода",
+    success: "Успешный",
+    failure: "Неуспешный",
 
     ////////////////////////
     // Timers

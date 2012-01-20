@@ -133,9 +133,10 @@ public class AssignmentModule extends Module {
                 JSONObject jsForm = jsFormsList.getJSONObject(i);
                 String formName = jsForm.getString("name");
                 String transition = WfUtils.encodeKey(jsForm.getString("transition"));
+                String transitionStyle = jsForm.optString("transitionStyle");
                 JSONObject jsProperties = jsForm.getJSONObject("properties");
                 try {
-                    context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName, jsProperties);
+                    context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName, transitionStyle, jsProperties);
                 } catch (DesignCompilationException e) {
                     if (error.length() != 0)
                         error.append("<br />");

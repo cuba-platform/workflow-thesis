@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -19,6 +20,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FormCompiler {
+
+    public static enum TransitionStyle {
+        SUCCESS("success", "wf-success"),
+        FAILURE("failure", "wf-failure");
+
+        private String id;
+        private String styleName;
+
+        TransitionStyle(String id, String styleName) {
+            this.styleName = styleName;
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public static TransitionStyle fromId(String id) {
+            for (TransitionStyle ts : TransitionStyle.values()) {
+                if (ts.getId().equals(id)) {
+                    return ts;
+                }
+            }
+            return null;
+        }
+
+        public String getStyleName() {
+            return styleName;
+        }
+    }
 
     private Map<String, String> builderClassNames;
 
@@ -42,7 +73,7 @@ public class FormCompiler {
         return builderClasses;
     }
 
-    public void writeFormEl(Element parentEl, String formName, JSONObject jsProperties) throws DesignCompilationException {
+    public void writeFormEl(Element parentEl, String formName, String transitionStyle, JSONObject jsProperties) throws DesignCompilationException {
         Class<? extends FormBuilder> cls = getBuilderClasses().get(formName);
         if (cls == null) {
             throw new RuntimeException("Unsupported form name: " + formName);
@@ -54,5 +85,9 @@ public class FormCompiler {
             throw new RuntimeException(e);
         }
         builder.writeFormEl(parentEl, jsProperties);
+        TransitionStyle style = TransitionStyle.fromId(transitionStyle);
+        if (style != null) {
+            parentEl.addAttribute("style", TransitionStyle.fromId(transitionStyle).getStyleName());
+        }
     }
 }

@@ -42,7 +42,15 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             this.transitionField = inputEx({
                 type: 'select', label: i18n.get("transition"), name: 'transition', choices: transitions
             }, this);
+            this.transitionStyle = inputEx({type: 'select',label : i18n.get("transitionStyle"),name: 'transitionStyle',
+                choices : [
+                    {value: null, label: ""},
+                    {value:"success", label:i18n.get("success")},
+                    {value:"failure", label:i18n.get("failure")}
+                ]
+            },this)
             this.fieldset.appendChild(this.transitionField.getEl());
+            this.fieldset.appendChild(this.transitionStyle.getEl());
         }
 
         var formChoices = [{value: null, label: ""}];
@@ -97,6 +105,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             if (this.transitionField) {
                 val.transition = this.transitionField.getValue();
             }
+            val.transitionStyle = this.transitionStyle.getValue();
             val.properties = this.formParamsGroup.getValue();
         }
         return val;
@@ -112,6 +121,10 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
 
         if (val.transition && this.transitionField) {
             this.transitionField.setValue(val.transition);
+
+        }
+        if(val.transitionStyle && this.transitionStyle) {
+            this.transitionStyle.setValue(val.transitionStyle);
         }
 
         this.formTypeField.setValue(val.name, false);

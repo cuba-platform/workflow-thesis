@@ -45,6 +45,9 @@ var i18nDict = {
     requiredRoles: "Required Roles",
     requiredAttachmentTypes: "Required Attachments",
     formHeight: "Form Height",
+    transitionStyle : "Transition Style",
+    success: "Success",
+    failure: "Failure",
 
     ////////////////////////
     // Timers
