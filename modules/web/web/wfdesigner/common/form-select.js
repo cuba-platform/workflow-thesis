@@ -51,6 +51,10 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             },this)
             this.fieldset.appendChild(this.transitionField.getEl());
             this.fieldset.appendChild(this.transitionStyle.getEl());
+
+            this.transitionStyle.updatedEvt.subscribe(this.onDataChanged, this, true);
+
+            this.transitionField.updatedEvt.subscribe(this.onDataChanged, this, true);
         }
 
         var formChoices = [{value: null, label: ""}];
@@ -78,7 +82,12 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
     onFormTypeChanged: function(e, params) {
         this.formName = params[0];
         //console.log(this.formName);
+        Wf.editor.layer.eventChanged.fire();
         this.renderFormParams();
+    },
+
+    onDataChanged: function(e, params) {
+        Wf.editor.layer.eventChanged.fire();
     },
 
     renderFormParams: function() {
@@ -91,6 +100,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             if (form) {
                 this.formParamsGroup = inputEx({type: "group", fields: form.fields}, this);
                 this.fieldset.appendChild(this.formParamsGroup.getEl());
+                this.formParamsGroup.updatedEvt.subscribe(this.onDataChanged, this, true);
             }
         } catch(e) {
             console.log(e)
@@ -120,11 +130,11 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             return;
 
         if (val.transition && this.transitionField) {
-            this.transitionField.setValue(val.transition);
+            this.transitionField.setValue(val.transition,false);
 
         }
         if(val.transitionStyle && this.transitionStyle) {
-            this.transitionStyle.setValue(val.transitionStyle);
+            this.transitionStyle.setValue(val.transitionStyle,false);
         }
 
         this.formTypeField.setValue(val.name, false);
@@ -132,7 +142,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
         this.formName = val.name;
         this.renderFormParams();
 
-        this.formParamsGroup.setValue(val.properties);
+        this.formParamsGroup.setValue(val.properties,false);
     }
 
 });
