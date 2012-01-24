@@ -11,6 +11,7 @@
 package com.haulmont.workflow.web.ui.usergroup;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.data.DataService;
@@ -19,7 +20,9 @@ import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.UserGroup;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,6 +37,8 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         data.clear();
         String queryString = "";
         Role secRole = (Role)params.get("secRole");
+        String requiredText = (String)params.get("requiredText");
+        HashSet list = (HashSet)params.get("selectedItems");
         if (secRole != null) {
           queryString = "select u from sec$User u join u.userRoles ur where ur.role.id = :secRole order by u.name";
         } else {
@@ -52,10 +57,19 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         List<UserGroup> userGroups = dataservice.loadList(ctx);
 
         for (UserGroup userGroup : userGroups) {
-            data.put(userGroup.getId(), userGroup);
+            if (StringUtils.isBlank(requiredText) || StringUtils.containsIgnoreCase(userGroup.getInstanceName(), requiredText))
+                data.put(userGroup.getId(), userGroup);
         }
         for (User user : users) {
-            data.put(user.getId(), user);
+            if (StringUtils.isBlank(requiredText) || StringUtils.containsIgnoreCase(user.getInstanceName(), requiredText))
+                data.put(user.getId(), user);
+        }
+        if (list != null) {
+            for (Object obj : list) {
+                UUID uuid = ((Entity)obj).getUuid();
+                if (!data.containsKey(uuid))
+                    data.put(uuid, obj);
+            }
         }
 
 //        State prevState = state;

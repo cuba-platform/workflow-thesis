@@ -21,11 +21,18 @@ import com.haulmont.workflow.core.entity.UserGroup
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.gui.components.TwinColumn.StyleProvider
+import javax.inject.Inject
 
 class UserGroupAdd extends AbstractWindow{
   private TwinColumn twinColumn
   private CollectionDatasourceImpl userGroupsDs
   private Set selectedUsers = []
+
+  @Inject
+  private Button searchButton;
+
+  @Inject
+  private TextField searchText;
 
   def UserGroupAdd(IFrame frame) {
     super(frame);
@@ -72,6 +79,20 @@ class UserGroupAdd extends AbstractWindow{
         @Override
         public String getCaption() {
             return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+        }
+    });
+
+    searchButton.setAction(new AbstractAction("search") {
+        public void actionPerform(Component component) {
+            HashSet selectedItems = twinColumn.getValue();
+            String requiredText = searchText.getValue();
+            userGroupsDs.refresh(['selectedItems' : selectedItems, 'requiredText' : requiredText])
+            twinColumn.setValue(selectedItems);
+        }
+
+        @Override
+        public String getCaption() {
+            return getMessage("actions.Apply");
         }
     });
   }

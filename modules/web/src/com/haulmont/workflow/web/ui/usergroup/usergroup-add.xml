@@ -15,6 +15,11 @@
     <#assign width = 300>
     <layout>
         <vbox id="main" stylename="edit-area" expandable="false" margin="true" spacing="true">
+            <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">
+                <label value="msg://searchText"/>
+                <textField id="searchText" width="${width}"/>
+                <button id="searchButton"/>
+            </hbox>
             <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="18" columns="25" expandable="false"/>
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
