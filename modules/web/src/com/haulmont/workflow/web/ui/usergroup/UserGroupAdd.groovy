@@ -27,6 +27,7 @@ class UserGroupAdd extends AbstractWindow{
   private TwinColumn twinColumn
   private CollectionDatasourceImpl userGroupsDs
   private Set selectedUsers = []
+  protected Role secRole
 
   @Inject
   private Button searchButton;
@@ -43,7 +44,7 @@ class UserGroupAdd extends AbstractWindow{
     twinColumn = getComponent('twinColumn')
     userGroupsDs = getDsContext().get('userGroupsDs')
 
-    Role secRole = params.get("secRole");
+    secRole = params.get("secRole");
     if (secRole) userGroupsDs.refresh(['secRole' : secRole])
 
     twinColumn.styleProvider = [
@@ -86,7 +87,7 @@ class UserGroupAdd extends AbstractWindow{
         public void actionPerform(Component component) {
             HashSet selectedItems = twinColumn.getValue();
             String requiredText = searchText.getValue();
-            userGroupsDs.refresh(['selectedItems' : selectedItems, 'requiredText' : requiredText])
+            userGroupsDs.refresh(['selectedItems': selectedItems, 'requiredText': requiredText, 'secRole': secRole])
             twinColumn.setValue(selectedItems);
         }
 
