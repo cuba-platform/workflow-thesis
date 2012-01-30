@@ -34,7 +34,7 @@
                 </row>
             </rows>
         </grid>
-        <table id="rolesTable" sortable="false">
+        <table id="rolesTable" sortable="false" multiselect="true">
             <columns>
                 <column id="procRole.name" caption="msg://role" width="150"/>
                 <column id="user" caption="msg://user"/>
