@@ -19,11 +19,9 @@ import org.apache.commons.lang.BooleanUtils;
 
 public class CardAttachmentEntityListener implements BeforeInsertEntityListener<CardAttachment>, BeforeDeleteEntityListener<CardAttachment> {
     public void onBeforeInsert(CardAttachment entity) {
-        if (!BooleanUtils.isTrue(entity.getCard().getHasAttachments())) {
-            entity.getCard().setHasAttachments(true);
-            if(!PersistenceHelper.isNew(entity.getCard()))
-                setHasAttachmentsInCard(entity.getCard(), true);
-        }
+        entity.getCard().setHasAttachments(true);
+        if (!PersistenceHelper.isNew(entity.getCard()))
+            setHasAttachmentsInCard(entity.getCard(), true);
     }
 
     public void onBeforeDelete(CardAttachment entity) {
