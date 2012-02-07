@@ -309,7 +309,7 @@ public class ProcEditor extends AbstractEditor {
     return max;
   }
 
-  private void initLazyTabs() {
+  protected void initLazyTabs() {
     Tabsheet tabsheet = getComponent("tabsheet")
     tabsheet.addListener([
             tabChanged : {Tabsheet.Tab newTab ->
@@ -323,7 +323,7 @@ public class ProcEditor extends AbstractEditor {
     ] as Tabsheet.TabChangeListener)
   }
 
-  private void initStagesTab() {
+  protected void initStagesTab() {
     final Table stagesTable = getComponent("stagesTable");
 
     TableActionsHelper stagesTableHelper = new TableActionsHelper(this, stagesTable);
