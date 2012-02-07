@@ -315,29 +315,30 @@ public class ProcEditor extends AbstractEditor {
             tabChanged : {Tabsheet.Tab newTab ->
               if (!initedTabs.contains(newTab)) {
                 initedTabs << newTab
-                if (newTab.name == 'stagesTab')
-                  initStagesTab()
+                if (newTab.name == 'stagesTab') {
+                  initStagesTab();
+                }
               }
             }
     ] as Tabsheet.TabChangeListener)
   }
 
   private void initStagesTab() {
-    final Table stagesTable = getComponent("stagesTable")
+    final Table stagesTable = getComponent("stagesTable");
 
-    TableActionsHelper stagesTableHelper = new TableActionsHelper(this, stagesTable)
+    TableActionsHelper stagesTableHelper = new TableActionsHelper(this, stagesTable);
     stagesTableHelper.createCreateAction(new ValueProvider() {
-        public Map<String, Object> getValues() {
-            return Collections.<String, Object>singletonMap("proc", procDs.getItem())
-        }
+      public Map<String, Object> getValues() {
+        return Collections.<String, Object> singletonMap("proc", procDs.getItem())
+      }
 
-        public Map<String, Object> getParameters() {
-            return null;
-        }
-    }, WindowManager.OpenType.THIS_TAB)
+      public Map<String, Object> getParameters() {
+        return null;
+      }
+    }, WindowManager.OpenType.THIS_TAB);
 
-    stagesTableHelper.createEditAction(WindowManager.OpenType.THIS_TAB)
-    stagesTableHelper.createRemoveAction(false)
+    stagesTableHelper.createEditAction(WindowManager.OpenType.THIS_TAB);
+    stagesTableHelper.createRemoveAction(false);
   }
 
   def void commitAndClose() {
