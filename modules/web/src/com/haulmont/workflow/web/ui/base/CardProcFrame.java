@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
@@ -230,7 +231,7 @@ public class CardProcFrame extends AbstractFrame {
         }
 
         final Window window = ComponentsHelper.getWindow(frame);
-        if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
+        if (window instanceof Window.Editor && ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()) {
             refreshCard();
 
             // starting
@@ -327,12 +328,7 @@ public class CardProcFrame extends AbstractFrame {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("cardType", "%," + card.getMetaClass().getName() + ",%");
-        User u = procDs.getDataService().reload(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser(), "user.edit");
-        List<UUID> roles = new ArrayList<UUID>();
-        for (UserRole role : u.getUserRoles()) {
-            roles.add(role.getRole().getId());
-        }
-        params.put("availableRole", roles);
+        params.put("userId", UserSessionProvider.currentOrSubstitutedUserId());
         procDs.refresh(params);
 
         initCreateProcLookup();

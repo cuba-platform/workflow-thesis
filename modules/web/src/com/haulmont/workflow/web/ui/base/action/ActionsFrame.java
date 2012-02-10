@@ -52,17 +52,22 @@ public class ActionsFrame extends AbstractFrame {
         List<String> actions = new ArrayList<String>();
 
         AbstractWfAccessData accessData = getContext().getParamValue("accessData");
-        if (accessData == null || accessData.getSaveEnabled()) {
-            actions.add(WfConstants.ACTION_SAVE);
-        }
-
         if (accessData == null || accessData.getSaveAndCloseEnabled()) {
             actions.add(WfConstants.ACTION_SAVE_AND_CLOSE);
         }
 
+        if (accessData == null || accessData.getSaveEnabled()) {
+            actions.add(WfConstants.ACTION_SAVE);
+        }
+
+
         if (card.getJbpmProcessId() != null) {
-            WfService wfs = ServiceLocator.lookup(WfService.NAME);
-            info = wfs.getAssignmentInfo(card);
+            if (accessData != null && accessData.getAssignmentInfo() != null) {
+                info = accessData.getAssignmentInfo();
+            } else {
+                WfService wfs = ServiceLocator.lookup(WfService.NAME);
+                info = wfs.getAssignmentInfo(card);
+            }
             if (info != null) {
                 descrText.setVisible(true);
                 if (info.getDescription() != null)
@@ -94,7 +99,7 @@ public class ActionsFrame extends AbstractFrame {
                     ((Button) btn).setAction(new ProcessAction(card, actionName, this));
                 }
 
-                if (!enabledActions.contains(actionName))
+                if ((enabledActions != null) && !enabledActions.contains(actionName))
                     btn.setEnabled(false);
 
                 FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);

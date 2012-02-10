@@ -119,7 +119,6 @@
         <property name="proc" view="_local"/>
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
-        <property name="attachments" view="resolutions" lazy="true"/>
         <property name="card" view="_local"/>
     </view>
 
@@ -207,6 +206,10 @@
         <property name="userRoles" view="usergroup-add"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.User" name="minimal-w-position" extends="_minimal">
+        <property name="position"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.UserRole" name="card-roles-frame" extends="_local">
         <property name="role" view="_minimal"/>
     </view>
@@ -230,5 +233,9 @@
 
     <view class="com.haulmont.workflow.core.entity.CardStage" name="browse" extends="_local">
         <property name="procStage" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.ProcState" name="browse" extends="_local">
+        <property name="proc" view="_local"/>
     </view>
 </views>

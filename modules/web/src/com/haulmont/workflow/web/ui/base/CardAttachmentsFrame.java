@@ -88,12 +88,12 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
-        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
+        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator);
         pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
-        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
@@ -165,7 +165,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
                                         ((DatasourceImpl) getDsContext().get("cardDs")).setModified(true);
                                         boolean isCommited = true;
                                         if (getFrame() instanceof WebWindow.Editor)
-                                            isCommited = ((AbstractEditor) ((WebWindow.Editor) getFrame()).getWrapper()).commit(true);
+                                            isCommited = ((AbstractEditor) ((WebWindow.Editor) getFrame()).getWrapper()).commit();
                                         else
                                             getFrame().getDsContext().commit();
 

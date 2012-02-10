@@ -251,4 +251,19 @@ public class WfServiceBean implements WfService {
             tx.end();
         }
     }
+
+    public void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("update wf$Card c set c.hasAttachments = ?1 " +
+                    "where c.id = ?2");
+            query.setParameter(1, hasAttachments);
+            query.setParameter(2, card);
+            query.executeUpdate();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }

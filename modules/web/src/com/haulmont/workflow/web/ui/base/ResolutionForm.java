@@ -51,7 +51,7 @@ public class ResolutionForm extends AbstractForm {
     }
 
     @Override
-    public void init(Map<String, Object> params) {
+    public void init(final Map<String, Object> params) {
         super.init(params);
 
         commentText = getComponent("commentText");

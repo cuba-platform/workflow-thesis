@@ -194,6 +194,10 @@ public class Assignment extends StandardEntity {
 
     @MetaProperty
     public String getDisplayUser() {
+        if (user == null) {
+            return "";
+        }
+
         if (finishedByUser == null || ObjectUtils.equals(user, finishedByUser)) {
             return userNameOrLogin(user);
         }

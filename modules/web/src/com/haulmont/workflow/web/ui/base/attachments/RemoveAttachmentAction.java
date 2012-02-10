@@ -69,7 +69,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         }
     }
 
-    private Set<Attachment> getAllVersions(Set<Attachment> selected) {
+    protected Set<Attachment> getAllVersions(Set<Attachment> selected) {
         Set allVersions = new HashSet();
         allVersions.addAll(selected);
 
@@ -85,7 +85,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         return allVersions;
     }
 
-    private void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
+    protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<Attachment, List<Attachment>>();
         CollectionDatasource datasource = owner.getDatasource();
         for (Object id : datasource.getItemIds()) {

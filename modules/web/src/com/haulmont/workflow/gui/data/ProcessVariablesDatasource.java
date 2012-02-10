@@ -136,6 +136,7 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
             }
         });
         state = State.VALID;
+        fireItemChanged(null);
         modified = false;
     }
 

@@ -10,12 +10,13 @@
  */
 package com.haulmont.workflow.core.listeners;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.listener.*;
+import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
+import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
-import org.apache.commons.lang.BooleanUtils;
 
 public class CardAttachmentEntityListener implements BeforeInsertEntityListener<CardAttachment>, BeforeDeleteEntityListener<CardAttachment> {
     public void onBeforeInsert(CardAttachment entity) {
@@ -34,17 +35,7 @@ public class CardAttachmentEntityListener implements BeforeInsertEntityListener<
     }
 
     private void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("update wf$Card c set c.hasAttachments = ?1 " +
-                    "where c.id = ?2");
-            query.setParameter(1, hasAttachments);
-            query.setParameter(2, card);
-            query.executeUpdate();
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        WfService wfService = Locator.lookup(WfService.NAME);
+        wfService.setHasAttachmentsInCard(card, hasAttachments);
     }
 }

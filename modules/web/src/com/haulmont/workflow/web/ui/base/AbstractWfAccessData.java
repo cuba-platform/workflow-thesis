@@ -23,15 +23,33 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractWfAccessData extends AbstractAccessData {
+    protected WfService wfService;
 
-    private Entity item;
+    protected Entity item;
+    protected AssignmentInfo info;
 
     public AbstractWfAccessData(Map<String, Object> params) {
         super(params);
+        init(params);
+    }
+
+    protected void init(Map<String, Object> params) {
+        item = (Entity) params.get("param$item");
     }
 
     public void setItem(Entity item) {
         this.item = item;
+        wfService = ServiceLocator.lookup(WfService.NAME);
+        info = wfService.getAssignmentInfo((Card) item);
+    }
+
+    /**
+     * Assignment info for current user and card
+     * if accessData exists then it used in ActionsFrame
+     * @return AssignmentInfo
+     */
+    public AssignmentInfo getAssignmentInfo() {
+        return info;
     }
 
     public abstract boolean getSaveEnabled();
@@ -74,13 +92,11 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         visibleActions.add(WfConstants.ACTION_SAVE_AND_CLOSE);
         visibleActions.add(WfConstants.ACTION_START);
         visibleActions.add(WfConstants.ACTION_CANCEL);
-        WfService wfs = ServiceLocator.lookup(WfService.NAME);
-        AssignmentInfo info = wfs.getAssignmentInfo(card);
         if (info != null) {
             visibleActions.addAll(info.getActions());
         }
         return visibleActions;
-    };
+    }
 
     public List<String> getEnabledActions(Card card) {
         return getVisibleActions(card);

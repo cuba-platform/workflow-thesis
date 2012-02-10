@@ -86,6 +86,7 @@ var i18nDict = {
     "ParallelAssignment": "Parallel Assignment",
     "ParallelAssignment.successTransition": "Success transition",
     "ParallelAssignment.refusedOnly": "Refused only",
+    "ParallelAssignment.finishBySingleUser": "Finish assignment by single user",
 
     "Decision": "Decision",
     "Decision.yes": "Yes",

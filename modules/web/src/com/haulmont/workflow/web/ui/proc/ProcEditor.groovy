@@ -10,42 +10,37 @@
  */
 package com.haulmont.workflow.web.ui.proc
 
-import com.haulmont.cuba.gui.components.*
+import com.haulmont.chile.core.model.MetaPropertyPath
+import com.haulmont.cuba.core.entity.Entity
+import com.haulmont.cuba.core.global.CommitContext
+import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.core.global.PersistenceHelper
+import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.WindowManager.OpenType
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener
+import com.haulmont.cuba.gui.data.DataService
 import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.data.DsContext.CommitListener
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
+import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
+import com.haulmont.cuba.security.entity.Role
+import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.web.gui.components.WebButton
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper
+import com.haulmont.cuba.web.gui.components.WebLookupField
+import com.haulmont.workflow.core.app.ProcRolePermissionsService
+import com.haulmont.workflow.core.entity.DefaultProcActor
+import com.haulmont.workflow.core.entity.OrderFillingType
 import com.haulmont.workflow.core.entity.Proc
 import com.haulmont.workflow.core.entity.ProcRole
-import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
-import com.haulmont.cuba.gui.WindowManager.OpenType
-import com.haulmont.workflow.core.entity.DefaultProcActor
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
-import com.haulmont.cuba.gui.data.DsContext.CommitListener
-import com.haulmont.cuba.core.global.CommitContext
-import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.gui.WindowManager
-import com.haulmont.workflow.core.app.ProcRolePermissionsService
-import com.haulmont.cuba.gui.ServiceLocator
-
-import com.haulmont.cuba.gui.data.DataService
-
-import com.haulmont.cuba.gui.data.ValueListener
-import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper
-import com.haulmont.chile.core.model.MetaPropertyPath
-import com.haulmont.cuba.core.global.PersistenceHelper
 import com.vaadin.data.Property.ValueChangeEvent
 import com.vaadin.data.Property.ValueChangeListener
-import com.haulmont.cuba.security.entity.Role
-import com.vaadin.data.Property
-import com.haulmont.cuba.web.gui.components.WebLookupField
-import java.util.*
-import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.BooleanUtils
-import com.haulmont.workflow.core.entity.OrderFillingType
-import com.haulmont.cuba.core.global.MessageProvider
-import com.haulmont.cuba.web.gui.components.WebButton
-import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener
+import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.gui.components.*
 
 public class ProcEditor extends AbstractEditor {
 
@@ -76,16 +71,16 @@ public class ProcEditor extends AbstractEditor {
     secRolesDs = getDsContext().get("secRoles");
     secRolesDs.refresh();
 
-//    final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
-//    final Component permissionsPane = getComponent("permissionsPane");
-//    permissionsEnabled.addListener (new ValueListener(){
-//
-//      void valueChanged(Object source, String property, Object prevValue, Object value) {
-//        if(permissionsPane != null)
-//          permissionsPane.setVisible(permissionsEnabled.getValue());
-//      }
-//
-//    });
+    /*final CheckBox permissionsEnabled = getComponent("permissionsEnabled");
+    final Component permissionsPane = getComponent("permissionsPane");
+    permissionsEnabled.addListener (new ValueListener(){
+
+      void valueChanged(Object source, String property, Object prevValue, Object value) {
+        if(permissionsPane != null)
+          permissionsPane.setVisible(permissionsEnabled.getValue());
+      }
+
+    });*/
 
     rolesTable = getComponent("rolesTable")
     TableActionsHelper rolesHelper = new TableActionsHelper(this, rolesTable)
@@ -230,14 +225,14 @@ public class ProcEditor extends AbstractEditor {
           def enablePermissionsActions = {
               ProcRole item = rolesDs.getItem()
               permissionsActions.each { it.setEnabled(item != null) }
-          }
+          }  */
 
           rolesDs.addListener(
                   [
-                          itemChanged: { ds, prevItem, item -> enableDpaActions(); enablePermissionsActions() },
+                          itemChanged: { ds, prevItem, item -> enableDpaActions(); /*enablePermissionsActions()*/ },
                           valueChanged: { source, property, prevValue, value -> enableDpaActions() }
                   ] as DsListenerAdapter
-          )
+          )  /*
       }*/
 
     WebButton moveUp = (WebButton) getComponent("moveUp");

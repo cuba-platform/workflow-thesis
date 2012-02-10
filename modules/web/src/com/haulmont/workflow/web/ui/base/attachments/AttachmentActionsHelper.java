@@ -29,6 +29,10 @@ import java.util.*;
  */
 public class AttachmentActionsHelper {
 
+    public static final String COPY_ACTION_ID = "actions.Copy";
+    public static final String PASTE_ACTION_ID = "actions.Paste";
+    public static final String LOAD_ACTION_ID = "actions.Load";
+
     private AttachmentActionsHelper() {
     }
 
@@ -38,7 +42,7 @@ public class AttachmentActionsHelper {
      */
     public static Action createCopyAction(Table attachmentsTable) {
         final Table attachments = attachmentsTable;
-        return new AbstractAction("actions.Copy") {
+        return new AbstractAction(COPY_ACTION_ID) {
             public void actionPerform(Component component) {
                 Set descriptors = attachments.getSelected();
                 if (descriptors.size() > 0) {
@@ -68,7 +72,7 @@ public class AttachmentActionsHelper {
         final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final UserSession userSession = UserSessionProvider.getUserSession();
-        return new AbstractAction("actions.Paste") {
+        return new AbstractAction(PASTE_ACTION_ID) {
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
                 if ((buffer != null) && (buffer.size() > 0)) {
@@ -122,7 +126,7 @@ public class AttachmentActionsHelper {
      */
     public static void createLoadAction(Table attachmentsTable, IFrame window) {
         final Table attachments = attachmentsTable;
-        attachments.addAction(new AbstractAction("actions.Load") {
+        attachments.addAction(new AbstractAction(LOAD_ACTION_ID) {
 
             public void actionPerform(Component component) {
                 Set selected = attachments.getSelected();

@@ -63,6 +63,9 @@ public class Proc extends StandardEntity {
     @JoinColumn(name = "AVAILABLE_ROLE_ID")
     protected Role availableRole;
 
+    @Column(name = "COMBINED_STAGES_ENABLED")
+    protected Boolean combinedStagesEnabled = false;
+
     public String getName() {
         return name;
     }
@@ -149,5 +152,13 @@ public class Proc extends StandardEntity {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Boolean getCombinedStagesEnabled() {
+        return combinedStagesEnabled;
+    }
+
+    public void setCombinedStagesEnabled(Boolean combinedStagesEnabled) {
+        this.combinedStagesEnabled = combinedStagesEnabled;
     }
 }

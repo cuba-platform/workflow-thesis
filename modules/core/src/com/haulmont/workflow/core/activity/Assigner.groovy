@@ -37,6 +37,7 @@ import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.entity.CardStage
 import com.haulmont.cuba.core.global.ScriptingProvider
 import com.haulmont.workflow.core.global.TimeUnit
+import com.haulmont.workflow.core.app.NotificationMatrixAPI
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -109,7 +110,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState);
+    NotificationMatrixAPI  notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
+    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
 
     afterCreateAssignment(assignment)
 
@@ -239,7 +241,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       }
       em.persist(assignment)
 
+      NotificationMatrixAPI  notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
       notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
     }
-
 }

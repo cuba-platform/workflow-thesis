@@ -51,11 +51,13 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
         Transaction tx = Locator.getTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
+            em.setSoftDeletion(false);
             Card c = em.find(Card.class, card.getId());
             Category category = null;
             if (c.getCategory() != null) {
                 category = em.find(Category.class, c.getCategory().getId());
             }
+            em.setSoftDeletion(true);
             tx.commit();
             return category;
         } finally {

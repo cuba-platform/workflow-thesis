@@ -45,5 +45,7 @@ public interface WfService {
     
     boolean isCurrentUserContainsRole(Role role);
 
-    void deleteNotifications(Card card, User user, int type);    
+    void deleteNotifications(Card card, User user, int type);
+
+    void setHasAttachmentsInCard(Card card, Boolean hasAttachments); 
 }

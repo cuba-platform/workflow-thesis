@@ -81,6 +81,10 @@
                                                  optionsDatasource="secRoles"
                                                  width="${width}"/>
                                 </row>
+                                <row>
+                                    <label value="msg://combinedStagesEnabled"/>
+                                    <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
+                                </row>
                             </rows>
                         </grid>
                     </vbox>

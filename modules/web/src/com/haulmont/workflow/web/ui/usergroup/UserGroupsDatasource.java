@@ -35,23 +35,12 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
     @Override
     protected void loadData(Map<String, Object> params) {
         data.clear();
-        String queryString = "";
         Role secRole = (Role)params.get("secRole");
         String requiredText = (String)params.get("requiredText");
         HashSet list = (HashSet)params.get("selectedItems");
-        if (secRole != null) {
-          queryString = "select u from sec$User u join u.userRoles ur where ur.role.id = :secRole order by u.name";
-        } else {
-            queryString = "select u from sec$User u order by u.name";
-        }
+        List<User> users = loadUsers(secRole);
 
-        LoadContext ctx = new LoadContext(User.class).setView("usergroup-add");
-        LoadContext.Query query = ctx.setQueryString(queryString);
-        query.addParameter("secRole", secRole);
-
-        List<User> users = dataservice.loadList(ctx);
-
-        ctx = new LoadContext(UserGroup.class).setView("add");
+        LoadContext ctx = new LoadContext(UserGroup.class).setView("add");
         ctx.setQueryString("select ug from wf$UserGroup ug order by ug.name");
 
         List<UserGroup> userGroups = dataservice.loadList(ctx);
@@ -74,6 +63,21 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
 
 //        State prevState = state;
 //        valid();
-//        fireStateChanged(prevState);
+//        forceStateChanged(prevState);
+    }
+
+    protected List<User> loadUsers(Role secRole) {
+        String queryString;
+        if (secRole != null) {
+          queryString = "select u from sec$User u join u.userRoles ur where ur.role.id = :secRole order by u.name";
+        } else {
+            queryString = "select u from sec$User u order by u.name";
+        }
+
+        LoadContext ctx = new LoadContext(User.class).setView("usergroup-add");
+        LoadContext.Query query = ctx.setQueryString(queryString);
+        query.addParameter("secRole", secRole);
+
+        return dataservice.loadList(ctx);
     }
 }

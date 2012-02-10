@@ -34,6 +34,11 @@ public class ParallelAssignmentModule extends AssignmentModule {
             if (refusedOnly) {
                 writeJpdlBooleanPropertyEl(element, "refusedOnly", true);
             }
+
+            boolean finishBySingleUser = jsOptions.optBoolean("finishBySingleUser");
+            if (finishBySingleUser) {
+                writeJpdlBooleanPropertyEl(element, "finishBySingleUser", true);
+            }
         }
         return element;
     }

@@ -14,7 +14,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
-import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -175,7 +174,8 @@ public class AssignmentModule extends Module {
                 JSONObject jsProps = jsTimer.getJSONObject("properties");
                 dueDateType = jsProps.getString("dueDateType");
                 if(StringUtils.trimToNull(dueDateType)==null||"null".equals(dueDateType)){
-                    throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class, "exception.dueDateTypeNotDefined", caption));
+                    throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
+                            "exception.dueDateTypeNotDefined", caption));
                 }
                 if ("manual".equals(dueDateType)) {
                     JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
@@ -183,7 +183,8 @@ public class AssignmentModule extends Module {
                         String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
                         dueDates.append(dueDate);
                     } catch (JSONException e) {
-                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class, "exception.dueDateInvalid", caption));
+                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
+                                "exception.dueDateInvalid", caption));
                     }
                 } else if ("form".equals(dueDateType)) {
                     dueDates.append("process");

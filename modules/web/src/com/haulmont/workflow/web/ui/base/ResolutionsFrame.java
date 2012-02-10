@@ -42,7 +42,31 @@ public class ResolutionsFrame extends AbstractFrame {
         resolutionsDs = getDsContext().get("resolutionsDs");
 
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-        vTable.setAllowMultiStringCells(true);
+        vTable.setPageLength(5);
+        vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyPath("comment"),
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    @Override
+                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                        com.vaadin.ui.Component component;
+                        Assignment assignment = resolutionsDs.getItem((UUID) itemId);
+                        String comment = assignment.getComment();
+                        int enterIdx = comment != null ? (comment.length() > 50 ? 50 : comment.indexOf('\n')) : -1;
+                        if (enterIdx != -1) {
+                            com.vaadin.ui.TextField content = new com.vaadin.ui.TextField(null, comment);
+                            content.setReadOnly(true);
+                            content.setWidth("300px");
+                            content.setHeight("300px");
+                            component = new com.vaadin.ui.PopupView("<span>" + comment.substring(0, enterIdx) + "...</span>", content);
+                            component.addStyleName("longtext");
+                        } else {
+                            component = new com.vaadin.ui.Label(comment == null ? "" : comment);
+                        }
+                        component.setWidth("-1px");
+                        return component;
+                    }
+                });
+
+//       vTable.setAllowMultiStringCells(true);
 
         vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
 
@@ -56,7 +80,7 @@ public class ResolutionsFrame extends AbstractFrame {
                             || (assignment.getFinished() != null && assignment.getDueDate().before(assignment.getFinished())))) {
                         return "overdue";
                     }
-                    if(assignment.getFinished() == null)
+                    if (assignment.getFinished() == null)
                         return "taskremind";
                     else
                         return "";

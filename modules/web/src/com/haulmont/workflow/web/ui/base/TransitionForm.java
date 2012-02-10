@@ -14,39 +14,23 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
-import com.haulmont.cuba.web.gui.components.WebTabsheet;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper;
-import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.ComponentContainer;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -94,6 +78,7 @@ public class TransitionForm extends AbstractForm {
 
     private final int DEFAULT_FORM_HEIGHT = 500;
 
+    protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
 
     public TransitionForm(IFrame frame) {
         super(frame);
@@ -239,6 +224,8 @@ public class TransitionForm extends AbstractForm {
                 return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
+
+        cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
     }
 
 //    private void initLazyTabs() {
@@ -292,7 +279,10 @@ public class TransitionForm extends AbstractForm {
         List<String> presentAttachmentTypes = new ArrayList<String>();
         for (Object itemId : attachmentsDs.getItemIds()) {
             final Attachment attachment = (Attachment) attachmentsDs.getItem(itemId);
-            presentAttachmentTypes.add(attachment.getAttachType().getCode());
+            AttachmentType attachType = attachment.getAttachType();
+            if (attachType != null) {
+                presentAttachmentTypes.add(attachType.getCode());
+            }
         }
         for (String attachmentTypeCode : requiredAttachmentTypes) {
             if (row++ == columnHeight) {
@@ -330,6 +320,30 @@ public class TransitionForm extends AbstractForm {
         return attachmentTypes.get(code);
     }
 
+    protected List<Entity> copyAttachments() {
+        List<Entity> commitList = new ArrayList<Entity>();
+        WfService wfService = ServiceLocator.lookup(WfService.NAME);
+        for (Map.Entry<Card, AssignmentInfo> entry : cardAssignmentInfoMap.entrySet()) {
+            AssignmentInfo assignmentInfo = entry.getValue();
+            if (assignmentInfo != null && !assignmentDs.getItem().getUuid().equals(assignmentInfo.getAssignmentId())) {
+                Assignment loadAssignment = ServiceLocator.getDataService().<Assignment>load(new
+                            LoadContext(Assignment.class).setView("resolutions").setId(assignmentInfo.getAssignmentId()));
+                for (UUID uuid : (Collection<UUID>) attachmentsDs.getItemIds()) {
+                    CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(uuid);
+                    CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
+                    cardAttachment.setAssignment(loadAssignment);
+                    cardAttachment.setCard(loadAssignment.getCard());
+                    cardAttachment.setFile(attachment.getFile());
+                    cardAttachment.setName(attachment.getName());
+                    commitList.add(cardAttachment);
+                }
+                commitList.add(card);
+            }
+            wfService.setHasAttachmentsInCard(entry.getKey(), true);
+        }
+        return commitList;
+    }
+
     protected boolean doCommit() {
         if (!validated()) return false;
 
@@ -349,6 +363,16 @@ public class TransitionForm extends AbstractForm {
 
         if (dueDate != null)
             getDsContext().get("varsDs").commit();
+        if (cardAssignmentInfoMap != null) {
+            CommitContext<Entity> commitContext = new CommitContext<Entity>();
+            commitContext.getCommitInstances().addAll(copyAttachments());
+            getDsContext().getDataService().commit(commitContext);
+        } else {
+            if (attachmentsDs.size() > 0) {
+                WfService wfService = ServiceLocator.lookup(WfService.NAME);
+                wfService.setHasAttachmentsInCard(card, true);
+            }
+        }
 
         return true;
     }
@@ -381,7 +405,7 @@ public class TransitionForm extends AbstractForm {
         WebWindow component = getComponent();
         Collection<com.vaadin.ui.Field> fields = WebComponentsHelper.getComponents((ComponentContainer) component.getComponent(), com.vaadin.ui.Field.class);
         for (com.vaadin.ui.Field field : fields) {
-            if (!field.isValid()) {
+            if (field.isVisible() && !field.isReadOnly() && field.isEnabled() && !field.isValid()) {
                 showNotification(getMessage("fillRequiredFields"), NotificationType.WARNING);
                 return false;
             }

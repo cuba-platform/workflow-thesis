@@ -26,6 +26,8 @@
         <class>com.haulmont.workflow.core.entity.ProcStage</class>
         <class>com.haulmont.workflow.core.entity.CardStage</class>
         <class>com.haulmont.workflow.core.entity.ProcStageType</class>
+        <class>com.haulmont.workflow.core.entity.ProcAppFolder</class>
+        <class>com.haulmont.workflow.core.entity.ProcState</class>
 
     </persistence-unit>
 </persistence>

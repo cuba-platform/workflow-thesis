@@ -75,6 +75,7 @@ create table WF_PROC (
     PERMISSIONS_ENABLED boolean,
     DESIGN_ID uuid,
     AVAILABLE_ROLE_ID uuid,
+    COMBINED_STAGES_ENABLED boolean,
     primary key (ID)
 )^
 
@@ -584,5 +585,34 @@ alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC
 
 ------------------------------------------------------------------------------------------------------------
 
+create table WF_PROC_STATE (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+
+    NAME varchar(200),
+    PROC_ID uuid,
+
+    primary key (ID)
+)^
+
+alter table WF_PROC_STATE add constraint FK_WF_PROC_STATE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_PROC_APP_FOLDER
+(
+  FOLDER_ID uuid,
+  PROC_CONDITIONS_XML text
+)^
+
+alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOLDER foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
+
+------------------------------------------------------------------------------------------------------------
 insert into WF_ATTACHMENTTYPE (ID, CODE, ISDEFAULT)
 values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70', 'AttachmentType.attachment', true)^

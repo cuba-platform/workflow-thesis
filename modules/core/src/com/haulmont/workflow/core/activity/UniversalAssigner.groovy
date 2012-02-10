@@ -44,8 +44,11 @@ public class UniversalAssigner extends MultiAssigner {
         Card card = findCard(execution)
 
         List<CardRole> srcCardRoles = getCardRoles(execution, card)
-        int minSortOrder = srcCardRoles[0].sortOrder;
-        def cardRoles = srcCardRoles.findAll {CardRole cr -> cr.sortOrder == minSortOrder}
+        def cardRoles = []
+        if (srcCardRoles) {
+            int minSortOrder = srcCardRoles[0].sortOrder;
+            cardRoles = srcCardRoles.findAll {CardRole cr -> cr.sortOrder == minSortOrder}
+        }
 
         if (cardRoles.isEmpty()) {
             if (forRefusedOnly(execution)) {

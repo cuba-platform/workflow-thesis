@@ -277,6 +277,12 @@ var wfLanguage = {
                         "value": false
                     },
                     {
+                        "type": "boolean",
+                        "label": "msg://ParallelAssignment.finishBySingleUser",
+                        "name": "finishBySingleUser",
+                        "value": false
+                    },
+                    {
                         type: "group",
                         legend: "msg://forms",
                         collapsible: "true",

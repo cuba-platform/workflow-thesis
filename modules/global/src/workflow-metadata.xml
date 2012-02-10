@@ -4,6 +4,11 @@
     <metadata-model>
         <class>com.haulmont.workflow.core.entity.DesignLocKey</class>
         <class>com.haulmont.workflow.core.entity.DesignLocValue</class>
+        <class>com.haulmont.workflow.core.entity.ProcCondition</class>
     </metadata-model>
+
+    <entityFactory>
+        <replace class="com.haulmont.cuba.core.entity.AppFolder" with="com.haulmont.workflow.core.entity.ProcAppFolder"/>
+    </entityFactory>
 
 </metadata>

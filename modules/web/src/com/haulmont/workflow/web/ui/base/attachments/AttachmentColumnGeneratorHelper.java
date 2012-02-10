@@ -42,8 +42,7 @@ public class AttachmentColumnGeneratorHelper {
         }
     }
 
-    private static void setGenerateColumn(final Table attachmentsTable)
-    {
+    private static void setGenerateColumn(final Table attachmentsTable) {
         final HashMap<UUID, com.vaadin.ui.Component> map = new HashMap<UUID, com.vaadin.ui.Component>();
         ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(attachmentsTable)).addGeneratedColumn(
                 attachmentsTable.getDatasource().getMetaClass().getPropertyPath("file.size"),

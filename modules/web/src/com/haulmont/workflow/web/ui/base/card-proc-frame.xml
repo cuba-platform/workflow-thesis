@@ -8,7 +8,8 @@
             <query>
                 select p from wf$Proc p
                 where (p.cardTypes is null or p.cardTypes = '' or p.cardTypes like :custom$cardType) and
-                (p.availableRole is null or p.availableRole.id in (:custom$availableRole))
+                (p.availableRole is null or
+                exists (select u from sec$UserRole u where u.user.id =:custom$userId and u.role.id = p.availableRole.id and u.deleteTs is null))
                 order by p.name
             </query>
         </collectionDatasource>
@@ -42,7 +43,7 @@
                     <rows datasource="cardProcDs"/>
                 </table>
             </vbox>
-            <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
+            <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
         </split>
     </layout>
 

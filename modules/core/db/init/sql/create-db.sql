@@ -71,6 +71,7 @@ create table WF_PROC (
     PERMISSIONS_ENABLED boolean,
     DESIGN_ID varchar(36),
     AVAILABLE_ROLE_ID varchar(36),
+    COMBINED_STAGES_ENABLED boolean,
     primary key (ID)
 );
 

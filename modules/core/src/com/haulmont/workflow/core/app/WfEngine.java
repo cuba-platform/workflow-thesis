@@ -179,7 +179,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
      */
     private void deployProcessStuff(String deploymentId, Proc proc) {
         Set<String> roles = new HashSet<String>();
-        String states = "";
+        Set<String> states = new HashSet<String>();
 
         EntityManager em = persistence.getEntityManager();
 
@@ -193,11 +193,11 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 Element root = doc.getRootElement();
                 for (Element stateElem : Dom4j.elements(root)) {
                     String state = stateElem.attributeValue("name");
-                    String clazz=stateElem.attributeValue("class");
+                    String clazz = stateElem.attributeValue("class");
 
                     if ("custom".equals(stateElem.getName())) {
                         if (StringUtils.isNotBlank(state))
-                        states += state + ",";
+                            states.add(state);
                     }
                     for (Element element : Dom4j.elements(stateElem)) {
                         String name = element.attributeValue("name");
@@ -249,7 +249,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                         procRole.setInvisible(true);
                         procRole.setAssignToCreator(true);
                     }
-                    if(multiUserRoles.contains(role)){
+                    if (multiUserRoles.contains(role)) {
                         procRole.setMultiUser(true);
                     }
                     em.persist(procRole);
@@ -257,8 +257,20 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             }
         }
 
-        if (StringUtils.isNotBlank(states)) {
-            proc.setStates(states);
+        if (!states.isEmpty()) {
+            Query query = em.createQuery("delete from wf$ProcState p where p.proc.id = ?1");
+            query.setParameter(1, proc.getId());
+            query.executeUpdate();
+
+            for (String state : states) {
+                ProcState procState = new ProcState();
+                procState.setName(state);
+                procState.setProc(proc);
+                em.persist(procState);
+            }
+
+            String statesStr = states.toString();
+            proc.setStates(statesStr.substring(1, statesStr.length() - 1));
         }
     }
 
@@ -282,7 +294,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     }
 
     private boolean checkMultyUserRole(String className) {
-        if (className==null)
+        if (className == null)
             return false;
         Class parallelClass = ScriptingProvider.loadClass(PARALLEL_ASSIGMENT_CLASS);
         Class sequentialClass = ScriptingProvider.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
@@ -293,7 +305,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             return true;
         else if (sequentialClass.isAssignableFrom(currentClass))
             return true;
-        else if (universalClass != null && universalClass.isAssignableFrom(currentClass))
+        else if (universalClass.isAssignableFrom(currentClass))
             return true;
 
         return false;

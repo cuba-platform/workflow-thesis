@@ -33,6 +33,8 @@ public class ParallelAssigner extends MultiAssigner {
 
   private Log log = LogFactory.getLog(ParallelAssigner.class)
 
+  Boolean finishBySingleUser
+
   @Override
   protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
@@ -122,6 +124,9 @@ public class ParallelAssigner extends MultiAssigner {
       q.setParameter(2, assignment.getId())
       List<Assignment> siblings = q.getResultList()
 
+      if (finishBySingleUser)
+        finishSiblings(assignment, siblings)
+
       String resultTransition = signalName
       for (Assignment sibling: siblings) {
         if (sibling.getFinished() == null) {
@@ -148,6 +153,27 @@ public class ParallelAssigner extends MultiAssigner {
       finishStages(card, execution, signalName)
       afterSignal(execution, signalName, parameters)
     }
+  }
+
+  protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
+    for (Assignment sibling: siblings) {
+        sibling.setFinished(assignment.getFinished())
+        sibling.setFinishedByUser(assignment.getFinishedByUser())
+        sibling.setOutcome(assignment.getOutcome())
+
+        deleteNotifications(sibling);
+      }
+  }
+
+  protected void deleteNotifications(Assignment assignment) {
+    EntityManager em = PersistenceProvider.getEntityManager();
+    Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
+            "where ci.card.id = ?3 and ci.user.id = ?4");
+    query.setParameter(1, assignment.finished);
+    query.setParameter(2, assignment.finishedByUser.login);
+    query.setParameter(3, assignment.card.id);
+    query.setParameter(4, assignment.user.id);
+    query.executeUpdate()
   }
 
   protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
