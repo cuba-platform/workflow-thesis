@@ -21,11 +21,9 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -563,6 +561,32 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         }
 
         notificationBean.notifyByCard(c, WfConstants.CARD_STATE_CANCELED);
+    }
+    
+    public Card finishTaskmanProcess(Card card, String state, String outcome, String comment) {
+        EntityManager em = persistence.getEntityManager();
+
+        Card c = em.merge(card);
+        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
+        query.setParameter(1, c);
+        List<Assignment> assignments = query.getResultList();
+        for (Assignment assignment : assignments) {
+            assignment.setName(state);
+            assignment.setOutcome(outcome);
+            assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), comment));
+            assignment.setFinished(TimeProvider.currentTimestamp());
+        }
+
+        WfHelper.getExecutionService().endProcessInstance(c.getJbpmProcessId(), WfConstants.CARD_STATE_CANCELED);
+
+        c.setJbpmProcessId(null);
+        card.setJbpmProcessId(null);
+        c.setState("," + state + ",");
+        card.setState(c.getState());
+        for (Listener listener : listeners) {
+            listener.onProcessCancel(c);
+        }
+        return card;
     }
 
     public void addListener(Listener listener) {

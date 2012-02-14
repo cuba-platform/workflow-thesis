@@ -144,6 +144,18 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    public Card finishTaskmanProcess(Card card, String state, String outcome, String comment) {
+        Transaction tx = Locator.createTransaction();
+        try {
+            Card c = wfEngine.finishTaskmanProcess(card, state, outcome, comment);
+            tx.commit();
+            return c;
+        } finally {
+            tx.end();
+        }
+    }
+
+
     public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
         User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         return isUserInProcRole(card, currentUser, procRoleCode);
