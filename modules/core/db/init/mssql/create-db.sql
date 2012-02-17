@@ -437,10 +437,10 @@ create table WF_CALENDAR (
     CREATED_BY varchar(50),
     UPDATE_TS datetime,
     UPDATED_BY varchar(50),
-    WORK_DAY date,
+    WORK_DAY datetime,
     WORK_DAY_OF_WEEK numeric(1),
-    WORK_START_TIME time,
-    WORK_END_TIME time,
+    WORK_START_TIME datetime,
+    WORK_END_TIME datetime,
     COMMENT varchar(500),
     primary key nonclustered (ID)
 );
