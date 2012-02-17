@@ -75,6 +75,7 @@ create table WF_PROC (
     PERMISSIONS_ENABLED tinyint,
     DESIGN_ID uniqueidentifier,
     AVAILABLE_ROLE_ID uniqueidentifier,
+    COMBINED_STAGES_ENABLED tinyint,
     primary key (ID)
 )^
 
@@ -583,6 +584,36 @@ create table WF_PROC_STAGE_TYPE (
 )^
 
 alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE (ID)^
+------------------------------------------------------------------------------------------------------------
+
+create table WF_PROC_STATE (
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS datetime,
+    UPDATED_BY varchar(50),
+    DELETE_TS datetime,
+    DELETED_BY varchar(50),
+
+    NAME varchar(200),
+    PROC_ID uniqueidentifier,
+
+    primary key (ID)
+)^
+
+alter table WF_PROC_STATE add constraint FK_WF_PROC_STATE_PROC foreign key (PROC_ID) references WF_PROC (ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_PROC_APP_FOLDER
+(
+  FOLDER_ID uniqueidentifier,
+  PROC_CONDITIONS_XML text
+)^
+
+alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOLDER foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
+
 
 ------------------------------------------------------------------------------------------------------------
 
