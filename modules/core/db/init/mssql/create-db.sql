@@ -8,10 +8,10 @@ create table WF_DESIGN (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     NAME varchar(100),
-    SRC text,
+    SRC varchar(max),
     NOTIFICATION_MATRIX image,
     NOTIFICATION_MATRIX_UPLOADED tinyint,
-    LOCALIZATION text,
+    LOCALIZATION varchar(max),
     COMPILE_TS datetime,
     primary key (ID)
 )^
@@ -29,7 +29,7 @@ create table WF_DESIGN_SCRIPT (
     DELETED_BY varchar(50),
     DESIGN_ID uniqueidentifier,
     NAME varchar(100),
-    CONTENT text,
+    CONTENT varchar(max),
     primary key nonclustered (ID)
 )^
 
@@ -46,7 +46,7 @@ create table WF_DESIGN_FILE (
     DESIGN_ID uniqueidentifier,
     NAME varchar(100),
     TYPE varchar(20),
-    CONTENT text,
+    CONTENT varchar(max),
     BINARY_CONTENT image,
     primary key nonclustered (ID)
 )^
@@ -127,7 +127,7 @@ create table WF_CARD_COMMENT (
     UPDATED_BY varchar(50),
     DELETE_TS datetime,
     DELETED_BY varchar(50),
-    COMMENT text,
+    COMMENT varchar(max),
     USER_ID uniqueidentifier,
     CARD_ID uniqueidentifier,
     PARENT_ID uniqueidentifier,
@@ -187,7 +187,7 @@ create table WF_CARD_INFO (
     USER_ID uniqueidentifier,
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
-    DESCRIPTION text,
+    DESCRIPTION varchar(max),
     primary key nonclustered (ID)
 )^
 
@@ -220,7 +220,7 @@ create table WF_ASSIGNMENT (
     FINISHED datetime,
     FINISHED_BY uniqueidentifier,
     OUTCOME varchar(255),
-    COMMENT text,
+    COMMENT varchar(max),
     ITERATION integer,
     primary key nonclustered (ID)
 )^
@@ -276,7 +276,7 @@ create table WF_ATTACHMENT (
     TYPE_ID uniqueidentifier,
     NAME varchar(500),
     COMMENT varchar(1000),
-    SIGNATURES text,
+    SIGNATURES varchar(max),
     CARD_ID uniqueidentifier,
     ASSIGNMENT_ID uniqueidentifier,
     VERSION_OF_ID uniqueidentifier,
@@ -518,7 +518,7 @@ create table WF_PROC_STAGE (
     NOTIFY_CURRENT_ACTOR tinyint,
     PROC_STAGE_TYPE_ID uniqueidentifier,
     DURATION_SCRIPT_ENABLED tinyint,
-    DURATION_SCRIPT text,
+    DURATION_SCRIPT varchar(max),
     --
     primary key nonclustered (ID)
 )^
@@ -578,7 +578,7 @@ create table WF_PROC_STAGE_TYPE (
     NAME varchar(200),
     CODE varchar(200),
     DURATION_SCRIPT_ENABLED tinyint,
-    DURATION_SCRIPT text,
+    DURATION_SCRIPT varchar(max),
     --
     primary key (ID)
 )^
@@ -609,7 +609,7 @@ alter table WF_PROC_STATE add constraint FK_WF_PROC_STATE_PROC foreign key (PROC
 create table WF_PROC_APP_FOLDER
 (
   FOLDER_ID uniqueidentifier,
-  PROC_CONDITIONS_XML text
+  PROC_CONDITIONS_XML varchar(max)
 )^
 
 alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOLDER foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
