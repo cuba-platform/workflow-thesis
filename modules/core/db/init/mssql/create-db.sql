@@ -577,8 +577,6 @@ create table WF_PROC_STAGE_TYPE (
     --
     NAME varchar(200),
     CODE varchar(200),
-    DURATION_SCRIPT_ENABLED tinyint,
-    DURATION_SCRIPT varchar(max),
     --
     primary key (ID)
 )^
