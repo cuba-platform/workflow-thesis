@@ -7,11 +7,13 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -53,19 +55,39 @@ public class RemoveAttachmentAction extends RemoveAction {
         if (!versionExists) {
             super.confirmAndRemove(selected);
         } else {
-            App.getInstance().getWindowManager().getDialogParams().setWidth(500);
-            Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+            final String messagesPackage = AppConfig.getMessagesPack();
+            owner.getFrame().showOptionDialog(
+                    getConfirmationTitle(messagesPackage),
+                    getConfirmationMessage(messagesPackage),
+                    IFrame.MessageType.CONFIRMATION,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.OK) {
 
-            window.addListener(new Window.CloseListener() {
-                public void windowClosed(String actionId) {
-                    if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
-                        migrateToNewLastVersion(selected);
-                        doRemove(selected, autocommit);
-                    } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
-                        doRemove(getAllVersions(selected), autocommit);
+                                public void actionPerform(Component component) {
+                                    migrateToNewLastVersion(selected);
+                                    doRemove(selected, autocommit);
+                                }
+                            }, new DialogAction(DialogAction.Type.CANCEL) {
+
+                        public void actionPerform(Component component) {
+                        }
                     }
-                }
-            });
+                    }
+            );
+
+//            App.getInstance().getWindowManager().getDialogParams().setWidth(500);
+//            Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+//
+//            window.addListener(new Window.CloseListener() {
+//                public void windowClosed(String actionId) {
+//                    if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
+//                        migrateToNewLastVersion(selected);
+//                        doRemove(selected, autocommit);
+//                    } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
+//                        doRemove(getAllVersions(selected), autocommit);
+//                    }
+//                }
+//            });
         }
     }
 
