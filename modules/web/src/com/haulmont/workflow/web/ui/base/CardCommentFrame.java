@@ -77,20 +77,13 @@ public class CardCommentFrame extends AbstractWindow {
                 WebHBoxLayout hLayoutFrom = new WebHBoxLayout();
                 WebLabel labelFrom = new WebLabel();
                 labelFrom.setValue(getMessage("fromUser"));
-                final WebButton buttonFrom = new WebButton();
-                buttonFrom.setCaption(getUserNameLogin(cardComment.getSender()));
-                buttonFrom.setStyleName("link");
-                com.vaadin.ui.Button vButtonFrom = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(buttonFrom);
-                vButtonFrom.addListener(new com.vaadin.ui.Button.ClickListener() {
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                        openUser(cardComment.getSender(), buttonFrom);
-                    }
-                });
+                WebLabel labelSender = new WebLabel();
+                labelSender.setValue(getUserNameLogin(cardComment.getSender()));
                 WebLabel dateValueLabel = new WebLabel();
                 Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
                 dateValueLabel.setValue(" (" + datatype.format(cardComment.getCreateTs(), UserSessionProvider.getLocale()) + ") ");
                 hLayoutFrom.add(labelFrom);
-                hLayoutFrom.add(buttonFrom);
+                hLayoutFrom.add(labelSender);
                 hLayoutFrom.add(dateValueLabel);
                 hLayoutFrom.setSpacing(true);
                 WebComponentsHelper.unwrap(hLayoutFrom).addStyleName("minsize");
@@ -102,16 +95,9 @@ public class CardCommentFrame extends AbstractWindow {
                 List<User> addressees = cardComment.getAddressees();
                 if (addressees != null) {
                     for (final User u : addressees) {
-                        final WebButton buttonTo = new WebButton();
-                        buttonTo.setCaption(getUserNameLogin(u));
-                        buttonTo.setStyleName("link");
-                        com.vaadin.ui.Button vButtonTo = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(buttonTo);
-                        vButtonTo.addListener(new com.vaadin.ui.Button.ClickListener() {
-                            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                                openUser(u, buttonTo);
-                            }
-                        });
-                        hLayoutTo.add(buttonTo);
+                        WebLabel labelUserTo = new WebLabel();
+                        labelUserTo.setValue(getUserNameLogin(u));
+                        hLayoutTo.add(labelUserTo);
                     }
                 }
                 hLayoutTo.setSpacing(true);
