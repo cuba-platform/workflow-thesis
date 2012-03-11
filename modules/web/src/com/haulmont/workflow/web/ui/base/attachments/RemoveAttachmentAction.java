@@ -126,7 +126,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         for (java.util.List<Attachment> list : map.values()) {
             Collections.sort(list, new Comparator<Attachment>() {
                 public int compare(Attachment o1, Attachment o2) {
-                    return o1.getVersionNum().compareTo(o2.getVersionNum());
+                    return o2.getVersionNum().compareTo(o1.getVersionNum());
                 }
             });
 
