@@ -9,11 +9,13 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -55,39 +57,41 @@ public class RemoveAttachmentAction extends RemoveAction {
         if (!versionExists) {
             super.confirmAndRemove(selected);
         } else {
-            final String messagesPackage = AppConfig.getMessagesPack();
-            owner.getFrame().showOptionDialog(
-                    getConfirmationTitle(messagesPackage),
-                    getConfirmationMessage(messagesPackage),
-                    IFrame.MessageType.CONFIRMATION,
-                    new Action[]{
-                            new DialogAction(DialogAction.Type.OK) {
+            if (!userIsCreatorAllAttachments(selected)) {
+                final String messagesPackage = AppConfig.getMessagesPack();
+                owner.getFrame().showOptionDialog(
+                        getConfirmationTitle(messagesPackage),
+                        getConfirmationMessage(messagesPackage),
+                        IFrame.MessageType.CONFIRMATION,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.OK) {
 
-                                public void actionPerform(Component component) {
-                                    migrateToNewLastVersion(selected);
-                                    doRemove(selected, autocommit);
-                                }
-                            }, new DialogAction(DialogAction.Type.CANCEL) {
+                                    public void actionPerform(Component component) {
+                                        migrateToNewLastVersion(selected);
+                                        doRemove(selected, autocommit);
+                                    }
+                                }, new DialogAction(DialogAction.Type.CANCEL) {
 
-                        public void actionPerform(Component component) {
+                            public void actionPerform(Component component) {
+                            }
+                        }
+                        }
+                );
+            } else {
+                App.getInstance().getWindowManager().getDialogParams().setWidth(500);
+                Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
+                            migrateToNewLastVersion(selected);
+                            doRemove(selected, autocommit);
+                        } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
+                            doRemove(getAllVersions(selected), autocommit);
                         }
                     }
-                    }
-            );
-
-//            App.getInstance().getWindowManager().getDialogParams().setWidth(500);
-//            Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
-//
-//            window.addListener(new Window.CloseListener() {
-//                public void windowClosed(String actionId) {
-//                    if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
-//                        migrateToNewLastVersion(selected);
-//                        doRemove(selected, autocommit);
-//                    } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
-//                        doRemove(getAllVersions(selected), autocommit);
-//                    }
-//                }
-//            });
+                });
+            }
         }
     }
 
@@ -105,6 +109,36 @@ public class RemoveAttachmentAction extends RemoveAction {
         }
 
         return allVersions;
+    }
+
+    protected Boolean userIsCreatorAllAttachments(Set<Attachment> oldLastVesrions) {
+        User user = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
+        Map<Attachment, List<Attachment>> map = getMapVersions(oldLastVesrions);
+        for (java.util.List<Attachment> list : map.values()) {
+            for (Attachment attachment : list) {
+                if (!user.getLogin().equals(attachment.getCreatedBy()))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    protected Map<Attachment, List<Attachment>> getMapVersions(Set<Attachment> oldLastVesrions) {
+        Map<Attachment, List<Attachment>> map = new HashMap<Attachment, List<Attachment>>();
+        CollectionDatasource datasource = owner.getDatasource();
+        for (Object id : datasource.getItemIds()) {
+            Attachment attachment = (Attachment) datasource.getItem(id);
+            Attachment versionOf = attachment.getVersionOf();
+            if (versionOf != null && oldLastVesrions.contains(versionOf)) {
+                java.util.List<Attachment> versions = map.get(versionOf);
+                if (versions == null) {
+                    versions = new ArrayList<Attachment>();
+                    map.put(versionOf, versions);
+                }
+                versions.add(attachment);
+            }
+        }
+        return map;
     }
 
     protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
