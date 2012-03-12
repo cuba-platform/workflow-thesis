@@ -8,6 +8,7 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
@@ -57,7 +58,21 @@ public class RemoveAttachmentAction extends RemoveAction {
         if (!versionExists) {
             super.confirmAndRemove(selected);
         } else {
-            if (!userIsCreatorAllAttachments(selected)) {
+            if (userIsCreatorAllAttachments(selected)) {
+                App.getInstance().getWindowManager().getDialogParams().setWidth(500);
+                Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
+                            migrateToNewLastVersion(selected);
+                            doRemove(selected, autocommit);
+                        } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
+                            doRemove(getAllVersions(selected), autocommit);
+                        }
+                    }
+                });
+            } else {
                 final String messagesPackage = AppConfig.getMessagesPack();
                 owner.getFrame().showOptionDialog(
                         getConfirmationTitle(messagesPackage),
@@ -77,20 +92,6 @@ public class RemoveAttachmentAction extends RemoveAction {
                         }
                         }
                 );
-            } else {
-                App.getInstance().getWindowManager().getDialogParams().setWidth(500);
-                Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
-
-                window.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
-                            migrateToNewLastVersion(selected);
-                            doRemove(selected, autocommit);
-                        } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
-                            doRemove(getAllVersions(selected), autocommit);
-                        }
-                    }
-                });
             }
         }
     }
@@ -113,6 +114,8 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected Boolean userIsCreatorAllAttachments(Set<Attachment> oldLastVesrions) {
         User user = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
+        if (UserSessionProvider.getUserSession().getRoles().contains("Administrators"))
+            return true;
         Map<Attachment, List<Attachment>> map = getMapVersions(oldLastVesrions);
         for (java.util.List<Attachment> list : map.values()) {
             for (Attachment attachment : list) {
