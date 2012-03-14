@@ -336,7 +336,7 @@ public class CardProcFrame extends AbstractFrame {
         cardRolesFrame.setCard(card);
     }
 
-    private void initCreateProcLookup() {
+    protected void initCreateProcLookup() {
         List options = new ArrayList();
         for (Proc p : getDsItems(procDs)) {
             if (!alreadyAdded(p)) {
