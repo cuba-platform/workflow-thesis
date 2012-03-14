@@ -31,6 +31,10 @@
                             <textField id="name" datasource="userGroupDs" property="name"
                                        width="${width}" required="true" requiredMessage="msg://nameMsg"/>
                         </row>
+                        <row>
+                            <label value="msg://global"/>
+                            <checkBox id="global" datasource="userGroupDs" property="global"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>

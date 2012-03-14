@@ -27,11 +27,18 @@ public class UserGroup extends StandardEntity {
     @Column(name = "NAME")
     protected String name;
 
+    @Column(name = "GLOBAL")
+    protected Boolean global = false;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "WF_USER_GROUP_USER",
         joinColumns = @JoinColumn(name = "USER_GROUP_ID", referencedColumnName = "ID"),
         inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"))
     protected Set<User> users;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTED_CREATOR_ID")
+    protected User substitutedCreator;
 
     public String getName() {
         return name;
@@ -41,11 +48,27 @@ public class UserGroup extends StandardEntity {
         this.name = name;
     }
 
+    public Boolean getGlobal() {
+        return global;
+    }
+
+    public void setGlobal(Boolean global) {
+        this.global = global;
+    }
+
     public Set<User> getUsers() {
         return users;
     }
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public User getSubstitutedCreator() {
+        return substitutedCreator;
+    }
+
+    public void setSubstitutedCreator(User substitutedCreator) {
+        this.substitutedCreator = substitutedCreator;
     }
 }

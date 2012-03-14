@@ -10,6 +10,8 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.core.global.EmailAttachment;
+import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
 
@@ -20,5 +22,7 @@ public interface MailService {
     public static String NAME = "workflow_MailService";
 
     void sendCardMail(Card card, String comment, List<User> users, String script);
+    
+    void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException;
 
 }

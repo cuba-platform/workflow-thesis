@@ -38,7 +38,7 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
     private ClusterManagerAPI clusterManager;
 
     @Inject
-    private EmailerAPI emailer;
+    private MailService mailService;
 
     public void processOverdueStages() {
         if (!AppContext.isStarted() || !clusterManager.isMaster())
@@ -124,7 +124,7 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
             @Override
             public void run() {
                 try {
-                    emailer.sendEmail(user.getEmail(), emailSubject, emailBody);
+                    mailService.sendEmail(user, emailSubject, emailBody);
                 } catch (Exception e) {
                     log.error("Unable to send email to " + user.getEmail(), e);
                 }

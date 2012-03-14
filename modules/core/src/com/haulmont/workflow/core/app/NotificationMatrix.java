@@ -11,9 +11,6 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.Emailer;
-import com.haulmont.cuba.core.app.EmailerAPI;
-import com.haulmont.cuba.core.app.EmailerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -32,13 +29,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @ManagedBean(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixMBean, NotificationMatrixAPI {
@@ -54,8 +47,8 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     @Inject
     private UserSessionSource userSessionSource;
 
-    private Map<String, Map<String, NotificationType>> cache = new ConcurrentHashMap<String, Map<String, NotificationType>>();
-    private Map<String, Map<NotificationType, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<NotificationType, NotificationMessageBuilder>>();
+    private Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
+    private Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -165,24 +158,22 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
             if (!StringUtils.isEmpty(notificationType) && !StringUtils.isEmpty(templeateType) && !StringUtils.isEmpty(text)) {
                 NotificationMessageBuilder message = getNotificationMessageBuilder(templeateType, text);
-                Map<NotificationType, NotificationMessageBuilder> map = messageCache.get(processPath);
-                NotificationType type = NotificationType.fromId(notificationType);
-
-                if (type != null) {
-                    map.put(type, message);
-                }
+                Map<String, NotificationMessageBuilder> map = messageCache.get(processPath);
+//                NotificationType type = NotificationType.fromId(notificationType);
+//                if (type != null) {
+                    map.put(notificationType, message);
+//                }
 
             } else {
                 log.error(String.format("NotificationType %s or TempleateType %s or ScriptText %s is missing or incorrect", notificationType, templeateType, text));
-                return;
             }
 
         }
 
     }
 
-    private boolean fillMatrixBySheet(Map<String, NotificationType> matrix, String sheetName, HSSFWorkbook matrixTemplate,
-                                      Map<String, String> rolesMap, Map<String, String> statesMap) {
+    private boolean fillMatrixBySheet(Map<String, String> matrix, String sheetName, HSSFWorkbook matrixTemplate,
+                                      Map<String, String> rolesMap, Map<String, String> statesMap, String processPath) {
         HSSFSheet sheet = matrixTemplate.getSheet(sheetName);
         if (sheet == null) {
             return false;
@@ -221,8 +212,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                     continue;
                 }
 
-                NotificationType type = NotificationType.fromId(value);
-                if (type != null && !NotificationType.NO.equals(type)) {
+//                NotificationType type = NotificationType.fromId(value);
+                if (value != null && !NotificationType.NO.toString().equals(value) &&
+                        (NotificationType.fromId(value) != null || messageCache.get(processPath).containsKey(value))) {
                     String state = statesRow.getCell(j).getRichStringCellValue().getString();
 
                     String codeState = statesMap.get(StringUtils.trimToEmpty(state));
@@ -234,12 +226,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                                 String s = StringUtils.trimToEmpty(tokenizer.nextToken());
                                 if (!"".equals(s)) {
                                     String key = s + '_' + codeAddresseeRole + "_" + sheetName;
-                                    matrix.put(key, type);
+                                    matrix.put(key, value);
                                 }
                             }
                         } else {
                             String key = codeState + '_' + codeAddresseeRole + "_" + sheetName;
-                            matrix.put(key, type);
+                            matrix.put(key, value);
                         }
                     } else {
                         throw new RuntimeException(String.format("Unable to get code for state %s in %s notification matrix",
@@ -271,7 +263,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     private synchronized void load(String processPath) throws Exception {
-        Map<String, NotificationType> matrix = cache.get(processPath);
+        Map<String, String> matrix = cache.get(processPath);
         if (matrix != null)
             return;
 
@@ -284,12 +276,12 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         Map<String, String> rolesMap = readRoles(hssfWorkbook);
         Map<String, String> statesMap = readStates(hssfWorkbook);
 
-        matrix = new HashMap<String, NotificationType>();
-        boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap);
-        boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap);
-
-        messageCache.put(processPath, new HashMap<NotificationType, NotificationMessageBuilder>());
+        messageCache.put(processPath, new HashMap<String, NotificationMessageBuilder>());
         loadMessages(hssfWorkbook, processPath);
+
+        matrix = new HashMap<String, String>();
+        boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+        boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
 
         if (mailMatrixFilled || trayMatrixFilled)
             cache.put(processPath, matrix);
@@ -311,10 +303,10 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         }
     }
 
-    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, NotificationType> matrix, String state,
+    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, String> matrix, String state,
                             List<User> mailList, List<User> trayList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
-        NotificationType type;
+        String type;
         String key = state + "_" + cardRole.getCode();
         final User user = cardRole.getUser();
 
@@ -336,11 +328,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
+            MailService mailService = Locator.lookup(MailService.NAME);
             try {
-                EmailInfo emailInfo = new EmailInfo(user.getEmail(), message.getSubject(),
-                        null, null, null, message.getBody(), null);
-                emailer.sendEmail(emailInfo, false);
+                mailService.sendEmail(user, message.getSubject(), message.getBody());
             } catch (EmailException e) {
                 log.warn(e);
             }
@@ -373,7 +363,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     public void notifyByCard(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
-        Map<String, NotificationType> matrix = getMatrix(processPath);
+        Map<String, String> matrix = getMatrix(processPath);
 
         if (matrix == null)
             return;
@@ -405,7 +395,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     public void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
-        Map<String, NotificationType> matrix = getMatrix(processPath);
+        Map<String, String> matrix = getMatrix(processPath);
 
         if (matrix == null)
             return;
@@ -453,7 +443,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     public void notifyUser(Card card, String state, User user) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
-        Map<String, NotificationType> matrix = getMatrix(processPath);
+        Map<String, String> matrix = getMatrix(processPath);
 
         if (matrix == null)
             return;
@@ -503,22 +493,25 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         if (templateType.equals("FreeMarker")) {
             message = new FreeMarkerNotificationMessageBuilder(text);
         }
+        if (templateType.equals("Script")) {
+            message = new ScriptNotificationMessageBuilder(text);
+        }
         return message;
     }
 
-    private String getScriptByNotificationType(String processPath, NotificationType type) {
+    private String getScriptByNotificationType(String processPath, String type) {
         String notificationScript = processPath.replace('.', '/') + "/%s" + "Notification.groovy";
-        if (type.equals(NotificationType.ACTION) || type.equals(NotificationType.WARNING)) {
+        if (type.equals(NotificationType.ACTION.toString()) || type.equals(NotificationType.WARNING.toString())) {
             notificationScript = String.format(notificationScript, "Assignment");
-        }
-        if (type.equals(NotificationType.SIMPLE)) {
+        } else if (type.equals(NotificationType.SIMPLE.toString())) {
             notificationScript = String.format(notificationScript, "Observer");
-        }
+        } else
+            notificationScript = String.format(notificationScript, StringUtils.capitalize(type.toLowerCase()));
         return notificationScript;
     }
 
-    private Map<String, NotificationType> getMatrix(String processPath) {
-        Map<String, NotificationType> matrix = cache.get(processPath);
+    private Map<String, String> getMatrix(String processPath) {
+        Map<String, String> matrix = cache.get(processPath);
         if (matrix == null) {
             try {
                 load(processPath);
@@ -544,15 +537,15 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         em.persist(ci);
     }
 
-    private int getCardInfoTypeByState(NotificationType type) {
-        if (type.equals(NotificationType.SIMPLE)) {
+    private int getCardInfoTypeByState(String type) {
+        if (type.equals(NotificationType.SIMPLE.toString())) {
             return CardInfo.TYPE_SIMPLE;
-        } else if (type.equals(NotificationType.ACTION)) {
+        } else if (type.equals(NotificationType.ACTION.toString())) {
             return CardInfo.TYPE_NOTIFICATION;
-        } else if (type.equals(NotificationType.WARNING)) {
+        } else if (type.equals(NotificationType.WARNING.toString())) {
             return CardInfo.TYPE_OVERDUE;
         }
-        return CardInfo.TYPE_NOTIFICATION;
+        return CardInfo.TYPE_SIMPLE;
     }
 
     private class DefaultMessageGenerator implements NotificationMatrixMessage.MessageGenerator {

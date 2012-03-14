@@ -47,7 +47,5 @@ public interface WfEngineAPI {
 
     void cancelProcess(Card card);
     
-    Card finishTaskmanProcess(Card card, String state, String outcome, String comment);
-    
     void addListener(Listener listener);
 }

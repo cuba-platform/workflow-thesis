@@ -13,14 +13,12 @@ package com.haulmont.workflow.core.timer;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
+import com.haulmont.workflow.core.app.MailService;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.Proc;
-import com.haulmont.workflow.core.timer.AssignmentTimerAction;
-import com.haulmont.workflow.core.timer.TimerActionContext;
 import groovy.lang.Binding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,9 +62,9 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
     }
 
     protected void sendEmail(User user, String subject, String body) {
+        MailService mailService = Locator.lookup(MailService.NAME);
         try {
-            EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
-            emailer.sendEmail(user.getEmail(), subject, body);
+            mailService.sendEmail(user, subject, body);
         } catch (Exception e) {
             log.error("Unable to send email to " + user.getEmail(), e);
         }

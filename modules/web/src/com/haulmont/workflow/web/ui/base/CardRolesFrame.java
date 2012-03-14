@@ -13,6 +13,10 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -30,9 +34,7 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.vaadin.data.Property;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -73,6 +75,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected Map<Role, Collection<User>> roleUsersMap = new HashMap<Role, Collection<User>>();
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
+    protected boolean editable = true;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -291,21 +294,25 @@ public class CardRolesFrame extends AbstractFrame {
                 CardRole cardRole = tmpCardRolesDs.getItem((UUID) itemId);
                 com.vaadin.ui.Component component = null;
                 if (cardRole != null && cardRole.getProcRole().getMultiUser()) {
-                    final UUID uuid = (UUID) itemId;
-                    WebLookupField orderLookup = new WebLookupField();
-                    orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
-                    orderLookup.setValue(cardRole.getSortOrder());
-                    orderLookup.setWidth("100%");
-                    final com.vaadin.ui.Select orderSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(orderLookup);
-                    orderSelect.setNullSelectionAllowed(false);
+                    if (editable) {
+                        final UUID uuid = (UUID) itemId;
+                        WebLookupField orderLookup = new WebLookupField();
+                        orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
+                        orderLookup.setValue(cardRole.getSortOrder());
+                        orderLookup.setWidth("100%");
+                        final com.vaadin.ui.Select orderSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(orderLookup);
+                        orderSelect.setNullSelectionAllowed(false);
 
-                    orderLookup.addListener(new ValueListener() {
-                        public void valueChanged(Object source, String property, Object prevValue, final Object value) {
-                            ((CardRole) tmpCardRolesDs.getItem(uuid)).setSortOrder((Integer) orderSelect.getValue());
-                            tmpCardRolesDs.doSort();
-                        }
-                    });
-                    component = orderSelect;
+                        orderLookup.addListener(new ValueListener() {
+                            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+                                (tmpCardRolesDs.getItem(uuid)).setSortOrder((Integer) orderSelect.getValue());
+                                tmpCardRolesDs.doSort();
+                            }
+                        });
+                        component = orderSelect;
+                    } else {
+                        component = new com.vaadin.ui.Label(cardRole.getSortOrder().toString());
+                    }
                 }
                 return component;
             }
@@ -322,10 +329,10 @@ public class CardRolesFrame extends AbstractFrame {
         addUserGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
         com.vaadin.ui.Button vAddUserGroupButton = (com.vaadin.ui.Button)WebComponentsHelper.unwrap(addUserGroupButton);
         final Class userGroupAddClass = ScriptingProvider.loadClass("com.haulmont.workflow.web.ui.usergroup.UserGroupAdd");
-        vAddUserGroupButton.addListener(new Button.ClickListener() {
+        vAddUserGroupButton.addListener(new com.vaadin.ui.Button.ClickListener() {
             private static final long serialVersionUID = -3820323886456571938L;
 
-            public void buttonClick(Button.ClickEvent event) {
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("secRole", cardRole.getProcRole().getRole());
 
@@ -906,6 +913,8 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void setEditable(boolean editable) {
+        this.editable = editable;
+
         for (Action action: rolesTable.getActions()) {
             action.setEnabled(editable);
         }

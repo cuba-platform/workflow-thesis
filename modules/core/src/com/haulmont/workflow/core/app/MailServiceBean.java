@@ -12,9 +12,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.EmailerAPI;
-import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
 import groovy.lang.Binding;
@@ -34,6 +32,8 @@ public class MailServiceBean implements MailService {
 
     @Inject
     private UserSessionSource userSessionSource;
+
+    protected EmailerAPI emailer;
 
     public void sendCardMail(Card card, String comment, List<User> users, String script) {
         String subject;
@@ -66,12 +66,16 @@ public class MailServiceBean implements MailService {
                     body = String.format("Card %1$s has become %2$s \nComment: %3$s", card.getDescription(), card.getLocState(), comment);
                 }
                 try {
-                    EmailerAPI emailer = Locator.lookup(EmailerAPI.NAME);
-                    emailer.sendEmail(user.getEmail(), subject, body);
+                    sendEmail(user, subject, body);
                 } catch (EmailException ex) {
                     log.warn(ex);
                 }
             }
         }
+    }
+
+    public void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException {
+        emailer = Locator.lookup(EmailerAPI.NAME);
+        emailer.sendEmail(user.getEmail(), caption, body, attachment);
     }
 }

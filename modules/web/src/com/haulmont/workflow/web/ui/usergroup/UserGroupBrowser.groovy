@@ -28,10 +28,13 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl
 import com.haulmont.cuba.core.global.UserSessionProvider
 import com.haulmont.cuba.security.entity.EntityOp
+import com.haulmont.cuba.gui.components.ValueProvider
+import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
 
 class UserGroupBrowser extends AbstractWindow{
-  private Table userGroupsTable
-  private Table usersTable
+  protected Table userGroupsTable
+  protected Table usersTable
 
   def UserGroupBrowser(IFrame frame) {
     super(frame);
@@ -42,7 +45,19 @@ class UserGroupBrowser extends AbstractWindow{
 
     userGroupsTable = getComponent('userGroupsTable')
     TableActionsHelper userGroupsHelper = [this, userGroupsTable]
-    userGroupsHelper.createCreateAction(WindowManager.OpenType.DIALOG)
+    userGroupsHelper.createCreateAction(
+            new ValueProvider() {
+                @Override
+                Map<String, Object> getValues() {
+                    return ['substitutedCreator': UserSessionProvider.userSession.currentOrSubstitutedUser]
+                }
+
+                @Override
+                Map<String, Object> getParameters() {
+                    return null
+                }
+            },
+            WindowManager.OpenType.DIALOG)
     userGroupsHelper.createEditAction(WindowManager.OpenType.DIALOG)
     userGroupsHelper.createRemoveAction()
 
@@ -87,9 +102,6 @@ class UserGroupBrowser extends AbstractWindow{
             },
             getCaption : {
               return getMessage('actions.Add')
-            },
-            isEnabled: {
-              return super.isEnabled() && userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.CREATE);
             }
     ]))
 
@@ -143,20 +155,26 @@ class UserGroupBrowser extends AbstractWindow{
             },
             getCaption: {
               return getMessage('actions.Remove')
-            },
-            isEnabled: {
-              return super.isEnabled() && userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.DELETE);
             }
     ]))
 
-//    CollectionDatasource userGroupsDs = getDsContext().get('userGroupsDs')
-//    userGroupsDs.addListener([
-//            itemChanged : {Datasource<UserGroup> ds, UserGroup prevItem, UserGroup item ->
-//              if (!item) return
-//              userGroupsDs.refresh(['userGroup' : item])
-//            }
-//    ] as DsListenerAdapter)
+    userGroupsDs.addListener([
+            itemChanged : {Datasource<UserGroup> ds, UserGroup prevItem, UserGroup item ->
+              if (item) {
+                  boolean isEnabled = getUserGroupEditable(item)
+                  userGroupsTable.getAction('edit').enabled = isEnabled
+                  userGroupsTable.getAction('remove').enabled = isEnabled
+                  usersTable.getAction('add').enabled = isEnabled &&
+                          userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.CREATE)
+                  usersTable.getAction('remove').enabled = isEnabled &&
+                          userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.DELETE)
+              }
+            }
+    ] as DsListenerAdapter)
   }
 
-
+  protected boolean getUserGroupEditable(UserGroup item) {
+      return UserSessionProvider.userSession.roles.contains('Administrators') ||
+          UserSessionProvider.userSession.currentOrSubstitutedUser.equals(item.substitutedCreator)
+  }
 }
