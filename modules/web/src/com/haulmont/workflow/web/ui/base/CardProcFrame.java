@@ -53,12 +53,12 @@ public class CardProcFrame extends AbstractFrame {
     private boolean enabled = true;
 
     private CollectionDatasource<CardRole, UUID> cardRolesDs;
-    private CollectionDatasource<Proc, UUID> procDs;
+    protected CollectionDatasource<Proc, UUID> procDs;
     protected CollectionDatasource<CardProc, UUID> cardProcDs;
     private LookupField createProcLookup;
     private Table cardProcTable;
     protected AbstractAction startProcessAction;
-    private CardRolesFrame cardRolesFrame;
+    protected CardRolesFrame cardRolesFrame;
     private Button removeProc;
 
     private String createProcCaption;
