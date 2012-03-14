@@ -35,6 +35,7 @@ import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -134,7 +135,11 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         }
 
         if (cardRolesFrame != null) {
-            cardRolesFrame.setCard((Card) getItem());
+            Boolean isNew = getContext().getParams() != null ? (Boolean) getContext().getParams().get("isNew") : null;
+            if (BooleanUtils.isNotTrue(isNew))
+                cardRolesFrame.setCard((Card) getItem());
+            else
+                cardRolesFrame.setCard((Card) getItem(), true);
             accessData = getContext().getParamValue("accessData");
             if (accessData != null) {
                 boolean disabled = (accessData.getDisabledComponents() != null)
