@@ -31,6 +31,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.vaadin.ui.ComponentContainer;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -70,6 +71,7 @@ public class TransitionForm extends AbstractForm {
     protected CollectionDatasource attachmentsDs;
 
     protected Card card;
+    protected Boolean isNew;
     protected Card cardCopy;
     protected List<String> requiredAttachmentTypes = new ArrayList<String>();
     private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>();
@@ -89,6 +91,7 @@ public class TransitionForm extends AbstractForm {
         super.init(params);
 
         card = (Card) params.get("param$card");
+        isNew = (Boolean)params.get("param$isNew");
         cardCopy = (Card) InstanceUtils.copy(card);
         cardDs = getDsContext().get("cardDs");
         cardDs.setItem(cardCopy);
@@ -110,7 +113,10 @@ public class TransitionForm extends AbstractForm {
             }
 
             cardRolesFrame.init();
-            cardRolesFrame.setCard(card);
+            if (BooleanUtils.isNotTrue(isNew))
+                cardRolesFrame.setCard(card);
+            else
+                cardRolesFrame.setCard(card, true);
             cardRolesDs = getDsContext().get("cardRolesDs");
             cardRolesDs.addListener(new DsListenerAdapter() {
                 @Override
