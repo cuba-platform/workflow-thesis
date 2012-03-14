@@ -547,10 +547,14 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void setCard(final Card card) {
+        setCard(card, false);
+    }
+
+    public void setCard(final Card card, boolean isNew) {
         Preconditions.checkArgument(card != null, "Card is null");
 
         this.card = card;
-        if (PersistenceHelper.isNew(card)) {
+        if (PersistenceHelper.isNew(card) || isNew) {
             if (card.getRoles() != null) {
                 ArrayList<CardRole> list = (ArrayList<CardRole>) card.getRoles();
                 Collections.sort(list, tmpCardRolesDs.createEntityComparator());
