@@ -415,7 +415,10 @@ public class TransitionForm extends AbstractForm {
             List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
             for (Object itemId : attachmentsDs.getItemIds()) {
                 CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
-                missingAttachments.remove(attachment.getAttachType().getCode());
+                AttachmentType attachType = attachment.getAttachType();
+                if (attachType != null) {
+                    missingAttachments.remove(attachType.getCode());
+                }
             }
 
             if (!missingAttachments.isEmpty()) {
