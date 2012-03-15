@@ -12,7 +12,7 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <iframe id="frame" src="/com/haulmont/workflow/web/ui/attachment/attachment-frame.xml"/>
+        <iframe id="frame" screen="attachmentFrame"/>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

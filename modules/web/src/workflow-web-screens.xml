@@ -67,6 +67,9 @@
     <screen id="wf$CardAttachment.edit"
             template="/com/haulmont/workflow/web/ui/attachment/card-attachment-edit.xml"/>
 
+    <screen id="attachmentFrame"
+            template="/com/haulmont/workflow/web/ui/attachment/attachment-frame.xml"/>
+
     <screen id="wf$AssignmentAttachment.edit"
             template="/com/haulmont/workflow/web/ui/attachment/assignment-attachment-edit.xml"/>
 

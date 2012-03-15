@@ -12,7 +12,7 @@
     <layout>
         <vbox margin="true" spacing="true" stylename="edit-area">
             <upload id="uploadField"/>
-            <grid spacing="true" expandable="false">
+            <grid id="attachGrid" spacing="true" expandable="false">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>
@@ -23,9 +23,11 @@
                         <textField id="fileName" datasource="fileDs" property="name"
                                    width="200px"/>
                     </row>
-                    <row>
+                    <row id="rowName">
                         <label value="msg://name"/>
-                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                        <hbox id="nameBox" spacing="false">
+                            <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                        </hbox>
                     </row>
                     <row>
                         <label value="msg://extension"/>
