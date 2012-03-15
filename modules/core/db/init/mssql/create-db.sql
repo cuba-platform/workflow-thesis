@@ -481,8 +481,12 @@ create table WF_USER_GROUP (
     DELETED_BY varchar(50),
     VERSION integer,
     NAME varchar(255),
+    GLOBAL tinyint,
+    SUBSTITUTED_CREATOR_ID uniqueidentifier,
     primary key (ID)
 )^
+
+alter table WF_USER_GROUP add constraint WF_USER_GROUP_SEC_USER foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
