@@ -197,7 +197,7 @@ public class CardRolesFrame extends AbstractFrame {
             public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
                 if (item == null) return;
 //                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
-                removeAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
+                removeAction.setVisible(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
             }
         });
 
@@ -413,7 +413,7 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        vAddUserGroupButton.setEnabled(cardRole.getProcRole().getMultiUser()
+        vAddUserGroupButton.setVisible(cardRole.getProcRole().getMultiUser()
          /*&& procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD)*/);
         return addUserGroupButton;
 
@@ -888,7 +888,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         if (rolesTable.getActions() != null) {
             for (Action action : rolesTable.getActions()) {
-                action.setEnabled(enabled);
+                action.setVisible(enabled);
             }
         }
         for (Component action : rolesActions) {
@@ -916,7 +916,7 @@ public class CardRolesFrame extends AbstractFrame {
         this.editable = editable;
 
         for (Action action: rolesTable.getActions()) {
-            action.setEnabled(editable);
+            action.setVisible(editable);
         }
         WebComponentsHelper.unwrap(rolesTable).setReadOnly(!editable);
         createRoleLookup.setEditable(editable);
