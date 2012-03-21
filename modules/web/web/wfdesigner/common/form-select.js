@@ -115,7 +115,9 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
             if (this.transitionField) {
                 val.transition = this.transitionField.getValue();
             }
-            val.transitionStyle = this.transitionStyle.getValue();
+			if (this.transitionStyle) {
+                val.transitionStyle = this.transitionStyle.getValue();
+			}
             val.properties = this.formParamsGroup.getValue();
         }
         return val;
