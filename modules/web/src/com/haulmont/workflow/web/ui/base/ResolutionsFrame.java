@@ -24,8 +24,13 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
@@ -74,10 +79,11 @@ public class ResolutionsFrame extends AbstractFrame {
                 if (propertyId == null) {
                     if (!(itemId instanceof UUID))
                         return "";
-                    Assignment assignment = (Assignment) resolutionsDs.getItem((UUID)itemId);
+                    Assignment assignment = resolutionsDs.getItem((UUID) itemId);
+                    equalsDateBeforeDate(assignment.getDueDate(), assignment.getDueDate());
                     if ((assignment.getDueDate() != null) &&
-                            (((assignment.getFinished() == null && assignment.getDueDate().before(TimeProvider.currentTimestamp())))
-                            || (assignment.getFinished() != null && assignment.getDueDate().before(assignment.getFinished())))) {
+                            (((assignment.getFinished() == null && equalsDateBeforeDate(assignment.getDueDate(), TimeProvider.currentTimestamp()) /*assignment.getDueDate().before(TimeProvider.currentTimestamp()*/))
+                                    || (assignment.getFinished() != null && equalsDateBeforeDate(assignment.getDueDate(), assignment.getFinished()) /*assignment.getDueDate().before(assignment.getFinished())*/))) {
                         return "overdue";
                     }
                     if (assignment.getFinished() == null)
@@ -194,5 +200,10 @@ public class ResolutionsFrame extends AbstractFrame {
 
     public void refreshDs() {
         getDsContext().get("resolutionsDs").refresh();
+    }
+
+    private boolean equalsDateBeforeDate(Date fromDate, Date toDate) {
+        return fromDate != null && toDate != null
+                && DateUtils.truncate(fromDate, Calendar.MINUTE).before(DateUtils.truncate(toDate, Calendar.MINUTE));
     }
 }
