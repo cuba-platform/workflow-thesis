@@ -165,6 +165,9 @@ public class AttachmentEditor extends AbstractEditor {
     if (needSave) {
       saveFile()
     }
+    Attachment attachment = attachmentDs.getItem();
+    if (attachment != null && attachment.getVersionNum() == null)
+    attachment.setVersionNum(1);
     super.commitAndClose();
   }
 

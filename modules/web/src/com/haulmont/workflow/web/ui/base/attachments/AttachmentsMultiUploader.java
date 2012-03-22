@@ -223,6 +223,12 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
+        for (Object uuid : attachDs.getItemIds()) {
+            Attachment attachment = (Attachment) attachDs.getItem(uuid);
+            if (attachment.getVersionNum() == null) {
+                attachment.setVersionNum(1);
+            }
+        }
         attachDs.setModified(false);
         if (commit()) {
             if (needSave) {
