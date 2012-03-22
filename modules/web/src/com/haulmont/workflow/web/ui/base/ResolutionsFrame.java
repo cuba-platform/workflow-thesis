@@ -80,10 +80,9 @@ public class ResolutionsFrame extends AbstractFrame {
                     if (!(itemId instanceof UUID))
                         return "";
                     Assignment assignment = resolutionsDs.getItem((UUID) itemId);
-                    equalsDateBeforeDate(assignment.getDueDate(), assignment.getDueDate());
                     if ((assignment.getDueDate() != null) &&
-                            (((assignment.getFinished() == null && equalsDateBeforeDate(assignment.getDueDate(), TimeProvider.currentTimestamp()) /*assignment.getDueDate().before(TimeProvider.currentTimestamp()*/))
-                                    || (assignment.getFinished() != null && equalsDateBeforeDate(assignment.getDueDate(), assignment.getFinished()) /*assignment.getDueDate().before(assignment.getFinished())*/))) {
+                            (((assignment.getFinished() == null && equalsDateBeforeDate(assignment.getDueDate(), TimeProvider.currentTimestamp())))
+                                    || (assignment.getFinished() != null && equalsDateBeforeDate(assignment.getDueDate(), assignment.getFinished())))) {
                         return "overdue";
                     }
                     if (assignment.getFinished() == null)
