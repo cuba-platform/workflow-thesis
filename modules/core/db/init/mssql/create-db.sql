@@ -82,7 +82,7 @@ create table WF_PROC (
 alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
 alter table WF_PROC add constraint WF_PROC_AVAILABLE_ROLE_ID foreign key (AVAILABLE_ROLE_ID) references SEC_ROLE(ID)^
 
-create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC (CODE) where DELETE_TS is null^
+create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC (CODE, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -258,7 +258,7 @@ create table WF_ATTACHMENTTYPE (
     primary key (ID)
 )^
 
-create unique index IDX_WF_ATTACHMENTTYPE_UNIQ_CODE on WF_ATTACHMENTTYPE (CODE) where DELETE_TS is null^
+create unique index IDX_WF_ATTACHMENTTYPE_UNIQ_CODE on WF_ATTACHMENTTYPE (CODE, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
