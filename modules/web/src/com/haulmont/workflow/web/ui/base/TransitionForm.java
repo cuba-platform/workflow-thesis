@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -88,6 +89,7 @@ public class TransitionForm extends AbstractForm {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        App.getInstance().getWindowManager().getDialogParams().setWidth(700);
         card = (Card) params.get("param$card");
         cardCopy = (Card) InstanceUtils.copy(card);
         cardDs = getDsContext().get("cardDs");
