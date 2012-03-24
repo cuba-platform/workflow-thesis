@@ -49,6 +49,7 @@ public class AttachmentEditor extends AbstractEditor {
   protected Assignment assignmnet;
 
   protected boolean needSave
+  protected UUID fileId
 
   public AttachmentEditor(IFrame frame) {
     super(frame)
@@ -70,7 +71,9 @@ public class AttachmentEditor extends AbstractEditor {
     createDateLab = getComponent("frame.createDate")
     attachType = getComponent("frame.attachType")
     attachTypesDs = attachType.getOptionsDatasource()
-    assignmnet = params.get("assignmnet");
+    assignmnet = params.get('assignmnet')
+
+    fileId = params.get('fileId')
   }
 
   @Override
@@ -90,14 +93,19 @@ public class AttachmentEditor extends AbstractEditor {
         defaultAType = getDefaultAttachmentType()
         attachType.setValue(defaultAType)
       }
-      attachmentDs.getItem().setFile(new FileDescriptor())
-      attachmentDs.getItem().setCreateTs(TimeProvider.currentTimestamp());
-      attachmentDs.getItem().setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
 
-      if (fileDs.getItem().createDate != null) {
+      def fdItem = fileDs.getItem()
+      if ((fdItem != null) && (fdItem.createDate != null)) {
         uploadField.setVisible(false)
         needSave = true
+        String fileName = fdItem.name
+        nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
       } else {
+        def attachItem = attachmentDs.getItem()
+        attachItem.setFile(new FileDescriptor())
+        attachItem.setCreateTs(TimeProvider.currentTimestamp());
+        attachItem.setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
+
         fileDs.refresh()
         okBtn.setEnabled(false)
         uploadField.addListener([
@@ -108,7 +116,7 @@ public class AttachmentEditor extends AbstractEditor {
 
               uploadSucceeded: {Event event ->
                 String fileName = uploadField.getFileName()
-                UUID fileId = uploadField.getFileId()
+                fileId = uploadField.getFileId()
 
                 fileNameText.setValue(fileName)
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
@@ -196,7 +204,7 @@ public class AttachmentEditor extends AbstractEditor {
   protected void saveFile() {
     FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
     try {
-        fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
+        fileUploading.putFileIntoStorage(fileId, fileDs.getItem());
     } catch (FileStorageException e) {
       throw new RuntimeException(e)
     }

@@ -269,6 +269,7 @@ public class AttachmentActionsHelper {
                 Map<String, Object> openParams = new HashMap<String, Object>();
                 UUID fileId = fileUploadField.getFileId();
                 String filename = event.getFilename();
+                openParams.put("fileId", fileId);
                 if (windowParams != null)
                     openParams.putAll(windowParams);
 
