@@ -93,11 +93,14 @@ public class AttachmentEditor extends AbstractEditor {
       attachmentDs.getItem().setFile(new FileDescriptor())
       attachmentDs.getItem().setCreateTs(TimeProvider.currentTimestamp());
       attachmentDs.getItem().setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
-      fileDs.refresh()
 
-      okBtn.setEnabled(false)
-
-      uploadField.addListener([
+      if (fileDs.getItem().createDate != null) {
+        uploadField.setVisible(false)
+        needSave = true
+      } else {
+        fileDs.refresh()
+        okBtn.setEnabled(false)
+        uploadField.addListener([
               updateProgress: {long readBytes, long contentLength -> },
               uploadFailed: {Event event -> },
               uploadFinished: {Event event -> },
@@ -105,6 +108,7 @@ public class AttachmentEditor extends AbstractEditor {
 
               uploadSucceeded: {Event event ->
                 String fileName = uploadField.getFileName()
+                UUID fileId = uploadField.getFileId()
 
                 fileNameText.setValue(fileName)
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
@@ -115,9 +119,9 @@ public class AttachmentEditor extends AbstractEditor {
                 DecimalFormat formatter = new DecimalFormat("###,###,###,###");
 
                 FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
-                File tmpFile = fileUploading.getFile(uploadField.getFileId());
+                File tmpFile = fileUploading.getFile(fileId);
 
-                extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()))
+                extLabel.setValue(FileDownloadHelper.getFileExt(fileName))
                 sizeLab.setValue(formatSize(tmpFile.length(), 0) + " (" + formatter.format(tmpFile.length()) +
                         " " + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")")
                 FileDescriptor fileDescriptor = getDsContext().get("fileDs").getItem()
@@ -129,7 +133,8 @@ public class AttachmentEditor extends AbstractEditor {
 
                 needSave = true
               }
-      ] as Listener)
+        ] as Listener)
+      }
     } else {
       if (item != null && item instanceof CardAttachment) {
         CardAttachment cardAttachment = (CardAttachment) item
