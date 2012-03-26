@@ -23,6 +23,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
 import com.vaadin.ui.Select;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.List;
@@ -183,7 +184,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
                     attach.setComment("");
-                    attach.setName(fDesc.getName());
+                    attach.setName(StringUtils.substringBeforeLast(fDesc.getName(), "."));
                     attach.setFile(fDesc);
 
                     Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
