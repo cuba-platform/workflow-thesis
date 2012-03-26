@@ -4,7 +4,7 @@
         messagesPack="com.haulmont.workflow.web.ui.base.workcalendar"
         datasource="calendarDs"
         caption="msg://workDayEditCaption"
-        focusComponent="dayOfWee">
+        focusComponent="dayOfWeek">
 
     <dsContext>
         <datasource id="calendarDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity" view="_local"/>
