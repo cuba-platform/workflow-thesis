@@ -89,7 +89,7 @@ public class TransitionForm extends AbstractForm {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        App.getInstance().getWindowManager().getDialogParams().setWidth(700);
+        getDialogParams().setWidth(835);
         card = (Card) params.get("param$card");
         cardCopy = (Card) InstanceUtils.copy(card);
         cardDs = getDsContext().get("cardDs");
