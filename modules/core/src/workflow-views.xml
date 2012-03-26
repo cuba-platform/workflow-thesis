@@ -40,6 +40,7 @@
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="proc-edit" extends="_local">
         <property name="defaultProcActors" view="_minimal"/>
+        <property name="role" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="edit" extends="_local">
