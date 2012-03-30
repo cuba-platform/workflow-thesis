@@ -689,6 +689,8 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private void assignNextSortOrder(CardRole cr) {
+        if (PersistenceHelper.isNew(card) && cr.getSortOrder() != null)
+            return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
             cr.setSortOrder(1);
