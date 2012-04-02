@@ -364,6 +364,7 @@ public class CardRolesFrame extends AbstractFrame {
                                 throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
                             }
 
+                            User oldUser = cardRole.getUser();
                             cardRole.setUser(null);
                             tmpCardRolesDs.updateItem(cardRole);
                             for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
@@ -386,7 +387,10 @@ public class CardRolesFrame extends AbstractFrame {
                             }
                             User oneOfValidUsers = null;
                             if (!validUsers.isEmpty()) {
-                                oneOfValidUsers = validUsers.iterator().next();
+                                if (validUsers.contains(oldUser))
+                                    oneOfValidUsers = oldUser;
+                                else
+                                    oneOfValidUsers = validUsers.iterator().next();
                             }
                             if (oneOfValidUsers != null) {
                                 cardRole.setUser(oneOfValidUsers);
@@ -410,7 +414,6 @@ public class CardRolesFrame extends AbstractFrame {
 
                                 showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
                             }
-
                         }
                     }
                 });
@@ -509,16 +512,26 @@ public class CardRolesFrame extends AbstractFrame {
     private List<CardRole> createCardRoles(Set<User> users, CardRole cardRole) {
         List<CardRole> cardRoles = new ArrayList<CardRole>();
         for (User user : users) {
-            CardRole cr = new CardRole();
-            cr.setUser(user);
-            cr.setProcRole(cardRole.getProcRole());
-            cr.setCode(cardRole.getCode());
-            cr.setNotifyByEmail(true);
-            cr.setNotifyByCardInfo(true);
-            cr.setCard(card);
-            cardRoles.add(cr);
-            assignNextSortOrder(cr);
-            tmpCardRolesDs.addItem(cr);
+            boolean isUserInList = false;
+            //check for user in list
+            for (UUID itemId : tmpCardRolesDs.getItemIds()) {
+                if (user.equals(tmpCardRolesDs.getItem(itemId).getUser())) {
+                    isUserInList = true;
+                    break;
+                }
+            }
+            if (!isUserInList) {
+                CardRole cr = new CardRole();
+                cr.setUser(user);
+                cr.setProcRole(cardRole.getProcRole());
+                cr.setCode(cardRole.getCode());
+                cr.setNotifyByEmail(true);
+                cr.setNotifyByCardInfo(true);
+                cr.setCard(card);
+                cardRoles.add(cr);
+                assignNextSortOrder(cr);
+                tmpCardRolesDs.addItem(cr);
+            }
         }
         return cardRoles;
     }
@@ -689,7 +702,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private void assignNextSortOrder(CardRole cr) {
-        if (PersistenceHelper.isNew(card) && cr.getSortOrder() != null)
+        if (cr.getSortOrder() != null)
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
@@ -723,7 +736,7 @@ public class CardRolesFrame extends AbstractFrame {
             range.add(cardRoles.get(0).getSortOrder());
         } else {
             int min = getMinSortOrderInCardRoles(cardRoles);
-            int max = getMaxSortOrderInCardRoles(cardRoles);
+            int max = cardRoles.size() - 1; //getMaxSortOrderInCardRoles(cardRoles);
             for (int i = min - 1; i <= max + 1; i++) {
                 if (i > 0) range.add(i);
             }
@@ -737,17 +750,18 @@ public class CardRolesFrame extends AbstractFrame {
             if (role.getSortOrder() != null && role.getSortOrder() > max)
                 max = role.getSortOrder();
         }
-        return max;
+        return max > roles.size() ? roles.size() : max;
     }
 
     private int getMinSortOrderInCardRoles(List<CardRole> roles) {
         if (roles == null || roles.size() == 1) return 0;
-        int min = roles.get(0).getSortOrder();
-        for (CardRole role : roles) {
-            if (role.getSortOrder() != null && role.getSortOrder() < min)
-                min = role.getSortOrder();
-        }
-        return min;
+        return 1;
+//        int min = roles.get(0).getSortOrder();
+//        for (CardRole role : roles) {
+//            if (role.getSortOrder() != null && role.getSortOrder() < min)
+//                min = role.getSortOrder();
+//        }
+//        return min;
     }
 
     //todo gorbunkov review and refactor next two methods

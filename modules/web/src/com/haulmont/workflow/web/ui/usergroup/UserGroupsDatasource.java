@@ -69,9 +69,9 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
     protected List<User> loadUsers(Role secRole) {
         String queryString;
         if (secRole != null) {
-          queryString = "select u from sec$User u join u.userRoles ur where ur.role.id = :secRole order by u.name";
+            queryString = "select u from sec$User u join u.userRoles ur where u.active = true and ur.role.id = :secRole order by u.name";
         } else {
-            queryString = "select u from sec$User u order by u.name";
+            queryString = "select u from sec$User u where u.active = true order by u.name";
         }
 
         LoadContext ctx = new LoadContext(User.class).setView("usergroup-add");

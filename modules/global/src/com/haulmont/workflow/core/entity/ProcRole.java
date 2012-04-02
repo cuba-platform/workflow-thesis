@@ -60,7 +60,7 @@ public class ProcRole extends StandardEntity {
     protected Integer sortOrder;
 
     @Column(name = "ORDER_FILLING_TYPE")
-    protected String orderFillingType = "P";
+    protected String orderFillingType = "EndorsementSeq".equals(code) ? "S" : "P";
 
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;
