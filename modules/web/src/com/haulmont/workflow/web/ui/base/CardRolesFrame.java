@@ -365,14 +365,15 @@ public class CardRolesFrame extends AbstractFrame {
                             }
 
                             User oldUser = cardRole.getUser();
-                            cardRole.setUser(null);
+                            //if code is right worked, then this comment need to REMOVE
+                            /*cardRole.setUser(null);
                             tmpCardRolesDs.updateItem(cardRole);
                             for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
                                 CardRole cr = tmpCardRolesDs.getItem((UUID) o);
                                 if (cr.getCode().equals(cardRole.getCode()) && !cardRole.getId().equals(cr.getId())) {
                                     tmpCardRolesDs.removeItem(cr);
                                 }
-                            }
+                            }*/
 
                             Role secRole = cardRole.getProcRole().getRole();
                             for (User user : selectedUsers) {
@@ -385,6 +386,13 @@ public class CardRolesFrame extends AbstractFrame {
                                     }
                                 }
                             }
+
+                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
+                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+                                if (cr.getCode().equals(cardRole.getCode()) && (cr.getProcRole().getCode().equals("Endorsement") || cr.getProcRole().getCode().equals("EndorsementSeq")) && !selectedUsers.contains(cr.getUser()))
+                                    tmpCardRolesDs.removeItem(cr);
+                            }
+
                             User oneOfValidUsers = null;
                             if (!validUsers.isEmpty()) {
                                 if (validUsers.contains(oldUser))
@@ -393,10 +401,22 @@ public class CardRolesFrame extends AbstractFrame {
                                     oneOfValidUsers = validUsers.iterator().next();
                             }
                             if (oneOfValidUsers != null) {
-                                cardRole.setUser(oneOfValidUsers);
-                                actorActionsFieldsMap.get(cardRole).setValue(oneOfValidUsers);
-                                validUsers.remove(oneOfValidUsers);
-                                tmpCardRolesDs.updateItem(cardRole);
+                                if (oldUser == null) {
+                                    CardRole cr = new CardRole();
+                                    cr.setUser(oneOfValidUsers);
+                                    cr.setProcRole(cardRole.getProcRole());
+                                    cr.setCode(cardRole.getCode());
+                                    cr.setNotifyByEmail(true);
+                                    cr.setNotifyByCardInfo(true);
+                                    cr.setCard(card);
+                                    assignNextSortOrder(cr);
+                                    tmpCardRolesDs.addItem(cr);
+                                } else {
+                                    cardRole.setUser(oneOfValidUsers);
+                                    actorActionsFieldsMap.get(cardRole).setValue(oneOfValidUsers);
+                                    validUsers.remove(oneOfValidUsers);
+                                    tmpCardRolesDs.updateItem(cardRole);
+                                }
                             }
                             List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
 
