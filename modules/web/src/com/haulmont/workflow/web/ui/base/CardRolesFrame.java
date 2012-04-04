@@ -755,12 +755,7 @@ public class CardRolesFrame extends AbstractFrame {
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
-                cr.setSortOrder(2);
-            }
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
-                cr.setSortOrder(1);
-            }
+            cr.setSortOrder(cr.getProcRole().getSortOrder());
         } else if (cr.getProcRole().getMultiUser()) {
             int max = getMaxSortOrderInCardRoles(cardRoles);
             if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
