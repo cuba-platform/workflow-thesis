@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.inject.Inject;
 import java.util.*;
 
 public class CardRolesFrame extends AbstractFrame {
@@ -74,6 +75,11 @@ public class CardRolesFrame extends AbstractFrame {
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
     protected boolean editable = true;
+
+    @Inject
+    WebButton moveDown;
+    @Inject
+    WebButton moveUp;
 
     public CardRolesFrame(IFrame frame) {
         super(frame);
@@ -112,48 +118,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         rolesTH.createRemoveAction(false);
 
-//        WebButton moveUp = (WebButton) getComponent("moveUp");
-//        moveUp.setAction(new AbstractAction("moveUp") {
-//            private static final long serialVersionUID = 3616849995887047615L;
-//
-//            public void actionPerform(Component component) {
-//                Set selected = rolesTable.getSelected();
-//                if (selected.isEmpty())
-//                    return;
-//
-//                CardRole curCr = (CardRole) selected.iterator().next();
-//                CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
-//                if (prevCr != null) {
-//                    Integer tmp = curCr.getSortOrder();
-//                    curCr.setSortOrder(prevCr.getSortOrder());
-//                    prevCr.setSortOrder(tmp);
-//
-//                    tmpCardRolesDs.doSort();
-//                }
-//            }
-//        });
-//
-//        WebButton moveDown = (WebButton) getComponent("moveDown");
-//        moveDown.setAction(new AbstractAction("moveUp") {
-//            private static final long serialVersionUID = 6060776970724140731L;
-//
-//            public void actionPerform(Component component) {
-//                Set selected = rolesTable.getSelected();
-//                if (selected.isEmpty())
-//                    return;
-//
-//                CardRole curCr = (CardRole) selected.iterator().next();
-//                CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
-//                if (nextCr != null) {
-//                    Integer tmp = curCr.getSortOrder();
-//                    curCr.setSortOrder(nextCr.getSortOrder());
-//                    nextCr.setSortOrder(tmp);
-//
-//                    tmpCardRolesDs.doSort();
-//                }
-//            }
-//        });
-
+        initMoveButtons();
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         final MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
 
@@ -293,6 +258,48 @@ public class CardRolesFrame extends AbstractFrame {
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
     }
 
+    private void initMoveButtons() {
+            moveUp.setAction(new AbstractAction("moveUp") {
+                private static final long serialVersionUID = 3616849995887047615L;
+
+                public void actionPerform(Component component) {
+                    Set selected = rolesTable.getSelected();
+                    if (selected.isEmpty())
+                        return;
+
+                    CardRole curCr = (CardRole) selected.iterator().next();
+                    CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
+                    if (prevCr != null) {
+                        Integer tmp = curCr.getSortOrder();
+                        curCr.setSortOrder(prevCr.getSortOrder());
+                        prevCr.setSortOrder(tmp);
+
+                        tmpCardRolesDs.doSort();
+                    }
+                }
+            });
+
+            moveDown.setAction(new AbstractAction("moveDown") {
+                private static final long serialVersionUID = 6060776970724140731L;
+
+                public void actionPerform(Component component) {
+                    Set selected = rolesTable.getSelected();
+                    if (selected.isEmpty())
+                        return;
+
+                    CardRole curCr = (CardRole) selected.iterator().next();
+                    CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
+                    if (nextCr != null) {
+                        Integer tmp = curCr.getSortOrder();
+                        curCr.setSortOrder(nextCr.getSortOrder());
+                        nextCr.setSortOrder(tmp);
+
+                        tmpCardRolesDs.doSort();
+                    }
+                }
+            });
+    }
+
     private void addSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath sortOrderProperty = rolesTableDs.getMetaClass().getPropertyPath("sortOrder");
         vRolesTable.addGeneratedColumn(sortOrderProperty, new com.vaadin.ui.Table.ColumnGenerator() {
@@ -389,7 +396,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                             for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
                                 CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                                if (cr.getCode().equals(cardRole.getCode()) && (cr.getProcRole().getCode().equals("Endorsement") || cr.getProcRole().getCode().equals("EndorsementSeq")) && !selectedUsers.contains(cr.getUser()))
+                                if (cr.getCode().equals(cardRole.getCode()) && cr.getProcRole().getMultiUser() && !selectedUsers.contains(cr.getUser()))
                                     tmpCardRolesDs.removeItem(cr);
                             }
 
@@ -635,6 +642,14 @@ public class CardRolesFrame extends AbstractFrame {
             component.setEnabled(proc != null && isEnabled());
         }
 
+        if (proc != null && proc.getJbpmProcessKey().equals("EndorsementFull")) {
+            moveDown.setVisible(true);
+            moveUp.setVisible(true);
+        } else {
+            moveDown.setVisible(false);
+            moveUp.setVisible(false);
+        }
+
         if (proc != null) {
             com.vaadin.ui.Table vRolesTable = ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable));
             if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
@@ -721,7 +736,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private void assignNextSortOrder(CardRole cr) {
+    /*private void assignNextSortOrder(CardRole cr) {
         if (cr.getSortOrder() != null)
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
@@ -735,6 +750,50 @@ public class CardRolesFrame extends AbstractFrame {
             if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
                 cr.setSortOrder(max + 1);
             }
+        }
+    }*/
+
+    private void assignNextSortOrder(CardRole cr) {
+        if (cr.getSortOrder() != null)
+            return;
+        List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
+        if (cardRoles.size() == 0) {
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
+                cr.setSortOrder(2);
+            }
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
+                cr.setSortOrder(1);
+            }
+        } else if (cr.getProcRole().getMultiUser()) {
+            int max = getMaxSortOrderInCardRoles(cardRoles);
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
+                cr.setSortOrder(max);
+                changeSortOrderByAllParallelCardRoles(max);
+            }
+            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
+                int parallelGroupNumb = getParallelGroupNumberCardRoles();
+                if (parallelGroupNumb >= max )
+                    cr.setSortOrder(parallelGroupNumb + 1);
+                else
+                    cr.setSortOrder(max + 1);
+            }
+        }
+    }
+
+    private int getParallelGroupNumberCardRoles() {
+        for (UUID id : tmpCardRolesDs.getItemIds()) {
+            CardRole role = tmpCardRolesDs.getItem(id);
+            if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
+                return role.getSortOrder();
+        }
+        return 0;
+    }
+
+    private void changeSortOrderByAllParallelCardRoles(int sortOrder) {
+        for (UUID id : tmpCardRolesDs.getItemIds()) {
+            CardRole role = tmpCardRolesDs.getItem(id);
+            if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
+                role.setSortOrder(sortOrder);
         }
     }
 
@@ -776,12 +835,6 @@ public class CardRolesFrame extends AbstractFrame {
     private int getMinSortOrderInCardRoles(List<CardRole> roles) {
         if (roles == null || roles.size() == 1) return 0;
         return 1;
-//        int min = roles.get(0).getSortOrder();
-//        for (CardRole role : roles) {
-//            if (role.getSortOrder() != null && role.getSortOrder() < min)
-//                min = role.getSortOrder();
-//        }
-//        return min;
     }
 
     //todo gorbunkov review and refactor next two methods
