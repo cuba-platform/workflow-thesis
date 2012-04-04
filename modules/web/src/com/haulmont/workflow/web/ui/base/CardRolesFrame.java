@@ -400,17 +400,11 @@ public class CardRolesFrame extends AbstractFrame {
                                     tmpCardRolesDs.removeItem(cr);
                             }
 
-                            User oneOfValidUsers = null;
                             if (!validUsers.isEmpty()) {
-                                if (validUsers.contains(oldUser))
-                                    oneOfValidUsers = oldUser;
-                                else
-                                    oneOfValidUsers = validUsers.iterator().next();
-                            }
-                            if (oneOfValidUsers != null) {
                                 if (oldUser == null) {
+                                    oldUser = validUsers.iterator().next();
                                     CardRole cr = new CardRole();
-                                    cr.setUser(oneOfValidUsers);
+                                    cr.setUser(oldUser);
                                     cr.setProcRole(cardRole.getProcRole());
                                     cr.setCode(cardRole.getCode());
                                     cr.setNotifyByEmail(true);
@@ -418,11 +412,14 @@ public class CardRolesFrame extends AbstractFrame {
                                     cr.setCard(card);
                                     assignNextSortOrder(cr);
                                     tmpCardRolesDs.addItem(cr);
+                                    validUsers.remove(oldUser);
                                 } else {
-                                    cardRole.setUser(oneOfValidUsers);
-                                    actorActionsFieldsMap.get(cardRole).setValue(oneOfValidUsers);
-                                    validUsers.remove(oneOfValidUsers);
-                                    tmpCardRolesDs.updateItem(cardRole);
+                                    if (validUsers.contains(oldUser)){
+                                        cardRole.setUser(oldUser);
+                                        actorActionsFieldsMap.get(cardRole).setValue(oldUser);
+                                        validUsers.remove(oldUser);
+                                        tmpCardRolesDs.updateItem(cardRole);
+                                    }
                                 }
                             }
                             List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
