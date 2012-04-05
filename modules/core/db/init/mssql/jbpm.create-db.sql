@@ -1,7 +1,7 @@
 
 create table JBPM4_DEPLOYMENT (
     DBID_ bigint not null,
-    NAME_ text,
+    NAME_ varchar(max),
     TIMESTAMP_ bigint,
     STATE_ varchar(255),
     primary key (DBID_)
@@ -70,7 +70,7 @@ create table JBPM4_HIST_DETAIL (
     HTASKIDX_ int,
     HVAR_ bigint,
     HVARIDX_ int,
-    MESSAGE_ text,
+    MESSAGE_ varchar(max),
     OLD_STR_ varchar(255),
     NEW_STR_ varchar(255),
     OLD_INT_ int,
@@ -164,7 +164,7 @@ create table JBPM4_JOB (
     ISEXCLUSIVE_ tinyint,
     LOCKOWNER_ varchar(255),
     LOCKEXPTIME_ datetime,
-    EXCEPTION_ text,
+    EXCEPTION_ varchar(max),
     RETRIES_ int,
     PROCESSINSTANCE_ bigint,
     EXECUTION_ bigint,
@@ -180,7 +180,7 @@ create table JBPM4_LOB (
     DBVERSION_ int not null,
     BLOB_VALUE_ varbinary(MAX),
     DEPLOYMENT_ bigint,
-    NAME_ text,
+    NAME_ varchar(max),
     primary key (DBID_)
 );
 
@@ -216,7 +216,7 @@ create table JBPM4_TASK (
     CLASS_ char(1) not null,
     DBVERSION_ int not null,
     NAME_ varchar(255),
-    DESCR_ text,
+    DESCR_ varchar(max),
     STATE_ varchar(255),
     SUSPHISTSTATE_ varchar(255),
     ASSIGNEE_ varchar(255),
@@ -252,7 +252,7 @@ create table JBPM4_VARIABLE (
     CLASSNAME_ varchar(255),
     LONG_VALUE_ bigint,
     STRING_VALUE_ varchar(max),
-    TEXT_VALUE_ text,
+    TEXT_VALUE_ varchar(max),
     EXESYS_ bigint,
     primary key (DBID_)
 );
