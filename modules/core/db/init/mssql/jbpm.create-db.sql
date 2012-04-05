@@ -251,7 +251,7 @@ create table JBPM4_VARIABLE (
     DOUBLE_VALUE_ float,
     CLASSNAME_ varchar(255),
     LONG_VALUE_ bigint,
-    STRING_VALUE_ varchar(255),
+    STRING_VALUE_ varchar(max),
     TEXT_VALUE_ text,
     EXESYS_ bigint,
     primary key (DBID_)

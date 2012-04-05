@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -21,11 +22,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.workflow.core.app.WorkCalendarService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -74,6 +77,7 @@ public class ResolutionsFrame extends AbstractFrame {
 //       vTable.setAllowMultiStringCells(true);
 
         vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
+            WorkCalendarService workCalendarService = ServiceLocator.lookup(WorkCalendarService.NAME);
 
             public String getStyle(Object itemId, Object propertyId) {
                 if (propertyId == null) {
