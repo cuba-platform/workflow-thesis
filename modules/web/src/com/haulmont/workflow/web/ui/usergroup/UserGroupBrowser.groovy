@@ -91,10 +91,11 @@ class UserGroupBrowser extends AbstractWindow{
                         }
                         CommitContext ctx = new CommitContext()
                         ctx.commitInstances << userGroup
-                        Map commited = getDsContext().getDataService().commit(ctx)
+                        Set commited = getDsContext().getDataService().commit(ctx)
                         usersDs.refresh()
-                        userGroupsDs.updateItem(commited[userGroup])
-                        userGroupsDs.setItem(commited[userGroup])
+                        userGroup = commited.iterator().next();
+                        userGroupsDs.updateItem(userGroup)
+                        userGroupsDs.setItem(userGroup)
                       }
               ] as Handler,
               WindowManager.OpenType.THIS_TAB,
@@ -129,10 +130,11 @@ class UserGroupBrowser extends AbstractWindow{
                                         userGroup.users.remove(selectedUser)
                                         CommitContext ctx = new CommitContext()
                                         ctx.getCommitInstances().add(userGroup)
-                                        Map commited = getDsContext().getDataService().commit(ctx)
+                                        Set commited = getDsContext().getDataService().commit(ctx)
                                         usersDs.refresh()
-                                        userGroupsDs.updateItem(commited[userGroup])
-                                        userGroupsDs.setItem(commited[userGroup])
+                                        userGroup = commited.iterator().next();
+                                        userGroupsDs.updateItem(userGroup)
+                                        userGroupsDs.setItem(userGroup)
                                       },
                                       getIcon : {
                                         return "icons/ok.png"
