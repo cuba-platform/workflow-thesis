@@ -10,11 +10,16 @@
  */
 package com.haulmont.workflow.web.ui.base.action;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.global.AssignmentInfo;
+import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
@@ -27,8 +32,6 @@ public class ActionsFrame extends AbstractFrame {
 
     private AssignmentInfo info;
 
-    private BoxLayout buttonContainer;
-
     public ActionsFrame(IFrame frame) {
         super(frame);
     }
@@ -37,17 +40,10 @@ public class ActionsFrame extends AbstractFrame {
         return info;
     }
 
-    public void initActions(Card card, boolean commentVisible) {
-        buttonContainer =  getComponent("buttonContainer");
-        List<Component> buttons = new ArrayList<Component>();
-        for (int i = 0; i < 7; i++) {
-            Button btn = getComponent("actionBtn" + i);
-            btn.setVisible(false);
-            buttons.add(btn);
-            buttonContainer.remove(btn);
-        }
-
+    public void initActions(Card card, boolean descriptionVisible) {
         TextField descrText = getComponent("descrText");
+
+        deleteActionButtons();
 
         List<String> actions = new ArrayList<String>();
 
@@ -69,10 +65,13 @@ public class ActionsFrame extends AbstractFrame {
                 info = wfs.getAssignmentInfo(card);
             }
             if (info != null) {
-                descrText.setVisible(true);
-                if (info.getDescription() != null)
-                    descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()));
-                descrText.setEditable(false);
+                if (descriptionVisible) {
+                    descrText.setVisible(true);
+                    descrText.setWidth("100%");
+                    if (info.getDescription() != null)
+                        descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()));
+                    descrText.setEditable(false);
+                }
 
                 actions.addAll(info.getActions());
             }
@@ -90,25 +89,30 @@ public class ActionsFrame extends AbstractFrame {
 
         if (visibleActions != null)
             actions.retainAll(visibleActions);
-        for (int i = 0; i < buttons.size(); i++) {
-            Component btn = buttons.get(i);
-            if (i <= actions.size() - 1) {
-                btn.setVisible(true);
-                String actionName = actions.get(i);
-                if (btn instanceof Button) {
-                    ((Button) btn).setAction(new ProcessAction(card, actionName, this));
-                }
 
-                if ((enabledActions != null) && !enabledActions.contains(actionName))
-                    btn.setEnabled(false);
+        for (String actionName : actions) {
+            Button button = AppConfig.getFactory().createComponent(Button.NAME);
+            button.setAction(new ProcessAction(card, actionName, this));
+            button.setWidth("100%");
 
-                FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
-                String style = (String) managerChain.getCommonParams().get("style");
-                if (style != null) {
-                    btn.setStyleName(style);
-                }
+            if ((enabledActions != null) && !enabledActions.contains(actionName))
+                button.setEnabled(false);
 
-                buttonContainer.add(btn);
+            FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
+            String style = (String) managerChain.getCommonParams().get("style");
+            if (style != null) {
+                button.setStyleName(style);
+            }
+            
+            add(button);
+        }
+
+    }
+
+    private void deleteActionButtons() {
+        for (Component component : getComponents()) {
+            if (component instanceof Button) {
+                remove(component);
             }
         }
     }
@@ -117,15 +121,13 @@ public class ActionsFrame extends AbstractFrame {
         if (button == null) {
             return;
         }
-
-        buttonContainer.add(button);
+        add(button);
     }
 
     public void removeButton(Component button) {
         if (button == null) {
             return;
         }
-
-        buttonContainer.remove(button);
+        remove(button);
     }
 }
