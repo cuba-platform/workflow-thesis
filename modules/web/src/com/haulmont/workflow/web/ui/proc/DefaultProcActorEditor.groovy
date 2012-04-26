@@ -16,11 +16,14 @@ import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.workflow.core.entity.DefaultProcActor
 import com.haulmont.cuba.gui.components.IFrame
+import com.haulmont.cuba.gui.components.LookupField
+import com.haulmont.cuba.gui.data.ValueListener
 
 class DefaultProcActorEditor extends AbstractEditor{
 
   CollectionDatasource usersDs = getDsContext().get("usersDs")
   List<UUID> userIds;
+  boolean isMulti
 
   public DefaultProcActorEditor(IFrame frame) {
     super(frame)
@@ -31,6 +34,7 @@ class DefaultProcActorEditor extends AbstractEditor{
     userIds = params.get("userIds");
     if (userIds == null)
       userIds = new ArrayList<UUID>();
+    isMulti = params["isMulti"]
   }
 
   public void setItem(Entity item) {
@@ -43,7 +47,20 @@ class DefaultProcActorEditor extends AbstractEditor{
       usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) order by u.name')
     }
     usersDs.refresh(['secRole': secRole, 'userIds':userIds])
+    if (isMulti)
+      initDpaSortOrder()
   }
 
-
+  private void initDpaSortOrder() {
+      def orderValues = []
+      for (int i = 1; i <= userIds.size() + 1; i++)
+          orderValues += i
+      LookupField sortOrderField = getComponent("sortOrderField")
+      sortOrderField.optionsList = orderValues
+      sortOrderField.value = item.sortOrder
+      sortOrderField.addListener(
+              {Object source, String property, Object prevValue, Object value ->
+                  item.sortOrder = value
+              } as ValueListener)
+  }
 }

@@ -327,6 +327,7 @@ create table WF_DEFAULT_PROC_ACTOR (
     PROC_ROLE_ID varchar(36),
     USER_ID varchar(36),
     NOTIFY_BY_EMAIL smallint,
+    SORT_ORDER integer,
     primary key (ID)
 );
 

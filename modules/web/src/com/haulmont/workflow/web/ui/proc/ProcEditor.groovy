@@ -110,7 +110,11 @@ public class ProcEditor extends AbstractEditor {
                         if (user)
                           userIds.add(user.getId());
                       }
-                      return Collections.singletonMap("userIds", userIds)},
+                      Map<String, Object> values = new HashMap<String, Object>()
+                      values.put("userIds", userIds)
+                      values.put("isMulti", rolesDs.item.multiUser)
+                      return values
+                    },
                     getValues: {
                       Map<String, Object> values = new HashMap<String, Object>()
                       values.put("procRole", rolesDs.getItem())
@@ -128,7 +132,11 @@ public class ProcEditor extends AbstractEditor {
                         if (user && !dpa.equals(dpaDs.getItem()))
                           userIds.add(user.getId());
                       }
-                      return Collections.singletonMap("userIds", userIds)},
+                        Map<String, Object> values = new HashMap<String, Object>()
+                        values.put("userIds", userIds)
+                        values.put("isMulti", rolesDs.item.multiUser)
+                        return values
+                    },
                     getValues: {
                       null
                     }

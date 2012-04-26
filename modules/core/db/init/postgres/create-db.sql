@@ -395,6 +395,7 @@ create table WF_DEFAULT_PROC_ACTOR (
     PROC_ROLE_ID uuid,
     USER_ID uuid,
     NOTIFY_BY_EMAIL boolean,
+    SORT_ORDER integer,
     primary key (ID)
 )^
 

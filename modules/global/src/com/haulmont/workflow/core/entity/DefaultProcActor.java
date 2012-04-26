@@ -34,6 +34,9 @@ public class DefaultProcActor extends StandardEntity {
     @Column(name = "NOTIFY_BY_EMAIL")
     protected Boolean notifyByEmail = true;
 
+    @Column(name = "SORT_ORDER")
+    protected Integer sortOrder;
+
     public User getUser() {
         return user;
     }
@@ -56,5 +59,13 @@ public class DefaultProcActor extends StandardEntity {
 
     public void setNotifyByEmail(Boolean notifyByEmail) {
         this.notifyByEmail = notifyByEmail;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

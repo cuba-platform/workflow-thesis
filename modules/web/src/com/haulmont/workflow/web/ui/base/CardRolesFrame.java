@@ -689,7 +689,7 @@ public class CardRolesFrame extends AbstractFrame {
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
         for (DefaultProcActor dpa : dpaList) {
-            addProcActor(proc, dpa.getProcRole().getCode(), dpa.getUser(), dpa.getNotifyByEmail(), true);
+            addProcActor(proc, dpa.getProcRole().getCode(), dpa.getUser(), dpa.getSortOrder(), dpa.getNotifyByEmail(), true);
         }
 
         initAssignedToCreatorActors();
@@ -879,6 +879,10 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
+        addProcActor(proc, roleCode, user, null, notifyByEmail, notifyByCardInfo);
+    }
+
+    public void addProcActor(Proc proc, String roleCode, User user, Integer sortOrder, boolean notifyByEmail, boolean notifyByCardInfo) {
         ProcRole procRole = null;
 
         if (proc.getRoles() == null) {
@@ -902,6 +906,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setNotifyByCardInfo(notifyByCardInfo);
             cardRole.setUser(user);
+            cardRole.setSortOrder(sortOrder);
             assignNextSortOrder(cardRole);
             tmpCardRolesDs.addItem(cardRole);
         } else {

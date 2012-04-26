@@ -34,6 +34,12 @@
                                        optionsDatasource="usersDs" width="${width}"
                                        required="true" requiredMessage="msg://userMsg"/>
                         </row>
+                        <#if param$isMulti?has_content && param$isMulti == true>
+                        <row>
+                            <label value="msg://dpa.sortOrder"/>
+                            <lookupField id="sortOrderField" width="${width}"/>
+                        </row>
+                        </#if>
                         <row>
                             <label value="msg://notifyByEmail"/>
                             <checkBox id="notifyByEmail" datasource="dpaDs" property="notifyByEmail"/>

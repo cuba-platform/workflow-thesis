@@ -124,6 +124,7 @@
                                 <table id="dpaTable" editable="false">
                                     <columns>
                                         <column id="user" caption="msg://user"/>
+                                        <column id="sortOrder" caption="msg://dpa.sortOrder"/>
                                         <column id="notifyByEmail" caption="msg://notifyByEmail"/>
                                     </columns>
                                     <rows datasource="dpaDs"/>
