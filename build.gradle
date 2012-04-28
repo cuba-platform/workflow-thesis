@@ -37,6 +37,7 @@ def webModule = project(':workflow-web')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def json = [group: 'org.json', name: 'json', version: '20090211']
+def hibernate = [group: 'com.haulmont.thirdparty', name: 'hibernate-core', version: '3.3.1.GA.20120428'];
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
@@ -63,7 +64,7 @@ configure([sharedLibModule, globalModule, coreModule, webModule]) {
 
 configure(sharedLibModule) {
     dependencies {
-        compile(group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false)
+        compile(hibernate)
         compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.7.RELEASE')
         compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.0.7.RELEASE')
         compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.7.RELEASE')
@@ -88,7 +89,7 @@ configure(coreModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.2.20110405')
         compile(json)
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
-        compile(group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA')
+        compile(hibernate)
         runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.5.2')
         runtime(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.5.2')
         runtime(group: 'javassist', name: 'javassist', version: '3.4.GA')
