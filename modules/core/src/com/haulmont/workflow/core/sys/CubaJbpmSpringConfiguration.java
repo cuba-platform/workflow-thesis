@@ -10,6 +10,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -17,6 +18,7 @@ import org.jbpm.pvm.internal.cfg.SpringConfiguration;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Configures jBPM depending on {@link DbmsType}.
@@ -29,11 +31,6 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
 
     public CubaJbpmSpringConfiguration() {
         super();
-
-        String dataDir = AppContext.getProperty("cuba.dataDir");
-        File hibernateCfgFile = new File(dataDir, "jbpm.hibernate.cfg.xml");
-        File jbpmCfgFile = new File(dataDir, "jbpm.cfg.xml");
-
         String hibernateDialect;
         switch (DbmsType.getCurrent()) {
             case HSQL:
@@ -49,6 +46,20 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
                 throw new UnsupportedOperationException("Unknown DBMS type: " + DbmsType.getCurrent());
         }
 
+        String dataDir = AppContext.getProperty("cuba.dataDir");
+        File hibernateCfgFile = modifyHibernateCfgXml(dataDir, hibernateDialect);
+        File jbpmCfgFile = modifyJbpmCfgXml(dataDir, hibernateCfgFile);
+
+        try {
+            setInputStream(new FileInputStream(jbpmCfgFile));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private File modifyHibernateCfgXml(String dataDir, String hibernateDialect) {
+        File hibernateCfgFile = new File(dataDir, "jbpm.hibernate.cfg.xml");
         Resource resource = new ConfigurationResourceLoader().getResource("wf.jbpm.hibernate.cfg.xml");
         FileOutputStream outputStream = null;
         try {
@@ -67,8 +78,25 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
             IOUtils.closeQuietly(outputStream);
         }
 
-        resource = new ConfigurationResourceLoader().getResource("wf.jbpm.cfg.xml");
-        outputStream = null;
+        // Insert DTD because Hibernate validates XML on load
+        try {
+            List<String> lines = FileUtils.readLines(hibernateCfgFile, "UTF-8");
+
+            lines.add(1, "<!DOCTYPE hibernate-configuration PUBLIC" +
+                    " \"-//Hibernate/Hibernate Configuration DTD 3.0//EN\"" +
+                    " \"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd\">");
+
+            FileUtils.writeLines(hibernateCfgFile, "UTF-8", lines, "\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return hibernateCfgFile;
+    }
+
+    private File modifyJbpmCfgXml(String dataDir, File hibernateCfgFile) {
+        File jbpmCfgFile = new File(dataDir, "jbpm.cfg.xml");
+        Resource resource = new ConfigurationResourceLoader().getResource("wf.jbpm.cfg.xml");
+        FileOutputStream outputStream = null;
         try {
             Document doc = Dom4j.readDocument(resource.getInputStream());
             Element pecEl = doc.getRootElement().element("process-engine-context");
@@ -78,17 +106,11 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
             hibCfgEl.addElement("cfg").addAttribute("file", hibernateCfgFile.getAbsolutePath());
             outputStream = new FileOutputStream(jbpmCfgFile);
             Dom4j.writeDocument(doc, true, outputStream);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
-
-        try {
-            setInputStream(new FileInputStream(jbpmCfgFile));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return jbpmCfgFile;
     }
 }
