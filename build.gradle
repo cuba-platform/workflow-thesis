@@ -37,7 +37,7 @@ def webModule = project(':workflow-web')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def json = [group: 'org.json', name: 'json', version: '20090211']
-def hibernate = [group: 'com.haulmont.thirdparty', name: 'hibernate-core', version: '3.3.1.GA.20120428'];
+def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
