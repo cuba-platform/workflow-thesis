@@ -948,14 +948,17 @@ public class CardRolesFrame extends AbstractFrame {
         // add ProcRole if it has multiUser == true or hasn't been added yet
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
-            if ((BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr))
-                /*&& procRolePermissionsService.isPermitted(card, pr, getState(), ProcRolePermissionType.ADD)*/) {
+            if (isNeedRole(pr)) {
                 options.add(pr);
             }
         }
         options.add(0, createRoleCaption);
         createRoleLookup.setOptionsList(options);
         createRoleLookup.setNullOption(createRoleCaption);
+    }
+
+    protected boolean isNeedRole(ProcRole pr) {
+        return BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr);
     }
 
     protected boolean alreadyAdded(ProcRole pr) {
