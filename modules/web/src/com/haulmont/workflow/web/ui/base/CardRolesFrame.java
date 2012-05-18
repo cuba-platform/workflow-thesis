@@ -394,6 +394,9 @@ public class CardRolesFrame extends AbstractFrame {
                                 }
                             }
 
+                            ProcRole procRole = cardRole.getProcRole();
+                            String code = cardRole.getCode();
+
                             for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
                                 CardRole cr = tmpCardRolesDs.getItem((UUID) o);
                                 if (cr.getCode().equals(cardRole.getCode()) && cr.getProcRole().getMultiUser() && !selectedUsers.contains(cr.getUser()))
@@ -422,7 +425,7 @@ public class CardRolesFrame extends AbstractFrame {
                                     }
                                 }
                             }
-                            List<CardRole> cardRolesToAdd = createCardRoles(validUsers, cardRole);
+                            List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);
 
                             if (!invalidUsers.isEmpty()) {
                                 String usersList = "";
@@ -533,7 +536,7 @@ public class CardRolesFrame extends AbstractFrame {
         return false;
     }
 
-    private List<CardRole> createCardRoles(Set<User> users, CardRole cardRole) {
+    private List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
         List<CardRole> cardRoles = new ArrayList<CardRole>();
         for (User user : users) {
             boolean isUserInList = false;
@@ -547,8 +550,8 @@ public class CardRolesFrame extends AbstractFrame {
             if (!isUserInList) {
                 CardRole cr = new CardRole();
                 cr.setUser(user);
-                cr.setProcRole(cardRole.getProcRole());
-                cr.setCode(cardRole.getCode());
+                cr.setProcRole(procRole);
+                cr.setCode(code);
                 cr.setNotifyByEmail(true);
                 cr.setNotifyByCardInfo(true);
                 cr.setCard(card);
@@ -1174,7 +1177,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
         private static final long serialVersionUID = 2186196099900027571L;
-        private CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
+        protected CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
         public boolean fill;
 
         public CardProcRolesDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
