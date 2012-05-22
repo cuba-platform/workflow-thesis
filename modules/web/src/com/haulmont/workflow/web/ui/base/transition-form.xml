@@ -35,7 +35,7 @@
         <tabsheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab">
                 <vbox id="mainPane" expand="cardRolesFrame" spacing="true" margin="true">
-                <hbox>
+                <hbox id="outcomeTextBox">
                     <label value="msg://transition" width="${labelWidth}"/>
                     <textField id="outcomeText" width="${width}"/>
                 </hbox>
