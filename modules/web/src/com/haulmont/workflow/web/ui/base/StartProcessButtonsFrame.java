@@ -51,7 +51,7 @@ public class StartProcessButtonsFrame extends AbstractFrame {
 
                 Button button = new WebButton();
 
-                button.setWidth("200px");
+                button.setWidth("100%");
                 AbstractAction buttonAction = new AbstractAction("start" + proc.getJbpmProcessKey()) {
                     public void actionPerform(Component component) {
                         startProcess(proc);
