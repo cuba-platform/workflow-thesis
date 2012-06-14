@@ -23,6 +23,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import java.text.DateFormat;
@@ -31,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @ManagedBean(WorkCalendarAPI.NAME)
+@Scope("prototype")
 public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, WorkCalendarMBean {
 
     private static class CalendarItem {
