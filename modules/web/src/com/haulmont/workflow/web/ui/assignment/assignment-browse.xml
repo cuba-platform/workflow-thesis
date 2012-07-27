@@ -16,21 +16,19 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox id="table-panel" expand="aTable" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="aTable.refresh" icon="icons/refresh.png"/>
-                <button action="aTable.open" icon="icons/edit.png"/>
-            </hbox>
-            <table id="aTable" editable="false">
-                <columns>
-                    <column id="locDescription" caption="msg://description"/>
-                    <column id="card.description" caption="msg://card"/>
-                    <column id="card.proc.name" caption="msg://procName"/>
-                    <column id="card.locState" caption="msg://state"/>
-                </columns>
-                <rows datasource="aDs"/>
-            </table>
-        </vbox>
+    <layout expand="aTable" spacing="true">
+        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+            <button action="aTable.refresh" icon="icons/refresh.png"/>
+            <button action="aTable.open" icon="icons/edit.png"/>
+        </hbox>
+        <table id="aTable" editable="false" width="100%">
+            <columns>
+                <column id="locDescription" caption="msg://description"/>
+                <column id="card.description" caption="msg://card"/>
+                <column id="card.proc.name" caption="msg://procName"/>
+                <column id="card.locState" caption="msg://state"/>
+            </columns>
+            <rows datasource="aDs"/>
+        </table>
     </layout>
 </window>

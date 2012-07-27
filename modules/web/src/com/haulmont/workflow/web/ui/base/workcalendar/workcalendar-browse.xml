@@ -21,17 +21,17 @@
     </dsContext>
 
     <#assign width=400>
-    <layout expand="split">
-        <split id="split" orientation="horizontal">
+    <layout>
+        <split id="split" orientation="horizontal" height="100%" width="100%">
 
-            <vbox spacing="true" margin="true" expand="workDaysTable">
+            <vbox spacing="true" margin="true" expand="workDaysTable" height="100%" width="100%">
                 <label value="msg://timeTable"/>
                 <hbox align="MIDDLE_LEFT" spacing="true">
                     <button id="createAttach" action="workDaysTable.create" icon="icons/create.png"/>
                     <button id="editAttach" action="workDaysTable.edit" icon="icons/edit.png"/>
                     <button id="removeAttach" action="workDaysTable.remove" icon="icons/remove.png"/>
                 </hbox>
-                <table id="workDaysTable" height="100%" width="100%">
+                <table id="workDaysTable" width="100%">
                     <columns>
                         <column id="dayOfWeek" caption="msg://WorkCalendar.dayOfWeek"/>
                         <column id="start" caption="msg://WorkCalendar.start"/>
@@ -41,14 +41,14 @@
                 </table>
             </vbox>
 
-            <vbox spacing="true" margin="true" expand="exceptionDaysTable">
+            <vbox spacing="true" margin="true" expand="exceptionDaysTable" height="100%" width="100%">
                 <label value="msg://exceptionDays"/>
                 <hbox align="MIDDLE_LEFT" spacing="true">
                     <button id="createAttach" action="exceptionDaysTable.create" icon="icons/create.png"/>
                     <button id="editAttach" action="exceptionDaysTable.edit" icon="icons/edit.png"/>
                     <button id="removeAttach" action="exceptionDaysTable.remove" icon="icons/remove.png"/>
                 </hbox>
-                <table id="exceptionDaysTable">
+                <table id="exceptionDaysTable" width="100%">
                     <columns>
                         <column id="day" caption="msg://WorkCalendar.day">
                             <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="msg://dateFormat"/>
