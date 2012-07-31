@@ -24,7 +24,7 @@
     <#assign width = 250>
     <#assign timeUnitWidth = 90>
     <layout>
-        <scrollbox>
+        <scrollBox>
             <vbox margin="true" stylename="edit-area" spacing="true" expand="spring">
                 <grid spacing="true" width="100%">
                     <columns>
@@ -101,6 +101,6 @@
 
                 <vbox id="spring"/>
             </vbox>
-        </scrollbox>
+        </scrollBox>
     </layout>
 </window>
