@@ -425,12 +425,6 @@ inputEx.ListField.prototype.renderSubField = function(value) {
         delButton = inputEx.cn('img', {src: inputEx.spacerUrl, className: 'inputEx-ListField-delButton'});
         Event.addListener( delButton, 'click', this.onDelete, this, true);
         newDiv.appendChild( delButton );
-    } else {   // Delete link
-        delDiv = inputEx.cn('div', null, {width:'100%', textAlign:'right'}, null);
-        delButton = inputEx.cn('a', {className: 'inputEx-List-link'}, null, this.options.listRemoveLabel);
-        Event.addListener(delButton, 'click', this.onDelete, this, true);
-        delDiv.appendChild(delButton);
-        newDiv.appendChild(delDiv);
     }
 
     // Instantiate the new subField
@@ -468,6 +462,14 @@ inputEx.ListField.prototype.renderSubField = function(value) {
         newDiv.appendChild( arrowDown );
     }
 
+	// Delete link
+    if(!this.options.useButtons) {
+        delDiv = inputEx.cn('div', null, {width:'100%', textAlign:'right'}, null);
+        delButton = inputEx.cn('a', {className: 'inputEx-List-link'}, null, this.options.listRemoveLabel);
+        Event.addListener(delButton, 'click', this.onDelete, this, true);
+        delDiv.appendChild(delButton);
+        newDiv.appendChild(delDiv);
+    } 
 
     // Line breaker
     newDiv.appendChild( inputEx.cn('div', null, {clear: "both"}) );
@@ -476,3 +478,40 @@ inputEx.ListField.prototype.renderSubField = function(value) {
 
     return el;
 };
+
+//Override ListField method to proper work with delete link wrapped by Div
+inputEx.ListField.prototype.onDelete = function(e) {
+	      
+	   YAHOO.util.Event.stopEvent(e);
+	   
+	   // Prevent removing a field if already at minItems
+	   if( YAHOO.lang.isNumber(this.options.minItems) && this.subFields.length <= this.options.minItems ) {
+	      return;
+	   }
+	      
+	   // Get the wrapping div element
+	   var elementDiv = YAHOO.util.Event.getTarget(e).parentNode.parentNode;
+	   
+	   // Get the index of the subField
+	   var index = -1;
+	   
+	   var subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
+	   for(var i = 0 ; i < this.subFields.length ; i++) {
+	      if(this.subFields[i].getEl() == subFieldEl) {
+	         index = i;
+	         break;
+	      }
+	   }
+	      
+	   // Remove it
+	   if(index != -1) {
+	      this.removeElement(index);
+	   }
+		
+		// Note: not very efficient
+		this.resetAllNames();      
+	
+	   // Fire the updated event
+	   this.fireUpdatedEvt();
+};
+
