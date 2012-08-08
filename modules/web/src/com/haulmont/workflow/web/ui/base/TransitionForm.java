@@ -61,6 +61,8 @@ public class TransitionForm extends AbstractForm {
     private BoxLayout mainPane;
     @Inject
     private BoxLayout commentTextPane;
+    @Inject
+    private CheckBox refusedOnly;
 
 
     @Inject
@@ -69,6 +71,8 @@ public class TransitionForm extends AbstractForm {
     protected Datasource cardDs;
     @Inject
     protected CollectionDatasource attachmentsDs;
+    @Inject
+    protected Datasource varsDs;
 
     protected Card card;
     protected Card cardCopy;
@@ -135,8 +139,10 @@ public class TransitionForm extends AbstractForm {
         if (dueDate != null) {
             String dueDateRequired = (String) params.get("dueDateRequired");
             dueDate.setRequired(dueDateRequired != null && Boolean.valueOf(dueDateRequired).equals(Boolean.TRUE));
-            Datasource varDs = getDsContext().get("varsDs");
-            varDs.refresh();
+        }
+
+        if (dueDate != null || refusedOnly != null) {
+            varsDs.refresh();
         }
 
         String requiredAttachmentTypesParam = (String) params.get("requiredAttachmentTypes");
@@ -363,8 +369,8 @@ public class TransitionForm extends AbstractForm {
         if (cardRolesFrame != null)
             cardRolesDs.commit();
 
-        if (dueDate != null)
-            getDsContext().get("varsDs").commit();
+        if (dueDate != null || refusedOnly != null)
+            varsDs.commit();
         if (cardAssignmentInfoMap != null) {
             CommitContext<Entity> commitContext = new CommitContext<Entity>();
             commitContext.getCommitInstances().addAll(copyAttachments());
