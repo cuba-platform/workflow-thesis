@@ -197,7 +197,7 @@ public class TransitionForm extends AbstractForm {
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
         }
 
-        enableAttachments = BooleanUtils.toBooleanObject(params.get("enableAttachments").toString());
+        enableAttachments = params.get("enableAttachments") == null ? false : BooleanUtils.toBooleanObject(params.get("enableAttachments").toString());
 
         attachmentsTab = tabsheet.getTab("attachmentsTab");
         attachmentsTab.setCaption(getAttachmentsTabCaption());
@@ -215,7 +215,7 @@ public class TransitionForm extends AbstractForm {
         attachmentsTab.setCaption(getAttachmentsTabCaption());
         initRequiredAttachmentsPane();
 
-        if (enableAttachments == null || !enableAttachments) {
+        if (!enableAttachments) {
             attachmentsTab.setVisible(false);
         }
 
