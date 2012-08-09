@@ -32,6 +32,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.vaadin.ui.ComponentContainer;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -64,6 +65,7 @@ public class TransitionForm extends AbstractForm {
     @Inject
     private CheckBox refusedOnly;
 
+    protected Boolean enableAttachments;
 
     @Inject
     protected Datasource assignmentDs;
@@ -103,7 +105,8 @@ public class TransitionForm extends AbstractForm {
         Integer formHeight = DEFAULT_FORM_HEIGHT;
         try {
             formHeight = Integer.valueOf(formHeightStr);
-        } catch (NumberFormatException e) {}
+        } catch (NumberFormatException e) {
+        }
 
         getDialogParams().setHeight(formHeight);
 
@@ -194,6 +197,8 @@ public class TransitionForm extends AbstractForm {
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
         }
 
+        enableAttachments = BooleanUtils.toBooleanObject(params.get("enableAttachments").toString());
+
         attachmentsTab = tabsheet.getTab("attachmentsTab");
         attachmentsTab.setCaption(getAttachmentsTabCaption());
 
@@ -209,6 +214,10 @@ public class TransitionForm extends AbstractForm {
         attachmentsFrame.setCardCommitCheckRequired(false);
         attachmentsTab.setCaption(getAttachmentsTabCaption());
         initRequiredAttachmentsPane();
+
+        if (enableAttachments == null || !enableAttachments) {
+            attachmentsTab.setVisible(false);
+        }
 
         addAction(new AbstractAction("windowCommit") {
             public void actionPerform(Component component) {
@@ -295,7 +304,7 @@ public class TransitionForm extends AbstractForm {
         for (String attachmentTypeCode : requiredAttachmentTypes) {
             if (row++ == columnHeight) {
                 row = 0;
-                grid.setColumns(column+2);
+                grid.setColumns(column + 2);
                 column++;
             }
             final AttachmentType type = getAttachmentType(attachmentTypeCode);
@@ -323,7 +332,7 @@ public class TransitionForm extends AbstractForm {
             ctx.setView("_local");
             ctx.setQueryString("select att from wf$AttachmentType att where att.code = :code").addParameter("code", code);
             List list = dataService.loadList(ctx);
-            attachmentTypes.put(code, list.isEmpty() ? null : (AttachmentType)list.get(0));
+            attachmentTypes.put(code, list.isEmpty() ? null : (AttachmentType) list.get(0));
         }
         return attachmentTypes.get(code);
     }
@@ -335,7 +344,7 @@ public class TransitionForm extends AbstractForm {
             AssignmentInfo assignmentInfo = entry.getValue();
             if (assignmentInfo != null && !assignmentDs.getItem().getUuid().equals(assignmentInfo.getAssignmentId())) {
                 Assignment loadAssignment = ServiceLocator.getDataService().<Assignment>load(new
-                            LoadContext(Assignment.class).setView("resolutions").setId(assignmentInfo.getAssignmentId()));
+                        LoadContext(Assignment.class).setView("resolutions").setId(assignmentInfo.getAssignmentId()));
                 for (UUID uuid : (Collection<UUID>) attachmentsDs.getItemIds()) {
                     CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(uuid);
                     CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
@@ -419,28 +428,30 @@ public class TransitionForm extends AbstractForm {
             }
         }
 
-        if (requiredAttachmentTypes != null) {
-            List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
-            for (Object itemId : attachmentsDs.getItemIds()) {
-                CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
-                AttachmentType attachType = attachment.getAttachType();
-                if (attachType != null) {
-                    missingAttachments.remove(attachType.getCode());
+        if (enableAttachments != null && enableAttachments) {
+            if (requiredAttachmentTypes != null) {
+                List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
+                for (Object itemId : attachmentsDs.getItemIds()) {
+                    CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
+                    AttachmentType attachType = attachment.getAttachType();
+                    if (attachType != null) {
+                        missingAttachments.remove(attachType.getCode());
+                    }
                 }
-            }
 
-            if (!missingAttachments.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("<ul>");
-                for (String attachmentTypeCode : missingAttachments) {
-                    final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
-                    String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
-                    sb.append("<li>").append(attachmentTypeName).append("</li>");
+                if (!missingAttachments.isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<ul>");
+                    for (String attachmentTypeCode : missingAttachments) {
+                        final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
+                        String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
+                        sb.append("<li>").append(attachmentTypeName).append("</li>");
+                    }
+                    sb.append("</ul>");
+                    showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING);
+                    tabsheet.setTab(attachmentsTab);
+                    return false;
                 }
-                sb.append("</ul>");
-                showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING);
-                tabsheet.setTab(attachmentsTab);
-                return false;
             }
         }
 
