@@ -35,6 +35,8 @@ public class UniversalAssigner extends MultiAssigner {
 
     private Log log = LogFactory.getLog(Assigner.class)
 
+    Boolean finishBySingleUser
+
     //todo add stage duration control!
     @Override
     protected boolean createAssignment(ActivityExecution execution) {
@@ -104,9 +106,11 @@ public class UniversalAssigner extends MultiAssigner {
 
             onSuccess(execution, signalName, assignment)
 
-            String resultTransition = signalName
-
             def siblings = getSiblings(assignment)
+            if (finishBySingleUser)
+                finishSiblings(assignment, siblings)
+
+            String resultTransition = signalName
             for (Assignment sibling: siblings) {
                 if (!sibling.finished) {
                     log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
@@ -170,6 +174,27 @@ public class UniversalAssigner extends MultiAssigner {
         q.setParameter(2, assignment.getId())
         List<Assignment> siblings = q.getResultList()
         return siblings
+    }
+
+    protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
+        for (Assignment sibling: siblings) {
+            sibling.setFinished(assignment.getFinished())
+            sibling.setFinishedByUser(assignment.getFinishedByUser())
+            sibling.setOutcome(assignment.getOutcome())
+
+            deleteNotifications(sibling);
+        }
+    }
+
+    protected void deleteNotifications(Assignment assignment) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
+                "where ci.card.id = ?3 and ci.user.id = ?4");
+        query.setParameter(1, assignment.finished);
+        query.setParameter(2, assignment.finishedByUser.login);
+        query.setParameter(3, assignment.card.id);
+        query.setParameter(4, assignment.user.id);
+        query.executeUpdate()
     }
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {
