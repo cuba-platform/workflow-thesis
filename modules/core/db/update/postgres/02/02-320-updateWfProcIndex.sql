@@ -19,7 +19,7 @@ DROP INDEX IF EXISTS IDX_WF_PROC_UNIQ_CODE^
 SELECT create_constraint_if_not_exists(
         'wf_proc',
         'wf_proc_uniq_code',
-        'ALTER TABLE wf_proc DROP CONSTRAINT wf_proc_uniq_code^')^
+        'ALTER TABLE wf_proc DROP CONSTRAINT wf_proc_uniq_code;')^
 CREATE UNIQUE INDEX IDX_WF_PROC_UNIQ_CODE ON WF_PROC (CODE) WHERE DELETE_TS IS NULL^
 
 DROP FUNCTION IF EXISTS create_constraint_if_not_exists()^
