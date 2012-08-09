@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.UserSessionClient
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.LoadContext.Query
 import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.gui.WindowParams
 
 public class CardAccessData extends AbstractWfAccessData {
 
@@ -26,7 +27,7 @@ public class CardAccessData extends AbstractWfAccessData {
 
   def CardAccessData(Map params) {
     super(params);
-    card = params['param$item']
+    card = WindowParams.ITEM.getEntity(params)
   }
 
   boolean getNotStarted() {

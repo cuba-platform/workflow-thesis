@@ -12,6 +12,7 @@ package com.haulmont.workflow.web.ui.proc;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -54,7 +55,7 @@ public class ProcStageEditor extends AbstractEditor {
 
         TableActionsHelper procRolesHelper = new TableActionsHelper(this, procRolesTable);
         Map<String, Object> procRoleLookupParams = new HashMap<String, Object>();
-        procRoleLookupParams.put("proc", ((ProcStage) params.get("param$item")).getProc());
+        procRoleLookupParams.put("proc", ((ProcStage) WindowParams.ITEM.getEntity(params)).getProc());
         procRolesHelper.createAddAction(new Lookup.Handler() {
 
             public void handleLookup(Collection items) {

@@ -12,6 +12,7 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAccessData;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
@@ -34,7 +35,7 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
     }
 
     protected void init(Map<String, Object> params) {
-        item = (Entity) params.get("param$item");
+        item = WindowParams.ITEM.getEntity(params);
     }
 
     public void setItem(Entity item) {

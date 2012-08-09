@@ -9,7 +9,7 @@
         <hierarchicalDatasource id="commentDs" class="com.haulmont.workflow.core.entity.CardComment"
                                 hierarchyProperty="parent" view="browse">
             <query>
-                <![CDATA[select cc from wf$CardComment cc where cc.card.id = :param$item order by cc.createTs]]>
+                <![CDATA[select cc from wf$CardComment cc where cc.card.id = :param$ITEM order by cc.createTs]]>
             </query>
         </hierarchicalDatasource>
     </dsContext>

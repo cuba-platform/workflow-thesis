@@ -11,22 +11,16 @@
 package com.haulmont.workflow.web.ui.proc;
 
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.workflow.core.entity.ProcRole;
 
 import java.util.Map;
 
 public class ProcRoleEditor extends AbstractEditor {
 
-
-    public ProcRoleEditor(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
-        if(!PersistenceHelper.isNew((ProcRole)params.get("item"))){
+        if (!PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params))) {
             getComponent("code").setEnabled(false);
         }
     }
