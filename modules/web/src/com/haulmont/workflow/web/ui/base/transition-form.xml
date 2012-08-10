@@ -4,6 +4,9 @@
         messagesPack="com.haulmont.workflow.web.ui.base"
         caption="msg://confirmationForm.title">
 
+    <assign name="width" value="400"/>
+    <assign name="labelWidth" value="90"/>
+
     <dsContext>
         <!--todo remove view with attachments-->
         <datasource id="cardDs" class="com.haulmont.workflow.core.entity.Card" view="w-attachments"/>
@@ -29,8 +32,6 @@
         </hierarchicalDatasource>
     </dsContext>
 
-    <#assign width=400>
-    <#assign labelWidth=90>
     <layout expand="tabsheet">
         <tabsheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab">

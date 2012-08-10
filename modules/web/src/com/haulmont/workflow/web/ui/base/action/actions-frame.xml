@@ -3,8 +3,9 @@
         messagesPack="com.haulmont.workflow.web.ui.base"
         >
 
-    <#assign width=200>
-    <layout spacing="true" expandLayout="false">
+    <assign name="width" value="200"/>
+
+    <layout spacing="true">
         <textField id="descrText" rows="3" visible="false"/>
     </layout>
 

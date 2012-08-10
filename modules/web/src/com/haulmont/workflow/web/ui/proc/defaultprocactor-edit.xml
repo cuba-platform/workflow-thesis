@@ -6,6 +6,8 @@
         focusComponent="userLookup"
         >
 
+    <assign name="width" value="400"/>
+
     <dsContext>
         <datasource
                 id="dpaDs"
@@ -17,7 +19,6 @@
         <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_minimal"/>
     </dsContext>
 
-    <#assign width = 400>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

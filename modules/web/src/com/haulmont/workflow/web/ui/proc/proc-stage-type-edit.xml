@@ -7,6 +7,8 @@
         focusComponent="fieldGroup"
         >
 
+    <assign name="width" value="250"/>
+
     <dsContext>
         <datasource
                 id="procStageTypeDs"
@@ -15,7 +17,6 @@
         </datasource>
     </dsContext>
 
-    <#assign width = 250>
     <layout expand="windowActions">
         <vbox margin="true" stylename="edit-area">
             <fieldGroup id="fieldGroup" datasource="procStageTypeDs">

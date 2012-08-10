@@ -6,11 +6,12 @@
         caption="msg://exceptionDayEditCaption"
         focusComponent="day">
 
+    <assign name="width" value="200"/>
+
     <dsContext>
         <datasource id="calendarDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity" view="_local"/>
     </dsContext>
 
-    <#assign width = 200>
     <layout expand="mainPane">
         <vbox id="mainPane" margin="true" spacing="true" stylename="edit-area">
             <grid spacing="true" width="100%">

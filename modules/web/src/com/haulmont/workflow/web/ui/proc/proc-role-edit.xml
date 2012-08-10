@@ -7,6 +7,8 @@
         focusComponent="code"
         >
 
+    <assign name="width" value="400"/>
+
     <dsContext>
         <datasource
                 id="roleDs"
@@ -20,7 +22,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 400>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

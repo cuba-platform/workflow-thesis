@@ -7,6 +7,8 @@
         focusComponent="fieldsTable"
         >
 
+    <assign name="width" value="200"/>
+
     <dsContext>
         <datasource
                 id="typeDs"
@@ -14,7 +16,7 @@
                 view="attachmenttype.browse">
         </datasource>
     </dsContext>
-    <#assign width = 200>
+
     <layout expand="windowActions">
         <vbox margin="true" stylename="edit-area">
             <fieldGroup id="fieldsTable" datasource="typeDs">

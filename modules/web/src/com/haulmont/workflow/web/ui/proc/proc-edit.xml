@@ -7,6 +7,8 @@
         focusComponent="name"
         >
 
+    <assign name="width" value="400"/>
+
     <dsContext>
         <datasource
                 id="procDs"
@@ -25,7 +27,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 400>
     <layout expand="tabsheet">
         <tabsheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab" expand="rolesSplit" margin="true">

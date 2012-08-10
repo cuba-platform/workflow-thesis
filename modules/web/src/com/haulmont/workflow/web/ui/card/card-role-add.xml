@@ -6,6 +6,10 @@
         caption="msg://roleAdd.caption"
         >
 
+    <assign name="width" value="300"/>
+    <assign name="userLabelWidth" value="125"/>
+    <assign name="userLookupWidth" value="230"/>
+
     <dsContext>
         <datasource
                 id="roleDs"
@@ -33,9 +37,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 300>
-    <#assign userLabelWidth = 125>
-    <#assign userLookupWidth = 230>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

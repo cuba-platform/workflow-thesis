@@ -7,6 +7,9 @@
         focusComponent="name"
         >
 
+    <assign name="width" value="250"/>
+    <assign name="timeUnitWidth" value="90"/>
+
     <dsContext>
         <datasource
                 id="stageDs"
@@ -21,8 +24,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 250>
-    <#assign timeUnitWidth = 90>
     <layout>
         <scrollBox>
             <vbox margin="true" stylename="edit-area" spacing="true" expand="spring">

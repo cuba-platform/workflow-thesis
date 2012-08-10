@@ -7,6 +7,8 @@
         focusComponent="state"
         >
 
+    <assign name="width" value="250"/>
+
     <dsContext>
         <datasource
                 id="permissionDs"
@@ -20,7 +22,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 250>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

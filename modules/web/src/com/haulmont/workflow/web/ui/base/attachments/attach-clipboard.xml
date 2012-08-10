@@ -5,6 +5,9 @@
         datasource="attachmentsDs"
         caption="msg://attachClipboard.caption"
         focusComponent="attachmentsTable">
+
+    <assign name="height" value="200"/>
+
     <dsContext>
         <collectionDatasource
                 id="attachmentsDs"
@@ -15,8 +18,7 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign height=200>
-    <layout expand="attachmentsTable" expandLayout="false">
+    <layout expand="attachmentsTable">
         <table id="attachmentsTable" editable="false" sortable="true" multiselect="true"
                height="${height}" width="100%">
             <buttonsPanel>

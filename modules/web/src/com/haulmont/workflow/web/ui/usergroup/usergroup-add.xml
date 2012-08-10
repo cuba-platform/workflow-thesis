@@ -6,13 +6,14 @@
         caption="msg://userGroupAdd.caption"
         >
 
+    <assign name="width" value="300"/>
+
     <dsContext>
         <collectionDatasource id="userGroupsDs" class="com.haulmont.cuba.core.entity.StandardEntity" view="_local">
             <datasourceClass>com.haulmont.workflow.web.ui.usergroup.UserGroupsDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 300>
     <layout>
         <vbox id="main" stylename="edit-area" expandable="false" margin="true" spacing="true">
             <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">

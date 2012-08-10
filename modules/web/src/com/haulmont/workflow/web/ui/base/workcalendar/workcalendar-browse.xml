@@ -5,6 +5,8 @@
         caption="msg://workCalendarBrowseCaption"
         focusComponent="workDaysTable">
 
+    <assign name="width" value="400"/>
+
     <dsContext>
         <collectionDatasource id="workDaysDs" class="com.haulmont.workflow.core.entity.WorkCalendarEntity"
                               view="_local">
@@ -20,7 +22,6 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width=400>
     <layout>
         <split id="split" orientation="horizontal" height="100%" width="100%">
 

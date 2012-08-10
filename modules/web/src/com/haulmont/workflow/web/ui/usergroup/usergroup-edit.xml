@@ -7,6 +7,8 @@
         focusComponent="name"
         >
 
+    <assign name="width" value="300"/>
+
     <dsContext>
         <datasource
                 id="userGroupDs"
@@ -15,7 +17,6 @@
         </datasource>
     </dsContext>
 
-    <#assign width = 300>
     <layout expand="spring">
         <hbox stylename="edit-area">
             <vbox margin="true">

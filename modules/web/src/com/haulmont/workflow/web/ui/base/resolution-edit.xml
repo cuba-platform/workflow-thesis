@@ -6,11 +6,12 @@
         caption="msg://resolutionEditCaption"
         focusComponent="proc">
 
+    <assign name="width" value="300"/>
+
     <dsContext>
         <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit"/>
     </dsContext>
 
-    <#assign width = 300>
     <layout expand="mainPane">
         <vbox id="mainPane" margin="true" spacing="true" stylename="edit-area" expand="attachmentsPane">
             <grid spacing="true" width="100%">
