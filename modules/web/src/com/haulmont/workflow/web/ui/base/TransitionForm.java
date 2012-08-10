@@ -65,7 +65,7 @@ public class TransitionForm extends AbstractForm {
     @Inject
     private CheckBox refusedOnly;
 
-    protected Boolean enableAttachments;
+    protected Boolean hideAttachments = false;
 
     @Inject
     protected Datasource assignmentDs;
@@ -197,7 +197,7 @@ public class TransitionForm extends AbstractForm {
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
         }
 
-        enableAttachments = params.get("enableAttachments") == null ? false : BooleanUtils.toBooleanObject(params.get("enableAttachments").toString());
+        hideAttachments = params.get("hideAttachments") == null ? false : BooleanUtils.toBooleanObject(params.get("hideAttachments").toString());
 
         attachmentsTab = tabsheet.getTab("attachmentsTab");
         attachmentsTab.setCaption(getAttachmentsTabCaption());
@@ -215,7 +215,7 @@ public class TransitionForm extends AbstractForm {
         attachmentsTab.setCaption(getAttachmentsTabCaption());
         initRequiredAttachmentsPane();
 
-        if (!enableAttachments) {
+        if (hideAttachments) {
             attachmentsTab.setVisible(false);
         }
 
@@ -428,7 +428,7 @@ public class TransitionForm extends AbstractForm {
             }
         }
 
-        if (enableAttachments != null && enableAttachments) {
+        if (!hideAttachments) {
             if (requiredAttachmentTypes != null) {
                 List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
                 for (Object itemId : attachmentsDs.getItemIds()) {
