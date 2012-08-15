@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
@@ -18,7 +19,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
@@ -68,22 +68,22 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
     
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("sortOrder")
-    @Aggregation
+    @Composition
     protected List<CardProc> procs;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("code, sortOrder")
-    @Aggregation
+    @Composition
     protected List<CardRole> roles;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("startDate")
-    @Aggregation
+    @Composition
     protected List<CardStage> stages;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("createTs")
-    @Aggregation
+    @Composition
     protected List<CardAttachment> attachments;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -11,7 +11,7 @@
 
 package com.haulmont.workflow.core.entity;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
@@ -43,7 +43,7 @@ public class CardComment extends StandardEntity {
     @JoinTable(name = "WF_CARD_COMMENT_USER",
             joinColumns = @JoinColumn(name = "CARD_COMMENT_ID", referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"))
-    @Aggregation
+    @Composition
     protected List<User> addressees;
 
     public String getComment() {

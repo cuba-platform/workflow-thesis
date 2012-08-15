@@ -10,8 +10,8 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.security.entity.Role;
 
@@ -38,7 +38,7 @@ public class Proc extends StandardEntity {
     protected String messagesPack;
 
     @OneToMany(mappedBy = "proc")
-    @Aggregation
+    @Composition
     @OrderBy("sortOrder")
     protected List<ProcRole> roles;
 
@@ -52,7 +52,7 @@ public class Proc extends StandardEntity {
     protected String states;
 
     @OneToMany(mappedBy = "proc")
-    @Aggregation
+    @Composition
     protected List<ProcStage> stages;
 
     @ManyToOne(fetch = FetchType.LAZY)

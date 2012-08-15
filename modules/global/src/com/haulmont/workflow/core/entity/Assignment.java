@@ -10,7 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -74,7 +74,7 @@ public class Assignment extends StandardEntity {
 
     @OneToMany(mappedBy = "assignment")
     @OrderBy("name")
-    @Aggregation
+    @Composition
     protected List<CardAttachment> attachments;
 
     @Column(name = "ITERATION")

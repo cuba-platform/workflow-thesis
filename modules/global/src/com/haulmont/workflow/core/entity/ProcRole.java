@@ -10,9 +10,9 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.persistence.*;
@@ -46,14 +46,14 @@ public class ProcRole extends StandardEntity {
     protected Role role;
 
     @OneToMany(mappedBy = "procRole")
-    @Aggregation
+    @Composition
     protected List<DefaultProcActor> defaultProcActors;
 
     @Column(name = "ASSIGN_TO_CREATOR")
     protected Boolean assignToCreator = false;
 
     @OneToMany(mappedBy = "procRoleFrom")
-    @Aggregation
+    @Composition
     protected List<ProcRolePermission> permissions;
 
     @Column(name = "SORT_ORDER")
