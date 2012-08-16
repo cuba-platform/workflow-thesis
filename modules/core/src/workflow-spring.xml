@@ -2,12 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
-        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <bean id="jbpmConfiguration" class="com.haulmont.workflow.core.sys.CubaJbpmSpringConfiguration"/>
 
@@ -63,7 +59,7 @@
 
     <!-- MBeans registration -->
 
-    <bean id="wf_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+    <bean id="wf_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.workflow:service=WfEngine" value-ref="workflow_WfEngine"/>
@@ -73,20 +69,6 @@
                 <entry key="${cuba.webContextName}.workflow:service=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
                 <entry key="${cuba.webContextName}.workflow:service=ProcStageManager" value-ref="workflow_ProcStageManager"/>
             </map>
-        </property>
-        <property name="assembler">
-            <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
-                <property name="interfaceMappings">
-                    <map>
-                        <entry key="workflow_WfEngine" value="com.haulmont.workflow.core.app.WfEngineMBean"/>
-                        <entry key="workflow_TimerManager" value="com.haulmont.workflow.core.app.TimerManagerMBean"/>
-                        <entry key="workflow_WorkCalendar" value="com.haulmont.workflow.core.app.WorkCalendarMBean"/>
-                        <entry key="workflow_PermissionsManager" value="com.haulmont.workflow.core.app.WorkCalendarMBean"/>
-                        <entry key="workflow_NotificationMatrix" value="com.haulmont.workflow.core.app.NotificationMatrixMBean"/>
-                        <entry key="workflow_ProcStageManager" value="com.haulmont.workflow.core.app.ProcStageManagerMBean"/>
-                    </map>
-                </property>
-            </bean>
         </property>
     </bean>
 

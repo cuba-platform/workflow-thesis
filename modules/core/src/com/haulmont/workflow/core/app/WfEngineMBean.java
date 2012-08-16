@@ -10,6 +10,9 @@
  */
 package com.haulmont.workflow.core.app;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 public interface WfEngineMBean {
 
     String OBJECT_NAME = "haulmont.workflow:service=WfEngine";
@@ -20,15 +23,18 @@ public interface WfEngineMBean {
 
     String getJbpmConfigName();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "name", description = "")})
     String deployProcess(String name);
 
     String printDeployments();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "id", description = "")})
     String printDeploymentResource(String id);
 
     String printProcessDefinitions();
 
     String deployTestProcesses();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "key", description = "")})
     String startProcessByKey(String key);
 }

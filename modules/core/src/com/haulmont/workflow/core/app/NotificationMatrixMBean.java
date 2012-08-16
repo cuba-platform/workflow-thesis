@@ -10,7 +10,11 @@
  */
 package com.haulmont.workflow.core.app;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 public interface NotificationMatrixMBean {
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "processPath", description = "")})
     void reload(String processPath) throws Exception;
 }
