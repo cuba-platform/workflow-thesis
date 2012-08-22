@@ -11,9 +11,12 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
@@ -26,6 +29,7 @@ import org.dom4j.Element;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -186,14 +190,20 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     private Date startTime;
     private ListIterator<CalendarItem> ciIterator;
 
+    @Inject
+    private Scripting scripting;
+
+    @Inject
+    private Persistence persistence;
+
     private synchronized void loadCaches() {
         if (exceptionDays == null) {
             synchronized (this) {
                 if (exceptionDays == null) {
                     exceptionDays = new HashMap<Date, List<CalendarItem>>();
-                    Transaction tx = Locator.createTransaction();
+                    Transaction tx = persistence.createTransaction();
                     try {
-                        EntityManager em = PersistenceProvider.getEntityManager();
+                        EntityManager em = persistence.getEntityManager();
                         Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
                                 "order by c.day, c.start");
                         List<WorkCalendarEntity> list = q.getResultList();
@@ -216,9 +226,9 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
         if (defaultDays == null) {
             defaultDays = new HashMap<Integer, List<CalendarItem>>();
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 Query q = em.createQuery("select c from wf$Calendar c where c.dayOfWeek is not null " +
                         "order by c.dayOfWeek, c.start");
                 List<WorkCalendarEntity> list = q.getResultList();
@@ -273,17 +283,17 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
 
     //Test data filling
     public String fillWorkCalendar() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             login();
             deleteWorkCalendar();
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             String calendarResourceName = AppContext.getProperty("workflow.workCalendar.path");
             if (calendarResourceName == null) return "workflow.workCalendar.path property isn't set";
-            ResourceRepositoryService rr = Locator.lookup(ResourceRepositoryService.NAME);
-            if (rr.resourceExists(calendarResourceName)) {
-                String xml = rr.getResAsString(calendarResourceName);
+
+            String xml = scripting.getResourceAsString(calendarResourceName);
+            if (xml != null) {
                 Document doc = Dom4j.readDocument(xml);
                 Element root = doc.getRootElement();
 
@@ -304,9 +314,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
                         filledDays.add(date);
                     }
                 }
-
             }
-
             tx.commit();
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -318,9 +326,9 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     }
 
     private void deleteWorkCalendar() throws Exception {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             em.setSoftDeletion(false);
             Query attrQuery = em.createQuery("select c from wf$Calendar c");

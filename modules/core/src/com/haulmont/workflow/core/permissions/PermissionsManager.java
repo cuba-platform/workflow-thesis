@@ -11,12 +11,12 @@
 package com.haulmont.workflow.core.permissions;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
@@ -29,25 +29,32 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
 @ManagedBean(PermissionsManagerMBean.NAME)
 public class PermissionsManager extends ManagementBean implements PermissionsManagerMBean {
 
+    @Inject
+    private Scripting scripting;
+
+    @Inject
+    private Persistence persistence;
+
     public String deployPermissions(String procName) {
         procName = procName.trim();
         String filePath = "/process/" + procName + "/permissions.xml";
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             login();
-            ResourceRepositoryService rrs = Locator.lookup(ResourceRepositoryService.NAME);
-            if (!rrs.resourceExists(filePath)) {
+            String xml = scripting.getResourceAsString(filePath);
+            if (xml == null) {
                 return "File " + filePath + " not found";
             }
             
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.setView(getProcView());
             Query query = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
             query.setParameter(1, StringUtils.capitalize(procName));
@@ -63,7 +70,6 @@ public class PermissionsManager extends ManagementBean implements PermissionsMan
             query.setParameter("proc", proc);
             query.executeUpdate();
 
-            String xml = rrs.getResAsString(filePath);
             Document doc = Dom4j.readDocument(xml);
             Element root = doc.getRootElement();
             for (Element whoChangesElement : Dom4j.elements(root)) {

@@ -10,15 +10,15 @@
 */
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.core.SecurityProvider
 import com.haulmont.cuba.core.global.ConfigProvider
 import com.haulmont.cuba.core.global.GlobalConfig
+import com.haulmont.cuba.core.global.UserSessionProvider
 
 Assignment a = assignment
 User u = user
 String link = makeLink(a)
 
-if (SecurityProvider.currentUserSession().getLocale().getLanguage() == 'ru') {
+if (UserSessionProvider.getUserSession().getLocale().getLanguage() == 'ru') {
   subject = "����� ������: ${a.card.description} - ${a.card.locState}"
 
   body = """
