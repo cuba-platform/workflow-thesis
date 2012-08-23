@@ -1,6 +1,6 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.gui.components.BasicEditor"
+        class="com.haulmont.cuba.gui.components.AbstractEditor"
         datasource="procStageTypeDs"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         caption="msg://procStageTypeEditor.caption"

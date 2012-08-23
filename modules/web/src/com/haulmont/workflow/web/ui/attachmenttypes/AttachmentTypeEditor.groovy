@@ -10,11 +10,11 @@
  */
 package com.haulmont.workflow.web.ui.attachmenttypes
 
-import com.haulmont.cuba.gui.components.BasicEditor
 import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.Entity
+import com.haulmont.cuba.gui.components.AbstractEditor;
 
-class AttachmentTypeEditor extends BasicEditor {
+class AttachmentTypeEditor extends AbstractEditor {
 
     public AttachmentTypeEditor(IFrame frame) {
         super(frame);
