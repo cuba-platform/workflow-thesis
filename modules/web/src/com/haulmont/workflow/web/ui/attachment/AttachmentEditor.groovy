@@ -126,7 +126,7 @@ public class AttachmentEditor extends AbstractEditor {
 
                 DecimalFormat formatter = new DecimalFormat("###,###,###,###");
 
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 File tmpFile = fileUploading.getFile(fileId);
 
                 extLabel.setValue(FileDownloadHelper.getFileExt(fileName))
@@ -202,7 +202,7 @@ public class AttachmentEditor extends AbstractEditor {
     }
 
   protected void saveFile() {
-    FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+    FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
     try {
         fileUploading.putFileIntoStorage(fileId, fileDs.getItem());
     } catch (FileStorageException e) {

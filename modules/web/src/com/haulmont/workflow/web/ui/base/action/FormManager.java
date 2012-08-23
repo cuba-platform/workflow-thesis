@@ -14,12 +14,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -154,7 +149,7 @@ public abstract class FormManager implements Serializable {
         private String screenId;
         private Map<String, Object> params;
 
-        protected WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+        protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
         public ScreenFormManager(Element element, String activity, String transition, FormManagerChain chain) {
             super(element, activity, transition, chain);

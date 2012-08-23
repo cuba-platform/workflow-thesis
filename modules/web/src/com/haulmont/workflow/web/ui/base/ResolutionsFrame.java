@@ -11,8 +11,8 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -106,7 +106,7 @@ public class ResolutionsFrame extends AbstractFrame {
                                 private static final long serialVersionUID = 8866649082801744357L;
 
                                 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                                    WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo("task.log.dialog");
+                                    WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("task.log.dialog");
                                     App.getInstance().getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG,
                                             Collections.<String, Object>singletonMap("item", assignment));
                                 }

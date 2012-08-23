@@ -10,8 +10,8 @@
  */
 package com.haulmont.workflow.web.ui.design;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -19,7 +19,10 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class ImportDialog extends AbstractWindow {
@@ -45,7 +48,7 @@ public class ImportDialog extends AbstractWindow {
             }
 
             public void uploadSucceeded(Event event) {
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 File file = fileUploading.getFile(fileUploadField.getFileId());
 
                 InputStream fileInput = null;

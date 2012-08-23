@@ -10,9 +10,12 @@
  */
 package com.haulmont.workflow.web.ui.design;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
 
@@ -45,7 +48,7 @@ public class NotificationMatrixWindow extends AbstractEditor {
                     public void uploadSucceeded(Event event) {
                         //bytes = uploadField.getBytes();
                         try {
-                            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
                             InputStream inputFile = new FileInputStream(fileUploading.getFile(uploadField.getFileId()));
                             bytes = IOUtils.toByteArray(inputFile);

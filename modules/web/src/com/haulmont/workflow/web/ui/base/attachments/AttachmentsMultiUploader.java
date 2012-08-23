@@ -12,6 +12,7 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -26,7 +27,6 @@ import com.vaadin.ui.Select;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.List;
 
 public class AttachmentsMultiUploader extends AbstractEditor {
     private static final long serialVersionUID = 5049622742528690083L;
@@ -116,7 +116,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         delBtn = getComponent("removeAttachBtn");
         delBtn.setAction(new AbstractAction("actions.Remove") {
             public void actionPerform(Component component) {
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 for (Object item : uploadsTable.getSelected()) {
                     attachDs.excludeItem((Entity) item);
 
@@ -176,7 +176,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 okBtn.setEnabled(true);
                 delBtn.setEnabled(true);
 
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
 
                 for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
@@ -247,7 +247,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             uploadField.setEnabled(true);
 
         if (closeResult && !COMMIT_ACTION_ID.equals(actionId)) {
-            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
                 try {
                     fileUploading.deleteFile(upload.getValue());
@@ -282,7 +282,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = attachDs.getItemIds();

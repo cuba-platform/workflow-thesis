@@ -12,12 +12,15 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -205,7 +208,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
                 break;
         }
 
-        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(this.getId());
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(this.getId());
         WebWindowManager webWindowManager = App.getInstance().getWindowManager();
         webWindowManager.openEditor(windowInfo, getItem(), openType, parameters);
     }

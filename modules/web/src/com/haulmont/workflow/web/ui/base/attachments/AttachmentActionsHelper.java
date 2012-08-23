@@ -11,9 +11,9 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -273,7 +273,7 @@ public class AttachmentActionsHelper {
                 if (windowParams != null)
                     openParams.putAll(windowParams);
 
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 FileDescriptor fileDescriptor = fileUploading.getFileDescriptor(fileId, filename);
 
                 Attachment attachment = creator.createObject();
