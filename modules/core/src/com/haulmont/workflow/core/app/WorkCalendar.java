@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
@@ -191,7 +191,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
     private ListIterator<CalendarItem> ciIterator;
 
     @Inject
-    private Scripting scripting;
+    private Resources resources;
 
     @Inject
     private Persistence persistence;
@@ -292,7 +292,7 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             String calendarResourceName = AppContext.getProperty("workflow.workCalendar.path");
             if (calendarResourceName == null) return "workflow.workCalendar.path property isn't set";
 
-            String xml = scripting.getResourceAsString(calendarResourceName);
+            String xml = resources.getResourceAsString(calendarResourceName);
             if (xml != null) {
                 Document doc = Dom4j.readDocument(xml);
                 Element root = doc.getRootElement();

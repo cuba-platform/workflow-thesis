@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
@@ -37,7 +37,7 @@ import java.util.Map;
 public class PermissionsManager extends ManagementBean implements PermissionsManagerMBean {
 
     @Inject
-    private Scripting scripting;
+    private Resources resources;
 
     @Inject
     private Persistence persistence;
@@ -49,7 +49,7 @@ public class PermissionsManager extends ManagementBean implements PermissionsMan
         Transaction tx = persistence.createTransaction();
         try {
             login();
-            String xml = scripting.getResourceAsString(filePath);
+            String xml = resources.getResourceAsString(filePath);
             if (xml == null) {
                 return "File " + filePath + " not found";
             }
