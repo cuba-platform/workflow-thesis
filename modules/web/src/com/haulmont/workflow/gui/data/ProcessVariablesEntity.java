@@ -21,6 +21,8 @@ import java.util.*;
 
 public class ProcessVariablesEntity implements Entity, Instance {
 
+    private static final long serialVersionUID = -8913144744993978336L;
+
     private MetaClass metaClass;
     private UUID id;
     private Map<String, Object> values;
@@ -55,6 +57,11 @@ public class ProcessVariablesEntity implements Entity, Instance {
 
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void removeAllListeners() {
+        listeners.clear();
     }
 
     public <T> T getValue(String name) {
