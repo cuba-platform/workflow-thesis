@@ -13,7 +13,9 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 
 import javax.persistence.*;
 import java.util.regex.Matcher;
@@ -103,7 +105,7 @@ public class CardProc extends StandardEntity {
             StringBuilder sb = new StringBuilder();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
             while (matcher.find()) {
-                sb.append(MessageUtils.loadString(messagesPack, "msg://" + matcher.group()))
+                sb.append(AppBeans.get(MessageTools.class).loadString(messagesPack, "msg://" + matcher.group()))
                         .append(Card.STATE_SEPARATOR);
             }
             if (sb.length() > 0)

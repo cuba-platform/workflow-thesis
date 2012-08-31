@@ -11,12 +11,13 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.chile.core.annotations.MetaProperty;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -250,9 +251,9 @@ public class Assignment extends StandardEntity {
 
         if (proc != null) {
             String messagesPack = proc.getMessagesPack();
-            if (!value.startsWith(MessageUtils.MARK))
-                value = MessageUtils.MARK + value;
-            return MessageUtils.loadString(messagesPack, value);
+            if (!value.startsWith(MessageTools.MARK))
+                value = MessageTools.MARK + value;
+            return AppBeans.get(MessageTools.class).loadString(messagesPack, value);
         }
         return value;
     }

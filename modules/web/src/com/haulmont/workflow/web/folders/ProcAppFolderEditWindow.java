@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -292,7 +291,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         Map<String, Object> items = new TreeMap<String, Object>();
         for (MetaClass metaClass : metaClasses) {
             if (metaClass.getJavaClass().getAnnotation(MappedSuperclass.class) == null) {
-                items.put(metaClass.getName() + " (" + MessageUtils.getEntityCaption(metaClass) + ")", metaClass);
+                items.put(metaClass.getName() + " (" + messages.getTools().getEntityCaption(metaClass) + ")", metaClass);
             }
         }
 

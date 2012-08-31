@@ -10,23 +10,21 @@
  */
 package com.haulmont.workflow.web.ui.base.action;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.web.App;
-import com.haulmont.workflow.core.app.WfUtils;
-import com.haulmont.workflow.core.global.AssignmentInfo;
-import com.haulmont.workflow.core.global.WfConfig;
-import com.haulmont.workflow.core.global.WfConstants;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.global.AssignmentInfo;
+import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.AbstractWfAccessData;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ActionsFrame extends AbstractFrame {
 
@@ -69,7 +67,7 @@ public class ActionsFrame extends AbstractFrame {
                     descrText.setVisible(true);
                     descrText.setWidth("100%");
                     if (info.getDescription() != null)
-                        descrText.setValue(MessageUtils.loadString(card.getProc().getMessagesPack(), info.getDescription()));
+                        descrText.setValue(AppBeans.get(MessageTools.class).loadString(card.getProc().getMessagesPack(), info.getDescription()));
                     descrText.setEditable(false);
                 }
 

@@ -40,12 +40,20 @@ public class ProcessVariablesMetaClass implements MetaClass {
         return null;
     }
 
+    @Override
+    public MetaProperty getPropertyNN(String name) {
+        MetaProperty property = getProperty(name);
+        if (property == null)
+            throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
+        return property;
+    }
+
     public MetaPropertyPath getPropertyEx(String propertyPath) {
         return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
     public MetaPropertyPath getPropertyPath(String propertyPath) {
-        return null;
+        return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
     public Collection<MetaProperty> getOwnProperties() {

@@ -11,11 +11,11 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.ProcRolePermissionValue;
 import com.haulmont.workflow.core.global.WfConstants;
@@ -50,12 +50,13 @@ public class ProcRolePermission extends StandardEntity {
         if (getState() == null)
             return "";
         if (procRoleFrom.getProc() != null) {
-            String messagesPack = null;
+            Messages messages = AppBeans.get(Messages.class);
+            String messagesPack;
             if (WfConstants.PROC_NOT_ACTIVE.equals(getState()))
-                messagesPack = MessageUtils.getMessagePack();
+                messagesPack = messages.getMainMessagePack();
             else
                 messagesPack = procRoleFrom.getProc().getMessagesPack();
-            return MessageUtils.loadString(messagesPack, "msg://" + getState());
+            return messages.getTools().loadString(messagesPack, "msg://" + getState());
         }
         return getState();
     }

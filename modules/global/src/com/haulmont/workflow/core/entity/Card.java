@@ -11,19 +11,25 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
-import com.haulmont.cuba.core.entity.*;
+import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -242,7 +248,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
             StringBuilder sb = new StringBuilder();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
             while (matcher.find()) {
-                sb.append(MessageUtils.loadString(messagesPack, "msg://" + matcher.group()))
+                sb.append(AppBeans.get(MessageTools.class).loadString(messagesPack, "msg://" + matcher.group()))
                         .append(STATE_SEPARATOR);
             }
             if (sb.length() > 0)

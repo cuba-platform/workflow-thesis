@@ -13,20 +13,11 @@ package com.haulmont.workflow.web.ui.base;
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -45,7 +36,6 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.List;
 
 public class CardProcFrame extends AbstractFrame {
 
@@ -64,10 +54,6 @@ public class CardProcFrame extends AbstractFrame {
     private String createProcCaption;
 
     protected ProcRolePermissionsService procRolePermissionsService;
-
-    public CardProcFrame(IFrame frame) {
-        super(frame);
-    }
 
     public void init() {
         cardProcDs = getDsContext().get("cardProcDs");
@@ -223,7 +209,7 @@ public class CardProcFrame extends AbstractFrame {
             Card loadedCard = ds.load(lc);
             if (loadedCard.getJbpmProcessId() != null) {
                 // already started in another transaction
-                String msg = MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "assignmentAlreadyFinished.message");
+                String msg = AppBeans.get(Messages.class).getMainMessage("assignmentAlreadyFinished.message");
                 App.getInstance().getWindowManager().showNotification(msg, NotificationType.ERROR);
                 resetAfterUnsuccessfulStart(cp, prevProc, prevStartCount, prevCardProcState);
                 return;

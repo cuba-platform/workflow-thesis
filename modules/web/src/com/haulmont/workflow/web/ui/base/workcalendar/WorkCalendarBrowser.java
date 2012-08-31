@@ -11,7 +11,9 @@
 package com.haulmont.workflow.web.ui.base.workcalendar;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -43,7 +45,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Create");
+                return AppBeans.get(Messages.class).getMainMessage("actions.Create");
             }
         });
 
@@ -62,7 +64,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
             }
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Edit");
+                return AppBeans.get(Messages.class).getMainMessage("actions.Edit");
             }
         });
         workDaysHelper.createRemoveAction();
@@ -81,7 +83,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Create");
+                return AppBeans.get(Messages.class).getMainMessage("actions.Create");
             }
         });
 
@@ -99,7 +101,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
             }
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP), "actions.Edit");
+                return AppBeans.get(Messages.class).getMainMessage("actions.Edit");
             }
         });
         exceptionDaysHelper.createRemoveAction();
