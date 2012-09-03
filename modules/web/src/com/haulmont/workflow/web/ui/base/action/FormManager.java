@@ -29,15 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public abstract class FormManager implements Serializable {
+public abstract class FormManager {
 
     protected Element element;
     protected String activity;
@@ -61,11 +58,6 @@ public abstract class FormManager implements Serializable {
         after = Boolean.valueOf(element.attributeValue("after"));
         if (!before && !after)
             before = true;
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        log = LogFactory.getLog(getClass());
     }
 
     public boolean isAfter() {

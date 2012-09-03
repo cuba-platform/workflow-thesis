@@ -32,9 +32,9 @@ import java.util.Date;
 import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
+
     private Table table;
     private CollectionDatasource<Assignment, UUID> resolutionsDs;
-    private static final long serialVersionUID = 3993679675921614604L;
 
     public ResolutionsFrame(IFrame frame) {
         super(frame);
