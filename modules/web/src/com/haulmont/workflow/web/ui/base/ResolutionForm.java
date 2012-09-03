@@ -105,7 +105,7 @@ public class ResolutionForm extends AbstractForm {
                 if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
                     showNotification(getMessage("putComments"), NotificationType.WARNING);
                 } else {
-                    CommitContext<Entity> commitContext = new CommitContext<Entity>();
+                    CommitContext commitContext = new CommitContext();
                     commitContext.getCommitInstances().addAll(copyAttachments());
                     getDsContext().getDataService().commit(commitContext);
                     getDsContext().commit();

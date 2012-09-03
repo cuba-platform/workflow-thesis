@@ -190,7 +190,7 @@ public class ProcEditor extends AbstractEditor {
 
     getDsContext().addListener(
             [
-                    beforeCommit: { CommitContext<Entity> context ->
+                    beforeCommit: { CommitContext context ->
                       Proc p = context.getCommitInstances().find { it == procDs.getItem() }
                       if (p) {
                         if (p.cardTypes && !p.cardTypes.startsWith(','))
@@ -199,7 +199,7 @@ public class ProcEditor extends AbstractEditor {
                           p.cardTypes = p.cardTypes + ','
                       }
                     },
-                    afterCommit: { CommitContext<Entity> context, Set<Entity> result ->
+                    afterCommit: { CommitContext context, Set<Entity> result ->
                     }
             ] as CommitListener
     )
