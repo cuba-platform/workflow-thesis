@@ -6,7 +6,6 @@
 
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -111,12 +110,12 @@ public class CardAttachmentsFrame extends AbstractFrame {
             }
         });
 
-        attachmentsTable.setStyleProvider(new Table.StyleProvider() {
-            public String getStyleName(Entity item, Object property) {
-                return ((Attachment) item).getVersionOf() != null ? "grey" : null;
+        attachmentsTable.setStyleProvider(new Table.StyleProvider<Attachment>() {
+            public String getStyleName(Attachment entity, String property) {
+                return entity.getVersionOf() != null ? "grey" : null;
             }
 
-            public String getItemIcon(Entity item) {
+            public String getItemIcon(Attachment entity) {
                 return null;
             }
         });
