@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
 @Prefix("workflow.")
 @Source(type = SourceType.APP)
@@ -28,4 +29,8 @@ public interface WfConfig extends Config {
     
     @Default("/com/haulmont/workflow/core/NotificationMatrixTemplate.xls")
     String getNotificationTemplatePath();
+
+    @DefaultBoolean(false)
+    boolean getOneAttachmentUploaderEnabled();
+    void setOneAttachmentUploaderEnabled(boolean value);
 }

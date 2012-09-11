@@ -11,7 +11,6 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.config.WorkflowConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
@@ -26,6 +25,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
+import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentActionsHelper;
@@ -153,7 +153,7 @@ public class ResolutionForm extends AbstractForm {
 
         PopupButton createPopup = getComponent("createAttachBtn");
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
-        WorkflowConfig wfConfig = ConfigProvider.getConfig(WorkflowConfig.class);
+        WfConfig wfConfig = ConfigProvider.getConfig(WfConfig.class);
         if (wfConfig.getOneAttachmentUploaderEnabled()) {
             createPopup.addAction(helper.createCreateAction(
                     new ValueProvider() {
