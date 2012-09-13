@@ -15,25 +15,23 @@
         </groupDatasource>
     </dsContext>
 
-    <layout expandLayout="true">
-        <vbox expand="resolutionsTable" height="100%">
-            <groupTable id="resolutionsTable" editable="false" sortable="true">
-                <columns>
-                    <column id="proc" caption="msg://process"/>
-                    <column id="createTs" caption="msg://createdDate"/>
-                    <column id="dueDate" caption="msg://dueDate" visible="true"/>
-                    <column id="finished" caption="msg://finishedDate"/>
-                    <column id="displayUser" caption="msg://user"/>
-                    <column id="locName" caption="msg://cardState"/>
-                    <column id="iteration" caption="msg://iteration"/>
-                    <column id="locOutcomeResult" caption="msg://outcome"/>
-                    <!--<column id="hasAttachments" caption="msg://attachments"/>-->
-                    <column id="comment" caption="msg://comment"/>
-                    <!--<column id="attachments" caption="msg://attachments"/>-->
-                </columns>
-                <rows datasource="resolutionsDs"/>
-            </groupTable>
-        </vbox>
+    <layout expand="resolutionsTable">
+        <groupTable id="resolutionsTable" editable="false" sortable="true" width="100%">
+            <columns>
+                <column id="proc" caption="msg://process"/>
+                <column id="createTs" caption="msg://createdDate"/>
+                <column id="dueDate" caption="msg://dueDate" visible="true"/>
+                <column id="finished" caption="msg://finishedDate"/>
+                <column id="displayUser" caption="msg://user"/>
+                <column id="locName" caption="msg://cardState"/>
+                <column id="iteration" caption="msg://iteration"/>
+                <column id="locOutcomeResult" caption="msg://outcome"/>
+                <!--<column id="hasAttachments" caption="msg://attachments"/>-->
+                <column id="comment" caption="msg://comment"/>
+                <!--<column id="attachments" caption="msg://attachments"/>-->
+            </columns>
+            <rows datasource="resolutionsDs"/>
+        </groupTable>
     </layout>
 
 </window>

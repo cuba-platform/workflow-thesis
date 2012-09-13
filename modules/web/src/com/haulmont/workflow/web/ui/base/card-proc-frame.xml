@@ -15,9 +15,9 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true" expand="procRolesSplit">
-        <split id="procRolesSplit" orientation="vertical">
-            <vbox spacing="true" expand="cardProcTable">
+    <layout expand="procRolesSplit">
+        <split id="procRolesSplit" orientation="vertical" width="100%">
+            <vbox spacing="true" expand="cardProcTable" height="100%">
                 <grid spacing="true" width="100%">
                     <columns>
                         <column/>
@@ -33,7 +33,7 @@
                         </row>
                     </rows>
                 </grid>
-                <table id="cardProcTable">
+                <table id="cardProcTable" width="100%">
                     <columns>
                         <column id="proc.name" caption="msg://process"/>
                         <column id="active" caption="msg://active"/>
@@ -43,7 +43,7 @@
                     <rows datasource="cardProcDs"/>
                 </table>
             </vbox>
-            <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
+            <iframe id="cardRolesFrame" screen="cardRolesFrame" width="100%" height="100%"/>
         </split>
     </layout>
 

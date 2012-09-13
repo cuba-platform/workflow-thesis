@@ -15,7 +15,7 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true" expand="rolesTable" spacing="true" height="200px">
+    <layout expand="rolesTable" spacing="true" height="200px">
         <grid width="100%" spacing="true">
             <columns>
                 <column/>
@@ -34,7 +34,7 @@
                 </row>
             </rows>
         </grid>
-        <table id="rolesTable" sortable="false" multiselect="true">
+        <table id="rolesTable" sortable="false" multiselect="true" width="100%">
             <columns>
                 <column id="procRole.name" caption="msg://role" width="150"/>
                 <column id="user" caption="msg://user"/>

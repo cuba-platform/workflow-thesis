@@ -91,8 +91,8 @@
                     </vbox>
                 </hbox>
 
-                <split id="rolesSplit" orientation="horizontal">
-                    <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true">
+                <split id="rolesSplit" orientation="horizontal" width="100%">
+                    <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true" width="100%" height="100%">
                         <label value="msg://roles"/>
                         <hbox align="MIDDLE_LEFT" spacing="true">
                             <button action="rolesTable.create" icon="icons/create.png"/>
@@ -100,7 +100,7 @@
                             <button id="moveUp" icon="icons/up.png"/>
                             <button id="moveDown" icon="icons/down.png"/>
                         </hbox>
-                        <table id="rolesTable" editable="true" sortable="false">
+                        <table id="rolesTable" editable="true" sortable="false" width="100%">
                             <columns>
                                 <column id="code" caption="msg://code"/>
                                 <column id="name" caption="msg://name"/>
@@ -113,16 +113,16 @@
                         </table>
                     </vbox>
 
-                    <vbox margin="false;false;false;true;">
+                    <vbox margin="false;false;false;true;" width="100%" height="100%">
                         <!--<split orientation="vertical">-->
-                            <vbox expand="dpaTable" spacing="true">
+                            <vbox expand="dpaTable" spacing="true" height="100%">
                                 <label value="msg://dpa"/>
                                 <hbox align="MIDDLE_LEFT" spacing="true">
                                     <button action="dpaTable.create" icon="icons/create.png"/>
                                     <button action="dpaTable.edit" icon="icons/edit.png"/>
                                     <button action="dpaTable.remove" icon="icons/remove.png"/>
                                 </hbox>
-                                <table id="dpaTable" editable="false">
+                                <table id="dpaTable" editable="false" width="100%">
                                     <columns>
                                         <column id="user" caption="msg://user"/>
                                         <column id="sortOrder" caption="msg://dpa.sortOrder"/>
