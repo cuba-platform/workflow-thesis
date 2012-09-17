@@ -55,11 +55,11 @@ public class AttachmentActionsHelper {
         return new AbstractAction(COPY_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
-                Set descriptors = attachments.getSelected();
+                Set<Attachment> descriptors = attachments.getSelected();
                 if (descriptors.size() > 0) {
                     ArrayList<Attachment> selected = new ArrayList<Attachment>();
-                    for (Object descriptor : descriptors) {
-                        selected.add((Attachment) descriptor);
+                    for (Attachment descriptor : descriptors) {
+                        selected.add(descriptor);
                     }
                     AttachmentCopyHelper.put(selected);
                     String info;
@@ -148,9 +148,9 @@ public class AttachmentActionsHelper {
 
             @Override
             public void actionPerform(Component component) {
-                Set selected = attachments.getSelected();
+                Set<Attachment> selected = attachments.getSelected();
                 if (selected.size() == 1) {
-                    FileDescriptor fd = ((Attachment) selected.iterator().next()).getFile();
+                    FileDescriptor fd = selected.iterator().next().getFile();
 
                     new WebExportDisplay().show(fd);
                 }

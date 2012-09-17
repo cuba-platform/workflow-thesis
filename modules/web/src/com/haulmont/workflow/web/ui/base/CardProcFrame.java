@@ -370,11 +370,11 @@ public class CardProcFrame extends AbstractFrame {
         }
 
         public void actionPerform(Component component) {
-            Set selected = cardProcTable.getSelected();
+            Set<CardProc> selected = cardProcTable.getSelected();
             if (selected.size() != 1)
                 return;
 
-            final CardProc cp = (CardProc) selected.iterator().next();
+            final CardProc cp = selected.iterator().next();
             if (BooleanUtils.isTrue(cp.getActive()))
                 return;
 

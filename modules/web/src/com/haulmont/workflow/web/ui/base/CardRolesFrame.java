@@ -263,11 +263,11 @@ public class CardRolesFrame extends AbstractFrame {
                 private static final long serialVersionUID = 3616849995887047615L;
 
                 public void actionPerform(Component component) {
-                    Set selected = rolesTable.getSelected();
+                    Set<CardRole> selected = rolesTable.getSelected();
                     if (selected.isEmpty())
                         return;
 
-                    CardRole curCr = (CardRole) selected.iterator().next();
+                    CardRole curCr = selected.iterator().next();
                     CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
                     if (prevCr != null) {
                         Integer tmp = curCr.getSortOrder();
@@ -283,11 +283,11 @@ public class CardRolesFrame extends AbstractFrame {
                 private static final long serialVersionUID = 6060776970724140731L;
 
                 public void actionPerform(Component component) {
-                    Set selected = rolesTable.getSelected();
+                    Set<CardRole> selected = rolesTable.getSelected();
                     if (selected.isEmpty())
                         return;
 
-                    CardRole curCr = (CardRole) selected.iterator().next();
+                    CardRole curCr = selected.iterator().next();
                     CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
                     if (nextCr != null) {
                         Integer tmp = curCr.getSortOrder();

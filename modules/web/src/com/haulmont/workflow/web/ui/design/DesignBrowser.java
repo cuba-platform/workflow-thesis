@@ -73,9 +73,9 @@ public class DesignBrowser extends AbstractWindow {
 
         Action designAction = new AbstractAction("design") {
             public void actionPerform(Component component) {
-                Set selected = table.getSelected();
+                Set<Design> selected = table.getSelected();
                 if (!selected.isEmpty()) {
-                    String id = ((Design) selected.iterator().next()).getId().toString();
+                    String id = selected.iterator().next().getId().toString();
                     openDesigner(id);
                 }
             }
@@ -161,9 +161,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
+                final Design design = selected.iterator().next();
                 UUID newId = service.copyDesign(design.getId());
                 openDesigner(newId.toString());
             }
@@ -176,9 +176,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                Design design = (Design) selected.iterator().next();
+                Design design = selected.iterator().next();
                 design = getDsContext().getDataService().reload(design, "export");
                 try {
                     new WebExportDisplay().show(new ByteArrayDataProvider(service.exportDesign(design)), "Design", ExportFormat.ZIP);
@@ -230,9 +230,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
+                final Design design = selected.iterator().next();
                 if (design.getCompileTs() != null) {
                     showOptionDialog(
                             getMessage("confirmCompile.title"),
@@ -309,9 +309,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
+                final Design design = selected.iterator().next();
                 if (design.getCompileTs() == null) {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
@@ -344,9 +344,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
+                final Design design = selected.iterator().next();
                 Window window = openWindow(
                         "wf$DesignScript.browse",
                         WindowManager.OpenType.THIS_TAB,
@@ -370,9 +370,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
+                final Design design = selected.iterator().next();
                 if (design.getCompileTs() == null) {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
@@ -396,9 +396,9 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                Design selectedDesign = (Design) selected.iterator().next();
+                Design selectedDesign = selected.iterator().next();
                 final Design design = ds.getDataService().reload(selectedDesign,"_local");
                 final NotificationMatrixWindow window = openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
@@ -425,10 +425,10 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
                 final DataService dataService = getDsContext().getDataService();
-                final Design design = dataService.reload((Design) selected.iterator().next(), "_local");
+                final Design design = dataService.reload(selected.iterator().next(), "_local");
                 showOptionDialog(
                         getMessage("confirmNMClear.title"),
                         String.format(getMessage("confirmNMClear.msg"), design.getName()),

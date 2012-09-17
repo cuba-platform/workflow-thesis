@@ -117,10 +117,10 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         delBtn.setAction(new AbstractAction("actions.Remove") {
             public void actionPerform(Component component) {
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                for (Object item : uploadsTable.getSelected()) {
-                    attachDs.excludeItem((Entity) item);
+                for (Attachment item : uploadsTable.<Attachment>getSelected()) {
+                    attachDs.excludeItem(item);
 
-                    FileDescriptor fDesc = ((Attachment) item).getFile();
+                    FileDescriptor fDesc = item.getFile();
                     filesDs.removeItem(fDesc);
 
                     UUID fileId = descriptors.get(fDesc);
