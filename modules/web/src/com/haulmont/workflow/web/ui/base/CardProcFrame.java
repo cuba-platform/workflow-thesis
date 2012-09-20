@@ -334,7 +334,7 @@ public class CardProcFrame extends AbstractFrame {
         createProcLookup.setNullOption(createProcCaption);
     }
 
-    private boolean alreadyAdded(Proc p) {
+    protected boolean alreadyAdded(Proc p) {
         for (CardProc cp : getDsItems(cardProcDs)) {
             if (cp.getProc().equals(p))
                 return true;
