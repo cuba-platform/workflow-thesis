@@ -98,9 +98,6 @@ public class UniversalAssigner extends MultiAssigner {
             onSuccess(execution, signalName, assignment)
             afterSignal(execution, signalName, parameters)
         } else {
-            if (timersFactory) {
-                timersFactory.removeTimers(execution, assignment)
-            }
             //todo change log message
             log.debug("Trying to finish assignment")
 
@@ -121,45 +118,50 @@ public class UniversalAssigner extends MultiAssigner {
                 if (sibling.getOutcome() != successTransition)
                     resultTransition = sibling.getOutcome()
             }
+            processSignal(assignment, resultTransition, execution, signalName, parameters)
+            if (timersFactory) {
+                timersFactory.removeTimers(execution, assignment)
+            }
+        }
+    }
 
+    private void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
+        ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
+        Map<String, Object> params = new HashMap<String, Object>()
+        params.put("assignment", assignment.getMasterAssignment())
 
-            ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
-            Map<String, Object> params = new HashMap<String, Object>()
-            params.put("assignment", assignment.getMasterAssignment())
+        if (resultTransition != successTransition) {
+            log.debug("Non-success transition has taken, signal master")
 
-            if (resultTransition != successTransition) {
-                log.debug("Non-success transition has taken, signal master")
+            es.signalExecutionById(execution.getId(), resultTransition, params)
+            afterSignal(execution, signalName, parameters)
+        } else {
+            def cardRoles = getCardRoles(execution, assignment.card)
+            def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user}
+            def nextCardRoles = []
+            int nextSortOrder = Integer.MAX_VALUE
 
-                es.signalExecutionById(execution.getId(), resultTransition, params)
-                afterSignal(execution, signalName, parameters)
-            } else {
-                def cardRoles = getCardRoles(execution, assignment.card)
-                def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user}
-                def nextCardRoles = []
-                int nextSortOrder = Integer.MAX_VALUE
-
-                //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
+            //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
 //                we don't know exactly)
-                cardRoles.each {CardRole  cr ->
-                    if (cr.sortOrder == nextSortOrder) {
-                        nextCardRoles.add(cr)
-                    } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
-                        nextSortOrder = cr.sortOrder
-                        nextCardRoles = [cr]
-                    }
+            cardRoles.each {CardRole cr ->
+                if (cr.sortOrder == nextSortOrder) {
+                    nextCardRoles.add(cr)
+                } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
+                    nextSortOrder = cr.sortOrder
+                    nextCardRoles = [cr]
                 }
+            }
 
 //                def nextCardRoles = cardRoles.findAll {CardRole cr -> cr.sortOrder == currentCardRole.sortOrder + 1}
-                if (nextCardRoles.isEmpty()) {
-                    log.debug("Last user assignment finished, taking $signalName")
+            if (nextCardRoles.isEmpty()) {
+                log.debug("Last user assignment finished, taking $signalName")
 
-                    es.signalExecutionById(execution.getId(), signalName, params)
-                    afterSignal(execution, signalName, parameters)
-                } else {
-                    log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
-                    nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
-                    execution.waitForSignal()
-                }
+                es.signalExecutionById(execution.getId(), signalName, params)
+                afterSignal(execution, signalName, parameters)
+            } else {
+                log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
+                nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
+                execution.waitForSignal()
             }
         }
     }
