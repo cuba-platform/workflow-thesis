@@ -8,22 +8,22 @@
 
 package com.haulmont.workflow.core.activity
 
-import org.jbpm.api.activity.ActivityExecution
 import com.google.common.base.Preconditions
-import org.apache.commons.lang.StringUtils
 import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.PersistenceProvider
+import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.global.TimeProvider
+import com.haulmont.workflow.core.WfHelper
+import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
-import com.haulmont.workflow.core.entity.Assignment
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.cuba.core.Locator
-import com.haulmont.cuba.core.Query
-import org.apache.commons.logging.LogFactory
+import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
-import com.haulmont.workflow.core.WfHelper
+import org.apache.commons.logging.LogFactory
 import org.jbpm.api.ExecutionService
+import org.jbpm.api.activity.ActivityExecution
 
 /**
  *
@@ -63,19 +63,15 @@ public class UniversalAssigner extends MultiAssigner {
             }
         }
 
-        if (srcCardRoles.size() == 1) {
-            createUserAssignment(execution, card, cardRoles[0], null)
-        } else {
-            Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
+        Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
-            Assignment master = new Assignment()
-            master.setName(execution.getActivityName())
-            master.setJbpmProcessId(execution.getProcessInstance().getId())
-            master.setCard(card)
-            em.persist(master)
+        Assignment master = new Assignment()
+        master.setName(execution.getActivityName())
+        master.setJbpmProcessId(execution.getProcessInstance().getId())
+        master.setCard(card)
+        em.persist(master)
 
-            cardRoles.each {CardRole cr -> createUserAssignment(execution, card, cr, master)}
-        }
+        cardRoles.each {CardRole cr -> createUserAssignment(execution, card, cr, master)}
 
         return true
     }
@@ -108,7 +104,7 @@ public class UniversalAssigner extends MultiAssigner {
                 finishSiblings(assignment, siblings)
 
             String resultTransition = signalName
-            for (Assignment sibling: siblings) {
+            for (Assignment sibling : siblings) {
                 if (!sibling.finished) {
                     log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
                     execution.waitForSignal()
@@ -179,7 +175,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
-        for (Assignment sibling: siblings) {
+        for (Assignment sibling : siblings) {
             sibling.setFinished(assignment.getFinished())
             sibling.setFinishedByUser(assignment.getFinishedByUser())
             sibling.setOutcome(assignment.getOutcome())
