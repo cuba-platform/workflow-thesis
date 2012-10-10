@@ -197,10 +197,8 @@ public class CardProcFrame extends AbstractFrame {
         final String prevCardProcState = cp.getState();
         card.setProc(proc);
         cp.setProc(proc);
-        cp.setActive(true);
         cp.setState(null);
         final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
-        cp.setStartCount(prevStartCount + 1);
 
         if (!PersistenceHelper.isNew(card)) {
             LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(

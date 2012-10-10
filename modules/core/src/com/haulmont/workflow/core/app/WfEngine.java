@@ -21,6 +21,7 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -528,6 +529,12 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
                 card.getId().toString()
         );
         card.setJbpmProcessId(pi.getId());
+
+        for (CardProc cardProc : card.getProcs())
+            if (card.getProc().equals(cardProc.getProc())) {
+                cardProc.setActive(true);
+                cardProc.setStartCount((Integer) ObjectUtils.defaultIfNull(cardProc.getStartCount(), 0) + 1);
+            }
 
         return card;
     }
