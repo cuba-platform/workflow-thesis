@@ -45,6 +45,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @ManagedBean(WfEngineAPI.NAME)
 public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
 
+    private static final String CANCELED_STATE = "," + WfConstants.CARD_STATE_CANCELED + ",";
     private Log log = LogFactory.getLog(getClass());
 
     private Configuration jbpmConfiguration;
@@ -559,10 +560,12 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         for (CardProc cp : c.getProcs()) {
             if (cp.getProc().equals(proc)) {
                 cp.setActive(false);
+                cp.setState(CANCELED_STATE);
+                break;
             }
         }
         c.setJbpmProcessId(null);
-        c.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
+        c.setState(CANCELED_STATE);
         for (Listener listener : listeners) {
             listener.onProcessCancel(card);
         }
