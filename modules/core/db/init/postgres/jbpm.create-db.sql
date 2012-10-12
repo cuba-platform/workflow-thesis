@@ -251,7 +251,7 @@
         DOUBLE_VALUE_ float8,
         CLASSNAME_ varchar(255),
         LONG_VALUE_ int8,
-        STRING_VALUE_ varchar(255),
+        STRING_VALUE_ text,
         TEXT_VALUE_ text,
         EXESYS_ int8,
         primary key (DBID_)

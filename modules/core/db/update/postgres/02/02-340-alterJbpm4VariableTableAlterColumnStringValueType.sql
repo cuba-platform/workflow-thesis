@@ -1,0 +1,1 @@
+alter table JBPM4_VARIABLE alter column STRING_VALUE_ type text^
