@@ -8,6 +8,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.annotation.Extends;
 
 import javax.persistence.*;
 
@@ -20,7 +21,11 @@ import javax.persistence.*;
 @Table(name = "WF_PROC_APP_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "FOLDER_ID")
 @DiscriminatorValue("P")
+@Extends(AppFolder.class)
 public class ProcAppFolder extends AppFolder {
+
+    private static final long serialVersionUID = 2716906222330698569L;
+
     @Column(name = "PROC_CONDITIONS_XML")
     protected String procAppFolderXml;
 
