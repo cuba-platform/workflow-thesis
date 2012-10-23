@@ -88,12 +88,11 @@ public class UniversalAssigner extends MultiAssigner {
             log.debug("No master assignment, just taking $signalName")
             assignment.setFinished(TimeProvider.currentTimestamp());
             execution.take(signalName)
-            if (timersFactory) {
-                timersFactory.removeTimers(execution)
-            }
+            removeTimers(execution)
             onSuccess(execution, signalName, assignment)
             afterSignal(execution, signalName, parameters)
         } else {
+            removeTimers(execution, assignment)
             //todo change log message
             log.debug("Trying to finish assignment")
 

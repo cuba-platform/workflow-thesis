@@ -342,6 +342,8 @@ create table WF_CARD_ROLE (
     NOTIFY_BY_EMAIL boolean,
     NOTIFY_BY_CARD_INFO boolean,
     SORT_ORDER integer,
+    DURATION integer,
+    TIME_UNIT varchar(1),
     primary key (ID)
 )^
 

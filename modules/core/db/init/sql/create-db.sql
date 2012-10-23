@@ -280,6 +280,8 @@ create table WF_CARD_ROLE (
     NOTIFY_BY_EMAIL smallint,
     NOTIFY_BY_CARD_INFO smallint,
     SORT_ORDER integer,
+    DURATION integer,
+    TIME_UNIT varchar(1),
     primary key (ID)
 );
 

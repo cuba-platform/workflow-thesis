@@ -34,11 +34,13 @@
                 </row>
             </rows>
         </grid>
-        <table id="rolesTable" sortable="false" multiselect="true" width="100%">
+        <table id="rolesTable" sortable="false" multiselect="true" editable="true">
             <columns>
                 <column id="procRole.name" caption="msg://role" width="150"/>
                 <column id="user" caption="msg://user"/>
-                <column id="sortOrder" caption="msg://sortOrder"  width="95"/>
+                <column id="sortOrder" caption="msg://sortOrder" width="95"/>
+                <column id="duration" width="60" editable="true"/>
+                <column id="timeUnit" width="60" editable="true"/>
                 <column id="notifyByEmail" caption="msg://notifyByEmail" width="45"/>
                 <column id="notifyByCardInfo" caption="msg://notifyByCardInfo" width="45"/>
             </columns>

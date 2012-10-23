@@ -11,7 +11,9 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.EmailException;
+import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -41,11 +43,15 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     static final String ROLES_SHEET = "Roles";
     static final String STATES_SHEET = "States";
     static final String ACTIONS_SHEET = "Actions";
+    public static final String OVERDUE_CARD_STATE = "Overdue";
 
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
 
     @Inject
     private UserSessionSource userSessionSource;
+
+    @Inject
+    private Persistence persistence;
 
     private Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
     private Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
@@ -466,12 +472,36 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 }
             }
 
-
             tx.commit();
         } catch (Exception e) {
             log.error(e);
         } finally {
             tx.end();
+        }
+    }
+
+    /**
+     * Notifies user of given <code>cardRole</code> by notification, specified for <code>state</code>
+     * in notification matrix
+     * @param state
+     * @param cardRole
+     */
+    @Override
+    public void notifyCardRole(Card card, CardRole cardRole, String state, Assignment assignment) {
+
+        try {
+            String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
+            Map<String, String> matrix = getMatrix(processPath);
+            if (matrix == null)
+                return;
+
+            List<User> mailList = new ArrayList<User>();
+            List<User> trayList = new ArrayList<User>();
+
+            notifyUser(card, cardRole, assignment, matrix, state, mailList, trayList, new DefaultMessageGenerator());
+
+        } catch (Exception e) {
+            log.error(e);
         }
     }
 

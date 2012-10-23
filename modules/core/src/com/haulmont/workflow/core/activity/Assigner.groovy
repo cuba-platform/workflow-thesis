@@ -38,6 +38,8 @@ import com.haulmont.workflow.core.entity.CardStage
 import com.haulmont.cuba.core.global.ScriptingProvider
 import com.haulmont.workflow.core.global.TimeUnit
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
+import com.haulmont.workflow.core.timer.OverdueAssignmentTimersFactory
+import com.haulmont.cuba.core.global.EntityLoadInfo
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour {
 
@@ -102,9 +104,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setProc(card.getProc())
     assignment.setIteration(calcIteration(card, user, execution.getActivityName()))
 
-    if (timersFactory) {
-      timersFactory.createTimers(execution, assignment)
-    }
+    createTimers(execution, assignment, cr)
 
     createStages(assignment)
 
@@ -122,9 +122,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     execution.take(signalName)
-    if (timersFactory) {
-      timersFactory.removeTimers(execution)
-    }
+    removeTimers(execution, null)
     Card card = findCard(execution)
     finishStages(card, execution, signalName)
 
@@ -236,12 +234,51 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       assignment.setMasterAssignment(master)
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
 
-      if (timersFactory) {
-        timersFactory.createTimers(execution, assignment)
-      }
+      createTimers(execution, assignment, cr)
       em.persist(assignment)
 
       NotificationMatrixAPI  notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
       notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
+    }
+
+    protected void createTimers(ActivityExecution execution, Assignment assignment, CardRole cardRole) {
+        if (timersFactory) {
+            timersFactory.createTimers(execution, assignment)
+        }
+
+        if (cardRole.duration && cardRole.timeUnit) {
+            WorkCalendarAPI workCalendar = Locator.lookup(WorkCalendarAPI.NAME);
+            def dueDate = workCalendar.addInterval(TimeProvider.currentTimestamp(), cardRole.duration, cardRole.timeUnit)
+            def overdueAssignmentTimersFactory = new OverdueAssignmentTimersFactory(dueDate)
+            overdueAssignmentTimersFactory.setDueDate(dueDate)
+            assignment.dueDate = dueDate
+
+            EntityLoadInfo crLoadInfo = EntityLoadInfo.create(cardRole);
+            overdueAssignmentTimersFactory.createTimers(execution, assignment, ['cardRole' : crLoadInfo.toString()])
+        }
+    }
+
+    protected void removeTimers(ActivityExecution execution) {
+        if (timersFactory)
+            timersFactory.removeTimers(execution)
+
+        new OverdueAssignmentTimersFactory().removeTimers(execution);
+    }
+
+    protected void removeTimers(ActivityExecution execution, Assignment assignment) {
+        if (timersFactory)
+            timersFactory.removeTimers(execution, assignment)
+
+        new OverdueAssignmentTimersFactory().removeTimers(execution, assignment);
+    }
+
+    protected Assignment findFamilyAssignment(Card card)
+    {
+      if (card.procFamily != null) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery("select a from wf\$Assignment a where a.subProcCard.id = ?1").setParameter(1, card.id)
+        List<Assignment> resultList = q.getResultList();
+        return resultList.isEmpty() ? null : resultList.get(0);
+      }
     }
 }

@@ -75,6 +75,7 @@ public class CardRolesFrame extends AbstractFrame {
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
     protected boolean editable = true;
+    private static final String[] extendedModeColumns = {"sortOrder", "duration", "timeUnit"};
 
     @Inject
     WebButton moveDown;
@@ -140,7 +141,12 @@ public class CardRolesFrame extends AbstractFrame {
         showSortOrderCheckBox.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                vRolesTable.setColumnCollapsed(mpp, !(Boolean) value);
+                for (String columnName : extendedModeColumns) {
+                    MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath(columnName);
+                    if (mpp != null) {
+                        vRolesTable.setColumnCollapsed(mpp, !(Boolean) value);
+                    }
+                }
             }
         });
 
@@ -254,8 +260,27 @@ public class CardRolesFrame extends AbstractFrame {
 
         addSortOrderColumn(vRolesTable);
 
+        initDurationColumns();
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+    }
+
+    private void initDurationColumns() {
+        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
+            @Override
+            public void valueChanged(CardRole source, String property, Object prevValue, Object value) {
+                if ("duration".equals(property) || "timeUnit".equals(property)) {
+                    for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+                        CardRole cr = tmpCardRolesDs.getItem(uuid);
+                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
+                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
+                            cr.setDuration(source.getDuration());
+                            cr.setTimeUnit(source.getTimeUnit());
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void initMoveButtons() {
@@ -1036,13 +1061,15 @@ public class CardRolesFrame extends AbstractFrame {
         for (Action action : rolesTable.getActions()) {
             action.setVisible(editable);
         }
-        WebComponentsHelper.unwrap(rolesTable).setReadOnly(!editable);
+        com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+        vRolesTable.setReadOnly(!editable);
+        vRolesTable.setEditable(editable);
         createRoleLookup.setEditable(editable);
         for (CardRoleField cardRoleField : actorActionsFieldsMap.values()) {
             cardRoleField.setEditable(editable);
         }
     }
-
+	
     private void refreshFieldsWithRole(CardRole cardRole) {
         for (CardRole cr : actorActionsFieldsMap.keySet()) {
             if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
