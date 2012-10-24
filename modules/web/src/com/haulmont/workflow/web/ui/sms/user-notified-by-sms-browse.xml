@@ -1,0 +1,38 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.sms.UserNotifiedBySmsBrowser"
+        messagesPack="com.haulmont.workflow.web.ui.sms"
+        lookupComponent="table"
+        caption="msg://UserNotifiedBySms.browser.caption">
+    <dsContext>
+        <collectionDatasource
+                id="userNotifiedBySmsDs"
+                class="com.haulmont.workflow.core.entity.UserNotifiedBySms"
+                view="browse">
+            <query>
+                select u from wf$UserNotifiedBySms u where u.user.deleteTs is null order by u.createTs
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="boxTable">
+        <vbox expand="genericFilter" stylename="edit-area" margin="true">
+            <filter id="genericFilter" datasource="userNotifiedBySmsDs">
+                <properties include=".*" exclude=""/>
+            </filter>
+        </vbox>
+        <vbox id="boxTable" expand="table" margin="true">
+            <groupTable id="table" spacing="true">
+                <buttonsPanel>
+                    <button id="add"  caption="msg://actions.Add" icon="icons/add.png" invoke="addUser"/>
+                    <button action="table.remove" icon="icons/remove.png"/>
+                    <button action="table.refresh" icon="icons/refresh.png"/>
+                </buttonsPanel>
+                <rowsCount/>
+                <columns>
+                    <column id="user" caption="msg://UserNotifiedBySms.user"/>
+                </columns>
+                <rows datasource="userNotifiedBySmsDs"/>
+            </groupTable>
+        </vbox>
+    </layout>
+</window>

@@ -24,6 +24,7 @@
                 <entry key="workflow_NotificationMatrixService" value="com.haulmont.workflow.core.app.NotificationMatrixService"/>
                 <entry key="workflow_procRolePermissionsService" value="com.haulmont.workflow.core.app.ProcRolePermissionsService"/>
                 <entry key="workflow_WorkCalendarService" value="com.haulmont.workflow.core.app.WorkCalendarService"/>
+                <entry key="workflow_SmsService" value="com.haulmont.workflow.core.app.SmsService"/>
             </map>
         </property>
     </bean>

@@ -40,6 +40,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
     static final String MAIL_SHEET = "Mail";
     static final String TRAY_SHEET = "Tray";
+    static final String SMS_SHEET = "Sms";
     static final String ROLES_SHEET = "Roles";
     static final String STATES_SHEET = "States";
     static final String ACTIONS_SHEET = "Actions";
@@ -288,8 +289,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         matrix = new HashMap<String, String>();
         boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
         boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+        boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
 
-        if (mailMatrixFilled || trayMatrixFilled)
+        if (mailMatrixFilled || trayMatrixFilled || smsMatrixFilled)
             cache.put(processPath, matrix);
     }
 
@@ -310,7 +312,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, String> matrix, String state,
-                            List<User> mailList, List<User> trayList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
+                            List<User> mailList, List<User> trayList, List<User> smsList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
         String type;
         String key = state + "_" + cardRole.getCode();
@@ -356,6 +358,38 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             createNotificationCardInfo(card, assignment, cardRole.getUser(), getCardInfoTypeByState(type), messageGenerator.generateMessage(variables));
             trayList.add(user);
         }
+
+        //sms
+        if (!smsList.contains(user) && ((type = matrix.get(key + "_" + SMS_SHEET)) != null) && isUserNotifiedBySms(user)) {
+            NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
+            if (notificationMessage != null) {
+                variables.put("messagetemplate", notificationMessage);
+            } else {
+                variables.put("script", getScriptByNotificationType(processPath, type));
+            }
+            final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
+
+            SmsService smsService = Locator.lookup(SmsService.NAME);
+            smsService.sendSms(message.getSubject(), message.getBody());
+
+            smsList.add(user);
+        }
+    }
+
+    private boolean isUserNotifiedBySms(User user) {
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("select e from wf$UserNotifiedBySms e where e.user.id = :user").setParameter("user", user);
+            List list = query.getResultList();
+            tx.commit();
+            return !list.isEmpty();
+        } catch (Exception e) {
+            log.error(e);
+            return false;
+        } finally {
+            tx.end();
+        }
     }
 
     public void notifyByCard(Card card, String state) {
@@ -379,6 +413,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
+            List<User> smsList = new ArrayList<User>();
 
             Card reloadedCard = reloadCard(card);
 
@@ -387,7 +422,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 for (CardRole cardRole : roleList) {
                     if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc())
                             && !excludedRoles.contains(cardRole.getCode())) {
-                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, messageGenerator);
                     }
                 }
             }
@@ -411,6 +446,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
+            List<User> smsList = new ArrayList<User>();
             List<String> excludeRoleCodes = new ArrayList<String>();
 
             NotificationMatrixMessage.MessageGenerator messageGenerator = new DefaultMessageGenerator();
@@ -419,7 +455,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                 for (Map.Entry<Assignment, CardRole> entry : assignmentsCardRoleMap.entrySet()) {
                     CardRole cardRole = entry.getValue();
                     if (!currentUser.equals(cardRole.getUser()))
-                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, smsList, trayList, messageGenerator);
 
                     excludeRoleCodes.add(cardRole.getCode());
                 }
@@ -435,7 +471,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
                             !excludeRoleCodes.contains(cardRole.getCode()) &&
                             ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
 
-                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, null, matrix, state, mailList, smsList, trayList, messageGenerator);
                     }
                 }
             }
@@ -458,6 +494,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
         try {
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
+            List<User> smsList = new ArrayList<User>();
 
             Card reloadedCard = reloadCard(card);
 
@@ -466,7 +503,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             if (roleList != null && user != null) {
                 for (CardRole cardRole : roleList) {
                     if (user.equals(cardRole.getUser())) {
-                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, new DefaultMessageGenerator());
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, new DefaultMessageGenerator());
                         break;
                     }
                 }
@@ -497,8 +534,9 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
 
             List<User> mailList = new ArrayList<User>();
             List<User> trayList = new ArrayList<User>();
+            List<User> smsList = new ArrayList<User>();
 
-            notifyUser(card, cardRole, assignment, matrix, state, mailList, trayList, new DefaultMessageGenerator());
+            notifyUser(card, cardRole, assignment, matrix, state, mailList, trayList, smsList, new DefaultMessageGenerator());
 
         } catch (Exception e) {
             log.error(e);

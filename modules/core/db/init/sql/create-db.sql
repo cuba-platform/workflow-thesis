@@ -391,3 +391,32 @@ create table WF_PROC_ROLE_PERMISSION (
 alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_TO_PROC_ROLE foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID);
 alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_FROM_PROC_ROLE foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID);
 
+------------------------------------------------------------------------------------------------------------
+create table WF_SENDING_SMS
+(
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+
+    SMS_ID varchar(255),
+    PHONE varchar(50),
+    MESSAGE varchar(255),
+    ERROR_CODE integer,
+    STATUS integer,
+    LAST_CHANGE_DATE timestamp,
+    ATTEMPTS_COUNT integer,
+    primary key (ID)
+)^
+------------------------------------------------------------------------------------------------------------
+
+create table WF_USER_NOTIFIED_BY_SMS
+(
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+
+    USER_ID varchar(36),
+    primary key (ID)
+)^
+alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_USER foreign key (USER_ID) references SEC_USER (ID)^
+

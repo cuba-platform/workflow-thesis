@@ -247,4 +247,8 @@
     <view class="com.haulmont.workflow.core.entity.ProcState" name="browse" extends="_local">
         <property name="proc" view="_local"/>
     </view>
+
+    <view class="com.haulmont.workflow.core.entity.UserNotifiedBySms" name="browse" extends="_local">
+        <property name="user" view="_minimal"/>
+    </view>
 </views>

@@ -34,6 +34,8 @@
         <class>com.haulmont.workflow.core.entity.ProcStageType</class>
         <class>com.haulmont.workflow.core.entity.ProcAppFolder</class>
         <class>com.haulmont.workflow.core.entity.ProcState</class>
+        <class>com.haulmont.workflow.core.entity.SendingSms</class>
+        <class>com.haulmont.workflow.core.entity.UserNotifiedBySms</class>
 
     </persistence-unit>
 </persistence>

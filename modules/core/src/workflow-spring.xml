@@ -74,6 +74,8 @@
                 <entry key="${cuba.webContextName}.workflow:service=PermissionsManager" value-ref="workflow_PermissionsManager"/>
                 <entry key="${cuba.webContextName}.workflow:service=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
                 <entry key="${cuba.webContextName}.workflow:service=ProcStageManager" value-ref="workflow_ProcStageManager"/>
+                <entry key="${cuba.webContextName}.workflow:service=SmsSender" value-ref="workflow_SmsSender"/>
+                <entry key="${cuba.webContextName}.workflow:service=SmsManager" value-ref="workflow_SmsManager"/>
             </map>
         </property>
     </bean>

@@ -619,5 +619,34 @@ create table WF_PROC_APP_FOLDER
 alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOLDER foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
 
 ------------------------------------------------------------------------------------------------------------
+
+create table WF_SENDING_SMS
+(
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+
+    SMS_ID varchar(255),
+    PHONE varchar(50),
+    MESSAGE varchar(255),
+    ERROR_CODE integer,
+    STATUS integer,
+    LAST_CHANGE_DATE timestamp,
+    ATTEMPTS_COUNT integer,
+    primary key (ID)
+)^
+------------------------------------------------------------------------------------------------------------
+
+create table WF_USER_NOTIFIED_BY_SMS
+(
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+
+    USER_ID uuid not null,
+    primary key (ID)
+)^
+alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_USER foreign key (USER_ID) references SEC_USER (ID)^
+------------------------------------------------------------------------------------------------------------
 insert into WF_ATTACHMENTTYPE (ID, CODE, ISDEFAULT)
 values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70', 'AttachmentType.attachment', true)^

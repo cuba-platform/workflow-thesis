@@ -122,4 +122,10 @@
     <screen id="wf$DesignScript.browse"
             template="/com/haulmont/workflow/web/ui/designscript/design-scripts.xml"/>
 
+    <screen id="wf$UserNotifiedBySms.browse"
+            template="/com/haulmont/workflow/web/ui/sms/user-notified-by-sms-browse.xml"/>
+
+    <screen id="wf$SendingSms.browse"
+            template="/com/haulmont/workflow/web/ui/sms/sending-sms-browse.xml"/>
+
 </screen-config>
