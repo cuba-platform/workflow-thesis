@@ -24,11 +24,7 @@
 
         <hibernate-session-factory/>
 
-        <object class="org.jbpm.pvm.internal.id.DatabaseDbidGenerator">
-            <field name="commandService">
-                <ref object="newTxRequiredCommandService"/>
-            </field>
-        </object>
+        <object class="com.haulmont.workflow.core.sys.CubaJbpmDbidGenerator"/>
 
         <object class="org.jbpm.pvm.internal.id.DatabaseIdComposer" init="eager"/>
 
