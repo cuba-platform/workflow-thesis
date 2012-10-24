@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
+import com.haulmont.workflow.core.app.WfService
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
@@ -34,6 +35,7 @@ import org.jbpm.api.activity.ActivityExecution
 public class UniversalAssigner extends MultiAssigner {
 
     private Log log = LogFactory.getLog(Assigner.class)
+    private WfService wfService = Locator.lookup(WfService.NAME);
 
     Boolean finishBySingleUser
 
@@ -132,7 +134,8 @@ public class UniversalAssigner extends MultiAssigner {
             afterSignal(execution, signalName, parameters)
         } else {
             def cardRoles = getCardRoles(execution, assignment.card)
-            def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user}
+            List<UUID> uuids = getCardRoleUuidsFromProcessVariables(assignment.card);
+            def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user && (uuids.contains(cr.id) || uuids.isEmpty())}
             def nextCardRoles = []
             int nextSortOrder = Integer.MAX_VALUE
 
@@ -155,10 +158,36 @@ public class UniversalAssigner extends MultiAssigner {
                 afterSignal(execution, signalName, parameters)
             } else {
                 log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
+                setCardRoleUuidsToProcessVariables(assignment.card, nextCardRoles);
                 nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
                 execution.waitForSignal()
             }
         }
+    }
+
+    private List<UUID> getCardRoleUuidsFromProcessVariables(Card card) {
+         Map<String, Object> processVariables = wfService.getProcessVariables(card);
+         if (processVariables) {
+             List<UUID> uuids = processVariables.get("cardRoleUuids");
+             return uuids ? uuids : Collections.<UUID>emptyList();
+         } else {
+             return Collections.<CardRole>emptyList();
+         }
+    }
+
+    private void setCardRoleUuidsToProcessVariables(Card card, List<CardRole> cardRoles) {
+         Map<String, Object> processVariables = wfService.getProcessVariables(card);
+         if (processVariables) {
+             processVariables = new java.util.HashMap<String, Object>(processVariables);
+         } else {
+             processVariables = new java.util.HashMap<String, Object>();
+         }
+         List<UUID> uuids = new ArrayList<UUID>(cardRoles.size());
+         for (CardRole cr: cardRoles) {
+             uuids.add(cr.id);
+         }
+         processVariables.put("cardRoleUuids", uuids);
+         wfService.setProcessVariables(card, processVariables);
     }
 
     protected List<Assignment> getSiblings(Assignment assignment) {
