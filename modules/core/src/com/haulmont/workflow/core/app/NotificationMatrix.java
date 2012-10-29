@@ -606,11 +606,11 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
     private int getCardInfoTypeByState(String type) {
-        if (type.equals(NotificationType.SIMPLE.toString())) {
+        if (type.endsWith(NotificationType.SIMPLE.toString())) {
             return CardInfo.TYPE_SIMPLE;
-        } else if (type.equals(NotificationType.ACTION.toString())) {
+        } else if (type.endsWith(NotificationType.ACTION.toString())) {
             return CardInfo.TYPE_NOTIFICATION;
-        } else if (type.equals(NotificationType.WARNING.toString())) {
+        } else if (type.endsWith(NotificationType.WARNING.toString())) {
             return CardInfo.TYPE_OVERDUE;
         }
         return CardInfo.TYPE_SIMPLE;

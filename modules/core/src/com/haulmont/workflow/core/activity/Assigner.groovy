@@ -110,13 +110,23 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    NotificationMatrixAPI  notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
-    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
+    notifyUser(execution, card, [(assignment): cr], notificationState)
 
     afterCreateAssignment(assignment)
 
     return true
   }
+
+    protected void notifyUser(
+            ActivityExecution execution,
+            Card card,
+            Map<Assignment, CardRole> assignmentCardRoleMap,
+            String state
+    ) {
+        if (!notificationMatrix)
+            notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
+        notificationMatrix.notifyByCardAndAssignments(card, assignmentCardRoleMap, state)
+    }
 
   protected void afterCreateAssignment(Assignment assignment) {}
 
