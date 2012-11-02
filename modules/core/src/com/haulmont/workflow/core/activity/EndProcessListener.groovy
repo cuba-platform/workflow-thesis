@@ -26,6 +26,7 @@ class EndProcessListener implements org.jbpm.api.listener.EventListener {
     for (CardProc cp in card.procs) {
       cp.active = false;
     }
+    card.jbpmProcessId = null
     String activityName = ((ActivityExecution) execution).getActivityName();
     String prevActivityName = execution.getVariable("prevActivityName")
     notificationMatrix.notifyByCard(card, prevActivityName + "." + activityName);
