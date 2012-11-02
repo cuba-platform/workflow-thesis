@@ -109,6 +109,7 @@ public class UniversalAssigner extends MultiAssigner {
                 if (!sibling.finished) {
                     log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
                     execution.waitForSignal()
+                    removeTimers(execution, assignment)
                     return
                 }
 
