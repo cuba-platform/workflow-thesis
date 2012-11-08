@@ -297,7 +297,7 @@ public class ProcEditor extends AbstractEditor {
     def sortInfos = new CollectionDatasource.Sortable.SortInfo[1];
     sortInfos[0] = sortInfo;
     ((CollectionPropertyDatasourceImpl) rolesDs).sort(sortInfos);
-    ((CollectionPropertyDatasourceImpl) rolesDs).forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH)
+    ((CollectionPropertyDatasourceImpl) rolesDs).fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH)
   }
 
   def int findMaxSortOrder() {
