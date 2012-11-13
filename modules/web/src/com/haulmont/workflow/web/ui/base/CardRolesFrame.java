@@ -537,7 +537,7 @@ public class CardRolesFrame extends AbstractFrame {
         return users;
     }
 
-    private CollectionDatasource createUserOptionsDs(CardRole cardRole) {
+    protected CollectionDatasource createUserOptionsDs(CardRole cardRole) {
         CollectionDatasource usersDs = procRoleUsers.get(cardRole.getProcRole());
         if (usersDs == null) {
             MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
