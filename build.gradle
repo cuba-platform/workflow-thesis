@@ -39,9 +39,6 @@ def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0
 def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
 
-def slf4jGAV = [group: 'org.slf4j', name: 'slf4j-simple', version: '1.5.2']
-def groovyGAV = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
-def asmGAV = [group: 'asm', name: 'asm', version: '3.2']
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
@@ -62,9 +59,9 @@ configure([sharedLibModule, globalModule, coreModule, webModule]) {
     }
 
     dependencies {
-        groovy(slf4jGAV)
-        groovy(groovyGAV)
-        groovy(asmGAV)
+        groovy(group: 'org.slf4j', name: 'slf4j-simple', version: '1.5.2')
+        groovy(group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10')
+        groovy(group: 'asm', name: 'asm', version: '3.2')
 
         compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: baseVersion)
         testCompile(group: 'junit', name: 'junit', version: '4.5')
