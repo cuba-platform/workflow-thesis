@@ -30,10 +30,10 @@ public class UserGroup extends StandardEntity {
     @Column(name = "GLOBAL")
     protected Boolean global = false;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "WF_USER_GROUP_USER",
-        joinColumns = @JoinColumn(name = "USER_GROUP_ID", referencedColumnName = "ID"),
-        inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"))
+        joinColumns = @JoinColumn(name = "USER_GROUP_ID"),
+        inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     protected Set<User> users;
     
     @ManyToOne(fetch = FetchType.LAZY)
