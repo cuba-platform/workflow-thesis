@@ -19,44 +19,40 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox expand="split" spacing="true">
-            <vbox expand="genericFilter" stylename="edit-area">
-                <filter id="genericFilter" datasource="userGroupsDs">
-                    <properties include=".*"/>
-                </filter>
+    <layout expand="split" spacing="true">
+        <filter id="genericFilter" datasource="userGroupsDs">
+            <properties include=".*"/>
+        </filter>
+
+        <split id="split" orientation="horizontal" pos="30" width="100%">
+            <vbox id="table-panel" expand="userGroupsTable" spacing="true" margin="false;true;false;false" height="100%">
+                <table id="userGroupsTable" width="100%">
+                    <buttonsPanel>
+                        <button action="userGroupsTable.create" icon="icons/create.png"/>
+                        <button action="userGroupsTable.edit" icon="icons/edit.png"/>
+                        <button action="userGroupsTable.remove" icon="icons/remove.png"/>
+                    </buttonsPanel>
+                    <rowsCount/>
+                    <columns>
+                        <column id="name" caption="msg://name"/>
+                    </columns>
+                    <rows datasource="userGroupsDs"/>
+                </table>
             </vbox>
 
-            <split id="split" orientation="horizontal" pos="30">
-                <vbox id="table-panel" expand="userGroupsTable" spacing="true" margin="false;true;false;false;">
-                    <table id="userGroupsTable" editable="false">
-                        <buttonsPanel>
-                            <button action="userGroupsTable.create" icon="icons/create.png"/>
-                            <button action="userGroupsTable.edit" icon="icons/edit.png"/>
-                            <button action="userGroupsTable.remove" icon="icons/remove.png"/>
-                        </buttonsPanel>
-                        <rowsCount/>
-                        <columns>
-                            <column id="name" caption="msg://name"/>
-                        </columns>
-                        <rows datasource="userGroupsDs"/>
-                    </table>
-                </vbox>
-
-                <vbox id="usersPanel" expand="usersTable" spacing="true" margin="false;false;false;true;">
-                    <buttonsPanel>
-                        <button action="usersTable.add" icon="icons/add.png"/>
-                        <button action="usersTable.remove" icon="icons/remove.png"/>
-                    </buttonsPanel>
-                    <table id="usersTable" editable="false">
-                        <columns>
-                            <column id="name" caption="msg://user"/>
-                            <column id="position" caption="msg://position"/>
-                        </columns>
-                        <rows datasource="usersDs"/>
-                    </table>
-                </vbox>
-            </split>
-        </vbox>
+            <vbox id="usersPanel" expand="usersTable" spacing="true" margin="false;false;false;true" height="100%">
+                <buttonsPanel>
+                    <button action="usersTable.add" icon="icons/add.png"/>
+                    <button action="usersTable.remove" icon="icons/remove.png"/>
+                </buttonsPanel>
+                <table id="usersTable" width="100%">
+                    <columns>
+                        <column id="name" caption="msg://user"/>
+                        <column id="position" caption="msg://position"/>
+                    </columns>
+                    <rows datasource="usersDs"/>
+                </table>
+            </vbox>
+        </split>
     </layout>
 </window>

@@ -13,6 +13,7 @@
         <item id="wf$Proc.browse"/>
         <item id="wf$ProcStageType.browse"/>
         <item id="wf$WorkCalendar.browse"/>
+        <item id="wf$UserGroup.browse"/>
     </menu>
 
 </menu-config>
