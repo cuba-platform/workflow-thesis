@@ -29,6 +29,7 @@ import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
+import com.haulmont.workflow.core.global.TimeUnit;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
@@ -209,6 +210,7 @@ public class CardRolesFrame extends AbstractFrame {
                 cardRole.setNotifyByCardInfo(true);
                 cardRole.setCard(card);
                 assignNextSortOrder(cardRole);
+                assignDurationAndTimeUnit(cardRole);
                 tmpCardRolesDs.addItem(cardRole);
 
                 createRoleLookup.setValue(null);
@@ -269,15 +271,26 @@ public class CardRolesFrame extends AbstractFrame {
         tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
             @Override
             public void valueChanged(CardRole source, String property, Object prevValue, Object value) {
-                if ("duration".equals(property) || "timeUnit".equals(property)) {
+                if ("duration".equals(property)) {
                     for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                         CardRole cr = tmpCardRolesDs.getItem(uuid);
                         if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
                                 && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
                             cr.setDuration(source.getDuration());
-                            cr.setTimeUnit(source.getTimeUnit());
                         }
                     }
+                } else if ("timeUnit".equals(property)) {
+                    for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+                        CardRole cr = tmpCardRolesDs.getItem(uuid);
+                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
+                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
+                            TimeUnit timeUnit = source.getTimeUnit();
+                            if (timeUnit != null)
+                                cr.setTimeUnit(timeUnit);
+                        }
+                    }
+                } else if ("sortOrder".equals(property)) {
+                    assignDurationAndTimeUnit(source);
                 }
             }
         });
@@ -799,6 +812,20 @@ public class CardRolesFrame extends AbstractFrame {
                     cr.setSortOrder(parallelGroupNumb + 1);
                 else
                     cr.setSortOrder(max + 1);
+            }
+        }
+    }
+
+    private void assignDurationAndTimeUnit(CardRole cardRole) {
+        for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+            CardRole cr = tmpCardRolesDs.getItem(uuid);
+            if (!cr.equals(cardRole) && cr.getSortOrder() != null && cr.getSortOrder().equals(cardRole.getSortOrder())
+                    && cr.getProcRole() != null && cr.getProcRole().equals(cardRole.getProcRole())) {
+                cardRole.setDuration(cr.getDuration());
+                TimeUnit timeUnit = cr.getTimeUnit();
+                if (timeUnit != null)
+                    cardRole.setTimeUnit(timeUnit);
+                break;
             }
         }
     }
