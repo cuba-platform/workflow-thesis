@@ -364,6 +364,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
             NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
             if (notificationMessage != null) {
                 variables.put("messagetemplate", notificationMessage);
+                variables.remove("script");
             } else {
                 variables.put("script", getScriptByNotificationType(processPath, type));
             }
