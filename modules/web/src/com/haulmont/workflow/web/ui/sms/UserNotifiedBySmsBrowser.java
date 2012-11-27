@@ -45,6 +45,7 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("multiselect", true);
         params.put("isLookup", true);
+        params.put("hasEmployees", true);
         openLookup("sec$User.lookup", new com.haulmont.cuba.gui.components.Window.Lookup.Handler() {
             public void handleLookup(Collection items) {
                 if (items != null && items.size() > 0) {

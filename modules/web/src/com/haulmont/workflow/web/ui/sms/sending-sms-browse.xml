@@ -10,11 +10,14 @@
         lookupComponent="table"
         caption="msg://SendingSms.browser.caption">
     <dsContext>
-        <collectionDatasource
+        <groupDatasource
                 id="sendingSmsDs"
                 class="com.haulmont.workflow.core.entity.SendingSms"
                 view="_local">
-        </collectionDatasource>
+            <query>
+                select s from wf$SendingSms s
+            </query>
+        </groupDatasource>
     </dsContext>
 
     <layout expand="boxTable">

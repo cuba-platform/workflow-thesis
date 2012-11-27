@@ -21,9 +21,9 @@
             </filter>
         </vbox>
         <vbox id="boxTable" expand="table" margin="true">
-            <groupTable id="table" spacing="true">
+            <table id="table" spacing="true">
                 <buttonsPanel>
-                    <button id="add"  caption="msg://actions.Add" icon="icons/add.png" invoke="addUser"/>
+                    <button id="add" caption="msg://actions.Add" icon="icons/add.png" invoke="addUser"/>
                     <button action="table.remove" icon="icons/remove.png"/>
                     <button action="table.refresh" icon="icons/refresh.png"/>
                 </buttonsPanel>
@@ -32,7 +32,7 @@
                     <column id="user" caption="msg://UserNotifiedBySms.user"/>
                 </columns>
                 <rows datasource="userNotifiedBySmsDs"/>
-            </groupTable>
+            </table>
         </vbox>
     </layout>
 </window>
