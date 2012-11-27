@@ -10,11 +10,13 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.SendingSms;
 import com.haulmont.workflow.core.enums.SmsStatus;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -162,8 +164,9 @@ public class SmsManager extends ManagementBean implements SmsManagerMBean, SmsMa
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setView(MetadataProvider.getViewRepository().getView(SendingSms.class, "_local"));
             Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0, 400, 500) and " +
-                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 order by sms.createTs")
-                    .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount());
+                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.createTs > :startDate order by sms.createTs")
+                    .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
+                    .setParameter("startDate", DateUtils.addSeconds(TimeProvider.currentTimestamp(), -config.getMaxSendingTimeSec()));
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;
