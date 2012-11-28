@@ -12,10 +12,11 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.regex.Matcher;
@@ -34,6 +35,7 @@ public class CardProc extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
+    @OnDeleteInverse(DeletePolicy.DENY)
     protected Proc proc;
 
     @Column(name = "IS_ACTIVE")

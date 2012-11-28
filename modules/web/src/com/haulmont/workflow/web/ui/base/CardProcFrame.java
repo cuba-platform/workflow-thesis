@@ -334,7 +334,7 @@ public class CardProcFrame extends AbstractFrame {
 
     protected boolean alreadyAdded(Proc p) {
         for (CardProc cp : getDsItems(cardProcDs)) {
-            if (cp.getProc().equals(p))
+            if (cp.getProc() != null  && cp.getProc().equals(p))
                 return true;
         }
         return false;
