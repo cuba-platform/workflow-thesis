@@ -27,9 +27,10 @@
             </filter>
         </vbox>
         <vbox id="boxTable" expand="table" margin="true">
-            <groupTable id="table" spacing="true" margin="true">
+            <groupTable id="table" spacing="true" margin="true" multiselect="true">
                 <buttonsPanel>
                     <button action="table.refresh" icon="icons/refresh.png"/>
+                    <button action="table.remove" icon="icons/remove.png"/>
                 </buttonsPanel>
                 <rowsCount/>
                 <columns>

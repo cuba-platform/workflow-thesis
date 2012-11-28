@@ -35,5 +35,6 @@ public class SendingSmsBrowser extends AbstractLookup {
         super.init(params);
 
         ComponentsHelper.createActions(table, EnumSet.of(ListActionType.REFRESH));
+        ComponentsHelper.createActions(table, EnumSet.of(ListActionType.REMOVE));
     }
 }

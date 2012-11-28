@@ -436,36 +436,38 @@ public class DesignCompiler {
 
     private void createNotificationSheet(Workbook book, List<String> rolesList, Collection<String> states, String sheetName) {
         Sheet mail = book.getSheet(sheetName);
-        Row statesRow = mail.getRow(1);
-        Iterator<Cell> cellIt = statesRow.cellIterator();
-        cellIt.next();
-        Iterator<String> statesIt = states.iterator();
-        while (cellIt.hasNext()) {
-            Cell cell = cellIt.next();
-            if (statesIt.hasNext()) {
-                cell.setCellValue(statesIt.next());
-            } else {
-                statesRow.removeCell(cell);
-            }
-        }
-        Iterator<Row> rowIt = mail.rowIterator();
-        rowIt.next();
-        rowIt.next();
-        Iterator<String> roleIt = rolesList.iterator();
-        while (rowIt.hasNext()) {
-            Row row = rowIt.next();
-            if (roleIt.hasNext()) {
-                row.getCell(0).setCellValue(roleIt.next());
-                Iterator<Cell> cellIterator = row.cellIterator();
-                cellIterator.next();
-                while (cellIterator.hasNext()) {
-                    row.removeCell(cellIterator.next());
+        if (mail != null) {
+            Row statesRow = mail.getRow(1);
+            Iterator<Cell> cellIt = statesRow.cellIterator();
+            cellIt.next();
+            Iterator<String> statesIt = states.iterator();
+            while (cellIt.hasNext()) {
+                Cell cell = cellIt.next();
+                if (statesIt.hasNext()) {
+                    cell.setCellValue(statesIt.next());
+                } else {
+                    statesRow.removeCell(cell);
                 }
+            }
+            Iterator<Row> rowIt = mail.rowIterator();
+            rowIt.next();
+            rowIt.next();
+            Iterator<String> roleIt = rolesList.iterator();
+            while (rowIt.hasNext()) {
+                Row row = rowIt.next();
+                if (roleIt.hasNext()) {
+                    row.getCell(0).setCellValue(roleIt.next());
+                    Iterator<Cell> cellIterator = row.cellIterator();
+                    cellIterator.next();
+                    while (cellIterator.hasNext()) {
+                        row.removeCell(cellIterator.next());
+                    }
 
-            } else {
-                Iterator<Cell> cellIterator = row.cellIterator();
-                while (cellIterator.hasNext()) {
-                    row.removeCell(cellIterator.next());
+                } else {
+                    Iterator<Cell> cellIterator = row.cellIterator();
+                    while (cellIterator.hasNext()) {
+                        row.removeCell(cellIterator.next());
+                    }
                 }
             }
         }
@@ -521,6 +523,7 @@ public class DesignCompiler {
             createStatesSheet(wb, states);
             createNotificationSheet(wb, rolesList, states.values(), "Mail");
             createNotificationSheet(wb, rolesList, states.values(), "Tray");
+            createNotificationSheet(wb, rolesList, states.values(), "Sms");
 
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             wb.write(buffer);
@@ -665,6 +668,7 @@ public class DesignCompiler {
             this.dstModuleId = dstModuleId;
             this.dstModuleTerminal = dstModuleTerminal;
         }
+
         int dstModuleId;
         String dstModuleTerminal;
     }
