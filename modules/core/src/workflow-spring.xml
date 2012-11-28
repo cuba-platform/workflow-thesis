@@ -68,14 +68,14 @@
     <bean id="wf_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
-                <entry key="${cuba.webContextName}.workflow:service=WfEngine" value-ref="workflow_WfEngine"/>
-                <entry key="${cuba.webContextName}.workflow:service=TimerManager" value-ref="workflow_TimerManager"/>
-                <entry key="${cuba.webContextName}.workflow:service=WorkCalendar" value-ref="workflow_WorkCalendar"/>
-                <entry key="${cuba.webContextName}.workflow:service=PermissionsManager" value-ref="workflow_PermissionsManager"/>
-                <entry key="${cuba.webContextName}.workflow:service=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
-                <entry key="${cuba.webContextName}.workflow:service=ProcStageManager" value-ref="workflow_ProcStageManager"/>
-                <entry key="${cuba.webContextName}.workflow:service=SmsSender" value-ref="workflow_SmsSender"/>
-                <entry key="${cuba.webContextName}.workflow:service=SmsManager" value-ref="workflow_SmsManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=WfEngine" value-ref="workflow_WfEngine"/>
+                <entry key="${cuba.webContextName}.workflow:type=TimerManager" value-ref="workflow_TimerManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=WorkCalendar" value-ref="workflow_WorkCalendar"/>
+                <entry key="${cuba.webContextName}.workflow:type=PermissionsManager" value-ref="workflow_PermissionsManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
+                <entry key="${cuba.webContextName}.workflow:type=ProcStageManager" value-ref="workflow_ProcStageManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=SmsSender" value-ref="workflow_SmsSender"/>
+                <entry key="${cuba.webContextName}.workflow:type=SmsManager" value-ref="workflow_SmsManager"/>
             </map>
         </property>
     </bean>
