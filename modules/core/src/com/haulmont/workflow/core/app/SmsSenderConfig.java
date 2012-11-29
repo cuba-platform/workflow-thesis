@@ -71,6 +71,6 @@ public interface SmsSenderConfig extends Config {
 
     void setSmsProviderClassName(String value);
 
-    @DefaultInt(3600)
+    @DefaultInt(86400)
     int getMaxSendingTimeSec();
 }
