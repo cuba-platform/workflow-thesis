@@ -142,6 +142,10 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
         try {
             login();
             config.setUseDefaultSmsSending(value);
+            if (value){
+                config.setSmsProviderClassName(DefaultSmsProvider.class.getCanonicalName());
+                smsProvider = null;
+            }
         } catch (LoginException e) {
             throw new RuntimeException(e);
         } finally {
