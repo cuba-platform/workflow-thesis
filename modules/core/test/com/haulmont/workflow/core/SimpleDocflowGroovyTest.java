@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.workflow.core.app.WfEngineAPI;
-import com.haulmont.workflow.core.app.WfEngineMBean;
 import com.haulmont.workflow.core.entity.*;
 import junit.framework.Assert;
 import org.jbpm.api.Execution;

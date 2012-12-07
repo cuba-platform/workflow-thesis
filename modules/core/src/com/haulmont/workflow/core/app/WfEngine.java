@@ -11,39 +11,36 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.ManagementBean;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.jbpm.api.*;
 import org.jbpm.api.Configuration;
+import org.jbpm.api.*;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 @ManagedBean(WfEngineAPI.NAME)
-public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineAPI {
+public class WfEngine implements WfEngineAPI {
 
     private static final String CANCELED_STATE = "," + WfConstants.CARD_STATE_CANCELED + ",";
     private Log log = LogFactory.getLog(getClass());
@@ -63,6 +60,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     @Inject
     private Persistence persistence;
+
+    @Inject
+    protected Scripting scripting;
+
+    @Inject
+    protected Resources resources;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Messages messages;
 
     @Inject
     private NotificationMatrixAPI notificationBean;
@@ -95,23 +104,18 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         return processEngine;
     }
 
-    public String getJbpmConfigName() {
-        String name = AppContext.getProperty(JBPM_CFG_NAME_PROP);
-        return name == null ? DEF_JBPM_CFG_NAME : name;
-    }
-
     public Proc deployJpdlXml(String resourcePath, Proc proc) {
         RepositoryService rs = getProcessEngine().getRepositoryService();
 
         NewDeployment deployment = rs.createDeployment();
 
-        String resource = ScriptingProvider.getResourceAsString(resourcePath);
+        String resource = resources.getResourceAsString(resourcePath);
         if (resource == null)
             throw new IllegalArgumentException("Resource not found: " + resourcePath);
 
         deployment.addResourceFromString(resourcePath, resource);
         deployment.setName(resourcePath.substring(resourcePath.lastIndexOf('/')));
-        deployment.setTimestamp(TimeProvider.currentTimestamp().getTime());
+        deployment.setTimestamp(timeSource.currentTimeMillis());
         deployment.deploy();
 
         ProcessDefinitionQuery pdq = rs.createProcessDefinitionQuery().deploymentId(deployment.getId());
@@ -152,24 +156,6 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
 
     public Proc deployJpdlXml(String resourcePath) {
         return deployJpdlXml(resourcePath, null);
-    }
-
-    public String deployProcess(String name) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            login();
-
-            String resourcePath = "/process/" + name + "/" + name + ".jpdl.xml";
-            Proc proc = deployJpdlXml(resourcePath);
-
-            tx.commit();
-            return "Deployed process " + proc.getJbpmProcessKey();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-            logout();
-        }
     }
 
     /**
@@ -296,125 +282,19 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     private boolean checkMultyUserRole(String className) {
         if (className == null)
             return false;
-        Class parallelClass = ScriptingProvider.loadClass(PARALLEL_ASSIGMENT_CLASS);
-        Class sequentialClass = ScriptingProvider.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
-        Class universalClass = ScriptingProvider.loadClass(UNIVERSAL_ASSIGNER_CLASS);
-        Class currentClass = ScriptingProvider.loadClass(className);
+        Class<?> parallelClass = scripting.loadClass(PARALLEL_ASSIGMENT_CLASS);
+        Class<?> sequentialClass = scripting.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
+        Class<?> universalClass = scripting.loadClass(UNIVERSAL_ASSIGNER_CLASS);
+        Class<?> currentClass = scripting.loadClass(className);
 
-        if (parallelClass.isAssignableFrom(currentClass))
+        if (parallelClass != null && parallelClass.isAssignableFrom(currentClass))
             return true;
-        else if (sequentialClass.isAssignableFrom(currentClass))
+        else if (sequentialClass != null && sequentialClass.isAssignableFrom(currentClass))
             return true;
-        else if (universalClass.isAssignableFrom(currentClass))
+        else if (universalClass != null && universalClass.isAssignableFrom(currentClass))
             return true;
 
         return false;
-    }
-
-    public String printDeployments() {
-        Transaction tx = persistence.createTransaction();
-        try {
-            String result;
-            RepositoryService rs = getProcessEngine().getRepositoryService();
-            List<Deployment> list = rs.createDeploymentQuery().orderAsc(DeploymentQuery.PROPERTY_TIMESTAMP).list();
-            if (list.isEmpty())
-                result = "No deployments found";
-            else {
-                StringBuilder sb = new StringBuilder();
-                for (Deployment deployment : list) {
-                    sb.append("Id=").append(deployment.getId()).append("\n");
-                    sb.append("Name=").append(deployment.getName()).append("\n");
-                    sb.append("State=").append(deployment.getState()).append("\n");
-                    sb.append("Timestamp=").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(deployment.getTimestamp()))).append("\n");
-                    sb.append("\n");
-                }
-                result = sb.toString();
-            }
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
-    }
-
-    public String printDeploymentResource(String id) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            String result;
-            RepositoryService rs = getProcessEngine().getRepositoryService();
-            Set<String> resourceNames = rs.getResourceNames(id);
-            if (resourceNames.isEmpty())
-                result = "No resources found";
-            else {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Resources in deployment id=").append(id).append("\n\n");
-                for (String resourceName : resourceNames) {
-                    sb.append("***** ").append(resourceName).append("\n");
-                    if (resourceName.endsWith(".xml")) {
-                        InputStream is = rs.getResourceAsStream(id, resourceName);
-                        String str = IOUtils.toString(is);
-                        sb.append(StringEscapeUtils.escapeXml(str)).append("\n");
-                    }
-                }
-                result = sb.toString();
-            }
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
-    }
-
-    public String printProcessDefinitions() {
-        Transaction tx = persistence.createTransaction();
-        try {
-            String result;
-            RepositoryService rs = getProcessEngine().getRepositoryService();
-            List<ProcessDefinition> list = rs.createProcessDefinitionQuery().orderAsc(ProcessDefinitionQuery.PROPERTY_ID).list();
-            if (list.isEmpty())
-                result = "No deployments found";
-            else {
-                StringBuilder sb = new StringBuilder();
-                for (ProcessDefinition pd : list) {
-                    sb.append("Name=").append(pd.getName()).append("\n");
-                    sb.append("Key=").append(pd.getKey()).append("\n");
-                    sb.append("Id=").append(pd.getId()).append("\n");
-                    sb.append("Version=").append(pd.getVersion()).append("\n");
-                    sb.append("DeploymentId=").append(pd.getDeploymentId()).append("\n");
-                    sb.append("\n");
-                }
-                result = sb.toString();
-            }
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
-    }
-
-    public String deployTestProcesses() {
-        return deployProcess("test1");
-    }
-
-    public String startProcessByKey(String key) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            ProcessEngine pe = getProcessEngine();
-            ExecutionService es = pe.getExecutionService();
-            ProcessInstance pi = es.startProcessInstanceByKey(key);
-            tx.commit();
-            return "ProcessInstance.id=" + pi.getId();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
     }
 
     public List<Assignment> getUserAssignments(UUID userId) {
@@ -479,7 +359,7 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
             if (assignment == null)
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
-            assignment.setFinished(TimeProvider.currentTimestamp());
+            assignment.setFinished(timeSource.currentTimestamp());
             assignment.setFinishedByUser(userSessionSource.getUserSession().getUser());
             assignment.setOutcome(outcome);
             assignment.setComment(comment);
@@ -550,8 +430,8 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
             if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
-                assignment.setComment(MessageProvider.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
-            assignment.setFinished(TimeProvider.currentTimestamp());
+                assignment.setComment(messages.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
+            assignment.setFinished(timeSource.currentTimestamp());
         }
 
         WfHelper.getExecutionService().endProcessInstance(c.getJbpmProcessId(), WfConstants.CARD_STATE_CANCELED);
@@ -576,5 +456,4 @@ public class WfEngine extends ManagementBean implements WfEngineMBean, WfEngineA
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
-
 }

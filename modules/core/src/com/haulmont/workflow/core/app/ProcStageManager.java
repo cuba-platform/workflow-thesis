@@ -10,15 +10,16 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.EmailerAPI;
-import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.*;
 import groovy.lang.Binding;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,8 +31,8 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.*;
 
-@ManagedBean(ProcStageManagerMBean.NAME)
-public class ProcStageManager extends ManagementBean implements ProcStageManagerMBean {
+@ManagedBean(ProcStageManagerAPI.NAME)
+public class ProcStageManager implements ProcStageManagerAPI {
     private Log log = LogFactory.getLog(ProcStageManager.class);
 
     @Inject
@@ -40,20 +41,32 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
     @Inject
     private MailService mailService;
 
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Scripting scripting;
+
+    @Inject
+    protected Authentication authentication;
+
+    @Override
     public void processOverdueStages() {
         if (!AppContext.isStarted() || !clusterManager.isMaster())
             return;
 
         log.info("Notifying about overdue stages");
+        authentication.begin();
         try {
-            login();
-
-            Transaction tx = Locator.getTransaction();
+            Transaction tx = persistence.getTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 Query query = em.createQuery("select cs from wf$CardStage cs left join cs.procStage ps left join fetch ps.procRoles where cs.endDateFact is null " +
                         "and cs.endDatePlan < :currentTime and cs.notified <> true");
-                Date currentTime = TimeProvider.currentTimestamp();
+                Date currentTime = timeSource.currentTimestamp();
                 query.setParameter("currentTime", currentTime);
 
                 List<CardStage> list = query.getResultList();
@@ -84,10 +97,8 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
             } finally {
                 tx.end();
             }
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
         } finally {
-            logout();
+            authentication.end();
         }
     }
 
@@ -105,7 +116,7 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
             bindingParams.put("user", user);
 
             Binding binding = new Binding(bindingParams);
-            ScriptingProvider.runGroovyScript(script, binding);
+            scripting.runGroovyScript(script, binding);
             subject = binding.getVariable("subject").toString();
             body = binding.getVariable("body").toString();
         } catch (Exception e) {
@@ -141,7 +152,7 @@ public class ProcStageManager extends ManagementBean implements ProcStageManager
 //        ci.setActivity(context.getActivity());
         ci.setDescription(subject);
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         em.persist(ci);
 
         return ci;

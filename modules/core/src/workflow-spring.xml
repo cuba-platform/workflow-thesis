@@ -68,14 +68,22 @@
     <bean id="wf_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
-                <entry key="${cuba.webContextName}.workflow:type=WfEngine" value-ref="workflow_WfEngine"/>
-                <entry key="${cuba.webContextName}.workflow:type=TimerManager" value-ref="workflow_TimerManager"/>
-                <entry key="${cuba.webContextName}.workflow:type=WorkCalendar" value-ref="workflow_WorkCalendar"/>
-                <entry key="${cuba.webContextName}.workflow:type=PermissionsManager" value-ref="workflow_PermissionsManager"/>
-                <entry key="${cuba.webContextName}.workflow:type=NotificationMatrix" value-ref="workflow_NotificationMatrix"/>
-                <entry key="${cuba.webContextName}.workflow:type=ProcStageManager" value-ref="workflow_ProcStageManager"/>
-                <entry key="${cuba.webContextName}.workflow:type=SmsSender" value-ref="workflow_SmsSender"/>
-                <entry key="${cuba.webContextName}.workflow:type=SmsManager" value-ref="workflow_SmsManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=WfEngine"
+                       value-ref="workflow_WfEngineMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=TimerManager"
+                       value-ref="workflow_TimerManagerMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=WorkCalendar"
+                       value-ref="workflow_WorkCalendarMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=PermissionsManager"
+                       value-ref="workflow_PermissionsManager"/>
+                <entry key="${cuba.webContextName}.workflow:type=NotificationMatrix"
+                       value-ref="workflow_NotificationMatrixMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=ProcStageManager"
+                       value-ref="workflow_ProcStageManagerMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=SmsSender"
+                       value-ref="workflow_SmsSenderMBean"/>
+                <entry key="${cuba.webContextName}.workflow:type=SmsManager"
+                       value-ref="workflow_SmsManagerMBean"/>
             </map>
         </property>
     </bean>

@@ -15,9 +15,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
 import com.haulmont.workflow.core.entity.ProcRolePermission;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ManagedBean(PermissionsManagerMBean.NAME)
-public class PermissionsManager extends ManagementBean implements PermissionsManagerMBean {
+public class PermissionsManager implements PermissionsManagerMBean {
 
     @Inject
     private Resources resources;
@@ -42,13 +42,14 @@ public class PermissionsManager extends ManagementBean implements PermissionsMan
     @Inject
     private Persistence persistence;
 
+    @Authenticated
+    @Override
     public String deployPermissions(String procName) {
         procName = procName.trim();
         String filePath = "/process/" + procName + "/permissions.xml";
 
         Transaction tx = persistence.createTransaction();
         try {
-            login();
             String xml = resources.getResourceAsString(filePath);
             if (xml == null) {
                 return "File " + filePath + " not found";
@@ -117,7 +118,6 @@ public class PermissionsManager extends ManagementBean implements PermissionsMan
             return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
-            logout();
         }
         return "Permissions successfully deployed";
     }

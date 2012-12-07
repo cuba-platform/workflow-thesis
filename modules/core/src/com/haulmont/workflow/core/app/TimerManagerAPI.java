@@ -28,4 +28,6 @@ public interface TimerManagerAPI {
     void removeTimers(ActivityExecution execution);
 
     void removeTimers(ActivityExecution execution, Assignment assignment);
+
+    void processTimers();
 }

@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.workflow.core.app;
+package com.haulmont.workflow.core.jmx;
 
 import com.haulmont.workflow.core.exception.SmsException;
 

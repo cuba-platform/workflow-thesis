@@ -4,13 +4,17 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 26.01.2010 12:56:53
+ * Created: 29.01.2010 13:31:30
  *
  * $Id$
  */
-package com.haulmont.workflow.core.app;
+package com.haulmont.workflow.core.jmx;
 
-public interface TimerManagerMBean {
+public interface WorkCalendarMBean {
 
-    void processTimers();
+    int getCacheSize();
+
+    void invalidateCache();
+
+    String fillWorkCalendar();
 }

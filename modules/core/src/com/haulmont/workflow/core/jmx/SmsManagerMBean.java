@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.workflow.core.app;
+package com.haulmont.workflow.core.jmx;
 
 /**
  * <p>$Id$</p>
@@ -14,9 +14,9 @@ package com.haulmont.workflow.core.app;
 
 public interface SmsManagerMBean {
 
-    String getDelayCallCountJmx();
+    int getDelayCallCount();
 
-    String getMessageQueueCapacityJmx();
+    int getMessageQueueCapacity();
 
     boolean getUseSmsSending();
 

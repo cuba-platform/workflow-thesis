@@ -19,6 +19,7 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.core.jmx.NotificationMatrixMBean;
 import groovy.lang.Binding;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,7 +37,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ManagedBean(NotificationMatrixAPI.NAME)
-public class NotificationMatrix implements NotificationMatrixMBean, NotificationMatrixAPI {
+public class NotificationMatrix implements NotificationMatrixAPI {
 
     static final String MAIL_SHEET = "Mail";
     static final String TRAY_SHEET = "Tray";
@@ -296,6 +297,7 @@ public class NotificationMatrix implements NotificationMatrixMBean, Notification
     }
 
 
+    @Override
     public void reload(String processPath) throws Exception {
         String path = StringUtils.trimToNull(processPath);
         if (path == null)

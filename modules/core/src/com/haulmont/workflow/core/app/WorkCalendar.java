@@ -10,34 +10,24 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @ManagedBean(WorkCalendarAPI.NAME)
 @Scope("prototype")
-public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, WorkCalendarMBean {
+public class WorkCalendar implements WorkCalendarAPI {
 
     private static class CalendarItem {
 
@@ -248,10 +238,12 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
         }
     }
 
+    @Override
     public int getCacheSize() {
         return exceptionDays == null ? 0 : exceptionDays.size();
     }
 
+    @Override
     public void invalidateCache() {
         exceptionDays = null;
         defaultDays = null;
@@ -278,87 +270,6 @@ public class WorkCalendar extends ManagementBean implements WorkCalendarAPI, Wor
             }
         }
         return workDayLength;
-    }
-
-
-    //Test data filling
-    public String fillWorkCalendar() {
-        Transaction tx = persistence.createTransaction();
-        try {
-            login();
-            deleteWorkCalendar();
-            EntityManager em = persistence.getEntityManager();
-
-            String calendarResourceName = AppContext.getProperty("workflow.workCalendar.path");
-            if (calendarResourceName == null) return "workflow.workCalendar.path property isn't set";
-
-            String xml = resources.getResourceAsString(calendarResourceName);
-            if (xml != null) {
-                Document doc = Dom4j.readDocument(xml);
-                Element root = doc.getRootElement();
-
-                List<Date> filledDays = new ArrayList<Date>();
-
-                DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-                for (Element dayElement : Dom4j.elements(root)) {
-                    if ("workDay".equals(dayElement.getName())) {
-                        em.persist(createWorkCalendarEntity(null, dayElement.attributeValue("start"), dayElement.attributeValue("end"),
-                                Integer.parseInt(dayElement.attributeValue("dayOfWeek"))));
-                    } else if ("dayOff".equals(dayElement.getName())) {
-                        Date date = df.parse(dayElement.attributeValue("date"));
-                        em.persist(createWorkCalendarEntity(date, null, null, null));
-                        filledDays.add(date);
-                    } else if ("exceptionDay".equals(dayElement.getName())) {
-                        Date date = df.parse(dayElement.attributeValue("date"));
-                        em.persist(createWorkCalendarEntity(date, dayElement.attributeValue("start"), dayElement.attributeValue("end"), null));
-                        filledDays.add(date);
-                    }
-                }
-            }
-            tx.commit();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-            logout();
-        }
-        return "Work calendar records created successfuly";
-    }
-
-    private void deleteWorkCalendar() throws Exception {
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-
-            em.setSoftDeletion(false);
-            Query attrQuery = em.createQuery("select c from wf$Calendar c");
-            List<WorkCalendarEntity> calendars = attrQuery.getResultList();
-            for (WorkCalendarEntity c : calendars) {
-                em.remove(c);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            tx.end();
-        }
-    }
-
-    private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end, Integer dayOfWeek) {
-        WorkCalendarEntity calendarEntity = new WorkCalendarEntity();
-        calendarEntity.setDay(day);
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm");
-        try {
-            if (!StringUtils.isEmpty(start))
-                calendarEntity.setStart(format.parse(start));
-            if (!StringUtils.isEmpty(end))
-                calendarEntity.setEnd(format.parse(end));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        calendarEntity.setDayOfWeek(DayOfWeek.fromId(dayOfWeek));
-
-        return calendarEntity;
     }
 
     private long getFirstIntervalDuration() {

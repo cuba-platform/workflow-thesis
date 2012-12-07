@@ -10,7 +10,8 @@
  */
 package com.haulmont.workflow.core.app;
 
-public interface ProcStageManagerMBean {
+public interface ProcStageManagerAPI {
+
     String NAME = "workflow_ProcStageManager";
 
     void processOverdueStages();

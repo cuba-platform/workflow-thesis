@@ -8,14 +8,12 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.core.app;
+package com.haulmont.workflow.core.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 
 public interface WfEngineMBean {
-
-    String OBJECT_NAME = "haulmont.workflow:service=WfEngine";
 
     String JBPM_CFG_NAME_PROP = "cuba.jbpmCfgName";
 

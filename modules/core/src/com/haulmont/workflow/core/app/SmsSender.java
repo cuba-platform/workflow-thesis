@@ -6,10 +6,14 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.ManagementBean;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.entity.SendingSms;
 import com.haulmont.workflow.core.enums.SmsStatus;
 import com.haulmont.workflow.core.exception.SmsException;
@@ -24,32 +28,38 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 @ManagedBean(SmsSenderAPI.NAME)
-public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSenderMBean {
+public class SmsSender implements SmsSenderAPI {
 
-    private static final Log log = LogFactory.getLog(SmsSender.class);
-
-    @Inject
-    private SmsManagerAPI smsManager;
+    protected static final Log log = LogFactory.getLog(SmsSender.class);
 
     @Inject
-    private Persistence persistence;
-
-    private SmsSenderConfig config;
-
-    private SmsProvider smsProvider;
+    protected SmsManagerAPI smsManager;
 
     @Inject
-    public void setConfig(Configuration configuration) {
+    protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    protected SmsSenderConfig config;
+
+    protected volatile SmsProvider smsProvider;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
         this.config = configuration.getConfig(SmsSenderConfig.class);
     }
 
-    private SmsProvider getSmsProvider() {
-        if (getUseDefaultSmsSending()) {
+    @Override
+    public SmsProvider getSmsProvider() {
+        if (config.getUseDefaultSmsSending()) {
             if (!(smsProvider instanceof DefaultSmsProvider)) {
                 smsProvider = new DefaultSmsProvider();
             }
@@ -72,102 +82,17 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
     }
 
     @Override
-    public String sendSms(String phone, String message) {
-        try {
-            login();
-            SendingSms sendingSms = MetadataProvider.create(SendingSms.class);
-            sendingSms.setPhone(phone);
-            sendingSms.setMessage(message);
-            sendingSms.setErrorCode(0);
-            sendingSms.setAttemptsCount(0);
-            sendingSms.setStatus(SmsStatus.IN_QUEUE);
-            sendingSms = sendSmsSync(sendingSms);
-            return sendingSms.getErrorCode() == 0 ? sendingSms.getSmsId() :
-                    MessageProvider.getMessage(SmsException.class, "smsException." + sendingSms.getErrorCode());
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String checkStatus(String smsId) {
-        try {
-            login();
-            Transaction tx = persistence.createTransaction();
-            SendingSms sendingSms = null;
-            try {
-                EntityManager em = PersistenceProvider.getEntityManager();
-                Query query = em.createQuery("select sms from wf$SendingSms sms where sms.smsId = :smsId");
-                query.setParameter("smsId", smsId);
-                List list = query.getResultList();
-                sendingSms = list.isEmpty() ? null : (SendingSms) list.get(0);
-                tx.commit();
-            } catch (Exception e) {
-                log.error("Failed to store sms: " + ExceptionUtils.getStackTrace(e));
-                return null;
-            } finally {
-                tx.end();
-            }
-            sendingSms = checkStatus(sendingSms);
-            return sendingSms.getErrorCode() == 0 ? MessageProvider.getMessage(sendingSms.getStatus()) :
-                    MessageProvider.getMessage(SmsException.class, "smsException." + sendingSms.getErrorCode());
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String getBalance() throws SmsException {
-        try {
-            login();
-            return getSmsProvider().getBalance();
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public boolean getUseDefaultSmsSending() {
-        return config.getUseDefaultSmsSending();
+    public void setSmsProviderClassName(String value) {
+        config.setSmsProviderClassName(value);
+        smsProvider = null;
     }
 
     @Override
     public void setUseDefaultSmsSending(boolean value) {
-        try {
-            login();
-            config.setUseDefaultSmsSending(value);
-            if (value){
-                config.setSmsProviderClassName(DefaultSmsProvider.class.getCanonicalName());
-                smsProvider = null;
-            }
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String getSmsProviderClassName() {
-        return config.getSmsProviderClassName();
-    }
-
-    @Override
-    public void setSmsProviderClassName(String value) {
-        try {
-            login();
-            config.setSmsProviderClassName(value);
+        config.setUseDefaultSmsSending(value);
+        if (value){
+            config.setSmsProviderClassName(DefaultSmsProvider.class.getCanonicalName());
             smsProvider = null;
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
         }
     }
 
@@ -181,7 +106,7 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
             sendingSms.setErrorCode(e.getCode());
             sendingSms.setStatus(SmsStatus.ERROR);
         }
-        sendingSms.setLastChangeDate(TimeProvider.currentTimestamp());
+        sendingSms.setLastChangeDate(timeSource.currentTimestamp());
         if (sendingSms.getAttemptsCount() == null) {
             sendingSms.setAttemptsCount(1);
         } else {
@@ -191,15 +116,15 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
         return sendingSms;
     }
 
+    @Authenticated
     @Override
-    public void scheduledSendSms(SendingSms sendingSms) throws LoginException {
-        loginOnce();
+    public void scheduledSendSms(SendingSms sendingSms) {
         sendSmsSync(sendingSms);
     }
 
     @Override
     public SendingSms sendSmsAsync(String phone, String message) {
-        SendingSms sendingSms = MetadataProvider.create(SendingSms.class);
+        SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
         sendingSms.setMessage(message);
         sendingSms.setErrorCode(0);
@@ -220,7 +145,7 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
 
     @Override
     public SendingSms checkStatus(SendingSms sendingSms) {
-        sendingSms.setLastChangeDate(TimeProvider.currentTimestamp());
+        sendingSms.setLastChangeDate(timeSource.currentTimestamp());
         try {
             sendingSms.setErrorCode(0);
             sendingSms.setStatus(SmsStatus.fromString(getSmsProvider().checkStatus(sendingSms.getSmsId())));
@@ -232,16 +157,16 @@ public class SmsSender extends ManagementBean implements SmsSenderAPI, SmsSender
         return sendingSms;
     }
 
+    @Authenticated
     @Override
-    public void scheduledCheckStatusSms(SendingSms sendingSms) throws LoginException {
-        loginOnce();
+    public void scheduledCheckStatusSms(SendingSms sendingSms) {
         checkStatus(sendingSms);
     }
 
     private SendingSms storeSendingSms(SendingSms sendingSms) {
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             if (PersistenceHelper.isNew(sendingSms))
                 em.persist(sendingSms);
             else

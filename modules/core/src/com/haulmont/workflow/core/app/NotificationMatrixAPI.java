@@ -54,4 +54,6 @@ public interface NotificationMatrixAPI {
     void notifyUser(Card card, String state, User user);
 
     void notifyCardRole(Card card, CardRole cardRole, String state, Assignment assignment);
+
+    void reload(String processPath) throws Exception;
 }

@@ -7,6 +7,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.SendingSms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +29,7 @@ public class SmsCheckStatusTask implements Runnable {
     @Override
     public void run() {
         try {
-            SmsSenderAPI smsSender = Locator.lookup(SmsSenderAPI.NAME);
+            SmsSenderAPI smsSender = AppBeans.get(SmsSenderAPI.NAME);
             smsSender.scheduledCheckStatusSms(sendingSms);
         } catch (Exception e) {
             log.error("Exception while check status sms " + sendingSms);

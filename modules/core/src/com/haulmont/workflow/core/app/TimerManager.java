@@ -8,13 +8,12 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
@@ -42,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @version $Id$
  */
 @ManagedBean(TimerManagerAPI.NAME)
-public class TimerManager extends ManagementBean implements TimerManagerAPI, TimerManagerMBean {
+public class TimerManager implements TimerManagerAPI {
 
     private Log log = LogFactory.getLog(TimerManager.class);
 
@@ -60,6 +59,9 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
 
     @Inject
     private Scripting scripting;
+
+    @Inject
+    protected Authentication authentication;
 
     @Override
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
@@ -132,9 +134,8 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
             return;
 
         log.debug("Processing timers");
+        authentication.begin();
         try {
-            loginOnce();
-
             Date currentTime = timeSource.currentTimestamp();
             if (!workCalendarAPI.isDateWorkDay(currentTime))
                 return;
@@ -144,10 +145,8 @@ public class TimerManager extends ManagementBean implements TimerManagerAPI, Tim
             for (TimerEntity timer : timers) {
                 fireTimer(timer);
             }
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
         } finally {
-            clearSecurityContext();
+            authentication.end();
         }
     }
 

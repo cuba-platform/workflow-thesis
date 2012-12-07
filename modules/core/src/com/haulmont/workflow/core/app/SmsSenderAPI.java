@@ -6,15 +6,13 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.workflow.core.entity.SendingSms;
 
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 
 public interface SmsSenderAPI {
@@ -22,7 +20,7 @@ public interface SmsSenderAPI {
 
     SendingSms sendSmsSync(SendingSms sendingSms);
 
-    void scheduledSendSms(SendingSms sendingSms) throws LoginException;
+    void scheduledSendSms(SendingSms sendingSms);
 
     SendingSms sendSmsAsync(String phone, String message);
 
@@ -32,5 +30,11 @@ public interface SmsSenderAPI {
 
     SendingSms checkStatus(SendingSms sendingSms);
 
-    void scheduledCheckStatusSms(SendingSms sendingSms) throws LoginException;
+    void scheduledCheckStatusSms(SendingSms sendingSms);
+
+    SmsProvider getSmsProvider();
+
+    void setSmsProviderClassName(String value);
+
+    void setUseDefaultSmsSending(boolean value);
 }

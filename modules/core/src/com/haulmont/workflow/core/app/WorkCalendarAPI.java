@@ -32,4 +32,8 @@ public interface WorkCalendarAPI {
     boolean isDateWorkDay(Calendar date);
 
     Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit);
+
+    int getCacheSize();
+
+    void invalidateCache();
 }

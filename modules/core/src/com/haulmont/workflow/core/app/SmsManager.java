@@ -6,13 +6,15 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.ManagementBean;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.workflow.core.entity.SendingSms;
 import com.haulmont.workflow.core.enums.SmsStatus;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -28,12 +30,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 @ManagedBean(SmsManagerAPI.NAME)
-public class SmsManager extends ManagementBean implements SmsManagerMBean, SmsManagerAPI {
+public class SmsManager implements SmsManagerAPI {
 
     private static final Log log = LogFactory.getLog(SmsManager.class);
 
@@ -57,26 +58,25 @@ public class SmsManager extends ManagementBean implements SmsManagerMBean, SmsMa
     @Inject
     private Persistence persistence;
 
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Authentication authentication;
+
     private SmsSenderConfig config;
 
     @Inject
-    public void setConfig(Configuration configuration) {
+    public void setConfiguration(Configuration configuration) {
         this.config = configuration.getConfig(SmsSenderConfig.class);
     }
 
     @Override
-    public String getDelayCallCountJmx() {
-        return String.valueOf(config.getDelayCallCount());
-    }
-
-    @Override
-    public String getMessageQueueCapacityJmx() {
-        return String.valueOf(config.getMessageQueueCapacity());
-    }
-
-    @Override
     public List<SendingSms> addSmsToQueue(List<SendingSms> sendingSmsList) {
-        if (!getUseSmsSending())
+        if (!config.getUseSmsSending())
             return sendingSmsList;
         Transaction tx = persistence.createTransaction();
         try {
@@ -94,49 +94,36 @@ public class SmsManager extends ManagementBean implements SmsManagerMBean, SmsMa
     @Override
     public void queueSmsToSend() {
         try {
-            if (!getUseSmsSending())
+            if (!config.getUseSmsSending())
                 return;
             int delay = config.getDelayCallCount();
             if (callCount >= delay) {
                 log.debug("Queueing Smses");
-                loginOnce();
-                List<SendingSms> loadedMessages = loadSmsToSend();
-                if (messageQueue == null)
-                    messageQueue = new LinkedHashSet<SendingSms>();
-                messageQueue.addAll(loadedMessages);
+                authentication.begin();
+                try {
+                    List<SendingSms> loadedMessages = loadSmsToSend();
+                    if (messageQueue == null)
+                        messageQueue = new LinkedHashSet<SendingSms>();
+                    messageQueue.addAll(loadedMessages);
 
-                List<SendingSms> processedMessages = new ArrayList<SendingSms>();
-                List<UUID> notSentMessageIds = new ArrayList<UUID>();
-                for (SendingSms msg : messageQueue) {
-                    if (SmsStatus.IN_QUEUE.equals(msg.getStatus()))
-                        sendAsync(msg);
-                    else
-                        checkStatusAsync(msg);
-                    processedMessages.add(msg);
+                    List<SendingSms> processedMessages = new ArrayList<SendingSms>();
+                    List<UUID> notSentMessageIds = new ArrayList<UUID>();
+                    for (SendingSms msg : messageQueue) {
+                        if (SmsStatus.IN_QUEUE.equals(msg.getStatus()))
+                            sendAsync(msg);
+                        else
+                            checkStatusAsync(msg);
+                        processedMessages.add(msg);
+                    }
+                    messageQueue.removeAll(processedMessages);
+                } finally {
+                    authentication.end();
                 }
-                messageQueue.removeAll(processedMessages);
             } else {
                 callCount++;
             }
         } catch (Throwable e) {
             log.error("Exception in queue sms to send:" + e);
-        }
-    }
-
-    @Override
-    public boolean getUseSmsSending() {
-        return config.getUseSmsSending();
-    }
-
-    @Override
-    public void setUseSmsSending(boolean value) {
-        try {
-            login();
-            config.setUseSmsSending(value);
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } finally {
-            logout();
         }
     }
 
@@ -161,12 +148,12 @@ public class SmsManager extends ManagementBean implements SmsManagerMBean, SmsMa
     private List<SendingSms> loadSmsToSend() {
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            em.setView(MetadataProvider.getViewRepository().getView(SendingSms.class, "_local"));
+            EntityManager em = persistence.getEntityManager();
+            em.setView(metadata.getViewRepository().getView(SendingSms.class, "_local"));
             Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0, 400, 500) and " +
                     "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.createTs > :startDate order by sms.createTs")
                     .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
-                    .setParameter("startDate", DateUtils.addSeconds(TimeProvider.currentTimestamp(), -config.getMaxSendingTimeSec()));
+                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;
