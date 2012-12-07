@@ -27,7 +27,7 @@ public class SmsServiceBean implements SmsService {
     protected SmsSenderAPI smsSender;
 
     @Override
-    public void sendSms(String phone, String message) {
-        smsSender.sendSmsAsync(phone, message);
+    public void sendSms(String phone, String addressee, String message) {
+        smsSender.sendSmsAsync(phone,addressee, message);
     }
 }

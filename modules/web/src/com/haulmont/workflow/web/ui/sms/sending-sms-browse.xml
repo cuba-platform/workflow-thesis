@@ -36,6 +36,7 @@
                 <columns>
                     <column id="smsId" caption="msg://UserNotifiedBySms.smsId"/>
                     <column id="phone" caption="msg://UserNotifiedBySms.phone"/>
+                    <column id="addressee" caption="msg://UserNotifiedBySms.addressee"/>
                     <column id="message" caption="msg://UserNotifiedBySms.message"/>
                     <column id="errorCode" caption="msg://UserNotifiedBySms.errorCode">
                         <formatter class="com.haulmont.workflow.web.ui.formatter.SmsExceptionFormatter"/>

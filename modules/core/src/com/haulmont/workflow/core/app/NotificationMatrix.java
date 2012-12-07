@@ -373,7 +373,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
             SmsService smsService = Locator.lookup(SmsService.NAME);
-            smsService.sendSms(message.getSubject(), message.getBody());
+            smsService.sendSms(message.getSubject(),user.getName(), message.getBody());
 
             smsList.add(user);
         }

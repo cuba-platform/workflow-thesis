@@ -633,6 +633,7 @@ create table WF_SENDING_SMS
     STATUS integer,
     LAST_CHANGE_DATE timestamp,
     ATTEMPTS_COUNT integer,
+    ADDRESSEE varchar(200),
     primary key (ID)
 )^
 ------------------------------------------------------------------------------------------------------------

@@ -105,6 +105,14 @@ public class SendingSms extends BaseUuidEntity {
         this.smsId = smsId;
     }
 
+    public String getAddressee() {
+        return addressee;
+    }
+
+    public void setAddressee(String addressee) {
+        this.addressee = addressee;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -123,9 +123,10 @@ public class SmsSender implements SmsSenderAPI {
     }
 
     @Override
-    public SendingSms sendSmsAsync(String phone, String message) {
+    public SendingSms sendSmsAsync(String phone, String addressee, String message) {
         SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
+        sendingSms.setAddressee(addressee);
         sendingSms.setMessage(message);
         sendingSms.setErrorCode(0);
         sendingSms.setAttemptsCount(0);

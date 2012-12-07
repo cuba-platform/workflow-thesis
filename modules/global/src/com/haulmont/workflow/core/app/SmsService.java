@@ -15,5 +15,5 @@ public interface SmsService {
 
     public static String NAME = "workflow_SmsService";
 
-    void sendSms(String phone, String message);
+    void sendSms(String phone, String addressee, String message);
 }

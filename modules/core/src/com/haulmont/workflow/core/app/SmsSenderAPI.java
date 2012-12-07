@@ -22,7 +22,7 @@ public interface SmsSenderAPI {
 
     void scheduledSendSms(SendingSms sendingSms);
 
-    SendingSms sendSmsAsync(String phone, String message);
+    SendingSms sendSmsAsync(String phone, String addressee, String message);
 
     SendingSms sendSmsAsync(SendingSms sendingSms);
 
