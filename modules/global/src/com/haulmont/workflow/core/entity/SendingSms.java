@@ -49,6 +49,9 @@ public class SendingSms extends BaseUuidEntity {
     @Column(name = "SMS_ID", length = 255)
     private String smsId;
 
+    @Column(name = "ADDRESSEE", length = 200)
+    private String addressee;
+
     public String getPhone() {
         return phone;
     }
