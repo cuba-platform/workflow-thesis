@@ -58,9 +58,10 @@ public class SmsSender implements SmsSenderMBean {
 
     @Authenticated
     @Override
-    public String sendSms(String phone, String message) {
+    public String sendSms(String phone,String addressee, String message) {
         SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
+        sendingSms.setAddressee(addressee);
         sendingSms.setMessage(message);
         sendingSms.setErrorCode(0);
         sendingSms.setAttemptsCount(0);
