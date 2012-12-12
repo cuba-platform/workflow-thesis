@@ -28,6 +28,6 @@ public class SmsServiceBean implements SmsService {
 
     @Override
     public void sendSms(String phone, String addressee, String message) {
-        smsSender.sendSmsAsync(phone,addressee, message);
+        smsSender.sendSmsAsync(phone, addressee, message);
     }
 }

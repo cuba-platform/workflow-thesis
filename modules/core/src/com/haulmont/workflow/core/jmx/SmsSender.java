@@ -58,7 +58,7 @@ public class SmsSender implements SmsSenderMBean {
 
     @Authenticated
     @Override
-    public String sendSms(String phone,String addressee, String message) {
+    public String sendSms(String phone, String addressee, String message) {
         SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
         sendingSms.setAddressee(addressee);
@@ -128,5 +128,15 @@ public class SmsSender implements SmsSenderMBean {
     @Override
     public void setSmsProviderClassName(String value) {
         sender.setSmsProviderClassName(value);
+    }
+
+    @Override
+    public int getSmsMaxParts() {
+        return config.getSmsMaxParts();
+    }
+
+    @Override
+    public void setSmsMaxParts(int value) {
+        config.setSmsMaxParts(value);
     }
 }

@@ -90,7 +90,7 @@ public class SmsSender implements SmsSenderAPI {
     @Override
     public void setUseDefaultSmsSending(boolean value) {
         config.setUseDefaultSmsSending(value);
-        if (value){
+        if (value) {
             config.setSmsProviderClassName(DefaultSmsProvider.class.getCanonicalName());
             smsProvider = null;
         }

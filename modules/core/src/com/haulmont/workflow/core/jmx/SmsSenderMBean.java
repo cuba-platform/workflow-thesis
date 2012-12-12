@@ -14,7 +14,7 @@ import com.haulmont.workflow.core.exception.SmsException;
  * @author novikov
  */
 public interface SmsSenderMBean {
-    String sendSms(String phone,String addressee, String message);
+    String sendSms(String phone, String addressee, String message);
 
     String checkStatus(String smsId);
 
@@ -27,4 +27,8 @@ public interface SmsSenderMBean {
     String getSmsProviderClassName();
 
     void setSmsProviderClassName(String value);
+
+    int getSmsMaxParts();
+
+    void setSmsMaxParts(int value);
 }
