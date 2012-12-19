@@ -27,7 +27,7 @@
     <layout expand="mainPane">
 
         <hbox id="mainPane" expand="tabsheet">
-            <tabsheet id="tabsheet">
+            <tabSheet id="tabsheet">
                 <tab id="mainTab" caption="msg://mainTab">
                     <accessControl data="com.haulmont.workflow.web.ui.card.CardAccessData" param="accessData">
                         <editable property="notStarted"/>
@@ -72,7 +72,7 @@
                 <tab id="rolesTab" caption="msg://rolesTab">
                     <iframe id="cardRolesFrame" src="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
                 </tab>
-            </tabsheet>
+            </tabSheet>
 
             <vbox id="actionsPane" width="250px" margin="true">
                 <iframe id="actionsFrame" src="/com/haulmont/workflow/web/ui/base/action/actions-frame.xml"/>

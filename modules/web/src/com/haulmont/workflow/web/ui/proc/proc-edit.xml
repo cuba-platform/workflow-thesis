@@ -28,7 +28,7 @@
     </dsContext>
 
     <layout expand="tabsheet">
-        <tabsheet id="tabsheet">
+        <tabSheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab" expand="rolesSplit" margin="true">
                 <hbox stylename="edit-area">
                     <vbox margin="true">
@@ -172,7 +172,7 @@
                     <rows datasource="stagesDs"/>
                 </table>
             </tab>
-        </tabsheet>
+        </tabSheet>
 
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

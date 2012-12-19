@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -55,9 +54,9 @@ public class TransitionForm extends AbstractForm {
     @Inject
     protected CardAttachmentsFrame attachmentsFrame;
     @Inject
-    protected Tabsheet.Tab attachmentsTab;
+    protected TabSheet.Tab attachmentsTab;
     @Inject
-    private Tabsheet tabsheet;
+    private TabSheet tabsheet;
     @Inject
     private BoxLayout mainPane;
     @Inject
@@ -79,7 +78,7 @@ public class TransitionForm extends AbstractForm {
     protected Card card;
     protected Card cardCopy;
     protected List<String> requiredAttachmentTypes = new ArrayList<String>();
-    private Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>();
+    private Set<TabSheet.Tab> initedTabs = new HashSet<TabSheet.Tab>();
     private String requiredRolesCodesStr;
     private Map<String, AttachmentType> attachmentTypes;
 

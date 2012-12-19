@@ -47,7 +47,7 @@ public class ProcEditor extends AbstractEditor {
   protected Table rolesTable;
   protected Table permissionsTable;
   protected Datasource<Proc> procDs;
-  protected Set<Tabsheet.Tab> initedTabs = new HashSet<Tabsheet.Tab>()
+  protected Set<TabSheet.Tab> initedTabs = new HashSet<TabSheet.Tab>()
   protected CollectionDatasource<DefaultProcActor, UUID> dpaDs
   protected CollectionDatasource<Role, UUID> secRolesDs
   protected Map multiUserMap = new HashMap<UUID, com.vaadin.ui.Component>();
@@ -313,9 +313,9 @@ public class ProcEditor extends AbstractEditor {
   }
 
   protected void initLazyTabs() {
-    Tabsheet tabsheet = getComponent("tabsheet")
+    TabSheet tabsheet = getComponent("tabsheet")
     tabsheet.addListener([
-            tabChanged : {Tabsheet.Tab newTab ->
+            tabChanged : {TabSheet.Tab newTab ->
               if (!initedTabs.contains(newTab)) {
                 initedTabs << newTab
                 if (newTab.name == 'stagesTab') {
@@ -323,7 +323,7 @@ public class ProcEditor extends AbstractEditor {
                 }
               }
             }
-    ] as Tabsheet.TabChangeListener)
+    ] as TabSheet.TabChangeListener)
   }
 
   protected void initStagesTab() {

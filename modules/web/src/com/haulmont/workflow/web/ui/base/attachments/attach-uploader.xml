@@ -25,7 +25,7 @@
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
             <hbox height="30" spacing="true">
-                <multiupload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
+                <multiUpload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
                 <button id="removeAttachBtn" icon="icons/remove.png"/>
                 <label value="msg://setAttachmentsType"/>
                 <lookupField id="attachTypeCombo" editable="true"/>

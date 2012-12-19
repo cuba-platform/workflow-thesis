@@ -33,7 +33,7 @@
     </dsContext>
 
     <layout expand="tabsheet">
-        <tabsheet id="tabsheet">
+        <tabSheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab">
                 <vbox id="mainPane" expand="cardRolesFrame" spacing="true" margin="true">
                 <hbox id="outcomeTextBox">
@@ -79,7 +79,7 @@
                 <label value="msg://requiredAttachmentsTypes" stylename="bold"/>
                 <hbox id="requiredAttachmentsPane"/>
             </tab>
-        </tabsheet>
+        </tabSheet>
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
