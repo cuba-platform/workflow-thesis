@@ -299,10 +299,6 @@ public class AttachmentActionsHelper {
             @Override
             public void uploadFailed(Event event) {
             }
-
-            @Override
-            public void updateProgress(long readBytes, long contentLength) {
-            }
         });
 
         buttonsPanel.add(fileUploadField);
