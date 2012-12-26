@@ -82,7 +82,10 @@ public class CardRolesFrame extends AbstractFrame {
     WebButton moveDown;
     @Inject
     WebButton moveUp;
-
+    
+    @Inject
+    private Metadata metadata;
+    
     public CardRolesFrame(IFrame frame) {
         super(frame);
     }
@@ -203,7 +206,7 @@ public class CardRolesFrame extends AbstractFrame {
                     return;
 
                 final ProcRole procRole = (ProcRole) value;
-                CardRole cardRole = new CardRole();
+                CardRole cardRole = metadata.create(CardRole.class);
                 cardRole.setProcRole(procRole);
                 cardRole.setCode(procRole.getCode());
                 cardRole.setNotifyByEmail(true);
@@ -444,7 +447,7 @@ public class CardRolesFrame extends AbstractFrame {
                             if (!validUsers.isEmpty()) {
                                 if (oldUser == null) {
                                     oldUser = validUsers.iterator().next();
-                                    CardRole cr = new CardRole();
+                                    CardRole cr = metadata.create(CardRole.class);
                                     cr.setUser(oldUser);
                                     cr.setProcRole(cardRole.getProcRole());
                                     cr.setCode(cardRole.getCode());
@@ -586,7 +589,7 @@ public class CardRolesFrame extends AbstractFrame {
                 }
             }
             if (!isUserInList) {
-                CardRole cr = new CardRole();
+                CardRole cr = metadata.create(CardRole.class);
                 cr.setUser(user);
                 cr.setProcRole(procRole);
                 cr.setCode(code);
@@ -908,7 +911,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         //If card role with given code doesn't exist we'll create a new one
         if (cardRole == null) {
-            cardRole = new CardRole();
+            cardRole = metadata.create(CardRole.class);
 
             if (proc.getRoles() == null) {
                 proc = getDsContext().getDataService().reload(proc, "edit");
@@ -954,7 +957,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (procActorExists(procRole, user))
             removeProcActor(procRole.getCode(), user);
         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
-            CardRole cardRole = new CardRole();
+            CardRole cardRole = metadata.create(CardRole.class);
             cardRole.setProcRole(procRole);
             cardRole.setCode(roleCode);
             cardRole.setCard(card);
