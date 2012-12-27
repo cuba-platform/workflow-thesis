@@ -406,6 +406,7 @@ create table WF_SENDING_SMS
     LAST_CHANGE_DATE timestamp,
     ATTEMPTS_COUNT integer,
     ADDRESSEE varchar(200),
+    DATE_START_SENDING timestamp,
     primary key (ID)
 )^
 ------------------------------------------------------------------------------------------------------------

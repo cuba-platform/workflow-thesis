@@ -71,11 +71,6 @@ public interface SmsSenderConfig extends Config {
     @DefaultInt(86400)
     int getMaxSendingTimeSec();
 
-    /**
-     * Max count sms
-     *
-     * @return
-     */
     @Property("workflow.sms.smsMaxParts")
     @Default("1")
     int getSmsMaxParts();

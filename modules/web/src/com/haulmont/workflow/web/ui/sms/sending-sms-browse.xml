@@ -31,6 +31,7 @@
                 <buttonsPanel>
                     <button action="table.refresh" icon="icons/refresh.png"/>
                     <button action="table.remove" icon="icons/remove.png"/>
+                    <button action="table.repeatSend" caption="msg://SendingSms.repeatSendMsg"/>
                 </buttonsPanel>
                 <rowsCount/>
                 <columns>
@@ -46,6 +47,7 @@
                     </column>
                     <column id="lastChangeDate" caption="msg://UserNotifiedBySms.lastChangeDate"/>
                     <column id="attemptsCount" caption="msg://UserNotifiedBySms.attemptsCount"/>
+                    <column id="dateStartSending" caption="msg://UserNotifiedBySms.dateStartSending"/>
                 </columns>
                 <rows datasource="sendingSmsDs"/>
             </groupTable>

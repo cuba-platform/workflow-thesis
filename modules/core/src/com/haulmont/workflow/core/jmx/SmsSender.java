@@ -10,9 +10,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.app.SmsSenderAPI;
 import com.haulmont.workflow.core.app.SmsSenderConfig;
@@ -49,6 +47,9 @@ public class SmsSender implements SmsSenderMBean {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected TimeSource timeSource;
+
     protected SmsSenderConfig config;
 
     @Inject
@@ -62,6 +63,7 @@ public class SmsSender implements SmsSenderMBean {
         SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
         sendingSms.setAddressee(addressee);
+        sendingSms.setDateStartSending(timeSource.currentTimestamp());
         sendingSms.setMessage(message);
         sendingSms.setErrorCode(0);
         sendingSms.setAttemptsCount(0);

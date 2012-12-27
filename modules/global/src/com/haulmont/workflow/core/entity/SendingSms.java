@@ -52,6 +52,9 @@ public class SendingSms extends BaseUuidEntity {
     @Column(name = "ADDRESSEE", length = 200)
     private String addressee;
 
+    @Column(name = "DATE_START_SENDING")
+    private Date dateStartSending;
+
     public String getPhone() {
         return phone;
     }
@@ -114,6 +117,14 @@ public class SendingSms extends BaseUuidEntity {
 
     public void setAddressee(String addressee) {
         this.addressee = addressee;
+    }
+
+    public Date getDateStartSending() {
+        return dateStartSending;
+    }
+
+    public void setDateStartSending(Date dateStartSending) {
+        this.dateStartSending = dateStartSending;
     }
 
     @Override

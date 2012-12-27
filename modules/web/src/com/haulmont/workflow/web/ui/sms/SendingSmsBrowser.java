@@ -6,15 +6,17 @@
 
 package com.haulmont.workflow.web.ui.sms;
 
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.workflow.core.entity.SendingSms;
+import com.haulmont.workflow.core.enums.SmsStatus;
 
 import javax.inject.Inject;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -36,5 +38,17 @@ public class SendingSmsBrowser extends AbstractLookup {
 
         ComponentsHelper.createActions(table, EnumSet.of(ListActionType.REFRESH));
         ComponentsHelper.createActions(table, EnumSet.of(ListActionType.REMOVE));
+        table.addAction(new AbstractAction("repeatSend") {
+            @Override
+            public void actionPerform(Component component) {
+                Set selected= table.getSelected();
+                for(Object obj:selected){
+                    ((SendingSms)obj).setDateStartSending(TimeProvider.currentTimestamp());
+                    ((SendingSms)obj).setStatus(SmsStatus.IN_QUEUE);
+                    ((SendingSms)obj).setAttemptsCount(0);
+                }
+                table.getDatasource().commit();
+            }
+        });
     }
 }
