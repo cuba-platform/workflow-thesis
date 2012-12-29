@@ -6,14 +6,8 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.workflow.core.entity.SendingSms;
 import com.haulmont.workflow.core.enums.SmsStatus;
@@ -116,6 +110,7 @@ public class SmsManager implements SmsManagerAPI {
                         processedMessages.add(msg);
                     }
                     messageQueue.removeAll(processedMessages);
+                    updateStatusForNotSetSms();
                 } finally {
                     authentication.end();
                 }
@@ -157,6 +152,38 @@ public class SmsManager implements SmsManagerAPI {
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;
+        } finally {
+            tx.end();
+        }
+    }
+
+    private List<SendingSms> loadSmsNotSent() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            em.setView(metadata.getViewRepository().getView(SendingSms.class, "_local"));
+            Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0) and " +
+                    "(sms.attemptsCount > :attemptsCount or sms.dateStartSending <= :startDate) and sms.errorCode = 0 order by sms.createTs")
+                    .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
+                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
+            List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
+            tx.commit();
+            return res;
+        } finally {
+            tx.end();
+        }
+    }
+
+    private void updateStatusForNotSetSms() {
+        List<SendingSms> notSentMessages = loadSmsNotSent();
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            for (SendingSms msg : notSentMessages) {
+                msg.setStatus(SmsStatus.NON_DELIVERED);
+                em.merge(msg);
+            }
+            tx.commit();
         } finally {
             tx.end();
         }
