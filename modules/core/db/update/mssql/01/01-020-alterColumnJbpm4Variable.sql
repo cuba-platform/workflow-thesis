@@ -1,0 +1,2 @@
+--$Id: 01-020-alterColumnJbpm4Variable.sql 8262 2012-06-26 09:08:07Z shishov $
+ALTER TABLE JBPM4_VARIABLE ALTER COLUMN STRING_VALUE_ varchar(4000)^
