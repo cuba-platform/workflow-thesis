@@ -23,27 +23,27 @@ public class TransitionFormAccessData extends AbstractAccessData {
     }
 
     public boolean isCommentVisible() {
-        String commentVisible = (String)params.get("param$commentVisible");
+        String commentVisible = (String)params.get("commentVisible");
         return commentVisible != null && Boolean.valueOf(commentVisible);
     }
 
     public boolean isCardRolesVisible() {
-        String cardRolesVisible = (String)params.get("param$cardRolesVisible");
+        String cardRolesVisible = (String)params.get("cardRolesVisible");
         return cardRolesVisible != null && Boolean.valueOf(cardRolesVisible);
     }
 
     public boolean isDueDateVisible() {
-        String dueDateVisible = (String)params.get("param$dueDateVisible");
+        String dueDateVisible = (String)params.get("dueDateVisible");
         return dueDateVisible != null && Boolean.valueOf(dueDateVisible);
     }
 
     public boolean isAttachmentsVisible() {
-        String attachmentsVisible = (String)params.get("param$attachmentsVisible");
+        String attachmentsVisible = (String)params.get("attachmentsVisible");
         return attachmentsVisible != null && Boolean.valueOf(attachmentsVisible);
     }
 
     public boolean isRefusedOnlyVisible() {
-        String refusedOnlyVisible = (String)params.get("param$refusedOnlyVisible");
+        String refusedOnlyVisible = (String)params.get("refusedOnlyVisible");
         return refusedOnlyVisible != null && Boolean.valueOf(refusedOnlyVisible);
     }
 }

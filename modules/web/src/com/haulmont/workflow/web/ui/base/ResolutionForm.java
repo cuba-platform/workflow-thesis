@@ -228,7 +228,7 @@ public class ResolutionForm extends AbstractForm {
                 for (CardAttachment attachment : attachmentList) {
                     CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
                     cardAttachment.setAssignment(item);
-                    cardAttachment.setCard(item.getCard());
+                    cardAttachment.setCard(item.getCard().getFamilyTop());
                     cardAttachment.setFile(attachment.getFile());
                     cardAttachment.setName(attachment.getName());
                     copyAttachmentList.add(cardAttachment);

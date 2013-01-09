@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.workflow.core.app.design.modules;
+
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.workflow.core.app.design.Module;
+import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+import org.json.JSONObject;
+
+import java.text.MessageFormat;
+
+/**
+ * @author subbotin
+ * @version $Id$
+ */
+public class ForEachUserModule extends Module {
+
+    protected String role;
+    protected JSONObject jsOptions;
+
+    @Override
+    public void init(Context context) throws DesignCompilationException {
+        super.init(context);
+        jsOptions = jsValue.optJSONObject("options");
+        role = jsOptions.optString("role");
+        if (StringUtils.trimToNull(role) == null)
+            throw new DesignCompilationException(MessageProvider.formatMessage(ForEachUserModule.class, "exception.noRole", caption));
+    }
+
+    @Override
+    public Element writeJpdlMainEl(Element parentEl) {
+        Element el = parentEl.addElement("foreach");
+        el.addAttribute("name", getName());
+        el.addAttribute("var", "iteratedAssigner");
+        el.addAttribute("in", MessageFormat.format("#'{'wf:getUsersByProcRole(execution, \"{0}\")'}'", role));
+        return el;
+    }
+}

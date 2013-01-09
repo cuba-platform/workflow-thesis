@@ -12,6 +12,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -21,24 +22,19 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.MailService;
 import com.haulmont.workflow.core.entity.*;
-import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.*;
-import java.util.List;
 
 public class CardSend extends AbstractWindow {
 
@@ -56,6 +52,13 @@ public class CardSend extends AbstractWindow {
     protected List<CardRole> roles;
     protected IFrame rootFrame;
 
+    private final Map<String, UserItemHandler> itemHandlers = new HashMap<String, UserItemHandler>();
+
+    public interface UserItemHandler {
+        void handleItem(Object value);
+    }
+
+
     public CardSend(IFrame frame) {
         super(frame);
     }
@@ -65,7 +68,7 @@ public class CardSend extends AbstractWindow {
         setHeight("400px");
         card = (Card) params.get("item");
         rootFrame = (IFrame) params.get("rootFrame");
-        if(PersistenceHelper.isNew(card))
+        if (PersistenceHelper.isNew(card))
             throw new RuntimeException("Card is new");
         if (card == null)
             throw new RuntimeException("Card null");
@@ -81,11 +84,11 @@ public class CardSend extends AbstractWindow {
         }
         notifyByCardInfo = getComponent("notifyByCardInfo");
         notifyByCardInfo.setValue(true);
-        parent = (CardComment)params.get("parent");
+        parent = (CardComment) params.get("parent");
         tmpUserDs = getDsContext().get("tmpUserDs");
         tmpUserDs.valid();
         if (parent != null) {
-            tmpUserDs.addItem(parent.getSender());    
+            tmpUserDs.addItem(parent.getSender());
         }
         createUserCaption = getMessage("cardSend.createUserCaption");
         createAllUsersCaption = getMessage("cardSend.createAllUsersCaption");
@@ -104,57 +107,69 @@ public class CardSend extends AbstractWindow {
             }
         });
 
-        createUserLookup.addListener(new ValueListener() {
-            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
-                if ((value == null) || createUserCaption.equals(value))
-                    return;
-                if (createAnyUserCaption.equals(value)) {
-                    Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("multiSelect", "true");
-                    App.getInstance().getWindowManager().getDialogParams().setWidth(750);
-                    openLookup("sec$User.lookup", new Lookup.Handler() {
-                        public void handleLookup(Collection items) {
-                            for (Object item : items) {
-                                User user = (User) item;
-                                if (tmpUserDs.containsItem(user.getUuid())) continue;
-                                tmpUserDs.addItem(user);
-                            }
-                        }
-
-                    }, WindowManager.OpenType.DIALOG, lookupParams);
-
-                } else if (createAllUsersCaption.equals(value)) {
-                    if (roles != null) {
-                        User user;
-                        for (CardRole cardRole : roles) {
-                            user = cardRole.getUser();
-                            if (user != null && !alreadyAdded(user)) {
-                                tmpUserDs.addItem(user);
-                            }
+        registerItemHandler(createAnyUserCaption, new UserItemHandler() {
+            public void handleItem(Object value) {
+                Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("multiSelect", "true");
+                App.getInstance().getWindowManager().getDialogParams().setWidth(750);
+                openLookup("sec$User.lookup", new Lookup.Handler() {
+                    public void handleLookup(Collection items) {
+                        for (Object item : items) {
+                            User user = (User) item;
+                            if (tmpUserDs.containsItem(user.getUuid())) continue;
+                            tmpUserDs.addItem(user);
                         }
                     }
-                    User user = card.getCreator();
-                    if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
-                        tmpUserDs.addItem(user);
+                }, WindowManager.OpenType.DIALOG, lookupParams);
+            }
+        });
+        registerItemHandler(createAllUsersCaption, new UserItemHandler() {
+            public void handleItem(Object value) {
+                if (roles != null) {
+                    User user;
+                    for (CardRole cardRole : roles) {
+                        user = cardRole.getUser();
+                        if (user != null && !alreadyAdded(user))
+                            tmpUserDs.addItem(user);
                     }
-                } else if (createCreatorUserCaption.equals(value)) {
-                    User user = card.getCreator();
-                    if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
-                        tmpUserDs.addItem(user);
-                    }
-                } else {;
-                    if (roles != null) {
-                        User user;
-                        for (CardRole cardRole : roles) {
-                            user = cardRole.getUser();
-                            if (user != null && !alreadyAdded(user)) {
-                                ProcRole procRole = cardRole.getProcRole();
-                                if (procRole != null && procRole.getName().equals(value)) {
-                                    tmpUserDs.addItem(user);
-                                }
+                }
+                User user = card.getCreator();
+                if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null)
+                    tmpUserDs.addItem(user);
+            }
+        });
+        registerItemHandler(createCreatorUserCaption, new UserItemHandler() {
+            public void handleItem(Object value) {
+                User user = card.getCreator();
+                if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
+                    tmpUserDs.addItem(user);
+                }
+            }
+        });
+        registerItemHandler("default", new UserItemHandler() {
+            @Override
+            public void handleItem(Object value) {
+                if (roles != null) {
+                    User user;
+                    for (CardRole cardRole : roles) {
+                        user = cardRole.getUser();
+                        if (user != null && !alreadyAdded(user)) {
+                            ProcRole procRole = cardRole.getProcRole();
+                            if (procRole != null && procRole.getName().equals(value)) {
+                                tmpUserDs.addItem(user);
                             }
                         }
                     }
                 }
+            }
+        });
+
+
+        createUserLookup.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+                if ((value == null) || createUserCaption.equals(value))
+                    return;
+                UserItemHandler handler = resolveItemHandler((String) value);
+                handler.handleItem(value);
                 createUserLookup.setValue(null);
             }
         });
@@ -196,13 +211,13 @@ public class CardSend extends AbstractWindow {
                     }
                     Set<Entity> toCommit = new HashSet<Entity>();
                     CardComment cardComment = new CardComment();
-                    if(parent != null){
+                    if (parent != null) {
                         cardComment.setAddressees(users);
                         cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                         cardComment.setParent(parent);
-                    }else{
+                    } else {
                         cardComment.setAddressees(users);
                         cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                         cardComment.setCard(card);
@@ -255,12 +270,12 @@ public class CardSend extends AbstractWindow {
         return false;
     }
 
-    protected List<CardRole> getCardRoles(Card card){
+    protected List<CardRole> getCardRoles(Card card) {
         LoadContext ctx = new LoadContext(CardRole.class);
         ctx.setView("card-edit");
         ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and cr.procRole.invisible = false and " +
                 "cr.procRole.id in (select pr.id from wf$ProcRole pr where pr.proc.id = :procId)")
-                .addParameter("cardId", card).addParameter("procId",card.getProc());
+                .addParameter("cardId", card).addParameter("procId", card.getProc());
         return ServiceLocator.getDataService().loadList(ctx);
     }
 
@@ -273,8 +288,8 @@ public class CardSend extends AbstractWindow {
                 if (user != null) {
                     ProcRole procRole = cardRole.getProcRole();
                     if (procRole != null && !alreadyAdded(user)) {
-                        if(!options.contains(procRole.getName()))
-                           options.add(procRole.getName());
+                        if (!options.contains(procRole.getName()))
+                            options.add(procRole.getName());
                     }
                 }
             }
@@ -309,11 +324,22 @@ public class CardSend extends AbstractWindow {
         ci.setCard(card);
         ci.setType(5);
         ci.setUser(user);
-        Proc proc  = card.getProc();
-        if(proc != null)
+        Proc proc = card.getProc();
+        if (proc != null)
             ci.setJbpmExecutionId(proc.getJbpmProcessKey());
         ci.setActivity("Comment");
-        ci.setDescription(card.getDescription()+"("+comment+")");
+        ci.setDescription(card.getDescription() + "(" + comment + ")");
         return ci;
+    }
+
+    protected void registerItemHandler(String name, UserItemHandler handler) {
+        itemHandlers.put(name, handler);
+    }
+
+    protected UserItemHandler resolveItemHandler(String name) {
+        UserItemHandler handler = itemHandlers.get(name);
+        if (handler == null)
+            return itemHandlers.get("default");
+        return handler;
     }
 }

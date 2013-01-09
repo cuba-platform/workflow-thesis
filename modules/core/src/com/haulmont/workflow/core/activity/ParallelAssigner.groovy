@@ -28,6 +28,7 @@ import org.jbpm.api.activity.ActivityExecution
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
 import com.haulmont.cuba.core.global.TimeProvider
+import com.haulmont.cuba.core.global.UserSessionProvider
 
 public class ParallelAssigner extends MultiAssigner {
 
@@ -62,6 +63,8 @@ public class ParallelAssigner extends MultiAssigner {
     em.persist(master)
 
     Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment,CardRole>();
+    Assignment familyAssignment = findFamilyAssignment(card)
+
     for (CardRole cr: cardRoles) {
       Assignment assignment = new Assignment()
       assignment.setName(execution.getActivityName())
@@ -77,6 +80,7 @@ public class ParallelAssigner extends MultiAssigner {
       assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
+      assignment.setFamilyAssignment(familyAssignment)
 
       if (timersFactory) {
         timersFactory.createTimers(execution, assignment)

@@ -52,7 +52,8 @@ public class FormManagerChain {
         String resourceName = card.getProc().getMessagesPack().replace(".", "/") + "/forms.xml";
 
         String cacheKey = resourceName + "/" + actionName;
-        FormManagerChain cached = cache.get(cacheKey);
+        FormManagerChain cached = null;
+        //cache.get(cacheKey);
         if (cached != null) {
             cached.reset();
             return cached.clone();

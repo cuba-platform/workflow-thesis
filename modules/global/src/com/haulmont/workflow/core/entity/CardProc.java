@@ -15,10 +15,12 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.global.MessageTools;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,9 @@ public class CardProc extends StandardEntity {
     @JoinColumn(name = "PROC_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Proc proc;
+
+    @Column(name = "JBPM_PROCESS_ID", length = 255)
+    protected String jbpmProcessId;
 
     @Column(name = "IS_ACTIVE")
     protected Boolean active;
@@ -64,6 +69,14 @@ public class CardProc extends StandardEntity {
 
     public void setProc(Proc proc) {
         this.proc = proc;
+    }
+
+    public String getJbpmProcessId() {
+        return jbpmProcessId;
+    }
+
+    public void setJbpmProcessId(String jbpmProcessId) {
+        this.jbpmProcessId = jbpmProcessId;
     }
 
     public Boolean getActive() {
@@ -106,8 +119,12 @@ public class CardProc extends StandardEntity {
             String messagesPack = getProc().getMessagesPack();
             StringBuilder sb = new StringBuilder();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
-            while (matcher.find()) {
-                sb.append(AppBeans.get(MessageTools.class).loadString(messagesPack, "msg://" + matcher.group()))
+            Set<String> states = new HashSet<>();
+            while (matcher.find())
+                states.add(matcher.group());
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            for (String state : states) {
+                sb.append(messageTools.loadString(messagesPack, "msg://" + state))
                         .append(Card.STATE_SEPARATOR);
             }
             if (sb.length() > 0)

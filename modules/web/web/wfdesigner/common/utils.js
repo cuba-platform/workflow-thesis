@@ -89,23 +89,31 @@ Wf = {
         return res;
     },
 
+    loadJson:function (url, callback, scope) {
+        YAHOO.util.Connect.asyncRequest(
+            'GET',
+            url,
+            {
+                success:function (o) {
+                    var r = YAHOO.lang.JSON.parse(o.responseText);
+                    callback.call(scope, r);
+                },
+                failure:function (o) {
+                    var error = o.status + " " + o.statusText;
+                    console.log(error);
+                }
+            },
+            null
+        );
+    },
+
 
     loadScripts: function(callback, scope) {
-        YAHOO.util.Connect.asyncRequest(
-                'GET',
-                'action/loadScripts.json' + Wf.createProcIdParam(),
-                {
-                    success: function(o) {
-                        var r = YAHOO.lang.JSON.parse(o.responseText);
-                        callback.call(scope, r);
-                    },
-                    failure: function(o) {
-                        var error = o.status + " " + o.statusText;
-                        console.log(error);
-                    }
-                },
-                null
-        );
+        this.loadJson('action/loadScripts.json' + Wf.createProcIdParam(), callback, scope);
+    },
+
+    loadJbpmProcs:function (callback, scope) {
+        this.loadJson('action/loadJbpmProcs.json', callback, scope);
     },
 
     initTerminalLabels: function(container, terminalConfigs) {

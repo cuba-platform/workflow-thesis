@@ -12,6 +12,7 @@ package com.haulmont.workflow.web.wfdesigner;
 
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -19,10 +20,13 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
+import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,8 +51,7 @@ public class ActionController {
     public String handlePostRequest(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(value = "id", required = false) String id
-    )  {
+            @RequestParam(value = "id", required = false) String id) {
         try {
             Design design;
             if (auth(request, response) && (design = findDesign(request, response, id)) != null) {
@@ -75,7 +78,7 @@ public class ActionController {
             return null;
         } catch (Throwable t) {
             log.error("Error processing POST", t);
-            throw new RuntimeException( t);
+            throw new RuntimeException(t);
         }
     }
 
@@ -83,34 +86,29 @@ public class ActionController {
     public String handleGetRequest(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(value = "id", required = false) String id
-    ) {
+            @RequestParam(value = "id", required = false) String id) {
         try {
             if (auth(request, response)) {
                 try {
                     Design design;
                     if (request.getPathInfo().endsWith("/load.json") && (design = findDesign(request, response, id)) != null) {
                         String src = design.getSrc() == null ? "" : design.getSrc();
-                        setHeaders(response);
-                        PrintWriter out = response.getWriter();
-                        out.println("[" + src + "]");
-                        out.close();
+                        printJson(response, "[" + src + "]");
                     } else if (request.getPathInfo().endsWith("/loadScripts.json")) {
-                        List<DesignScript> designScripts = findDesignScripts(request, response, id);
-
-                        StringBuilder sb = new StringBuilder("[");
-                        for (Iterator<DesignScript> it = designScripts.iterator(); it.hasNext();) {
-                            final DesignScript designScript = it.next();
-                            sb.append("\"").append(designScript.getName()).append("\"");
-                            if (it.hasNext())
-                                sb.append(",");
-                        }
-                        sb.append("]");
-
-                        setHeaders(response);
-                        PrintWriter out = response.getWriter();
-                        out.println(sb.toString());
-                        out.close();
+                        JSONWriter json = new JSONStringer().array();
+                        for (DesignScript designScript : findDesignScripts(request, response, id))
+                            json.value(designScript.getName());
+                        json.endArray();
+                        printJson(response, json.toString());
+                    } else if (request.getPathInfo().endsWith("/loadJbpmProcs.json")) {
+                        JSONWriter json = new JSONStringer().array();
+                        for (Proc proc : findProcs())
+                            json.object()
+                                    .key("procCode").value(proc.getCode())
+                                    .key("name").value(proc.getName())
+                                    .endObject();
+                        json.endArray();
+                        printJson(response, json.toString());
                     } else {
                         log.warn("Illegal request path info: " + request.getPathInfo());
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -122,8 +120,21 @@ public class ActionController {
             return null;
         } catch (Throwable t) {
             log.error("Error processing GET", t);
-            throw new RuntimeException( t);
+            throw new RuntimeException(t);
         }
+    }
+
+    protected void setHeaders(HttpServletResponse resp) {
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    protected void printJson(HttpServletResponse response, String json) throws IOException {
+        setHeaders(response);
+        PrintWriter out = response.getWriter();
+        out.println(json);
+        out.close();
     }
 
     protected Design findDesign(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
@@ -159,6 +170,13 @@ public class ActionController {
         return true;
     }
 
+    private List<Proc> findProcs() {
+        View view = new View(Proc.class).addProperty("code").addProperty("name");
+        LoadContext ctx = new LoadContext(Proc.class).setView(view);
+        ctx.setQueryString("select p from wf$Proc p order by p.name");
+        return ServiceLocator.getDataService().loadList(ctx);
+    }
+
     private Design loadDesign(UUID designId) {
         LoadContext ctx = new LoadContext(Design.class).setId(designId).setView("_local");
         return ServiceLocator.getDataService().load(ctx);
@@ -168,11 +186,5 @@ public class ActionController {
         LoadContext ctx = new LoadContext(DesignScript.class).setView("_minimal");
         ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").addParameter("designId", designId);
         return ServiceLocator.getDataService().loadList(ctx);
-    }
-
-    protected void setHeaders(HttpServletResponse resp) {
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
     }
 }

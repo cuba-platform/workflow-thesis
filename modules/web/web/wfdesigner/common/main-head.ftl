@@ -87,6 +87,7 @@
 <script type="text/javascript" src="../common/utils.js"></script>
 <script type="text/javascript" src="../common/output-select.js"></script>
 <script type="text/javascript" src="../common/script-select.js"></script>
+<script type="text/javascript" src="../common/jbpmproc-select.js"></script>
 <script type="text/javascript" src="../common/form-select.js"></script>
 <script type="text/javascript" src="../common/timer-select.js"></script>
 <script type="text/javascript" src="../common/container.js"></script>

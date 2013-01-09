@@ -18,19 +18,16 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.workflow.core.WfHelper;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardInfo;
-import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.ProcessDefinition;
 import org.jbpm.api.ProcessDefinitionQuery;
 import org.jbpm.api.ProcessInstance;
+import org.jbpm.api.model.Activity;
+import org.jbpm.api.model.Transition;
 import org.jbpm.pvm.internal.client.ClientProcessDefinition;
-import org.jbpm.pvm.internal.model.Activity;
-import org.jbpm.pvm.internal.model.Transition;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -59,6 +56,8 @@ public class WfServiceBean implements WfService {
                     Assignment assignment = assignments.get(0);
                     info = new AssignmentInfo(assignment);
                     String activityName = assignment.getName();
+                    if (!card.equals(assignment.getCard()))
+                        processId = assignment.getCard().getJbpmProcessId();
 
                     ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
 
@@ -104,7 +103,11 @@ public class WfServiceBean implements WfService {
     }
 
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
-        WfHelper.getEngine().finishAssignment(assignmentId, outcome, comment);
+        finishAssignment(assignmentId, outcome, comment, null);
+    }
+
+    public void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard) {
+        WfHelper.getEngine().finishAssignment(assignmentId, outcome, comment, subProcCard);
     }
 
     public Map<String, Object> getProcessVariables(Card card) {
@@ -148,7 +151,7 @@ public class WfServiceBean implements WfService {
         User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         return isUserInProcRole(card, currentUser, procRoleCode);
     }
-    
+
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
         CardRole appropCardRole = null;
         if (card.getRoles() == null) {
@@ -265,5 +268,54 @@ public class WfServiceBean implements WfService {
         } finally {
             tx.end();
         }
+    }
+
+    public Card createSubProcCard(Card parentCard, String procCode) {
+        Transaction tx = PersistenceProvider.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Card familyTop = parentCard.getFamilyTop();
+            Card card = new Card();
+            card.setProc(getProc(procCode));
+            ProcFamily procFamily = new ProcFamily();
+            procFamily.setCard(familyTop);
+            procFamily.setJbpmProcessId(familyTop.getJbpmProcessId());
+            card.setProcFamily(procFamily);
+            CardProc cardProc = new CardProc();
+            cardProc.setCard(card);
+            cardProc.setActive(true);
+            cardProc.setStartCount(1);
+            cardProc.setProc(card.getProc());
+            card.setProcs(Arrays.asList(cardProc));
+            em.persist(cardProc);
+            em.persist(card);
+            tx.commit();
+            return card;
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void removeSubProcCard(Card card) {
+        Transaction tx = PersistenceProvider.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            for (CardProc cardProc : card.getProcs())
+                em.remove(cardProc);
+            em.remove(card);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    //TODO: extract logic into separate helper api
+    private Proc getProc(String code) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery("select p from wf$Proc p where p.code = :code").setParameter("code", code);
+        List<Proc> result = q.getResultList();
+        if (result.isEmpty())
+            throw new RuntimeException("Proc not found");
+        return result.get(0);
     }
 }

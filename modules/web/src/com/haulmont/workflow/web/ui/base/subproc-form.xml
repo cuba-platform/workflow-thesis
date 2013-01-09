@@ -1,0 +1,13 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.SubProcForm"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        caption="msg://confirmationForm.title"
+        extends="/com/haulmont/workflow/web/ui/base/transition-form.xml">
+</window>

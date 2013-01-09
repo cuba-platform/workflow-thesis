@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -78,7 +79,7 @@ public class TransitionForm extends AbstractForm {
     protected Card card;
     protected Card cardCopy;
     protected List<String> requiredAttachmentTypes = new ArrayList<String>();
-    private Set<TabSheet.Tab> initedTabs = new HashSet<TabSheet.Tab>();
+
     private String requiredRolesCodesStr;
     private Map<String, AttachmentType> attachmentTypes;
 
@@ -95,7 +96,7 @@ public class TransitionForm extends AbstractForm {
         super.init(params);
 
         getDialogParams().setWidth(835);
-        card = (Card) params.get("param$card");
+        card = (Card) params.get("card");
         cardCopy = (Card) InstanceUtils.copy(card);
         cardDs = getDsContext().get("cardDs");
         cardDs.setItem(cardCopy);
@@ -111,8 +112,8 @@ public class TransitionForm extends AbstractForm {
 
 
         if (cardRolesFrame != null) {
-            requiredRolesCodesStr = (String) params.get("param$requiredRoles");
-            String additionalRolesCodes = (String) params.get("param$additionalRoles");
+            requiredRolesCodesStr = (String) params.get("requiredRoles");
+            String additionalRolesCodes = (String) params.get("additionalRoles");
             if (!StringUtils.isEmpty(additionalRolesCodes)) {
                 requiredRolesCodesStr += "," + additionalRolesCodes;
             }
@@ -153,18 +154,21 @@ public class TransitionForm extends AbstractForm {
 
 
         String messagesPack = card.getProc().getMessagesPack();
-        String activity = (String) params.get("param$activity");
-        String transition = (String) params.get("param$transition");
+        String activity = (String) params.get("activity");
+        String transition = (String) params.get("transition");
 
         LoadContext ctx = new LoadContext(Assignment.class);
-        Object assignmentId = params.get("param$assignmentId");
+        Object assignmentId = params.get("assignmentId");
         //when starting process
         if (assignmentId != null) {
             ctx.setId(assignmentId);
             ctx.setView("resolution-edit");
             Assignment assignment = ServiceLocator.getDataService().load(ctx);
             assignmentDs.setItem(assignment);
-            outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + "." + transition));
+            String parentMessagesPack = messagesPack;
+            if (card.isSubProcCard())
+                parentMessagesPack = card.getProcFamily().getCard().getProc().getMessagesPack();
+            outcomeText.setValue(MessageProvider.getMessage(parentMessagesPack, activity + "." + transition));
             if (commentText != null)
                 commentText.setDatasource(assignmentDs, "comment");
         } else {
@@ -172,18 +176,18 @@ public class TransitionForm extends AbstractForm {
         }
         outcomeText.setEditable(false);
 
-        String formCaption = (String) params.get("param$formCaption");
+        String formCaption = (String) params.get("formCaption");
         if (StringUtils.isNotBlank(formCaption))
             setCaption(MessageProvider.getMessage(messagesPack, formCaption));
 
-        String dueDateLabelParam = (String) params.get("param$dueDateLabel");
+        String dueDateLabelParam = (String) params.get("dueDateLabel");
         if (StringUtils.isNotBlank(dueDateLabelParam)) {
             Label dueDateLabel = getComponent("dueDateLabel");
             if (dueDateLabel != null)
                 dueDateLabel.setValue(MessageProvider.getMessage(messagesPack, dueDateLabelParam));
         }
 
-        String dueDateFormatParam = (String) params.get("param$dueDateFormat");
+        String dueDateFormatParam = (String) params.get("dueDateFormat");
         if (StringUtils.isNotBlank(dueDateFormatParam)) {
             if ("dateTimeFormat".equals(dueDateFormatParam)) {
                 dueDate.setResolution(DateField.Resolution.MIN);
@@ -192,7 +196,7 @@ public class TransitionForm extends AbstractForm {
         }
 
         if (commentText != null) {
-            String commentRequired = (String) params.get("param$commentRequired");
+            String commentRequired = (String) params.get("commentRequired");
             commentText.setRequired(commentRequired != null && Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
         }
 
@@ -243,21 +247,6 @@ public class TransitionForm extends AbstractForm {
 
         cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
     }
-
-//    private void initLazyTabs() {
-//        tabsheet.addListener(new Tabsheet.TabChangeListener() {
-//            public void tabChanged(Tabsheet.Tab newTab) {
-//                if ("attachmentsTab".equals(newTab.getName()) && !initedTabs.contains(newTab)) {
-//                    initedTabs.add(newTab);
-//                    attachmentsFrame = getComponent("attachmentsFrame");
-//                    attachmentsFrame.init();
-//                    attachmentsFrame.setCardCommitCheckRequired(false);
-//                    attachmentsTab.setCaption(getAttachmentsTabCaption());
-//                    initRequiredAttachmentsPane();
-//                }
-//            }
-//        });
-//    }
 
     private String getAttachmentsTabCaption() {
         Set<String> presentAttachmentTypes = new HashSet<String>();

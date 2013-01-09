@@ -54,7 +54,6 @@ public class CardActivity implements ActivityBehaviour {
 
     CardProc cp = card.procs.find { it.proc == card.proc }
     cp?.setState(card.state)
-
     if (!delayedNotify)
       notificationMatrix.notifyByCard(card, notificationState)
   }

@@ -11,11 +11,12 @@
 package com.haulmont.workflow.core.global;
 
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Card;
 
 import java.io.Serializable;
-import java.util.UUID;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AssignmentInfo implements Serializable {
 
@@ -25,12 +26,17 @@ public class AssignmentInfo implements Serializable {
     private String name;
     private String description;
     private List<String> actions;
+    private Card card;
 
     public AssignmentInfo(Assignment assignment) {
         assignmentId = assignment.getId();
         name = assignment.getName();
         description = assignment.getDescription();
         actions = new ArrayList();
+        //todo: store card in assignment info (its a hack)
+        card = assignment.getCard();
+        if (card != null)
+            card.getProc();
     }
 
     public List<String> getActions() {
@@ -48,4 +54,9 @@ public class AssignmentInfo implements Serializable {
     public String getName() {
         return name;
     }
+
+    public Card getCard() {
+        return card;
+    }
+
 }

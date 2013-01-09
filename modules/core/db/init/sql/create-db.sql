@@ -100,6 +100,8 @@ create table WF_CARD (
     HAS_ATTACHMENTS boolean,
     HAS_ATTRIBUTES boolean,
     CATEGORY_ID varchar(36),
+    FAMILY_CARD_ID varchar(36),
+    FAMILY_JBPM_PROCESS_ID varchar(255),
     primary key (ID)
 );
 
@@ -108,6 +110,8 @@ alter table WF_CARD add constraint FK_WF_CARD_USER foreign key (CREATOR_ID) refe
 alter table WF_CARD add constraint FK_WF_CARD_CARD foreign key (PARENT_CARD_ID) references WF_CARD (ID);
 alter table WF_CARD add constraint FK_WF_CARD_SUBSTITUTED_CREATOR foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER (ID);
 alter table WF_CARD add constraint FK_WF_CARD_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID);
+alter table WF_CARD add constraint WF_CARD_FAMILY_CARD foreign key (FAMILY_CARD_ID) references WF_CARD(ID);
+create index IDX_WF_CARD_FAMILY_CARD on WF_CARD(FAMILY_CARD_ID);
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_RELATION (
@@ -170,6 +174,8 @@ create table WF_ASSIGNMENT (
     OUTCOME varchar(255),
     COMMENT text,
     ITERATION integer,
+    SUBPROC_CARD_ID varchar(36),
+    FAMILY_ASSIGNMENT_ID varchar(36),
     primary key (ID)
 );
 
@@ -180,6 +186,10 @@ alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_FINISHED_BY foreign ke
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD (ID);
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC_ID) references WF_PROC (ID);
+
+alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_FAMILY_ASSIGNMENT foreign key (FAMILY_ASSIGNMENT_ID) references WF_ASSIGNMENT(ID);
+
+alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_SUBPROC_CARD foreign key (SUBPROC_CARD_ID) references WF_CARD(ID);
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -308,6 +318,7 @@ create table WF_CARD_PROC (
     START_COUNT integer,
     STATE varchar(255),
     SORT_ORDER integer,
+    JBPM_PROCESS_ID varchar(255),
     primary key (ID)
 );
 

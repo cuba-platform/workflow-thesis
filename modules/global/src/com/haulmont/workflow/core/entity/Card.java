@@ -12,6 +12,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -21,24 +22,21 @@ import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Entity(name = "wf$Card")
 @Table(name = "WF_CARD")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
 @Listeners({"com.haulmont.workflow.core.listeners.CardListener"})
+@NamePattern("%s|description")
 @SystemLevel
 public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
@@ -71,7 +69,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     @Column(name = "DESCRIPTION", length = 1000)
     protected String description;
-    
+
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("sortOrder")
     @Composition
@@ -102,7 +100,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CARD_ID")
-    @OnDeleteInverse(DeletePolicy.DENY)    
+    @OnDeleteInverse(DeletePolicy.DENY)
     protected Card parentCard;
 
     @OneToMany(mappedBy = "parentCard")
@@ -119,6 +117,9 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     @Column(name = "HAS_ATTRIBUTES")
     protected Boolean hasAttributes = false;
+
+    @Embedded
+    protected ProcFamily procFamily;
 
     @Transient
     protected Map<String, Object> initialProcessVariables;
@@ -231,6 +232,24 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
         this.parentCard = parentCard;
     }
 
+    public ProcFamily getProcFamily() {
+        return procFamily;
+    }
+
+    public void setProcFamily(ProcFamily procFamily) {
+        this.procFamily = procFamily;
+    }
+
+    public Card getFamilyTop() {
+        if (procFamily == null)
+            return this;
+        return procFamily.getCard() != null ? procFamily.getCard() : this;
+    }
+
+    public boolean isSubProcCard() {
+        return procFamily != null && procFamily.getCard() != null;
+    }
+
     public Set<Card> getSubCards() {
         return subCards;
     }
@@ -247,10 +266,13 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
             String messagesPack = getProc().getMessagesPack();
             StringBuilder sb = new StringBuilder();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
-            while (matcher.find()) {
-                sb.append(AppBeans.get(MessageTools.class).loadString(messagesPack, "msg://" + matcher.group()))
+            Set<String> states = new HashSet<>();
+            while (matcher.find())
+                states.add(matcher.group());
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            for (String state : states)
+                sb.append(messageTools.loadString(messagesPack, "msg://" + state))
                         .append(STATE_SEPARATOR);
-            }
             if (sb.length() > 0)
                 sb.delete(sb.length() - STATE_SEPARATOR.length(), sb.length());
             return sb.toString();

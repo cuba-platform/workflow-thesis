@@ -86,9 +86,12 @@
     <screen id="transition.form"
             template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>
 
+    <screen id="subproc.form"
+            template="/com/haulmont/workflow/web/ui/base/subproc-form.xml"/>
+
     <screen id="cardRolesFrame"
             template="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
-    
+
     <screen id="wf$Card.send"
             template="workflow/web/ui/base/card-send.xml"/>
 

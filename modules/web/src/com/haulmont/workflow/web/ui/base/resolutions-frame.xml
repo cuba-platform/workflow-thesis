@@ -4,19 +4,19 @@
         >
 
     <dsContext>
-        <groupDatasource id="resolutionsDs"
+        <hierarchicalDatasource id="resolutionsDs"
                               class="com.haulmont.workflow.core.entity.Assignment"
-                              view="resolutions">
+                              view="resolutions" hierarchyProperty="familyAssignment">
             <query>
                 select a from wf$Assignment a
-                where a.card.id = :custom$cardId and a.user is not null
+                where (a.card.id = :custom$cardId or a.card.procFamily.card.id=:custom$cardId) and a.user is not null
                 order by a.createTs desc
             </query>
-        </groupDatasource>
+        </hierarchicalDatasource>
     </dsContext>
 
     <layout expand="resolutionsTable">
-        <groupTable id="resolutionsTable" editable="false" sortable="true" width="100%">
+        <treeTable  id="resolutionsTable" editable="false" sortable="true" width="100%">
             <columns>
                 <column id="proc" caption="msg://process"/>
                 <column id="createTs" caption="msg://createdDate"/>
@@ -31,7 +31,7 @@
                 <!--<column id="attachments" caption="msg://attachments"/>-->
             </columns>
             <rows datasource="resolutionsDs"/>
-        </groupTable>
+        </treeTable >
     </layout>
 
 </window>

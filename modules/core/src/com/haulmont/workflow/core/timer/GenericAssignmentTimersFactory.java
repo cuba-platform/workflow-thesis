@@ -54,6 +54,8 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
                 assignment.setDueDate(d);
             } else if (!StringUtils.isBlank(scriptsArr[i])) {
                 params.put("script", scriptsArr[i]);
+                if ("process".equals(StringUtils.trimToNull(dueDate)))
+                    assignment.setDueDate(d);
             }
 
             WfHelper.getTimerManager().addTimer(

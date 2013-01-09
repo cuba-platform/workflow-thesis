@@ -40,10 +40,7 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         HashSet list = (HashSet)params.get("selectedItems");
         List<User> users = loadUsers(secRole);
 
-        LoadContext ctx = new LoadContext(UserGroup.class).setView("add");
-        ctx.setQueryString("select ug from wf$UserGroup ug order by ug.name");
-
-        List<UserGroup> userGroups = dataservice.loadList(ctx);
+        List<UserGroup> userGroups = loadUserGroups();
 
         for (UserGroup userGroup : userGroups) {
             if (StringUtils.isBlank(requiredText) || StringUtils.containsIgnoreCase(userGroup.getInstanceName(), requiredText))
@@ -78,6 +75,12 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         LoadContext.Query query = ctx.setQueryString(queryString);
         query.addParameter("secRole", secRole);
 
+        return dataservice.loadList(ctx);
+    }
+
+    protected List<UserGroup> loadUserGroups(){
+        LoadContext ctx = new LoadContext(UserGroup.class).setView("add");
+        ctx.setQueryString("select ug from wf$UserGroup ug order by ug.name");
         return dataservice.loadList(ctx);
     }
 }

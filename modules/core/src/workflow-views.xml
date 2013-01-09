@@ -94,6 +94,13 @@
         <property name="roles" view="card-edit"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.Card" name="with-processFamily" extends="_local">
+        <property name="procFamily">
+            <property name="card" view="_local"/>
+            <property name="jbpmProcessId"/>
+        </property>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.Card" name="w-attachments" extends="_local">
         <property name="attachments" view="card-edit"/>
     </view>
@@ -119,6 +126,11 @@
         <property name="proc" view="_local"/>
     </view>
 
+    <view class="com.haulmont.workflow.core.entity.CardProc" name="subprocess" extends="_local">
+        <property name="card" view="edit"/>
+        <property name="proc" view="edit"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.Assignment" name="browse" extends="_local">
         <property name="card" view="browse"/>
     </view>
@@ -128,6 +140,7 @@
         <property name="user" view="resolutions"/>
         <property name="finishedByUser" view="resolutions"/>
         <property name="card" view="_local"/>
+        <property name="familyAssignment" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="resolutions" extends="_local">

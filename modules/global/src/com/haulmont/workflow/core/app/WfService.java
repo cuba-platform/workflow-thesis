@@ -31,6 +31,8 @@ public interface WfService {
 
     void finishAssignment(UUID assignmentId, String outcome, String comment);
 
+    void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard);
+
     Map<String, Object> getProcessVariables(Card card);
 
     void setProcessVariables(Card card, Map<String, Object> variables);
@@ -47,5 +49,9 @@ public interface WfService {
 
     void deleteNotifications(Card card, User user, int type);
 
-    void setHasAttachmentsInCard(Card card, Boolean hasAttachments); 
+    void setHasAttachmentsInCard(Card card, Boolean hasAttachments);
+
+    Card createSubProcCard(Card parentCard, String subProcCode);
+
+    void removeSubProcCard(Card card);
 }

@@ -1,10 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
-  ~ Haulmont Technology proprietary and confidential.
-  ~ Use is subject to license terms.
-  -->
-
+<?xml version="1.0"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
 
@@ -34,8 +28,8 @@
         <class>com.haulmont.workflow.core.entity.ProcStageType</class>
         <class>com.haulmont.workflow.core.entity.ProcAppFolder</class>
         <class>com.haulmont.workflow.core.entity.ProcState</class>
+        <class>com.haulmont.workflow.core.entity.ProcFamily</class>
         <class>com.haulmont.workflow.core.entity.SendingSms</class>
         <class>com.haulmont.workflow.core.entity.UserNotifiedBySms</class>
-
     </persistence-unit>
 </persistence>

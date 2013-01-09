@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -669,12 +670,13 @@ public class CardRolesFrame extends AbstractFrame {
                 initCreateRoleLookup();
             }
         }
-//        for (Component component : rolesActions) {
-//            component.setEnabled(card.getProc() != null);
-//        }
     }
 
     public void procChanged(Proc proc) {
+        procChanged(proc, null);
+    }
+
+    public void procChanged(Proc proc, Card card) {
         procRolesDs.refresh(Collections.<String, Object>singletonMap("procId", proc));
         initCreateRoleLookup();
         tmpCardRolesDs.fillForProc(proc);
@@ -711,10 +713,6 @@ public class CardRolesFrame extends AbstractFrame {
                 if (vRolesTable.getColumnHeader("sortOrder") != null) {
                     vRolesTable.removeGeneratedColumn("sortOrder");
                 }
-//                if (vRolesTable.getColumnHeader("sortOrder") != null) {
-//                    MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
-//                    vRolesTable.removeContainerProperty(mpp);
-//                }
                 if (rolesTable.getColumn("sortOrder") != null) {
                     rolesTable.removeGeneratedColumn("sortOrder");
                     rolesTable.removeColumn(rolesTable.getColumn("sortOrder"));
@@ -1233,28 +1231,38 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
-        private static final long serialVersionUID = 2186196099900027571L;
-        protected CollectionDatasource<CardRole, UUID> cardRolesDs = getDsContext().get("cardRolesDs");
+        protected CollectionDatasource<CardRole, UUID> cardRolesDs;
+        private CollectionDatasource<CardRole, UUID> activeDs;
+        private Map<UUID, CollectionDatasource<CardRole, UUID>> dsRegistry = new HashMap<UUID, CollectionDatasource<CardRole, UUID>>();
         public boolean fill;
+
+        private static final long serialVersionUID = 2186196099900027571L;
 
         public CardProcRolesDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
             super(context, dataservice, id, metaClass, viewName);
             cardRolesDs = getDsContext().get("cardRolesDs");
+            this.activeDs = this.cardRolesDs;
+        }
+
+        public void setCard(Card card) {
+            if (card == null)
+                this.activeDs = this.cardRolesDs;
+            else
+                this.activeDs = getDsInternal(card);
         }
 
         @Override
         public void addItem(CardRole item) throws UnsupportedOperationException {
-
             super.addItem(item);
             if (!fill)
-                cardRolesDs.addItem(item);
+                activeDs.addItem(item);
         }
 
         @Override
         public void removeItem(CardRole item) throws UnsupportedOperationException {
             super.removeItem(item);
             if (!fill)
-                cardRolesDs.removeItem(item);
+                activeDs.removeItem(item);
         }
 
         @Override
@@ -1290,15 +1298,12 @@ public class CardRolesFrame extends AbstractFrame {
         public void fillForProc(Proc proc) {
             fill = true;
             try {
-                for (UUID id : new ArrayList<UUID>(getItemIds())) {
-                    removeItem(getItem(id));
-                }
+                removeAll();
                 if (proc != null) {
-                    for (UUID id : cardRolesDs.getItemIds()) {
-                        CardRole cardRole = cardRolesDs.getItem(id);
-                        if (BooleanUtils.isNotTrue(cardRole.getProcRole().getInvisible()) && cardRole.getProcRole().getProc().equals(proc)) {
+                    for (UUID id : activeDs.getItemIds()) {
+                        CardRole cardRole = activeDs.getItem(id);
+                        if (BooleanUtils.isNotTrue(cardRole.getProcRole().getInvisible()) && cardRole.getProcRole().getProc().equals(proc))
                             addItem(cardRole);
-                        }
                     }
                 }
                 doSort();
@@ -1311,6 +1316,29 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void setSuspended(boolean suspended) {
             super.setSuspended(false);
+        }
+
+        private void removeAll() {
+            List<UUID> items = new ArrayList<UUID>(getItemIds());
+            for (UUID id : items)
+                removeItem(getItem(id));
+        }
+
+        private CollectionDatasource<CardRole, UUID> getDsInternal(Card card) {
+            CollectionDatasource<CardRole, UUID> ds = dsRegistry.get(card.getId());
+            if (ds == null) {
+                DsContextImplementation dsContext = (DsContextImplementation) cardRolesDs.getDsContext();
+                DsBuilder dsBuilder = new DsBuilder(dsContext)
+                        .setJavaClass(CardRole.class)
+                        .setViewName("transition-form")
+                        .setId("cardRoles" + card.getId().toString() + "Ds");
+                ds = dsBuilder.buildCollectionDatasource();
+                ds.setQuery("select cr from wf$CardRole cr where cr.card.id = :custom$card");
+                ds.refresh(Collections.<String, Object>singletonMap("card", card));
+                dsContext.register(ds);
+                dsRegistry.put(card.getId(), ds);
+            }
+            return ds;
         }
     }
 

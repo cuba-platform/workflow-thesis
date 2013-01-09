@@ -56,7 +56,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
             public Attachment createObject() {
                 CardAttachment attachment = new CardAttachment();
                 Card card = cardDs.getItem();
-                attachment.setCard(card);
+                attachment.setCard(card.getFamilyTop());
                 attachment.setCreateTs(TimeProvider.currentTimestamp());
                 attachment.setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
                 return attachment;

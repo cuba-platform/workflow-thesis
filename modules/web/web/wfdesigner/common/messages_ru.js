@@ -43,6 +43,9 @@ var i18nDict = {
     attachmentsVisible: "Вложения",
     commentRequired: "Необходим комментарий",
 
+    //SubProc
+    subProcForm: "Запуск подпроцесса",
+
     // Transition
     transition: "Переход",
     commentVisible: "Комментарий",
@@ -100,10 +103,15 @@ var i18nDict = {
     "Decision.yes": "Да",
     "Decision.no": "Нет",
     "Fork" : "Ветвление",
+    "ForEachUser" : "Цикл",
     "Join" : "Объединение",
     "IsRoleAssigned" : "Роль назначена",
     "EmptyModule" : "Пустой модуль",
-    
+
+    "SubProc" : "Подпроцесс",
+    "SubProc.description" : "Запуск подпроцесса",
+    "SubProc.subProcCompleted" : "Завершен",
+    "SubProc.proc" : "Процесс",
     ////////////////////////////////
     ///Messages
 

@@ -43,9 +43,11 @@ public interface WfEngineAPI {
 
     void finishAssignment(UUID assignmentId, String outcome, String comment);
 
+    void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard);
+
     Card startProcess(Card card);
 
     void cancelProcess(Card card);
-    
+
     void addListener(Listener listener);
 }

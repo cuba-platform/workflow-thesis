@@ -14,23 +14,31 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.jbpm.pvm.internal.cfg.SpringConfiguration;
+import org.jbpm.api.ProcessEngine;
+import org.jbpm.pvm.internal.cfg.ConfigurationImpl;
+import org.jbpm.pvm.internal.processengine.SpringHelper;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
  * Configures jBPM depending on {@link DbmsType}.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class CubaJbpmSpringConfiguration extends SpringConfiguration {
+public class CubaJbpmSpringHelper extends SpringHelper {
 
-    public CubaJbpmSpringConfiguration() {
+    private String jbpmConfiguration;
+    private String hibernateConfiguration;
+
+    public CubaJbpmSpringHelper() {
         super();
+
         String hibernateDialect;
         switch (DbmsType.getCurrent()) {
             case HSQL:
@@ -50,11 +58,30 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
         File hibernateCfgFile = modifyHibernateCfgXml(dataDir, hibernateDialect);
         File jbpmCfgFile = modifyJbpmCfgXml(dataDir, hibernateCfgFile);
 
+        jbpmConfiguration = jbpmCfgFile.toURI().toString();
+        hibernateConfiguration = hibernateCfgFile.toURI().toString();
+    }
+
+    public ProcessEngine createProcessEngine() {
         try {
-            setInputStream(new FileInputStream(jbpmCfgFile));
+            processEngine = new ConfigurationImpl()
+                    .springInitiated(applicationContext)
+                    .setInputStream(new FileInputStream(new File(new URI(getJbpmConfiguration()))))
+                    .buildProcessEngine();
+            return processEngine;
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public String getJbpmConfiguration() {
+        return jbpmConfiguration;
+    }
+
+    public String getHibernateConfiguration() {
+        return hibernateConfiguration;
     }
 
     @SuppressWarnings("unchecked")
@@ -113,4 +140,6 @@ public class CubaJbpmSpringConfiguration extends SpringConfiguration {
         }
         return jbpmCfgFile;
     }
+
+
 }

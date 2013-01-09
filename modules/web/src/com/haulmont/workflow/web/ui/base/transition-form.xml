@@ -13,7 +13,9 @@
 
         <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment"
                                 view="card-edit" hierarchyProperty="versionOf">
-            <query>select a from wf$CardAttachment a where a.card.id = :ds$cardDs order by a.createTs desc</query>
+            <query>select a from wf$CardAttachment a where (a.card.id = :ds$cardDs or a.card.id in (select c.id from
+                wf$Card c where c.procFamily.card.id = :ds$cardDs)) order by a.createTs desc
+            </query>
         </hierarchicalDatasource>
 
         <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="_local"/>
@@ -35,41 +37,43 @@
     <layout expand="tabsheet">
         <tabSheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab">
-                <vbox id="mainPane" expand="cardRolesFrame" spacing="true" margin="true">
-                <hbox id="outcomeTextBox">
-                    <label value="msg://transition" width="${labelWidth}"/>
-                    <textField id="outcomeText" width="${width}"/>
-                </hbox>
-
-                <accessControl id="cardRolesFrameAccessControl"
-                               data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                    <visible property="cardRolesVisible"/>
-                    <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
-                </accessControl>
-
-                <accessControl id="refusedOnlyControl" data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
-                               param="accessData">
-                    <visible property="refusedOnlyVisible"/>
-                    <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly" caption="msg://refusedOnly"/>
-                </accessControl>
-
-                <accessControl id="dueDateAccessControl"
-                               data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
-                               param="accessData">
-                    <visible property="dueDateVisible"/>
-                    <hbox id="dueDatePane">
-                        <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
-                        <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
+                <vbox id="mainPane" spacing="true" margin="true">
+                    <hbox id="outcomeTextBox">
+                        <label value="msg://transition" width="${labelWidth}"/>
+                        <textField id="outcomeText" width="${width}"/>
                     </hbox>
-                </accessControl>
 
-                <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
-                    <visible property="commentVisible"/>
-                    <hbox id="commentTextPane">
-                        <label value="msg://comment" width="${labelWidth}"/>
-                        <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
-                    </hbox>
-                </accessControl>
+                    <accessControl id="cardRolesFrameAccessControl"
+                                   data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                        <visible property="cardRolesVisible"/>
+                        <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
+                    </accessControl>
+
+                    <accessControl id="refusedOnlyControl"
+                                   data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                                   param="accessData">
+                        <visible property="refusedOnlyVisible"/>
+                        <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly"
+                                  caption="msg://refusedOnly"/>
+                    </accessControl>
+
+                    <accessControl id="dueDateAccessControl"
+                                   data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                                   param="accessData">
+                        <visible property="dueDateVisible"/>
+                        <hbox id="dueDatePane">
+                            <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
+                            <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
+                        </hbox>
+                    </accessControl>
+
+                    <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                        <visible property="commentVisible"/>
+                        <hbox id="commentTextPane">
+                            <label value="msg://comment" width="${labelWidth}"/>
+                            <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
+                        </hbox>
+                    </accessControl>
                 </vbox>
             </tab>
             <tab id="attachmentsTab" caption="msg://attachmentsTab" expand="attachmentsFrame" margin="true"

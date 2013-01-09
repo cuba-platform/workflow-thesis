@@ -22,9 +22,12 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ProcessAction extends AbstractAction {
     public static String SEND_PREFIX = "send_";
@@ -41,6 +44,11 @@ public class ProcessAction extends AbstractAction {
     }
 
     public String getCaption() {
+        AssignmentInfo assignmentInfo = frame.getInfo();
+        if (assignmentInfo != null && !card.equals(frame.getInfo().getCard()) && frame.getInfo().getCard() != null) {
+            if (frame.getInfo().getCard().getProc() != null)
+                return MessageProvider.getMessage(frame.getInfo().getCard().getProc().getMessagesPack(), getId());
+        }
         if (card.getProc() != null)
             return MessageProvider.getMessage(card.getProc().getMessagesPack(), getId());
         else
@@ -53,16 +61,20 @@ public class ProcessAction extends AbstractAction {
 
         card = (Card) ((Window.Editor) window).getItem();
         final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
-
-        final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
-        managerChain.setCard(card);
+        Card currentCard = null;
+        if (frame.getInfo() == null || frame.getInfo().getCard() == null || card.equals(frame.getInfo().getCard()))
+            currentCard = card;
+        else
+            currentCard = frame.getInfo().getCard();
+        final FormManagerChain managerChain = FormManagerChain.getManagerChain(currentCard, actionName);
+        managerChain.setCard(currentCard);
         managerChain.setAssignmentId(assignmentId);
 
         final Map<String, Object> formManagerParams = new HashMap<String, Object>();
 
         DsContext dsContext = window.getDsContext();
-        if(dsContext != null)
-            formManagerParams.put("modifed",dsContext.isModified());
+        if (dsContext != null)
+            formManagerParams.put("modifed", dsContext.isModified());
 
         for (Object o : window.getContext().getParams().entrySet()) {
             Map.Entry entry = (Map.Entry) o;
@@ -71,6 +83,8 @@ public class ProcessAction extends AbstractAction {
                 formManagerParams.put(key.substring(5), entry.getValue());
             }
         }
+
+        formManagerParams.put("subProcCard", new CardContext());
 
         //we won't commit the editor if user presses no in cancel process confirmation form
         if (WfConstants.ACTION_CANCEL.equals(actionName)) {
@@ -98,8 +112,8 @@ public class ProcessAction extends AbstractAction {
                             new DialogAction(DialogAction.Type.NO)
                     }
             );
-        } else if ((window instanceof WebWindow)? ((Window.Editor)((WebWindow.Editor) window).getWrapper()).commit()
-                :((Window.Editor) window).commit()) {
+        } else if ((window instanceof WebWindow) ? ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()
+                : ((Window.Editor) window).commit()) {
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
@@ -162,16 +176,20 @@ public class ProcessAction extends AbstractAction {
 
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        finishAssignment(window, comment, managerChain);
+                        CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+                        finishAssignment(window, comment, managerChain, subProcCardContext.getCard());
                     }
 
                     public void onFail() {
+                        CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+                        removeSubProcCard(subProcCardContext.getCard());
                     }
                 });
                 managerChain.doManagerBefore(assignment.getComment(), formManagerParams);
             }
         }
     }
+
 
     private void startProcess(Window window, FormManagerChain managerChain) {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
@@ -181,13 +199,20 @@ public class ProcessAction extends AbstractAction {
         managerChain.doManagerAfter();
     }
 
-    private void finishAssignment(Window window, String comment, FormManagerChain managerChain) {
+    private void finishAssignment(Window window, String comment, FormManagerChain managerChain, Card subProcCard) {
         WfService wfs = ServiceLocator.lookup(WfService.NAME);
         String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
-        wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment);
+        wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment, subProcCard);
         window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
+    }
+
+    private void removeSubProcCard(Card card) {
+        if (card != null) {
+            WfService wfs = ServiceLocator.lookup(WfService.NAME);
+            wfs.removeSubProcCard(card);
+        }
     }
 
     private void cancelProcess(Window window, FormManagerChain managerChain) {
@@ -196,5 +221,5 @@ public class ProcessAction extends AbstractAction {
         window.close(Window.COMMIT_ACTION_ID, true);
         managerChain.doManagerAfter();
     }
-    
+
 }

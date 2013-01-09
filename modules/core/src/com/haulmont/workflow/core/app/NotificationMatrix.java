@@ -598,12 +598,15 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     private void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = new CardInfo();
         ci.setType(cardInfoType);
-        ci.setCard(card);
+        if (card.isSubProcCard()) {
+            ci.setCard(card.getFamilyTop());
+            ci.setJbpmExecutionId(card.getProcFamily().getJbpmProcessId());
+        } else {
+            ci.setCard(card);
+            ci.setJbpmExecutionId(card.getProc().getJbpmProcessKey());
+        }
         ci.setUser(user);
-//        ci.setActivity((assignment == null) ? null : assignment.getName());
-        ci.setJbpmExecutionId(card.getProc().getJbpmProcessKey());
         ci.setDescription(message.getSubject());
-
         EntityManager em = PersistenceProvider.getEntityManager();
         em.persist(ci);
     }

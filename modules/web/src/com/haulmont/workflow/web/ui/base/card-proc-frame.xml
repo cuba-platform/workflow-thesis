@@ -13,6 +13,15 @@
                 order by p.name
             </query>
         </collectionDatasource>
+        <collectionDatasource id="subProcessCardProcDs" class="com.haulmont.workflow.core.entity.CardProc"
+                              view="subprocess">
+            <query>
+                <![CDATA[select cp from wf$CardProc cp
+                where (cp.card.procFamily.jbpmProcessId in (select c.jbpmProcessId from wf$CardProc c where c.id = :custom$cardProc)
+                      or (cp.id is not null and cp.id = :custom$cardProc)) and cp.deleteTs is null
+                order by cp.createTs]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
 
     <layout expand="procRolesSplit">
@@ -42,6 +51,11 @@
                     </columns>
                     <rows datasource="cardProcDs"/>
                 </table>
+                <hbox spacing="true">
+                    <label id="subProcessLookupLabel" value="msg://subProcessRoleBrowse"/>
+                    <lookupField id="subProcessLookup" optionsDatasource="subProcessCardProcDs" captionProperty="card" width="200"/>
+                </hbox>
+
             </vbox>
             <iframe id="cardRolesFrame" screen="cardRolesFrame" width="100%" height="100%"/>
         </split>

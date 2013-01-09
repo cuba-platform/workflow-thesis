@@ -81,15 +81,27 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       cr = null
       user = list.get(0)
     } else {
-      cr = card.getRoles().find { CardRole it -> it.procRole.code == role && card.proc == it.procRole.proc}
-      if (!cr) {
+      Collection<CardRole> cardRoles = card.getRoles().findAll { CardRole it -> it.procRole.code == role && card.proc == it.procRole.proc}
+      if (!cardRoles || cardRoles.empty) {
         def pr = getProcRoleByCode(card, role)
         throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
                 "User not found: cardId=${card.getId()}, procRole=$role", pr?.name ? pr.name : role)
       }
-      user = cr.getUser()
+      if (execution.hasVariable("iteratedAssigner"))
+      {
+        String iteratedAssigner = execution.getVariable("iteratedAssigner");
+        UUID id = UUID.fromString(iteratedAssigner)
+        cr = cardRoles.find {CardRole it -> it.user != null && it.user.id == id};
+        cr = cr ?: cardRoles.iterator().next();
+        user = cr.getUser();
+      }
+      else {
+        cr = cardRoles.iterator().next();
+        user = cr.getUser()
+      }
     }
 
+    Assignment familyAssignment = findFamilyAssignment(card)
     Assignment assignment = new Assignment()
     assignment.setName(execution.getActivityName())
 
@@ -103,6 +115,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     assignment.setCard(card)
     assignment.setProc(card.getProc())
     assignment.setIteration(calcIteration(card, user, execution.getActivityName()))
+    assignment.setFamilyAssignment(familyAssignment)
 
     createTimers(execution, assignment, cr)
 
@@ -229,6 +242,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
       EntityManager em = PersistenceProvider.getEntityManager()
 
+      Assignment familyAssignment = findFamilyAssignment(card)
+
       Assignment assignment = new Assignment()
       assignment.setName(execution.getActivityName())
 
@@ -243,6 +258,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       assignment.setUser(cr.user)
       assignment.setMasterAssignment(master)
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
+      assignment.setFamilyAssignment(familyAssignment)
 
       createTimers(execution, assignment, cr)
       em.persist(assignment)

@@ -87,6 +87,10 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
+    dependencies {
+        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT')
+    }
+
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/workflow-persistence.xml"
     }
@@ -101,7 +105,7 @@ configure(coreModule) {
         compile(sharedLibModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'tests')
-        compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.2.20110405')
+        compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
         compile(json)
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
         compile(hibernate)

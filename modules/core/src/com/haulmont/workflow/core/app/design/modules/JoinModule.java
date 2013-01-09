@@ -17,8 +17,13 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
+
 
 public class JoinModule extends Module {
+
+    protected String role;
+
     @Override
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
@@ -30,6 +35,7 @@ public class JoinModule extends Module {
                 this.name = WfUtils.encodeKey(name);
                 this.caption = name;
             }
+            this.role = StringUtils.trimToNull(jsOptions.optString("role"));
         }
     }
 
@@ -37,10 +43,12 @@ public class JoinModule extends Module {
     public Element writeJpdlMainEl(Element parentEl) {
         Element el = parentEl.addElement("join");
         el.addAttribute("name", name);
+        if (role != null)
+            el.addAttribute("multiplicity", MessageFormat.format("#'{'wf:getUserCntByProcRole(execution, \"{0}\")'}'", role));
         Element onElement = el.addElement("on");
-        onElement.addAttribute("event","end");
+        onElement.addAttribute("event", "end");
         Element eventListener = onElement.addElement("event-listener");
-        eventListener.addAttribute("class","com.haulmont.workflow.core.activity.CardStateListener");
+        eventListener.addAttribute("class", "com.haulmont.workflow.core.activity.CardStateListener");
         return el;
     }
 

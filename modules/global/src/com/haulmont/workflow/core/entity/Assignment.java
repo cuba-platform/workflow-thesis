@@ -41,12 +41,20 @@ public class Assignment extends StandardEntity {
     protected Card card;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBPROC_CARD_ID")
+    protected Card subProcCard;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_ID")
     protected Proc proc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MASTER_ASSIGNMENT_ID")
     protected Assignment masterAssignment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FAMILY_ASSIGNMENT_ID")
+    protected Assignment familyAssignment;
 
     @Column(name = "NAME", length = 255)
     protected String name;
@@ -113,6 +121,14 @@ public class Assignment extends StandardEntity {
         this.card = card;
     }
 
+    public Card getSubProcCard() {
+        return subProcCard;
+    }
+
+    public void setSubProcCard(Card subProcCard) {
+        this.subProcCard = subProcCard;
+    }
+
     public Proc getProc() {
         return proc;
     }
@@ -127,6 +143,15 @@ public class Assignment extends StandardEntity {
 
     public void setMasterAssignment(Assignment masterAssignment) {
         this.masterAssignment = masterAssignment;
+    }
+
+
+    public Assignment getFamilyAssignment() {
+        return familyAssignment;
+    }
+
+    public void setFamilyAssignment(Assignment familyAssignment) {
+        this.familyAssignment = familyAssignment;
     }
 
     public String getJbpmProcessId() {

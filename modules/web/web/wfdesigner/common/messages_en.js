@@ -50,6 +50,9 @@ var i18nDict = {
     success: "Success",
     failure: "Failure",
 
+    //SubProc
+    subProcForm: "Start Sub-Process",
+
     ////////////////////////
     // Timers
     "timers": "Timers",
@@ -93,10 +96,15 @@ var i18nDict = {
     "Decision.yes": "Yes",
     "Decision.no": "No",
     "Fork" : "Fork",
+    "ForEachUser" : "ForEach",
     "Join" : "Join",
     "IsRoleAssigned" : "Is role assigned",
     "EmptyModule" : "Empty Module",
-    
+
+    "SubProc" : "Sub-Process",
+    "SubProc.description" : "Start Sub-Process",
+    "SubProc.subProcCompleted" : "Completed",
+    "SubProc.proc" : "Process",
     ////////////////////////////////
     ///Messages
 

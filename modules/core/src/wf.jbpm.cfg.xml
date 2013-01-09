@@ -4,22 +4,22 @@
 
     <process-engine-context>
 
-        <repository-service />
+        <repository-service/>
         <repository-cache/>
         <execution-service/>
         <!--<history-service/>-->
 
         <command-service>
-            <environment-interceptor />
+            <environment-interceptor/>
         </command-service>
 
         <command-service name="newTxRequiredCommandService">
-            <environment-interceptor policy="requiresNew" />
-            <spring-transaction-interceptor />
+            <environment-interceptor policy="requiresNew"/>
+            <spring-transaction-interceptor/>
         </command-service>
 
         <command-service name="txRequiredCommandService">
-            <environment-interceptor />
+            <environment-interceptor/>
         </command-service>
 
         <hibernate-session-factory/>
@@ -27,6 +27,30 @@
         <object class="com.haulmont.workflow.core.sys.CubaJbpmDbidGenerator"/>
 
         <object class="org.jbpm.pvm.internal.id.DatabaseIdComposer" init="eager"/>
+
+        <object class='org.jbpm.pvm.internal.el.JbpmElFactoryImpl'>
+            <field name='functionClassMap'>
+                <map>
+                    <entry>
+                        <key>
+                            <string value=''/>
+                        </key>
+                        <value>
+                            <class class-name='org.jbpm.pvm.internal.el.JstlFunction'/>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>
+                            <string value='wf'/>
+                        </key>
+                        <value>
+                            <class class-name="com.haulmont.workflow.core.app.WfOperations"/>
+                        </value>
+                    </entry>
+                </map>
+            </field>
+        </object>
+
 
         <script-manager default-expression-language="juel"
                         default-script-language="juel">
@@ -36,13 +60,14 @@
         <types resource="jbpm.variable.types.xml"/>
 
         <deployer-manager>
-            <jpdl-deployer />
+            <jpdl-deployer/>
         </deployer-manager>
 
     </process-engine-context>
 
     <transaction-context>
-        <hibernate-session current="true" />
+        <transaction type="spring"/>
+        <hibernate-session current="true"/>
         <repository-session/>
         <db-session/>
     </transaction-context>

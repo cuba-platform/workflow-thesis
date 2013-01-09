@@ -11,7 +11,6 @@
 package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -73,7 +72,7 @@ public class ActionsFrame extends AbstractFrame {
 
                 actions.addAll(info.getActions());
             }
-            if (!WfUtils.isCardInState(card,  WfConstants.CARD_STATE_CANCELED) && (accessData == null || accessData.getCancelProcessEnabled())) {
+            if (!WfUtils.isCardInState(card, WfConstants.CARD_STATE_CANCELED) && (accessData == null || accessData.getCancelProcessEnabled())) {
                 actions.add(WfConstants.ACTION_CANCEL);
             }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
@@ -95,13 +94,16 @@ public class ActionsFrame extends AbstractFrame {
 
             if ((enabledActions != null) && !enabledActions.contains(actionName))
                 button.setEnabled(false);
-
-            FormManagerChain managerChain = FormManagerChain.getManagerChain(card, actionName);
+            FormManagerChain managerChain = null;
+            if (info != null && info.getCard() != null && !card.equals(info.getCard()))
+                managerChain = FormManagerChain.getManagerChain(info.getCard(), actionName);
+            else
+                managerChain = FormManagerChain.getManagerChain(card, actionName);
             String style = (String) managerChain.getCommonParams().get("style");
             if (style != null) {
                 button.setStyleName(style);
             }
-            
+
             add(button);
         }
 

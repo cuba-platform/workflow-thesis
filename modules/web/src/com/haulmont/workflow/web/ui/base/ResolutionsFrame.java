@@ -32,18 +32,16 @@ import java.util.Date;
 import java.util.UUID;
 
 public class ResolutionsFrame extends AbstractFrame {
-
-    private Table table;
+    private TreeTable table;
     private CollectionDatasource<Assignment, UUID> resolutionsDs;
 
-    public ResolutionsFrame(IFrame frame) {
-        super(frame);
+    public ResolutionsFrame() {
+        super();
     }
 
     public void init() {
         table = getComponent("resolutionsTable");
         resolutionsDs = getDsContext().get("resolutionsDs");
-
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         vTable.setPageLength(5);
         vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyPath("comment"),
@@ -68,8 +66,6 @@ public class ResolutionsFrame extends AbstractFrame {
                         return component;
                     }
                 });
-
-//       vTable.setAllowMultiStringCells(true);
 
         vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
             public String getStyle(Object itemId, Object propertyId) {
@@ -130,51 +126,10 @@ public class ResolutionsFrame extends AbstractFrame {
                 openResolution(entity);
             }
         });
-
-        final CollectionDatasource ds = table.getDatasource();
-//        vTable.removeGeneratedColumn(ds.getMetaClass().getPropertyEx("hasAttachments"));
-//        vTable.addGeneratedColumn(ds.getMetaClass().getPropertyEx("hasAttachments"),
-//                new com.vaadin.ui.Table.ColumnGenerator() {
-//                    private static final long serialVersionUID = -9060082478585490858L;
-//
-//                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
-//                        Assignment assignment = (Assignment) ds.getItem(itemId);
-//                        java.util.List<AssignmentAttachment> attachmentList = assignment.getAttachments();
-//
-//                        if (attachmentList != null && !attachmentList.isEmpty()) {
-//                            VerticalLayout layout = new VerticalLayout();
-//
-//                            for (AssignmentAttachment assignmentAttachment : attachmentList) {
-//                                final FileDescriptor fd = assignmentAttachment.getFile();
-//                                if (fd != null) {
-//                                    com.vaadin.ui.Component component;
-//                                    component = new com.vaadin.ui.Button(fd.getName(),
-//                                            new com.vaadin.ui.Button.ClickListener() {
-//                                                private static final long serialVersionUID = -4083361053049572380L;
-//
-//                                                public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-//                                                    FileDisplay fileDisplay = new FileDisplay(true);
-//                                                    fileDisplay.show(fd.getName(), fd, false);
-//                                                }
-//                                            });
-//                                    component.setStyleName("link");
-//                                    layout.addComponent(component);
-//                                }
-//                            }
-//
-//                            if (layout.getComponentIterator().hasNext()) {
-//                                return layout;
-//                            }
-//                        }
-//
-//                        return new com.vaadin.ui.Label();
-//                    }
-//                });
     }
 
     private void openResolution(Entity entity) {
         final Window window = openEditor("wf$Assignment.edit", entity, WindowManager.OpenType.DIALOG);
-
         window.addListener(new Window.CloseListener() {
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
@@ -188,10 +143,9 @@ public class ResolutionsFrame extends AbstractFrame {
     }
 
     public void setCard(final Card card) {
-//        Preconditions.checkArgument(card != null, "Card is null");
-
         CollectionDatasource<Assignment, UUID> ds = getDsContext().get("resolutionsDs");
         ds.refresh(Collections.<String, Object>singletonMap("cardId", card != null ? card.getId() : null));
+        table.expandAll();
     }
 
     public void refreshDs() {

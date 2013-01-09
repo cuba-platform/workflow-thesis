@@ -29,6 +29,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.jbpm.api.Configuration;
 import org.jbpm.api.*;
+import org.jbpm.pvm.internal.processengine.SpringHelper;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -42,10 +43,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 @ManagedBean(WfEngineAPI.NAME)
 public class WfEngine implements WfEngineAPI {
 
-    private static final String CANCELED_STATE = "," + WfConstants.CARD_STATE_CANCELED + ",";
     private Log log = LogFactory.getLog(getClass());
 
-    private Configuration jbpmConfiguration;
+    private SpringHelper springHelper;
 
     private volatile ProcessEngine processEngine;
 
@@ -80,9 +80,9 @@ public class WfEngine implements WfEngineAPI {
         System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getClassLoader");
     }
 
-    @Resource(name = "jbpmConfiguration")
-    public void setJbpmConfiguration(Configuration jbpmConfiguration) {
-        this.jbpmConfiguration = jbpmConfiguration;
+    @Resource(name = "springHelper")
+    public void setSpringHelper(SpringHelper springHelper) {
+        this.springHelper = springHelper;
     }
 
     public ProcessEngine getProcessEngine() {
@@ -92,7 +92,7 @@ public class WfEngine implements WfEngineAPI {
                     Transaction tx = persistence.createTransaction();
                     try {
                         if (processEngine == null) {
-                            processEngine = jbpmConfiguration.buildProcessEngine();
+                            processEngine = springHelper.createProcessEngine();
                         }
                         tx.commit();
                     } finally {
@@ -160,6 +160,7 @@ public class WfEngine implements WfEngineAPI {
 
     /**
      * Deploys roles, states
+     *
      * @param deploymentId
      * @param proc
      */
@@ -231,7 +232,7 @@ public class WfEngine implements WfEngineAPI {
                     procRole.setCode(role);
                     procRole.setName(role);
                     procRole.setSortOrder(++sortOrder);
-                    if (WfConstants.CARD_CREATOR.equals(role)){
+                    if (WfConstants.CARD_CREATOR.equals(role)) {
                         procRole.setInvisible(true);
                         procRole.setAssignToCreator(true);
                     }
@@ -330,7 +331,7 @@ public class WfEngine implements WfEngineAPI {
             EntityManager em = persistence.getEntityManager();
             String s = "select a from wf$Assignment a where a.user.id = ?1 and a.finished is null";
             if (card != null)
-                s = s + " and a.card.id = ?2";
+                s = s + " and (a.card.id = ?2 or a.card.procFamily.card.id = ?2)";
             Query q = em.createQuery(s);
             q.setParameter(1, userId);
             if (card != null)
@@ -350,6 +351,10 @@ public class WfEngine implements WfEngineAPI {
     }
 
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
+        finishAssignment(assignmentId, outcome, comment, null);
+    }
+
+    public void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard) {
         checkArgument(assignmentId != null, "assignmentId is null");
 
         Transaction tx = persistence.getTransaction();
@@ -363,7 +368,10 @@ public class WfEngine implements WfEngineAPI {
             assignment.setFinishedByUser(userSessionSource.getUserSession().getUser());
             assignment.setOutcome(outcome);
             assignment.setComment(comment);
-
+            if (subProcCard != null) {
+                assignment.setSubProcCard(subProcCard);
+                em.flush();
+            }
             ExecutionService es = getProcessEngine().getExecutionService();
             ProcessInstance pi = es.findProcessInstanceById(assignment.getJbpmProcessId());
             //if process is over
@@ -373,9 +381,15 @@ public class WfEngine implements WfEngineAPI {
             if (execution == null)
                 throw new WorkflowException(WorkflowException.Type.NO_ACTIVE_EXECUTION, "No active execution in " + assignment.getName());
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("assignment", assignment);
-
+            if (subProcCard != null) {
+                es.setVariable(execution.getId(), "subProcCard", subProcCard.getId().toString());
+                if (comment != null)
+                    es.setVariable(execution.getId(), "startSubProcessComment", comment);
+                if (subProcCard.getInitialProcessVariables() != null && subProcCard.getInitialProcessVariables().containsKey("dueDate"))
+                    es.setVariable(execution.getId(), "subProc_dueDate", subProcCard.getInitialProcessVariables().get("dueDate"));
+            }
             pi = es.signalExecutionById(execution.getId(), outcome, params);
 
             if (Execution.STATE_ENDED.equals(pi.getState())) {
@@ -413,44 +427,74 @@ public class WfEngine implements WfEngineAPI {
 
         for (CardProc cardProc : card.getProcs())
             if (card.getProc().equals(cardProc.getProc())) {
+                cardProc.setJbpmProcessId(pi.getId());
                 cardProc.setActive(true);
                 cardProc.setStartCount((Integer) ObjectUtils.defaultIfNull(cardProc.getStartCount(), 0) + 1);
             }
+
+        if (Execution.STATE_ENDED.equals(pi.getState())) {
+            card.setJbpmProcessId(null);
+        }
 
         return card;
     }
 
     public void cancelProcess(Card card) {
         EntityManager em = persistence.getEntityManager();
-
         Card c = em.merge(card);
+        if (c.isSubProcCard())
+            //cancel sub process. sub state should be only "ended".
+            //This is restriction of jBPM
+            cancelProcessInternal(c, Execution.STATE_ENDED);
+        else {
+            for (Card subProcCard : findFamilyCards(c))
+                cancelProcessInternal(subProcCard, Execution.STATE_ENDED);
+            cancelProcessInternal(c, WfConstants.CARD_STATE_CANCELED);
+        }
 
+    }
+
+    public void cancelProcessInternal(Card card, String state) {
+        EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
-        query.setParameter(1, c);
+        query.setParameter(1, card);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
             if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
-                assignment.setComment(messages.getMessage(c.getProc().getMessagesPack(), "canceledCard.msg"));
+                assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
             assignment.setFinished(timeSource.currentTimestamp());
         }
 
-        WfHelper.getExecutionService().endProcessInstance(c.getJbpmProcessId(), WfConstants.CARD_STATE_CANCELED);
+        if (card.getJbpmProcessId() != null) {
+            ProcessInstance processInstance = WfHelper.getExecutionService().findProcessInstanceById(card.getJbpmProcessId());
+            //Top process is not canceled when all sub process are canceled
+            if (processInstance != null)
+                WfHelper.getExecutionService().endProcessInstance(card.getJbpmProcessId(), state);
+        }
 
-        Proc proc = c.getProc();
-        for (CardProc cp : c.getProcs()) {
+        Proc proc = card.getProc();
+        for (CardProc cp : card.getProcs()) {
             if (cp.getProc().equals(proc)) {
                 cp.setActive(false);
-                cp.setState(CANCELED_STATE);
+                cp.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
                 break;
             }
         }
-        c.setJbpmProcessId(null);
-        c.setState(CANCELED_STATE);
+        card.setJbpmProcessId(null);
+        card.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
         for (Listener listener : listeners) {
             listener.onProcessCancel(card);
         }
 
-        notificationBean.notifyByCard(c, WfConstants.CARD_STATE_CANCELED);
+        notificationBean.notifyByCard(card, WfConstants.CARD_STATE_CANCELED);
+    }
+
+    protected List<Card> findFamilyCards(Card topFamily) {
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createQuery("select c from wf$Card c where c.procFamily.card.id = :card and c.procFamily.jbpmProcessId = :procId")
+                .setParameter("card", topFamily)
+                .setParameter("procId", topFamily.getJbpmProcessId());
+        return query.getResultList();
     }
 
     public void addListener(Listener listener) {

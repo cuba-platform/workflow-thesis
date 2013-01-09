@@ -45,7 +45,10 @@ public class CardProcFrame extends AbstractFrame {
     private CollectionDatasource<CardRole, UUID> cardRolesDs;
     protected CollectionDatasource<Proc, UUID> procDs;
     protected CollectionDatasource<CardProc, UUID> cardProcDs;
-    private LookupField createProcLookup;
+    protected CollectionDatasource<CardProc, UUID> subProcessCardProcDs;
+    protected LookupField createProcLookup;
+    protected LookupField subProcessLookup;
+    protected Label subProcessLookupLabel;
     private Table cardProcTable;
     protected AbstractAction startProcessAction;
     protected CardRolesFrame cardRolesFrame;
@@ -69,9 +72,15 @@ public class CardProcFrame extends AbstractFrame {
     private void initProc() {
         createProcCaption = getMessage("createProcCaption");
         createProcLookup = getComponent("createProcLookup");
+        subProcessLookup = getComponent("subProcessLookup");
+        subProcessLookupLabel = getComponent("subProcessLookupLabel");
+        subProcessLookup.setVisible(false);
+        subProcessLookupLabel.setVisible(false);
 
-        procDs = getDsContext().get("procDs");
+
         cardRolesDs = getDsContext().get("cardRolesDs");
+        subProcessCardProcDs = getDsContext().get("subProcessCardProcDs");
+        procDs = getDsContext().get("procDs");
 
         cardProcTable = getComponent("cardProcTable");
         final com.vaadin.ui.Table vCardProcTable = ( com.vaadin.ui.Table)WebComponentsHelper.unwrap(cardProcTable);
@@ -132,9 +141,23 @@ public class CardProcFrame extends AbstractFrame {
                 new CollectionDsListenerAdapter<CardProc>() {
                     @Override
                     public void itemChanged(Datasource<CardProc> ds, CardProc prevItem, CardProc item) {
-                        cardRolesFrame.procChanged(item == null ? null : item.getProc());
                         cardRolesFrame.setCardProc(item);
+                        if (item != null)
+                        {
+                            subProcessCardProcDs.refresh(Collections.<String, Object>singletonMap("cardProc", item.getId()));
+                            if (subProcessCardProcDs.size() > 1) {
+                                subProcessLookup.setVisible(true);
+                                subProcessLookupLabel.setVisible(true);
+                            }
+                            else {
+                                subProcessLookup.setVisible(false);
+                                subProcessLookupLabel.setVisible(false);
+                            }
+                            subProcessLookup.setNullOption(item);
+                            subProcessLookup.setValue(item);
+                        }
 
+                        cardRolesFrame.procChanged(item == null ? null : item.getProc());
                         boolean enabled = item != null && !BooleanUtils.isTrue(item.getActive());
                         removeAction.setEnabled(enabled && removeActionEnabled);
 
@@ -158,6 +181,19 @@ public class CardProcFrame extends AbstractFrame {
 
                 }
         );
+
+        subProcessLookup.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                if (value == null) {
+                    CardProc selectedRole = cardProcTable.getSingleSelected();
+                    if (selectedRole != null)
+                        cardRolesFrame.procChanged(selectedRole.getProc());
+                } else {
+                    CardProc selectedProc = (CardProc) value;
+                    cardRolesFrame.procChanged(selectedProc.getProc(), selectedProc.getCard());
+                }
+            }
+        });
 
         boolean enabled = accessData == null || accessData.getAddCardProcessEnabled();
         createProcLookup.setEditable(enabled);
@@ -381,7 +417,7 @@ public class CardProcFrame extends AbstractFrame {
                     getMessage("runProc.title"),
                     String.format(getMessage("runProc.msg"), proc.getName()),
                     MessageType.CONFIRMATION,
-                    new Action[] {
+                    new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
@@ -393,7 +429,7 @@ public class CardProcFrame extends AbstractFrame {
             );
         }
     }
-    
+
     protected ProcRolePermissionsService getProcRolePermissionsService() {
         return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
     }
