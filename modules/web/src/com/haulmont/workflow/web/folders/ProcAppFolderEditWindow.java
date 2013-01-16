@@ -11,8 +11,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -61,6 +62,8 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
     private TwinColumn rolesField;
     private String procConditionsXml;
     private TextField entityAliasField;
+
+    protected Metadata metadata = AppBeans.get(Metadata.class);
 
     private boolean modified = false;
 
@@ -285,7 +288,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         });
         grid.addComponent(WebComponentsHelper.unwrap(entityField));
 
-        MetaClass cardMetaClass = MetadataProvider.getSession().getClass("wf$Card");
+        MetaClass cardMetaClass = metadata.getSession().getClass("wf$Card");
         Collection<MetaClass> metaClasses = cardMetaClass.getDescendants();
 
         Map<String, Object> items = new TreeMap<String, Object>();
@@ -324,7 +327,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         webGroupBox.addComponent(WebComponentsHelper.unwrap(rolesField));
 
         CollectionDatasource rolesDs = new DsBuilder()
-                .setMetaClass(MetadataProvider.getSession().getClass("sec$Role"))
+                .setMetaClass(metadata.getSession().getClass("sec$Role"))
                 .setViewName(View.MINIMAL)
                 .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                 .buildCollectionDatasource();
@@ -378,7 +381,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
             }
         });
 
-        MetaClass metaClass = MetadataProvider.getSession().getClass(ProcCondition.class);
+        MetaClass metaClass = metadata.getSession().getClassNN(ProcCondition.class);
 
         Column procColumn = new Column(metaClass.getPropertyPath("proc"));
         procColumn.setCaption(getMessage("proc"));
@@ -402,8 +405,9 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         statesColumn.setCaption(getMessage("states"));
         table.addColumn(statesColumn);
 
-        procConditionDatasource =
-                new ProcConditionDatasource(null, null, "procConditionDs", metaClass, View.LOCAL);
+        procConditionDatasource = new ProcConditionDatasource();
+        procConditionDatasource.setup(null, null, "procConditionDs", metaClass,
+                metadata.getViewRepository().getView(metaClass, View.LOCAL));
         procConditionDatasource.loadData(Collections.<String, Object>emptyMap());
         table.setDatasource(procConditionDatasource);
 

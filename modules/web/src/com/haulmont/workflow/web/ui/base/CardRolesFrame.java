@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -1116,7 +1117,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         Proc proc = card.getProc();
-        proc = cardRolesDs.getDataService().reload(proc, "edit");
+        proc = cardRolesDs.getDataSupplier().reload(proc, "edit");
 
         for (String roleCode : requiredRolesCodes) {
             if (!roleCode.contains("|"))
@@ -1231,16 +1232,16 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public static class CardProcRolesDatasource extends CollectionDatasourceImpl<CardRole, UUID> {
+
         protected CollectionDatasource<CardRole, UUID> cardRolesDs;
         private CollectionDatasource<CardRole, UUID> activeDs;
         private Map<UUID, CollectionDatasource<CardRole, UUID>> dsRegistry = new HashMap<UUID, CollectionDatasource<CardRole, UUID>>();
         public boolean fill;
 
-        private static final long serialVersionUID = 2186196099900027571L;
-
-        public CardProcRolesDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
-            super(context, dataservice, id, metaClass, viewName);
-            cardRolesDs = getDsContext().get("cardRolesDs");
+        @Override
+        public void setup(DsContext dsContext, DataSupplier dataSupplier, String id, MetaClass metaClass, @Nullable View view) {
+            super.setup(dsContext, dataSupplier, id, metaClass, view);
+            cardRolesDs = dsContext.get("cardRolesDs");
             this.activeDs = this.cardRolesDs;
         }
 

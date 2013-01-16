@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 27.01.2010 12:28:21
- *
- * $Id$
  */
 package com.haulmont.workflow.gui.data;
 
@@ -15,16 +10,21 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class ProcessVariablesDatasource extends AbstractDatasource<ProcessVariablesEntity> {
 
     private DsContext dsContext;
@@ -35,12 +35,10 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
 
     protected abstract Map<String, Class> getVariableTypes();
 
-    public ProcessVariablesDatasource(DsContext dsContext, DataService dataservice,
-                                      String id, MetaClass metaClass, String viewName)
-    {
-        super(id);
+    @Override
+    public void setup(DsContext dsContext, DataSupplier dataSupplier, String id, MetaClass metaClass, @Nullable View view) {
+        this.id = id;
         this.dsContext = dsContext;
-
         this.metaClass = new ProcessVariablesMetaClass();
         initMetaClass();
     }
@@ -81,7 +79,7 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
         return dsContext;
     }
 
-    public DataService getDataService() {
+    public DataSupplier getDataSupplier() {
         return null;
     }
 

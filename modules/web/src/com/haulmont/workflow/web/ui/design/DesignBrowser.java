@@ -19,7 +19,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
@@ -399,7 +399,7 @@ public class DesignBrowser extends AbstractWindow {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
                 Design selectedDesign = selected.iterator().next();
-                final Design design = ds.getDataService().reload(selectedDesign,"_local");
+                final Design design = ds.getDataSupplier().reload(selectedDesign,"_local");
                 final NotificationMatrixWindow window = openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
                         new CloseListener() {
@@ -407,7 +407,7 @@ public class DesignBrowser extends AbstractWindow {
                                 if (Window.COMMIT_ACTION_ID.equals(actionId)){
                                     design.setNotificationMatrix(window.getBytes());
                                     design.setNotificationMatrixUploaded(true);
-                                    ds.getDataService().commit(new CommitContext(Collections.singleton(design)));
+                                    ds.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
                                     DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
                                     service.saveNotificationMatrixFile(design);
                                     ds.refresh();
@@ -427,8 +427,8 @@ public class DesignBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final DataService dataService = getDsContext().getDataService();
-                final Design design = dataService.reload(selected.iterator().next(), "_local");
+                final DataSupplier dataSupplier = getDsContext().getDataService();
+                final Design design = dataSupplier.reload(selected.iterator().next(), "_local");
                 showOptionDialog(
                         getMessage("confirmNMClear.title"),
                         String.format(getMessage("confirmNMClear.msg"), design.getName()),
@@ -439,7 +439,7 @@ public class DesignBrowser extends AbstractWindow {
                                     public void actionPerform(Component component) {
                                         design.setNotificationMatrix(null);
                                         design.setNotificationMatrixUploaded(false);
-                                        dataService.commit(new CommitContext(Collections.singleton(design)));
+                                        dataSupplier.commit(new CommitContext(Collections.singleton(design)));
                                         ds.refresh();
                                     }
                                 },

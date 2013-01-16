@@ -1,21 +1,13 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 06.08.2010 17:36:47
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.usergroup;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -27,10 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Gorbunkov
+ * @version $Id$
+ */
 public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntity, UUID> {
-    public UserGroupsDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected void loadData(Map<String, Object> params) {
@@ -75,12 +68,12 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         LoadContext.Query query = ctx.setQueryString(queryString);
         query.addParameter("secRole", secRole);
 
-        return dataservice.loadList(ctx);
+        return dataSupplier.loadList(ctx);
     }
 
     protected List<UserGroup> loadUserGroups(){
         LoadContext ctx = new LoadContext(UserGroup.class).setView("add");
         ctx.setQueryString("select ug from wf$UserGroup ug order by ug.name");
-        return dataservice.loadList(ctx);
+        return dataSupplier.loadList(ctx);
     }
 }

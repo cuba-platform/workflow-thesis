@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.WindowManager
 import com.haulmont.cuba.gui.WindowManager.OpenType
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener
-import com.haulmont.cuba.gui.data.DataService
+import com.haulmont.cuba.gui.data.DataSupplier
 import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.data.DsContext.CommitListener
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
@@ -547,7 +547,7 @@ public class ProcEditor extends AbstractEditor {
             }
     ] as com.vaadin.ui.Table.ColumnGenerator);
 
-    DataService dataService = rolesDs.getDataService()
+    DataSupplier dataService = rolesDs.getDataSupplier()
     java.util.List<ProcRole> roles = proc.roles.collect{dataService.reload(it, 'edit-w-permissions')}
     roles.removeAll({ProcRole role -> role.invisible })
     proc.roles = roles
