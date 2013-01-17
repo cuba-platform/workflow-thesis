@@ -10,13 +10,17 @@
     <dsContext>
         <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="localize"/>
 
-        <hierarchicalDatasource id="keysDs" class="com.haulmont.workflow.core.entity.DesignLocKey" view="_local"
-                hierarchyProperty="parentKey">
-            <datasourceClass>com.haulmont.workflow.web.ui.design.DesignLocKeyDatasource</datasourceClass>
+        <hierarchicalDatasource id="keysDs"
+                                class="com.haulmont.workflow.core.entity.DesignLocKey"
+                                view="_local"
+                                hierarchyProperty="parentKey"
+                                datasourceClass="com.haulmont.workflow.web.ui.design.DesignLocKeyDatasource">
         </hierarchicalDatasource>
 
-        <collectionDatasource id="valuesDs" class="com.haulmont.workflow.core.entity.DesignLocValue" view="_local">
-            <datasourceClass>com.haulmont.workflow.web.ui.design.DesignLocValueDatasource</datasourceClass>
+        <collectionDatasource id="valuesDs"
+                              class="com.haulmont.workflow.core.entity.DesignLocValue"
+                              view="_local"
+                              datasourceClass="com.haulmont.workflow.web.ui.design.DesignLocValueDatasource">
         </collectionDatasource>
 
     </dsContext>

@@ -9,8 +9,10 @@
     <assign name="width" value="300"/>
 
     <dsContext>
-        <collectionDatasource id="userGroupsDs" class="com.haulmont.cuba.core.entity.StandardEntity" view="_local">
-            <datasourceClass>com.haulmont.workflow.web.ui.usergroup.UserGroupsDatasource</datasourceClass>
+        <collectionDatasource id="userGroupsDs"
+                              class="com.haulmont.cuba.core.entity.StandardEntity"
+                              view="_local"
+                              datasourceClass="com.haulmont.workflow.web.ui.usergroup.UserGroupsDatasource">
         </collectionDatasource>
     </dsContext>
 

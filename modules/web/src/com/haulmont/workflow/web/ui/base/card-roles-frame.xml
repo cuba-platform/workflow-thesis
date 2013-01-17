@@ -10,8 +10,10 @@
                 <![CDATA[select pr from wf$ProcRole pr where pr.proc.id = :custom$procId and (pr.invisible is null or pr.invisible = false) order by pr.code]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="tmpCardRolesDs" class="com.haulmont.workflow.core.entity.CardRole" view="card-edit">
-            <datasourceClass>com.haulmont.workflow.web.ui.base.CardRolesFrame$CardProcRolesDatasource</datasourceClass>
+        <collectionDatasource id="tmpCardRolesDs"
+                              class="com.haulmont.workflow.core.entity.CardRole"
+                              view="card-edit"
+                              datasourceClass="com.haulmont.workflow.web.ui.base.CardRolesFrame$CardProcRolesDatasource">
         </collectionDatasource>
     </dsContext>
 

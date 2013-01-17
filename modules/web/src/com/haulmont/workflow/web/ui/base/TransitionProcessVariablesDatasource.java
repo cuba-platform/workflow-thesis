@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Gorbunkov
  * @version $Id$
  */
-public class TransitionProcessVariablesDatasource extends ProcessVariablesDatasource{
+public class TransitionProcessVariablesDatasource extends ProcessVariablesDatasource {
 
     @Override
     protected Map<String, Class> getVariableTypes() {

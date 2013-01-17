@@ -8,9 +8,10 @@
     <assign name="width" value="400"/>
 
     <dsContext>
-        <collectionDatasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment"
-                              view="resolution-edit">
-            <datasourceClass>com.haulmont.workflow.web.ui.base.AssignmentCollectionDatasource</datasourceClass>
+        <collectionDatasource id="assignmentDs"
+                              class="com.haulmont.workflow.core.entity.Assignment"
+                              view="resolution-edit"
+                              datasourceClass="com.haulmont.workflow.web.ui.base.AssignmentCollectionDatasource">
             <collectionDatasource id="attachmentsDs" property="attachments"/>
         </collectionDatasource>
     </dsContext>

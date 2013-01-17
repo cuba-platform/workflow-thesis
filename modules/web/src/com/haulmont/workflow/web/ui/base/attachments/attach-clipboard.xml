@@ -13,8 +13,7 @@
                 id="attachmentsDs"
                 class="com.haulmont.workflow.core.entity.Attachment"
                 view="attachments-browse"
-                >
-            <datasourceClass>com.haulmont.workflow.web.ui.base.attachments.AttachmentsDataSource</datasourceClass>
+                datasourceClass="com.haulmont.workflow.web.ui.base.attachments.AttachmentsDataSource">
         </collectionDatasource>
     </dsContext>
 

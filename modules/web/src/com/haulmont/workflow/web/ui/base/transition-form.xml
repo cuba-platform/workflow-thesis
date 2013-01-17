@@ -20,8 +20,8 @@
 
         <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="_local"/>
 
-        <datasource id="varsDs">
-            <datasourceClass>com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource</datasourceClass>
+        <datasource id="varsDs"
+                    datasourceClass="com.haulmont.workflow.web.ui.base.TransitionProcessVariablesDatasource">
         </datasource>
 
         <hierarchicalDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole"
