@@ -59,7 +59,6 @@ public class ProcConditionEditWindow extends Window {
         procDs = new DsBuilder()
                 .setMetaClass(MetadataProvider.getSession().getClass("wf$Proc"))
                 .setViewName(View.LOCAL)
-                .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                 .buildCollectionDatasource();
 
         procDs.refresh();
@@ -133,7 +132,6 @@ public class ProcConditionEditWindow extends Window {
         CollectionDatasource<ProcState, UUID> procStateDs = new DsBuilder()
                 .setMetaClass(MetadataProvider.getSession().getClass("wf$ProcState"))
                 .setViewName("browse")
-                .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                 .buildCollectionDatasource();
 
         procStateDs.setQuery("select e from wf$ProcState e where e.proc.id = :custom$proc or :custom$proc is null");

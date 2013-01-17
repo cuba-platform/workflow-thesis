@@ -329,7 +329,6 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         CollectionDatasource rolesDs = new DsBuilder()
                 .setMetaClass(metadata.getSession().getClass("sec$Role"))
                 .setViewName(View.MINIMAL)
-                .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                 .buildCollectionDatasource();
         rolesDs.refresh();
 
