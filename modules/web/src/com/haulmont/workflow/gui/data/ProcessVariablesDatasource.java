@@ -84,6 +84,9 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
     }
 
     public void commit() {
+        if (!allowCommit)
+            return;
+
         Card c = getCard();
         Map<String, Object> vars = item.getChanged();
         if (!vars.isEmpty()) {
