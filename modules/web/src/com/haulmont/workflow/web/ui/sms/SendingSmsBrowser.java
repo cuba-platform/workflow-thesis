@@ -43,7 +43,7 @@ public class SendingSmsBrowser extends AbstractLookup {
             public void actionPerform(Component component) {
                 Set selected= table.getSelected();
                 for(Object obj:selected){
-                    ((SendingSms)obj).setDateStartSending(TimeProvider.currentTimestamp());
+                    ((SendingSms)obj).setStartSendingDate(TimeProvider.currentTimestamp());
                     ((SendingSms)obj).setStatus(SmsStatus.IN_QUEUE);
                     ((SendingSms)obj).setAttemptsCount(0);
                 }

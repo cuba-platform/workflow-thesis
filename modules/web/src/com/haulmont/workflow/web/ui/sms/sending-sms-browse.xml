@@ -47,7 +47,7 @@
                     </column>
                     <column id="lastChangeDate" caption="msg://UserNotifiedBySms.lastChangeDate"/>
                     <column id="attemptsCount" caption="msg://UserNotifiedBySms.attemptsCount"/>
-                    <column id="dateStartSending" caption="msg://UserNotifiedBySms.dateStartSending"/>
+                    <column id="startSendingDate" caption="msg://UserNotifiedBySms.startSendingDate"/>
                 </columns>
                 <rows datasource="sendingSmsDs"/>
             </groupTable>

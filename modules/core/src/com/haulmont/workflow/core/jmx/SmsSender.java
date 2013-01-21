@@ -63,7 +63,7 @@ public class SmsSender implements SmsSenderMBean {
         SendingSms sendingSms = metadata.create(SendingSms.class);
         sendingSms.setPhone(phone);
         sendingSms.setAddressee(addressee);
-        sendingSms.setDateStartSending(timeSource.currentTimestamp());
+        sendingSms.setStartSendingDate(timeSource.currentTimestamp());
         sendingSms.setMessage(message);
         sendingSms.setErrorCode(0);
         sendingSms.setAttemptsCount(0);
