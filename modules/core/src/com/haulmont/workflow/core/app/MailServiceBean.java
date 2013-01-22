@@ -76,7 +76,7 @@ public class MailServiceBean implements MailService {
 
     public void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException {
         emailer = Locator.lookup(EmailerAPI.NAME);
-        EmailInfo info = new EmailInfo(user.getEmail(), caption, null, null, null, body, attachment);
+        EmailInfo info = new EmailInfo(user.getEmail(), caption, null, body, attachment);
         emailer.sendEmail(info, false);
     }
 }
