@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -1328,15 +1327,13 @@ public class CardRolesFrame extends AbstractFrame {
         private CollectionDatasource<CardRole, UUID> getDsInternal(Card card) {
             CollectionDatasource<CardRole, UUID> ds = dsRegistry.get(card.getId());
             if (ds == null) {
-                DsContextImplementation dsContext = (DsContextImplementation) cardRolesDs.getDsContext();
-                DsBuilder dsBuilder = new DsBuilder(dsContext)
+                DsBuilder dsBuilder = new DsBuilder(cardRolesDs.getDsContext())
                         .setJavaClass(CardRole.class)
                         .setViewName("transition-form")
                         .setId("cardRoles" + card.getId().toString() + "Ds");
                 ds = dsBuilder.buildCollectionDatasource();
                 ds.setQuery("select cr from wf$CardRole cr where cr.card.id = :custom$card");
                 ds.refresh(Collections.<String, Object>singletonMap("card", card));
-                dsContext.register(ds);
                 dsRegistry.put(card.getId(), ds);
             }
             return ds;
