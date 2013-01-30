@@ -46,6 +46,7 @@ public class SendingSmsBrowser extends AbstractLookup {
                     ((SendingSms)obj).setStartSendingDate(TimeProvider.currentTimestamp());
                     ((SendingSms)obj).setStatus(SmsStatus.IN_QUEUE);
                     ((SendingSms)obj).setAttemptsCount(0);
+                    ((SendingSms)obj).setErrorCode(0);
                 }
                 table.getDatasource().commit();
             }

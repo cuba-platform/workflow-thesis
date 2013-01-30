@@ -146,7 +146,7 @@ public class SmsManager implements SmsManagerAPI {
             EntityManager em = persistence.getEntityManager();
             em.setView(metadata.getViewRepository().getView(SendingSms.class, "_local"));
             Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0, 400, 500) and " +
-                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.dateStartSending > :startDate order by sms.createTs")
+                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.startSendingDate > :startDate order by sms.createTs")
                     .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
                     .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
@@ -163,7 +163,7 @@ public class SmsManager implements SmsManagerAPI {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setView(metadata.getViewRepository().getView(SendingSms.class, "_local"));
             Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0) and " +
-                    "(sms.attemptsCount > :attemptsCount or sms.dateStartSending <= :startDate) and sms.errorCode = 0 order by sms.createTs")
+                    "(sms.attemptsCount > :attemptsCount or sms.startSendingDate <= :startDate) and sms.errorCode = 0 order by sms.createTs")
                     .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
                     .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
