@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.01.2010 10:08:33
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.action;
 
@@ -21,14 +16,14 @@ import com.vaadin.ui.Window;
 import javax.inject.Named;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class AbstractForm extends AbstractWindow {
 
     @Named("windowActions.windowCommit")
     private Button windowCommit;
-
-    public AbstractForm(IFrame frame) {
-        super(frame);
-    }
 
     public void init(Map<String, Object> params) {
         super.init(params);

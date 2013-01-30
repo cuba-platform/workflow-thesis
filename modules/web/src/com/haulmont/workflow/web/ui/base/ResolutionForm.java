@@ -2,16 +2,10 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.01.2010 16:57:01
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -34,8 +28,11 @@ import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ResolutionForm extends AbstractForm {
 
     private TextField commentText;
@@ -45,10 +42,6 @@ public class ResolutionForm extends AbstractForm {
 
     private CollectionDatasourceImpl<Assignment, UUID> datasource;
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
-
-    public ResolutionForm(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(final Map<String, Object> params) {
@@ -63,7 +56,7 @@ public class ResolutionForm extends AbstractForm {
         String transition = (String) params.get("param$transition");
 
         TextField outcomeText = getComponent("outcomeText");
-        outcomeText.setValue(MessageProvider.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
+        outcomeText.setValue(messages.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
         outcomeText.setEditable(false);
 
         String commentRequired = (String) params.get("param$commentRequired");
@@ -128,7 +121,7 @@ public class ResolutionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
 
@@ -136,7 +129,7 @@ public class ResolutionForm extends AbstractForm {
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
-        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Copy"));
+        copyAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
@@ -149,7 +142,7 @@ public class ResolutionForm extends AbstractForm {
         };
         pasteAttachBtn.setAction(
                 AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
-        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Paste"));
+        pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
         PopupButton createPopup = getComponent("createAttachBtn");
         TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
@@ -201,9 +194,9 @@ public class ResolutionForm extends AbstractForm {
                 datasource.addItem(assign);
             }
 
-            datasource.addListener(new DsListenerAdapter() {
+            datasource.addListener(new DsListenerAdapter<Assignment>() {
                 @Override
-                public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                public void valueChanged(Assignment source, String property, Object prevValue, Object value) {
                     if (source.equals(assignment)) {
                         for (Object key : datasource.getItemIds()) {
                             InstanceUtils.setValueEx(datasource.getItem((UUID) key), property, value);
@@ -216,7 +209,7 @@ public class ResolutionForm extends AbstractForm {
 
     protected List<CardAttachment> copyAttachments() {
         List<CardAttachment> attachmentList = datasource.getItem().getAttachments();
-        List<CardAttachment> commitList = new ArrayList<CardAttachment>();
+        List<CardAttachment> commitList = new ArrayList<>();
         if (datasource.getItemIds().size() > 1 && attachmentList != null) {
             for (Object key : datasource.getItemIds()) {
                 if (key.equals(assignment.getId())) {
@@ -224,7 +217,7 @@ public class ResolutionForm extends AbstractForm {
                 }
 
                 Assignment item = datasource.getItem((UUID) key);
-                List<CardAttachment> copyAttachmentList = new ArrayList<CardAttachment>();
+                List<CardAttachment> copyAttachmentList = new ArrayList<>();
                 for (CardAttachment attachment : attachmentList) {
                     CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
                     cardAttachment.setAssignment(item);

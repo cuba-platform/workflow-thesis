@@ -7,16 +7,13 @@
 package com.haulmont.workflow.web.folders;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
@@ -28,7 +25,9 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.UUID;
 
 public class ProcConditionEditWindow extends Window {
     private static final long serialVersionUID = -3522104911369198300L;
@@ -36,7 +35,7 @@ public class ProcConditionEditWindow extends Window {
     private CollectionDatasource<ProcCondition, UUID> procConditionDatasource;
 
     public ProcConditionEditWindow(CollectionDatasource<ProcCondition, UUID> procConditionDatasource) {
-        super(MessageProvider.getMessage(ProcConditionEditWindow.class, "ProcCondition"));
+        super(AppBeans.get(Messages.class).getMessage(ProcConditionEditWindow.class, "ProcCondition"));
 
         this.procConditionDatasource = procConditionDatasource;
 
@@ -85,10 +84,9 @@ public class ProcConditionEditWindow extends Window {
         statesField.setOptionsDatasource(getStatesList(null));
         statesField.setCaptionProperty("locName");
 
-        procDs.addListener(new CollectionDsListenerAdapter() {
+        procDs.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                super.itemChanged(ds, prevItem, item);
                 statesField.setOptionsDatasource(getStatesList((Proc) item));
                 statesField.setValue(null);
             }
@@ -141,6 +139,6 @@ public class ProcConditionEditWindow extends Window {
     }
 
     private String getMessage(String key) {
-        return MessageProvider.getMessage(this.getClass(), key);
+        return AppBeans.get(Messages.class).getMessage(this.getClass(), key);
     }
 }

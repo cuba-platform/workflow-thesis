@@ -44,16 +44,18 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CardRolesFrame extends AbstractFrame {
-    protected Map<ProcRole, CollectionDatasource> procRoleUsers = new HashMap<ProcRole, CollectionDatasource>();
+    protected Map<ProcRole, CollectionDatasource> procRoleUsers = new HashMap<>();
 
     public interface Listener {
         void afterInitDefaultActors(Proc proc);
     }
 
-    private Log log = LogFactory.getLog(CardRolesFrame.class);
-
-    private Set<Listener> listeners = new HashSet<Listener>();
+    private Set<Listener> listeners = new HashSet<>();
 
     protected Card card;
     private boolean enabled = true;
@@ -67,13 +69,13 @@ public class CardRolesFrame extends AbstractFrame {
     protected CheckBox showSortOrderCheckBox;
     protected CollectionDatasource rolesTableDs;
 
-    protected List<Component> rolesActions = new ArrayList<Component>();
+    protected List<Component> rolesActions = new ArrayList<>();
 
     protected String createRoleCaption;
     protected ProcRolePermissionsService procRolePermissionsService;
-    protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<CardRole, CardRoleField>();
+    protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<>();
     protected List<User> users;
-    protected Map<Role, Collection<User>> roleUsersMap = new HashMap<Role, Collection<User>>();
+    protected Map<Role, Collection<User>> roleUsersMap = new HashMap<>();
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
     protected boolean editable = true;
@@ -161,7 +163,7 @@ public class CardRolesFrame extends AbstractFrame {
             private static final long serialVersionUID = 1205336750221624070L;
 
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<CardRole> items) {
                 initCreateRoleLookup();
                 if (operation.equals(Operation.ADD)) tmpCardRolesDs.doSort();
             }
@@ -302,8 +304,8 @@ public class CardRolesFrame extends AbstractFrame {
 
     private void initMoveButtons() {
             moveUp.setAction(new AbstractAction("moveUp") {
-                private static final long serialVersionUID = 3616849995887047615L;
 
+                @Override
                 public void actionPerform(Component component) {
                     Set<CardRole> selected = rolesTable.getSelected();
                     if (selected.isEmpty())
@@ -322,8 +324,8 @@ public class CardRolesFrame extends AbstractFrame {
             });
 
             moveDown.setAction(new AbstractAction("moveDown") {
-                private static final long serialVersionUID = 6060776970724140731L;
 
+                @Override
                 public void actionPerform(Component component) {
                     Set<CardRole> selected = rolesTable.getSelected();
                     if (selected.isEmpty())
@@ -386,10 +388,10 @@ public class CardRolesFrame extends AbstractFrame {
             private static final long serialVersionUID = -3820323886456571938L;
 
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("secRole", cardRole.getProcRole().getRole());
 
-                List<User> users = new ArrayList<User>();
+                List<User> users = new ArrayList<>();
                 for (Object o : tmpCardRolesDs.getItemIds()) {
                     CardRole cr = tmpCardRolesDs.getItem((UUID) o);
                     if (cr.getCode().equals(cardRole.getCode()) && cr.getUser() != null) {
@@ -404,9 +406,9 @@ public class CardRolesFrame extends AbstractFrame {
 
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            Set<User> selectedUsers = null;
-                            Set<User> validUsers = new HashSet<User>();
-                            Set<User> invalidUsers = new HashSet<User>();
+                            Set<User> selectedUsers;
+                            Set<User> validUsers = new HashSet<>();
+                            Set<User> invalidUsers = new HashSet<>();
                             try {
                                 selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
                             } catch (Exception e) {
@@ -1292,7 +1294,7 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void doSort() {
             super.doSort();
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
         }
 
         public void fillForProc(Proc proc) {
@@ -1319,7 +1321,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         private void removeAll() {
-            List<UUID> items = new ArrayList<UUID>(getItemIds());
+            List<UUID> items = new ArrayList<>(getItemIds());
             for (UUID id : items)
                 removeItem(getItem(id));
         }

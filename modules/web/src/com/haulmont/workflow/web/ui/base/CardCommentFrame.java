@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Valery Novikov
- * Created: 05.08.2010 19:21:16
- *
- * $Id$
  */
 
 package com.haulmont.workflow.web.ui.base;
@@ -14,6 +9,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -35,6 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author novikov
+ * @version $Id$
+ */
 public class CardCommentFrame extends AbstractWindow {
 
     protected HierarchicalDatasource commentDs;
@@ -45,10 +45,6 @@ public class CardCommentFrame extends AbstractWindow {
     protected Boolean justCreated;
     protected int maxWidthDigit = 70;
     protected int maxHeightDigit = 3;
-
-    public CardCommentFrame(IFrame frame) {
-        super(frame);
-    }
 
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -63,9 +59,9 @@ public class CardCommentFrame extends AbstractWindow {
         buttonCreate = (com.haulmont.cuba.gui.components.Button) getComponent("add");
         treeComment = (WidgetsTree) getComponent("treeComment");
         commentDs.refresh();
-        commentDs.addListener(new CollectionDsListenerAdapter() {
+        commentDs.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 treeComment.expandTree();
             }
         });

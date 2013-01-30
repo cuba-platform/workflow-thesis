@@ -2,24 +2,15 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Valery Novikov
- * Created: 28.06.2010 13:50:48
- *
- * $Id$
  */
 
 package com.haulmont.workflow.web.ui.base;
 
-
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -36,6 +27,10 @@ import com.haulmont.workflow.core.entity.*;
 
 import java.util.*;
 
+/**
+ * @author novikov
+ * @version $Id$
+ */
 public class CardSend extends AbstractWindow {
 
     protected CollectionDatasourceImpl<User, UUID> tmpUserDs;
@@ -52,15 +47,10 @@ public class CardSend extends AbstractWindow {
     protected List<CardRole> roles;
     protected IFrame rootFrame;
 
-    private final Map<String, UserItemHandler> itemHandlers = new HashMap<String, UserItemHandler>();
+    private final Map<String, UserItemHandler> itemHandlers = new HashMap<>();
 
     public interface UserItemHandler {
         void handleItem(Object value);
-    }
-
-
-    public CardSend(IFrame frame) {
-        super(frame);
     }
 
     public void init(Map<String, Object> params) {
@@ -74,7 +64,7 @@ public class CardSend extends AbstractWindow {
             throw new RuntimeException("Card null");
         CollectionDatasource cardRolesDs = (CollectionDatasource) params.get("cardRolesDs");
         if (cardRolesDs != null && cardRolesDs.getItemIds().size() != 0) {
-            roles = new ArrayList<CardRole>();
+            roles = new ArrayList<>();
             for (Object o : cardRolesDs.getItemIds()) {
                 CardRole cardRole = (CardRole) cardRolesDs.getItem(o);
                 roles.add(cardRole);
@@ -102,7 +92,7 @@ public class CardSend extends AbstractWindow {
 
         tmpUserDs.addListener(new CollectionDsListenerAdapter<User>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation, List<User> items) {
                 initCreateUserLookup();
             }
         });
@@ -165,6 +155,7 @@ public class CardSend extends AbstractWindow {
 
 
         createUserLookup.addListener(new ValueListener() {
+            @Override
             public void valueChanged(Object source, String property, Object prevValue, final Object value) {
                 if ((value == null) || createUserCaption.equals(value))
                     return;
@@ -175,6 +166,7 @@ public class CardSend extends AbstractWindow {
         });
 
         ((Button) getComponent("removeUser")).setAction(new AbstractAction("usersTable.remove") {
+            @Override
             public void actionPerform(Component component) {
                 if (usersTable.getSingleSelected() != null)
                     tmpUserDs.removeItem((User) usersTable.getSingleSelected());
@@ -186,6 +178,7 @@ public class CardSend extends AbstractWindow {
             }
         });
         addAction(new AbstractAction("windowCommit") {
+            @Override
             public void actionPerform(Component component) {
                 TextField comment = getComponent("commentText");
                 String commentStr = comment.getValue();
@@ -207,19 +200,20 @@ public class CardSend extends AbstractWindow {
                             toCommit.add(createCardInfo(card, tmpUserDs.getItem(uuid), commentStr));
                         }
                         CommitContext commitContext = new CommitContext(toCommit);
-                        ServiceLocator.getDataService().commit(commitContext);
+                        AppBeans.get(DataService.class).commit(commitContext);
                     }
-                    Set<Entity> toCommit = new HashSet<Entity>();
+                    Set<Entity> toCommit = new HashSet<>();
                     CardComment cardComment = new CardComment();
+                    UserSessionSource uss = AppBeans.get(UserSessionSource.class);
                     if (parent != null) {
                         cardComment.setAddressees(users);
-                        cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                         cardComment.setParent(parent);
                     } else {
                         cardComment.setAddressees(users);
-                        cardComment.setSender(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                     }
@@ -234,18 +228,19 @@ public class CardSend extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
         addAction(new AbstractAction("windowClose") {
+            @Override
             public void actionPerform(Component component) {
                 close("cancel", true);
             }
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
     }
@@ -276,11 +271,11 @@ public class CardSend extends AbstractWindow {
         ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and cr.procRole.invisible = false and " +
                 "cr.procRole.id in (select pr.id from wf$ProcRole pr where pr.proc.id = :procId)")
                 .addParameter("cardId", card).addParameter("procId", card.getProc());
-        return ServiceLocator.getDataService().loadList(ctx);
+        return AppBeans.get(DataService.class).loadList(ctx);
     }
 
     protected void initCreateUserLookup() {
-        List<String> options = new ArrayList<String>();
+        List<String> options = new ArrayList<>();
         if (roles != null) {
             User user;
             for (CardRole cardRole : roles) {

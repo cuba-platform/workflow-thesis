@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2009 10:11:47
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -37,6 +32,10 @@ import org.apache.commons.lang.BooleanUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CardProcFrame extends AbstractFrame {
 
     protected Card card;
@@ -175,7 +174,9 @@ public class CardProcFrame extends AbstractFrame {
                     }
 
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation) {
+                    public void collectionChanged(CollectionDatasource ds,
+                                                  CollectionDatasourceListener.Operation operation,
+                                                  List<CardProc> items) {
                         initCreateProcLookup();
                     }
 
@@ -261,6 +262,7 @@ public class CardProcFrame extends AbstractFrame {
 
                 managerChain.setHandler(
                         new FormManagerChain.Handler() {
+                            @Override
                             public void onSuccess(String comment) {
                                 WfService wfs = ServiceLocator.lookup(WfService.NAME);
                                 wfs.startProcess(card);
@@ -268,6 +270,7 @@ public class CardProcFrame extends AbstractFrame {
                                 managerChain.doManagerAfter();
                             }
 
+                            @Override
                             public void onFail() {
                                 rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
 
@@ -346,7 +349,7 @@ public class CardProcFrame extends AbstractFrame {
         Preconditions.checkArgument(card != null, "Card is null");
         this.card = card;
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("cardType", "%," + card.getMetaClass().getName() + ",%");
         params.put("userId", UserSessionProvider.currentOrSubstitutedUserId());
         procDs.refresh(params);

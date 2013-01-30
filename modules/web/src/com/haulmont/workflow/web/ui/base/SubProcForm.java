@@ -6,8 +6,7 @@
 
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.web.ui.base.action.CardContext;
@@ -19,10 +18,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class SubProcForm extends TransitionForm {
-
-    public SubProcForm(IFrame frame) {
-        super(frame);
-    }
 
     public void init(Map<String, Object> params) {
         Card card = (Card) params.get("card");
@@ -37,15 +32,7 @@ public class SubProcForm extends TransitionForm {
     }
 
     protected Card createSubProcCard(Card parentCard, String subProcCode){
-        WfService wfService = ServiceLocator.lookup(WfService.NAME);
+        WfService wfService = AppBeans.get(WfService.NAME);
         return wfService.createSubProcCard(parentCard, subProcCode);
     }
 }
-
-
-
-
-
-
-
-

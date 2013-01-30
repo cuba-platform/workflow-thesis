@@ -49,9 +49,8 @@ import java.io.StringWriter;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author pavlov
+ * @version $Id$
  */
 public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
@@ -291,7 +290,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         MetaClass cardMetaClass = metadata.getSession().getClass("wf$Card");
         Collection<MetaClass> metaClasses = cardMetaClass.getDescendants();
 
-        Map<String, Object> items = new TreeMap<String, Object>();
+        Map<String, Object> items = new TreeMap<>();
         for (MetaClass metaClass : metaClasses) {
             if (metaClass.getJavaClass().getAnnotation(MappedSuperclass.class) == null) {
                 items.put(metaClass.getName() + " (" + messages.getTools().getEntityCaption(metaClass) + ")", metaClass);
@@ -412,7 +411,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
         procConditionDatasource.addListener(new CollectionDsListenerAdapter<ProcCondition>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<ProcCondition> items) {
                 modified = true;
             }
         });
@@ -431,7 +430,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
             String entityAlias = rootElem.elementText("entityAlias");
             entityAliasField.setValue(entityAlias);
 
-            Set<Role> selected = new HashSet<Role>();
+            Set<Role> selected = new HashSet<>();
             for (Element roleEl : Dom4j.elements(rootElem.element("roles"), "role")) {
                 String role = roleEl.getText();
                 CollectionDatasource rolesDs = rolesField.getOptionsDatasource();
@@ -507,6 +506,4 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
             }
         }
     }
-
-
 }

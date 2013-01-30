@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 20.04.2010 12:11:14
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -22,7 +17,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -40,6 +34,10 @@ import java.util.*;
 
 import static com.haulmont.cuba.gui.ServiceLocator.getDataService;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class TransitionForm extends AbstractForm {
 
     @Inject
@@ -78,18 +76,14 @@ public class TransitionForm extends AbstractForm {
 
     protected Card card;
     protected Card cardCopy;
-    protected List<String> requiredAttachmentTypes = new ArrayList<String>();
+    protected List<String> requiredAttachmentTypes = new ArrayList<>();
 
     private String requiredRolesCodesStr;
     private Map<String, AttachmentType> attachmentTypes;
 
-    private final int DEFAULT_FORM_HEIGHT = 500;
+    private static final int DEFAULT_FORM_HEIGHT = 500;
 
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
-
-    public TransitionForm(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -163,35 +157,35 @@ public class TransitionForm extends AbstractForm {
         if (assignmentId != null) {
             ctx.setId(assignmentId);
             ctx.setView("resolution-edit");
-            Assignment assignment = ServiceLocator.getDataService().load(ctx);
+            Assignment assignment = AppBeans.get(DataService.class).load(ctx);
             assignmentDs.setItem(assignment);
             String parentMessagesPack = messagesPack;
             if (card.isSubProcCard())
                 parentMessagesPack = card.getProcFamily().getCard().getProc().getMessagesPack();
-            outcomeText.setValue(MessageProvider.getMessage(parentMessagesPack, activity + "." + transition));
+            outcomeText.setValue(messages.getMessage(parentMessagesPack, activity + "." + transition));
             if (commentText != null)
                 commentText.setDatasource(assignmentDs, "comment");
         } else {
-            outcomeText.setValue(MessageProvider.getMessage(messagesPack, WfConstants.ACTION_START));
+            outcomeText.setValue(messages.getMessage(messagesPack, WfConstants.ACTION_START));
         }
         outcomeText.setEditable(false);
 
         String formCaption = (String) params.get("formCaption");
         if (StringUtils.isNotBlank(formCaption))
-            setCaption(MessageProvider.getMessage(messagesPack, formCaption));
+            setCaption(messages.getMessage(messagesPack, formCaption));
 
         String dueDateLabelParam = (String) params.get("dueDateLabel");
         if (StringUtils.isNotBlank(dueDateLabelParam)) {
             Label dueDateLabel = getComponent("dueDateLabel");
             if (dueDateLabel != null)
-                dueDateLabel.setValue(MessageProvider.getMessage(messagesPack, dueDateLabelParam));
+                dueDateLabel.setValue(messages.getMessage(messagesPack, dueDateLabelParam));
         }
 
         String dueDateFormatParam = (String) params.get("dueDateFormat");
         if (StringUtils.isNotBlank(dueDateFormatParam)) {
             if ("dateTimeFormat".equals(dueDateFormatParam)) {
                 dueDate.setResolution(DateField.Resolution.MIN);
-                dueDate.setDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
+                dueDate.setDateFormat(Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getDateTimeFormat());
             }
         }
 
@@ -205,9 +199,9 @@ public class TransitionForm extends AbstractForm {
         attachmentsTab = tabsheet.getTab("attachmentsTab");
         attachmentsTab.setCaption(getAttachmentsTabCaption());
 
-        attachmentsDs.addListener(new CollectionDsListenerAdapter() {
+        attachmentsDs.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 attachmentsTab.setCaption(getAttachmentsTabCaption());
                 initRequiredAttachmentsPane();
             }
@@ -230,7 +224,7 @@ public class TransitionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
@@ -241,7 +235,7 @@ public class TransitionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
 
@@ -249,7 +243,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     private String getAttachmentsTabCaption() {
-        Set<String> presentAttachmentTypes = new HashSet<String>();
+        Set<String> presentAttachmentTypes = new HashSet<>();
         for (Object itemId : attachmentsDs.getItemIds()) {
             CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
             if ((attachment.getAttachType() != null) && requiredAttachmentTypes.contains(attachment.getAttachType().getCode()))
@@ -257,11 +251,11 @@ public class TransitionForm extends AbstractForm {
         }
 
         if (!requiredAttachmentTypes.isEmpty()) {
-            return MessageProvider.formatMessage(getClass(), "attachmentsTabWithRequired",
+            return messages.formatMessage(getClass(), "attachmentsTabWithRequired",
                     attachmentsDs.getItemIds().size(), presentAttachmentTypes.size(), requiredAttachmentTypes.size());
         } else {
             if (attachmentsDs.getItemIds().size() > 0)
-                return MessageProvider.formatMessage(getClass(), "attachmentsTabWithoutRequired",
+                return messages.formatMessage(getClass(), "attachmentsTabWithoutRequired",
                         attachmentsDs.getItemIds().size(), presentAttachmentTypes.size(), requiredAttachmentTypes.size());
             else
                 return getMessage("attachments");
@@ -281,7 +275,7 @@ public class TransitionForm extends AbstractForm {
         grid.setRows(columnHeight);
         int row = 0;
         int column = 0;
-        List<String> presentAttachmentTypes = new ArrayList<String>();
+        List<String> presentAttachmentTypes = new ArrayList<>();
         for (Object itemId : attachmentsDs.getItemIds()) {
             final Attachment attachment = (Attachment) attachmentsDs.getItem(itemId);
             AttachmentType attachType = attachment.getAttachType();
