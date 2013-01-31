@@ -6,7 +6,10 @@
 
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +33,10 @@ public class SubProcModule extends Module {
     public void init(Context context) throws DesignCompilationException {
         super.init(context);
         subProcCode = jsValue.optString("subProcCode");
-        if (StringUtils.isBlank(subProcCode))
-            throw new DesignCompilationException(MessageProvider.formatMessage(SubProcModule.class, "exception.noProc", caption));
+        if (StringUtils.isBlank(subProcCode)) {
+            Messages messages = AppBeans.get(Messages.class);
+            throw new DesignCompilationException(messages.formatMessage(SubProcModule.class, "exception.noProc", caption));
+        }
     }
 
     @Override

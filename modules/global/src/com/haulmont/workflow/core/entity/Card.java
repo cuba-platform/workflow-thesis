@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.core.entity;
 
+import com.google.common.base.Joiner;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
@@ -264,18 +265,13 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
             return "";
         if (getProc() != null) {
             String messagesPack = getProc().getMessagesPack();
-            StringBuilder sb = new StringBuilder();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
             Set<String> states = new HashSet<>();
-            while (matcher.find())
-                states.add(matcher.group());
             MessageTools messageTools = AppBeans.get(MessageTools.class);
-            for (String state : states)
-                sb.append(messageTools.loadString(messagesPack, "msg://" + state))
-                        .append(STATE_SEPARATOR);
-            if (sb.length() > 0)
-                sb.delete(sb.length() - STATE_SEPARATOR.length(), sb.length());
-            return sb.toString();
+            while (matcher.find()) {
+                states.add(messageTools.loadString(messagesPack, "msg://" + matcher.group()));
+            }
+            return Joiner.on(Card.STATE_SEPARATOR).join(states);
         }
         return getState();
     }

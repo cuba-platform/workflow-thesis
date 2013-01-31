@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.jbpm.api.Configuration;
 import org.jbpm.api.*;
 import org.jbpm.pvm.internal.processengine.SpringHelper;
 
@@ -45,7 +44,7 @@ public class WfEngine implements WfEngineAPI {
 
     private Log log = LogFactory.getLog(getClass());
 
-    private SpringHelper springHelper;
+    private SpringHelper jbpmSpringHelper;
 
     private volatile ProcessEngine processEngine;
 
@@ -80,9 +79,9 @@ public class WfEngine implements WfEngineAPI {
         System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getClassLoader");
     }
 
-    @Resource(name = "springHelper")
-    public void setSpringHelper(SpringHelper springHelper) {
-        this.springHelper = springHelper;
+    @Resource(name = "jbpmSpringHelper")
+    public void setJbpmSpringHelper(SpringHelper jbpmSpringHelper) {
+        this.jbpmSpringHelper = jbpmSpringHelper;
     }
 
     public ProcessEngine getProcessEngine() {
@@ -92,7 +91,7 @@ public class WfEngine implements WfEngineAPI {
                     Transaction tx = persistence.createTransaction();
                     try {
                         if (processEngine == null) {
-                            processEngine = springHelper.createProcessEngine();
+                            processEngine = jbpmSpringHelper.createProcessEngine();
                         }
                         tx.commit();
                     } finally {

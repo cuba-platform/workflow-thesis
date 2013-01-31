@@ -6,7 +6,9 @@
 
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
@@ -29,8 +31,10 @@ public class ForEachUserModule extends Module {
         super.init(context);
         jsOptions = jsValue.optJSONObject("options");
         role = jsOptions.optString("role");
-        if (StringUtils.trimToNull(role) == null)
-            throw new DesignCompilationException(MessageProvider.formatMessage(ForEachUserModule.class, "exception.noRole", caption));
+        if (StringUtils.trimToNull(role) == null) {
+            Messages messages = AppBeans.get(Messages.class);
+            throw new DesignCompilationException(messages.formatMessage(ForEachUserModule.class, "exception.noRole", caption));
+        }
     }
 
     @Override

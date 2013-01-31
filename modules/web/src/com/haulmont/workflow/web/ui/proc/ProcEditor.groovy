@@ -181,7 +181,7 @@ public class ProcEditor extends AbstractEditor {
 
     dpaDs.addListener(
             [
-                    collectionChanged: { ds, operation -> enableDpaActions() },
+                    collectionChanged: { ds, operation, items -> enableDpaActions() },
                     itemChanged:{ds, prevItem, item ->
                       enableCheckBox()
                     }

@@ -141,17 +141,10 @@ public class CardProcFrame extends AbstractFrame {
                     @Override
                     public void itemChanged(Datasource<CardProc> ds, CardProc prevItem, CardProc item) {
                         cardRolesFrame.setCardProc(item);
-                        if (item != null)
-                        {
+                        if (item != null) {
                             subProcessCardProcDs.refresh(Collections.<String, Object>singletonMap("cardProc", item.getId()));
-                            if (subProcessCardProcDs.size() > 1) {
-                                subProcessLookup.setVisible(true);
-                                subProcessLookupLabel.setVisible(true);
-                            }
-                            else {
-                                subProcessLookup.setVisible(false);
-                                subProcessLookupLabel.setVisible(false);
-                            }
+                            subProcessLookup.setVisible(subProcessCardProcDs.size() > 1);
+                            subProcessLookupLabel.setVisible(subProcessLookup.isVisible());
                             subProcessLookup.setNullOption(item);
                             subProcessLookup.setValue(item);
                         }
