@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 27.01.2010 16:40:55
- *
- * $Id$
  */
 package com.haulmont.workflow.gui.data;
 
 import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 
 import java.util.*;
 
-public class ProcessVariablesMetaClass implements MetaClass {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class ProcessVariablesMetaClass extends MetadataObjectImpl<MetaClass> implements MetaClass {
 
     private Map<String, MetaProperty> properties = new HashMap<String, MetaProperty>();
 
@@ -28,16 +28,19 @@ public class ProcessVariablesMetaClass implements MetaClass {
         }
     }
 
+    @Override
     public MetaModel getModel() {
         return null;
     }
 
+    @Override
     public Class getJavaClass() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public MetaProperty getProperty(String name) {
-        return null;
+        return properties.get(name);
     }
 
     @Override
@@ -48,63 +51,28 @@ public class ProcessVariablesMetaClass implements MetaClass {
         return property;
     }
 
+    @Override
     public MetaPropertyPath getPropertyEx(String propertyPath) {
         return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
+    @Override
     public MetaPropertyPath getPropertyPath(String propertyPath) {
         return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
+    @Override
     public Collection<MetaProperty> getOwnProperties() {
-        return null;
+        return properties.values();
     }
 
+    @Override
     public Collection<MetaProperty> getProperties() {
-        return null;
+        return properties.values();
     }
 
+    @Override
     public <T> T createInstance() throws InstantiationException, IllegalAccessException {
-        return null;
-    }
-
-    public <T> T createInstance(Class<T> clazz) {
-        return null;
-    }
-
-    public MetaClass getAncestor() {
-        return null;
-    }
-
-    public Collection<MetaClass> getAncestors() {
-        return null;
-    }
-
-    public Collection<MetaClass> getDescendants() {
-        return null;
-    }
-
-    public String getName() {
-        return null;
-    }
-
-    public String getFullName() {
-        return null;
-    }
-
-    public String getCaption() {
-        return null;
-    }
-
-    public String getDescription() {
-        return null;
-    }
-
-    public UUID getUUID() {
-        return null;
-    }
-
-    public Map<String, Object> getAnnotations() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
