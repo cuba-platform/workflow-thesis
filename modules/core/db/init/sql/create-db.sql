@@ -43,7 +43,7 @@ create table WF_DESIGN_FILE (
     CREATED_BY varchar(50),
     DESIGN_ID varchar(36),
     NAME varchar(100),
-    TYPE varchar(20),
+    DESIGN_FILE_TYPE varchar(20),
     CONTENT longvarchar,
     BINARY_CONTENT longvarbinary,
     primary key (ID)
@@ -89,7 +89,7 @@ create table WF_CARD (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    TYPE integer,
+    CARD_TYPE integer,
     PROC_ID varchar(36),
     JBPM_PROCESS_ID varchar(255),
     STATE varchar(255),
@@ -112,6 +112,29 @@ alter table WF_CARD add constraint FK_WF_CARD_SUBSTITUTED_CREATOR foreign key (S
 alter table WF_CARD add constraint FK_WF_CARD_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID);
 alter table WF_CARD add constraint WF_CARD_FAMILY_CARD foreign key (FAMILY_CARD_ID) references WF_CARD(ID);
 create index IDX_WF_CARD_FAMILY_CARD on WF_CARD(FAMILY_CARD_ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table WF_CARD_COMMENT (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    CARD_COMMENT text,
+    USER_ID varchar(36),
+    CARD_ID varchar(36),
+    PARENT_ID varchar(36),
+    primary key (ID)
+)^
+
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_PARENT foreign key (PARENT_ID) references WF_CARD_COMMENT (ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_RELATION (
@@ -131,6 +154,7 @@ alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD foreign key (CARD_ID) 
 alter table WF_CARD_RELATION add constraint FK_WF_CC_CARD_RELATED foreign key (RELATED_CARD_ID) references WF_CARD (ID);
 
 ------------------------------------------------------------------------------------------------------------
+
 create table WF_CARD_INFO (
     ID varchar(36),
     NAME varchar(50),
@@ -139,7 +163,7 @@ create table WF_CARD_INFO (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     CARD_ID varchar(36),
-    TYPE integer,
+    CARD_INFO_TYPE integer,
     USER_ID varchar(36),
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
@@ -172,7 +196,7 @@ create table WF_ASSIGNMENT (
     FINISHED timestamp,
     FINISHED_BY varchar(36),
     OUTCOME varchar(255),
-    COMMENT text,
+    ASSIGNMENT_COMMENT text,
     ITERATION integer,
     SUBPROC_CARD_ID varchar(36),
     FAMILY_ASSIGNMENT_ID varchar(36),
@@ -203,7 +227,7 @@ create table WF_ATTACHMENTTYPE (
     DELETED_BY varchar(50),
     VERSION integer,
     NAME varchar(500),
-    COMMENT varchar(1000),
+    ATTACHMENTTYPE_COMMENT varchar(1000),
     ISDEFAULT boolean,
     CODE varchar(200),
     primary key (ID)
@@ -220,11 +244,11 @@ create table WF_ATTACHMENT (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    TYPE char(1),
+    ATTACHMENT_TYPE char(1),
     FILE_ID varchar(36),
     TYPE_ID varchar(36),
     NAME varchar(500),
-    COMMENT text,
+    ATTACHMENT_COMMENT text,
     SIGNATURES longvarchar,
     CARD_ID varchar(36),
     ASSIGNMENT_ID varchar(36),
@@ -377,6 +401,7 @@ create table WF_CALENDAR (
     WORK_DAY_OF_WEEK smallint,
     WORK_START_TIME timestamp,
     WORK_END_TIME timestamp,
+    CALENDAR_COMMENT varchar(500),
     primary key (ID)
 );
 
@@ -394,8 +419,8 @@ create table WF_PROC_ROLE_PERMISSION (
     PROC_ROLE_FROM_ID varchar(36),
     PROC_ROLE_TO_ID varchar(36),
     STATE varchar(255),
-    value numeric(2),
-    type numeric(2),
+    VALUE numeric(2),
+    PERMISSION_TYPE numeric(2),
     primary key (ID)
 );
 
