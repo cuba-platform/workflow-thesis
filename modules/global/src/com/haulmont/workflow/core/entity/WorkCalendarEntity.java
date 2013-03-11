@@ -44,7 +44,7 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     @Temporal(TemporalType.TIME)
     protected Date end;
 
-    @Column(name = "COMMENT")
+    @Column(name = "CALENDAR_COMMENT")
     protected String comment;
 
     public String getUpdatedBy() {

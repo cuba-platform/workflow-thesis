@@ -45,7 +45,7 @@ create table WF_DESIGN_FILE (
     CREATED_BY varchar(50),
     DESIGN_ID uuid,
     NAME varchar(100),
-    TYPE varchar(20),
+    DESIGN_FILE_TYPE varchar(20),
     CONTENT text,
     BINARY_CONTENT bytea,
     primary key (ID)
@@ -94,7 +94,7 @@ create table WF_CARD (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    TYPE integer,
+    CARD_TYPE integer,
     PROC_ID uuid,
     JBPM_PROCESS_ID varchar(255),
     STATE varchar(255),
@@ -129,7 +129,7 @@ create table WF_CARD_COMMENT (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    COMMENT text,
+    CARD_COMMENT text,
     USER_ID uuid,
     CARD_ID uuid,
     PARENT_ID uuid,
@@ -185,7 +185,7 @@ create table WF_CARD_INFO (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     CARD_ID uuid,
-    TYPE integer,
+    CARD_INFO_TYPE integer,
     USER_ID uuid,
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
@@ -222,7 +222,7 @@ create table WF_ASSIGNMENT (
     FINISHED timestamp,
     FINISHED_BY uuid,
     OUTCOME varchar(255),
-    COMMENT text,
+    ASSIGNMENT_COMMENT text,
     ITERATION integer,
     SUBPROC_CARD_ID uuid,
     FAMILY_ASSIGNMENT_ID uuid,
@@ -259,7 +259,7 @@ create table WF_ATTACHMENTTYPE (
     DELETED_BY varchar(50),
     VERSION integer,
     NAME varchar(500),
-    COMMENT varchar(1000),
+    ATTACHMENTTYPE_COMMENT varchar(1000),
     ISDEFAULT boolean,
     CODE varchar(200),
     ISSYSTEM boolean,
@@ -279,11 +279,11 @@ create table WF_ATTACHMENT (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    TYPE char(1),
+    ATTACHMENT_TYPE char(1),
     FILE_ID uuid,
     TYPE_ID uuid,
     NAME varchar(500),
-    COMMENT varchar(1000),
+    ATTACHMENT_COMMENT varchar(1000),
     SIGNATURES text,
     CARD_ID uuid,
     ASSIGNMENT_ID uuid,
@@ -453,7 +453,7 @@ create table WF_CALENDAR (
     WORK_DAY_OF_WEEK numeric(1),
     WORK_START_TIME time,
     WORK_END_TIME time,
-    COMMENT varchar(500),
+    CALENDAR_COMMENT varchar(500),
     primary key (ID)
 );
 
@@ -473,8 +473,8 @@ create table WF_PROC_ROLE_PERMISSION (
     PROC_ROLE_FROM_ID uuid,
     PROC_ROLE_TO_ID uuid,
     STATE varchar(255),
-    value numeric(2),
-    type numeric(2),
+    VALUE numeric(2),
+    PERMISSION_TYPE numeric(2),
     primary key (ID)
 )^
 
@@ -660,6 +660,8 @@ create table WF_USER_NOTIFIED_BY_SMS
     primary key (ID)
 )^
 alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_USER foreign key (USER_ID) references SEC_USER (ID)^
+
 ------------------------------------------------------------------------------------------------------------
+
 insert into WF_ATTACHMENTTYPE (ID, CODE, ISDEFAULT)
 values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70', 'AttachmentType.attachment', true)^

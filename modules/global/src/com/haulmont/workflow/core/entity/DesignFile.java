@@ -29,7 +29,7 @@ public class DesignFile extends BaseUuidEntity {
     @Column(name = "NAME", length = 100)
     protected String name;
 
-    @Column(name = "TYPE", length = 20)
+    @Column(name = "DESIGN_FILE_TYPE", length = 20)
     protected String type;
 
     @Column(name = "CONTENT", length = 0)

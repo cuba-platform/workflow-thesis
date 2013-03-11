@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @Entity(name = "wf$Card")
 @Table(name = "WF_CARD")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name = "CARD_TYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
 @Listeners({"com.haulmont.workflow.core.listeners.CardListener"})
 @NamePattern("%s|description")

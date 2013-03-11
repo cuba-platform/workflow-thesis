@@ -30,7 +30,7 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
     @Column(name = "NAME", length = 500)
     protected String name;
 
-    @Column(name = "COMMENT", length = 1000)
+    @Column(name = "ATTACHMENTTYPE_COMMENT", length = 1000)
     protected String comment;
 
     //Localization code

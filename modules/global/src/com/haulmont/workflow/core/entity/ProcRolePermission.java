@@ -31,7 +31,7 @@ public class ProcRolePermission extends StandardEntity {
     @Column(name = "STATE", length = 255)
     protected String state;
 
-    @Column(name = "TYPE")
+    @Column(name = "PERMISSION_TYPE")
     protected Integer type;
 
     @Column(name = "VALUE")

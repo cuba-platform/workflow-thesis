@@ -78,7 +78,7 @@ public class Assignment extends StandardEntity {
     @Column(name = "OUTCOME", length = 255)
     protected String outcome;
 
-    @Column(name = "COMMENT", length = 100000)
+    @Column(name = "ASSIGNMENT_COMMENT", length = 100000)
     protected String comment;
 
     @OneToMany(mappedBy = "assignment")

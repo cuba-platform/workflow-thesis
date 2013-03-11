@@ -57,7 +57,7 @@ public class CardInfo extends BaseUuidEntity implements SoftDelete {
     @JoinColumn(name = "CARD_ID")
     protected Card card;
 
-    @Column(name = "TYPE")
+    @Column(name = "CARD_INFO_TYPE")
     protected Integer type;
 
     @ManyToOne(fetch = FetchType.LAZY)

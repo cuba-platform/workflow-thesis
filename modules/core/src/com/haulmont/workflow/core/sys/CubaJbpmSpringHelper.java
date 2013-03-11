@@ -50,6 +50,9 @@ public class CubaJbpmSpringHelper extends SpringHelper {
             case MSSQL:
                 hibernateDialect = "org.hibernate.dialect.SQLServerDialect";
                 break;
+            case ORACLE:
+                hibernateDialect = "org.hibernate.dialect.Oracle10gDialect";
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown DBMS type: " + DbmsType.getCurrent());
         }

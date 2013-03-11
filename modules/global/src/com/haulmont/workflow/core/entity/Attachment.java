@@ -23,7 +23,7 @@ import java.util.UUID;
 @Entity(name = "wf$Attachment")
 @Table(name = "WF_ATTACHMENT")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "ATTACHMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("-")
 @SystemLevel
 public class Attachment extends StandardEntity {
@@ -37,7 +37,7 @@ public class Attachment extends StandardEntity {
     @Column(name = "NAME", length = 500)
     protected String name;
 
-    @Column(name = "COMMENT", length = 1000)
+    @Column(name = "ATTACHMENT_COMMENT", length = 1000)
     protected String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)

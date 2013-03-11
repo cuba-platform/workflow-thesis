@@ -24,7 +24,7 @@ import java.util.List;
 @SystemLevel
 public class CardComment extends StandardEntity {
 
-    @Column(name = "COMMENT", length = 100000)
+    @Column(name = "CARD_COMMENT", length = 100000)
     protected String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
