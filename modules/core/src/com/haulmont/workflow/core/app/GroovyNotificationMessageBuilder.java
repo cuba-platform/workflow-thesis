@@ -10,34 +10,24 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import groovy.lang.Binding;
 
 import java.util.Map;
 
 
 public class GroovyNotificationMessageBuilder implements NotificationMessageBuilder {
-    private Binding binding;
     private String script;
 
     public GroovyNotificationMessageBuilder(String script) {
         this.script = script;
     }
 
-    public String getSubject() {
-        String subject = binding.getVariable("subject").toString();
-        return subject;
-    }
+    public NotificationMatrixMessage build(Map<String, Object> parameters) {
+        Binding binding = new Binding(parameters);
+        AppBeans.get(Scripting.class).evaluateGroovy(script, binding);
 
-    public String getBody() {
-        String body = binding.getVariable("body").toString();
-        return body;
-    }
-
-    public void setParameters(Map<String, Object> parameters) {
-
-        binding = new Binding(parameters);
-        ScriptingProvider.evaluateGroovy(script, binding);
+        return new NotificationMatrixMessage(binding.getVariable("subject").toString(), binding.getVariable("body").toString());
     }
 }

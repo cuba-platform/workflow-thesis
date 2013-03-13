@@ -11,15 +11,12 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
-import com.haulmont.workflow.core.jmx.NotificationMatrixMBean;
 import groovy.lang.Binding;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,13 +47,19 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
-    private Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
+    @Inject
+    protected Scripting scripting;
+
+    @Inject
+    protected Resources resources;
+
+    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
+    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -631,9 +634,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             if (script != null) {
                 //Old mechanism to run Groovy scripts for create message
                 try {
-                    String scriptStr = ScriptingProvider.getResourceAsString(script);
+                    String scriptStr = resources.getResourceAsString(script);
                     Binding binding = new Binding(parameters);
-                    ScriptingProvider.evaluateGroovy(scriptStr, binding);
+                    scripting.evaluateGroovy(scriptStr, binding);
                     message.setSubject(binding.getVariable("subject").toString());
                     message.setBody(binding.getVariable("body").toString());
                 } catch (Exception e) {
@@ -644,11 +647,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                 }
             } else {
                 //New mechanism to create message for user
-                NotificationMessageBuilder notificationMessage = (NotificationMessageBuilder) parameters.get("messagetemplate");
+                NotificationMessageBuilder messageBuilder = (NotificationMessageBuilder) parameters.get("messagetemplate");
                 try {
-                    notificationMessage.setParameters(parameters);
-                    message.setSubject(notificationMessage.getSubject());
-                    message.setBody(notificationMessage.getBody());
+                    message = messageBuilder.build(parameters);
                 } catch (Exception e) {
                     log.warn("Unable to get email subject and body, using defaults", e);
                     message.setSubject(String.format("%s: %s - %s",

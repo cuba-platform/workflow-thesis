@@ -22,6 +22,9 @@ public class NotificationMatrixMessage implements Serializable {
         this.body = body;
     }
 
+    public NotificationMatrixMessage() {
+    }
+
     public String getSubject() {
         return subject;
     }

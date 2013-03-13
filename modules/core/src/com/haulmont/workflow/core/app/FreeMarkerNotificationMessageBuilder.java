@@ -23,11 +23,8 @@ import org.apache.commons.logging.*;
 
 
 public class FreeMarkerNotificationMessageBuilder implements NotificationMessageBuilder {
-    private Map<String, Object> dataModel;
     private Template templateSubject;
     private Template templateBody;
-    private String subject;
-    private String body;
 
     private Log log = LogFactory.getLog(FreeMarkerNotificationMessageBuilder.class);
 
@@ -69,29 +66,24 @@ public class FreeMarkerNotificationMessageBuilder implements NotificationMessage
         }
     }
 
-    public String getSubject() {
-        return subject;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String getBody() {
-        return body;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setParameters(Map<String, Object> parameters) {
-        this.dataModel = parameters;
+    public NotificationMatrixMessage build(Map<String, Object> parameters) {
+        Map<String, Object> dataModel = parameters;
+        NotificationMatrixMessage msg = new NotificationMatrixMessage();
         StringWriter outSubject = new StringWriter(256);
         StringWriter outBody = new StringWriter(2048);
         try {
             templateSubject.process(dataModel, outSubject);
-            subject = outSubject.getBuffer().toString();
+            msg.setSubject(outSubject.getBuffer().toString());
 
             templateBody.process(dataModel, outBody);
-            body = outBody.getBuffer().toString();
+            msg.setBody(outBody.getBuffer().toString());
 
         } catch (TemplateException e) {
             log.warn("Can not load templeate");
         } catch (IOException e) {
             log.warn("Can not load templeate");
         }
+
+        return msg;
     }
 }

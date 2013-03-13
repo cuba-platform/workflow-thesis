@@ -14,7 +14,6 @@ import java.util.Map;
 
 
 public class TextNotificationMessageBuilder implements NotificationMessageBuilder {
-
     private String subject;
     private String body;
 
@@ -38,15 +37,7 @@ public class TextNotificationMessageBuilder implements NotificationMessageBuilde
 
     }
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setParameters(Map<String, Object> parameters) {
-
+    public NotificationMatrixMessage build(Map<String, Object> parameters) {
+        return new NotificationMatrixMessage(subject, body);
     }
 }

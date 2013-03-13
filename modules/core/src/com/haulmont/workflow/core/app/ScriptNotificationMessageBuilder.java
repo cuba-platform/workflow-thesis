@@ -6,7 +6,9 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.Scripting;
 import groovy.lang.Binding;
 
 import java.util.Map;
@@ -16,8 +18,7 @@ import java.util.Map;
  *
  * @author shishov
  */
-public class ScriptNotificationMessageBuilder implements NotificationMessageBuilder{
-    private Binding binding;
+public class ScriptNotificationMessageBuilder implements NotificationMessageBuilder {
     private String script;
 
     public ScriptNotificationMessageBuilder(String script) {
@@ -25,19 +26,11 @@ public class ScriptNotificationMessageBuilder implements NotificationMessageBuil
     }
 
     @Override
-    public String getSubject() {
-        return binding.getVariable("subject").toString();
-    }
+    public NotificationMatrixMessage build(Map<String, Object> parameters) {
+        Binding binding = new Binding(parameters);
+        String text = AppBeans.get(Resources.class).getResourceAsString(script);
+        AppBeans.get(Scripting.class).evaluateGroovy(text, binding);
 
-    @Override
-    public String getBody() {
-        return binding.getVariable("body").toString();
-    }
-
-    @Override
-    public void setParameters(Map<String, Object> parameters) {
-        binding = new Binding(parameters);
-        String text = ScriptingProvider.getResourceAsString(script);
-        ScriptingProvider.evaluateGroovy(text, binding);
+        return new NotificationMatrixMessage(binding.getVariable("subject").toString(), binding.getVariable("body").toString());
     }
 }

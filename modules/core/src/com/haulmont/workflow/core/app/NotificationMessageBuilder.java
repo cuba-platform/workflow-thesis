@@ -13,9 +13,5 @@ package com.haulmont.workflow.core.app;
 import java.util.Map;
 
 public interface NotificationMessageBuilder {
-    String getSubject();
-
-    String getBody();
-
-    void setParameters(Map<String, Object> parameters);
+    NotificationMatrixMessage build(Map<String, Object> parameters);
 }
