@@ -30,7 +30,7 @@ public class ProcessVariableMetaProperty extends MetadataObjectImpl<MetaProperty
     public ProcessVariableMetaProperty(MetaClass metaClass, String name, Class javaClass) {
         this.metaClass = metaClass;
         this.name = name;
-        this.range = new DatatypeRange(Datatypes.get(javaClass));
+        this.range = new DatatypeRange(Datatypes.getNN(javaClass));
     }
 
     @Override
