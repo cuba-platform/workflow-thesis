@@ -7,10 +7,6 @@
 
 <metadata xmlns="http://schemas.haulmont.com/cuba/4.0/metadata.xsd">
 
-    <metadata-model>
-        <class>com.haulmont.workflow.core.entity.DesignLocKey</class>
-        <class>com.haulmont.workflow.core.entity.DesignLocValue</class>
-        <class>com.haulmont.workflow.core.entity.ProcCondition</class>
-    </metadata-model>
+    <metadata-model root-package="com.haulmont.workflow"/>
 
 </metadata>
