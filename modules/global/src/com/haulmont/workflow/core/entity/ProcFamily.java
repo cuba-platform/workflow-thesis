@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import javax.persistence.*;
  */
 @Embeddable
 @MetaClass(name = "wf$ProcFamily")
+@SystemLevel
 public class ProcFamily extends EmbeddableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

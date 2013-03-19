@@ -9,6 +9,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.Collection;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
  * @author pavlov
  */
 @MetaClass(name = "wf$ProcCondition")
+@SystemLevel
 public class ProcCondition extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 2804489532106080184L;
 

@@ -1,20 +1,21 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 18.01.11 12:48
- *
- * $Id$
  */
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @MetaClass(name = "wf$DesignLocValue")
+@SystemLevel
 public class DesignLocValue extends AbstractNotPersistentEntity implements Comparable<DesignLocValue> {
 
     private static final long serialVersionUID = -999308806151427161L;
