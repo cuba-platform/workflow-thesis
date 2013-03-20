@@ -72,7 +72,7 @@
 
     <!-- MBeans registration -->
 
-    <bean id="wf_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
+    <bean id="wf_MBeanExporter" class="com.haulmont.cuba.core.sys.jmx.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.workflow:type=WfEngine"
