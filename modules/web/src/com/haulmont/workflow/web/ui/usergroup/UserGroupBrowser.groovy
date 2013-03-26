@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 30.07.2010 13:20:06
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.usergroup
 
@@ -15,6 +10,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider
 import com.haulmont.cuba.gui.WindowManager
 import com.haulmont.cuba.gui.components.Window.Lookup.Handler
 import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener
 import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
@@ -26,6 +22,10 @@ import javax.inject.Inject
 
 import com.haulmont.cuba.gui.components.*
 
+/**
+ * @author Gorbunkov
+ * @version $Id$
+ */
 class UserGroupBrowser extends AbstractWindow {
     protected Table userGroupsTable
     protected Table usersTable
@@ -51,12 +51,16 @@ class UserGroupBrowser extends AbstractWindow {
         userGroupsHelper.createEditAction(WindowManager.OpenType.DIALOG)
         userGroupsHelper.createRemoveAction()
 
-        userGroupsDs.addListener([collectionChanged: { ds, operation ->
-            usersDs.refresh()
-        }] as CollectionDsListenerAdapter);
+        userGroupsDs.addListener(new CollectionDsListenerAdapter() {
+            @Override
+            void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation, List items) {
+                usersDs.refresh()
+            }
+        })
 
         usersTable = getComponent('usersTable')
         final userSession = UserSessionProvider.getUserSession();
+
         usersTable.addAction(new ActionAdapter("add", [
                 actionPerform: {
                     if (userGroupsTable.getSelected().size() == 0) {
@@ -89,7 +93,7 @@ class UserGroupBrowser extends AbstractWindow {
                             userBrowserParams)
                 },
                 getCaption: {
-                    return getMessage('actions.Add')
+                    return messages.getMainMessage("actions.Add")
                 }
         ]))
 
@@ -176,7 +180,7 @@ class UserGroupBrowser extends AbstractWindow {
 
         @Override
         public String getCaption() {
-            return getMessage('actions.Remove')
+            return messages.getMainMessage('actions.Remove')
         }
     }
 }
