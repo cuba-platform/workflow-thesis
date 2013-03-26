@@ -126,8 +126,4 @@ public class Attachment extends StandardEntity {
     public void setRecognizedFileDescriptor(FileDescriptor recognizedFileDescriptor) {
         this.recognizedFileDescriptor = recognizedFileDescriptor;
     }
-
-    public Boolean hasRecognizedFileDescriptor() {
-       return this.recognizedFileDescriptor != null ? true : false;
-    }
 }
