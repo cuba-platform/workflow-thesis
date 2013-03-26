@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity(name = "wf$Attachment")
 @Table(name = "WF_ATTACHMENT")
@@ -51,6 +50,10 @@ public class Attachment extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VERSION_OF_ID")
     protected Attachment versionOf;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECOGNIZED_FILE_DESCRIPTOR_ID")
+    protected FileDescriptor recognizedFileDescriptor;
 
     @Column(name = "VERSION_NUM")
     protected Integer versionNum;
@@ -114,5 +117,17 @@ public class Attachment extends StandardEntity {
 
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
+    }
+
+    public FileDescriptor getRecognizedFileDescriptor() {
+        return recognizedFileDescriptor;
+    }
+
+    public void setRecognizedFileDescriptor(FileDescriptor recognizedFileDescriptor) {
+        this.recognizedFileDescriptor = recognizedFileDescriptor;
+    }
+
+    public Boolean hasRecognizedFileDescriptor() {
+       return this.recognizedFileDescriptor != null ? true : false;
     }
 }

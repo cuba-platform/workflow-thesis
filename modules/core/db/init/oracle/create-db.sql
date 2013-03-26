@@ -46,6 +46,7 @@ create table WF_ATTACHMENT (
     CARD_ID varchar2(32),
     ASSIGNMENT_ID varchar2(32),
     VERSION_OF_ID varchar2(32),
+    RECOGNIZED_FILE_DESCRIPTOR_ID varchar2(32),
     VERSION_NUM integer,
     primary key(ID)
 )^
@@ -490,6 +491,7 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key (VERSION_OF_ID) references WF_ATTACHMENT(ID)^
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE_ID) references WF_ATTACHMENTTYPE(ID)^
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD_ID) references WF_CARD(ID)^
+alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_DESCRIPTOR_ID) references SYS_FILE(ID)^
 
 alter table WF_CARD add constraint FK_WF_CARD_SUBSTITUTED_CREATOR foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER(ID)^
 alter table WF_CARD add constraint FK_WF_CARD_USER foreign key (CREATOR_ID) references SEC_USER(ID)^

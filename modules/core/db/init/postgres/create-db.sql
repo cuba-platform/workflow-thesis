@@ -289,6 +289,7 @@ create table WF_ATTACHMENT (
     ASSIGNMENT_ID uuid,
     VERSION_OF_ID uuid,
     VERSION_NUM integer,
+    RECOGNIZED_FILE_DESCRIPTOR_ID uuid,
     primary key (ID)
 )^
 
@@ -301,6 +302,8 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE_ID) references WF_ATTACHMENTTYPE (ID)^
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key (VERSION_OF_ID) references WF_ATTACHMENT (ID)^
+
+alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_DESCRIPTOR_ID) references SYS_FILE (ID)^
 
 create index IDX_WF_ATTACHMENT_CARD on WF_ATTACHMENT (CARD_ID)^
 
