@@ -290,7 +290,7 @@ create table WF_ATTACHMENT (
     CARD_ID uniqueidentifier,
     ASSIGNMENT_ID uniqueidentifier,
     VERSION_OF_ID uniqueidentifier,
-    RECOGNIZED_FILE_DESCRIPTOR_ID uniqueidentifier,
+    RECOGNIZED_FILE_ID uniqueidentifier,
     VERSION_NUM integer,
     primary key nonclustered (ID)
 )^
@@ -305,7 +305,7 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_TYPE foreign key (TYPE
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key (VERSION_OF_ID) references WF_ATTACHMENT (ID)^
 
-alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_DESCRIPTOR_ID) references SYS_FILE (ID)^
+alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_ID) references SYS_FILE (ID)^
 
 create clustered index IDX_WF_ATTACHMENT_CARD on WF_ATTACHMENT (CARD_ID)^
 

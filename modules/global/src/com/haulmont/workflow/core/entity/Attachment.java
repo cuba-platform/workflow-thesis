@@ -52,7 +52,7 @@ public class Attachment extends StandardEntity {
     protected Attachment versionOf;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RECOGNIZED_FILE_DESCRIPTOR_ID")
+    @JoinColumn(name = "RECOGNIZED_FILE_ID")
     protected FileDescriptor recognizedFileDescriptor;
 
     @Column(name = "VERSION_NUM")

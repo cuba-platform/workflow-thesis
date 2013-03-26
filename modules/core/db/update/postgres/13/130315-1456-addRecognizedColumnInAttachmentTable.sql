@@ -1,2 +1,2 @@
-alter table WF_ATTACHMENT add RECOGNIZED_FILE_DESCRIPTOR_ID uuid^
-alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_DESCRIPTOR_ID) references SYS_FILE (ID)^
+alter table WF_ATTACHMENT add RECOGNIZED_FILE_ID uuid^
+alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_ID) references SYS_FILE (ID)^
