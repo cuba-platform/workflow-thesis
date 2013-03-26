@@ -15,9 +15,9 @@
     </dsContext>
 
     <layout expand="split">
-        <split id="split" orientation="horizontal" pos="30">
-            <vbox id="listPane" expand="table" margin="true">
-                <table id="table">
+        <split id="split" orientation="horizontal" pos="30" height="100%" width="100%">
+            <vbox id="listPane" expand="table" margin="true" height="100%">
+                <table id="table" width="100%">
                     <buttonsPanel>
                         <button action="table.new" icon="icons/create.png"/>
                         <button action="table.modify" icon="icons/edit.png"/>
@@ -29,11 +29,11 @@
                     <rows datasource="scriptsDs"/>
                 </table>
             </vbox>
-            <vbox id="contentPane" expand="contentField" spacing="true" margin="true">
+            <vbox id="contentPane" expand="contentField" spacing="true" margin="true" height="100%">
                 <textField id="nameField" editable="false" datasource="scriptsDs" property="name" width="100%"
                            caption="msg://com.haulmont.workflow.core.entity/DesignScript.name"/>
                 <textField id="contentField" editable="false" datasource="scriptsDs" property="content" rows="25"
-                           caption="msg://com.haulmont.workflow.core.entity/DesignScript.content"/>
+                           caption="msg://com.haulmont.workflow.core.entity/DesignScript.content" width="100%"/>
                 <vbox id="actionsPane" visible="false">
                     <hbox align="MIDDLE_LEFT" spacing="true" expandable="false">
                         <button id="saveBtn" action="save" icon="icons/ok.png"/>
