@@ -53,7 +53,7 @@ public class Attachment extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECOGNIZED_FILE_ID")
-    protected FileDescriptor recognizedFileDescriptor;
+    protected FileDescriptor recognizedFile;
 
     @Column(name = "VERSION_NUM")
     protected Integer versionNum;
@@ -119,11 +119,11 @@ public class Attachment extends StandardEntity {
         this.versionNum = versionNum;
     }
 
-    public FileDescriptor getRecognizedFileDescriptor() {
-        return recognizedFileDescriptor;
+    public FileDescriptor getRecognizedFile() {
+        return recognizedFile;
     }
 
-    public void setRecognizedFileDescriptor(FileDescriptor recognizedFileDescriptor) {
-        this.recognizedFileDescriptor = recognizedFileDescriptor;
+    public void setRecognizedFile(FileDescriptor recognizedFile) {
+        this.recognizedFile = recognizedFile;
     }
 }
