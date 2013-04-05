@@ -7,6 +7,7 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
@@ -20,6 +21,7 @@ import javax.persistence.*;
  */
 @Entity(name = "wf$ProcState")
 @Table(name = "WF_PROC_STATE")
+@NamePattern("%s|locName")
 public class ProcState extends StandardEntity {
     private static final long serialVersionUID = 1544054162497523936L;
 
