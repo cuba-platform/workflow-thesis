@@ -104,12 +104,10 @@ configure(globalModule) {
         provided(cubaPlugin)
     }
 
-    task enhance(type: CubaEnhancing) {
+    task enhance(type: CubaEnhancing, dependsOn: compileJava) {
         persistenceXml = "$globalModule.projectDir/src/workflow-persistence.xml"
     }
-    compileJava << {
-        enhance.execute()
-    }
+    classes.dependsOn += [enhance]
 }
 
 configure(coreModule) {
