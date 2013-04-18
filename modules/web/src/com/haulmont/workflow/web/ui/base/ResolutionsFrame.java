@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2009 10:11:47
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -31,13 +26,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ResolutionsFrame extends AbstractFrame {
     private TreeTable table;
     private CollectionDatasource<Assignment, UUID> resolutionsDs;
-
-    public ResolutionsFrame() {
-        super();
-    }
 
     public void init() {
         table = getComponent("resolutionsTable");
@@ -68,39 +63,37 @@ public class ResolutionsFrame extends AbstractFrame {
                 });
 
         vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-            public String getStyle(Object itemId, Object propertyId) {
+            @Override
+            public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
                 if (propertyId == null) {
-                    if (!(itemId instanceof UUID))
-                        return "";
-                    Assignment assignment = resolutionsDs.getItem((UUID) itemId);
-                    if ((assignment.getDueDate() != null) &&
-                            (((assignment.getFinished() == null && equalsDateBeforeDate(assignment.getDueDate(), TimeProvider.currentTimestamp())))
-                                    || (assignment.getFinished() != null && equalsDateBeforeDate(assignment.getDueDate(), assignment.getFinished())))) {
-                        return "overdue";
-                    }
-                    if (assignment.getFinished() == null)
-                        return "taskremind";
-                    else
-                        return "";
+                if (!(itemId instanceof UUID))
+                    return "";
+                Assignment assignment = resolutionsDs.getItem((UUID) itemId);
+                if ((assignment.getDueDate() != null) &&
+                        (((assignment.getFinished() == null && equalsDateBeforeDate(assignment.getDueDate(), TimeProvider.currentTimestamp())))
+                                || (assignment.getFinished() != null && equalsDateBeforeDate(assignment.getDueDate(), assignment.getFinished())))) {
+                    return "overdue";
                 }
+                if (assignment.getFinished() == null)
+                    return "taskremind";
+                else
+                    return "";
+            }
                 return "";
             }
-
         });
 
-        vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyEx("locOutcomeResult"),
+        vTable.addGeneratedColumn(resolutionsDs.getMetaClass().getPropertyPath("locOutcomeResult"),
                 new com.vaadin.ui.Table.ColumnGenerator() {
-                    private static final long serialVersionUID = 5218754905457505133L;
-
+                    @Override
                     public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table table, Object itemId, Object columnId) {
                         final Assignment assignment = resolutionsDs.getItem((UUID) itemId);
                         String state = assignment.getLocOutcome();
                         if (state != null && StringUtils.contains(state, ".Saved")) {
                             final com.vaadin.ui.Button vButton = new com.vaadin.ui.Button(assignment.getLocOutcomeResult());
                             vButton.setStyleName("link");
-                            vButton.addListener(new com.vaadin.ui.Button.ClickListener() {
-                                private static final long serialVersionUID = 8866649082801744357L;
-
+                            vButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                                @Override
                                 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                                     WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("task.log.dialog");
                                     App.getInstance().getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG,
@@ -114,14 +107,14 @@ public class ResolutionsFrame extends AbstractFrame {
                 });
 
         table.addAction(new AbstractAction("openResolution") {
+            @Override
             public void actionPerform(Component component) {
                 openResolution(table.getDatasource().getItem());
             }
         });
 
         LinkColumnHelper.initColumn(table, "createTs", new LinkColumnHelper.Handler() {
-            private static final long serialVersionUID = -6702999877103154970L;
-
+            @Override
             public void onClick(Entity entity) {
                 openResolution(entity);
             }
@@ -131,11 +124,12 @@ public class ResolutionsFrame extends AbstractFrame {
     private void openResolution(Entity entity) {
         final Window window = openEditor("wf$Assignment.edit", entity, WindowManager.OpenType.DIALOG);
         window.addListener(new Window.CloseListener() {
+            @Deprecated
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                    Object item = ((Window.Editor) window).getItem();
-                    if (item instanceof Entity) {
-                        table.getDatasource().updateItem((Entity) item);
+                    Entity item = ((Window.Editor) window).getItem();
+                    if (item != null) {
+                        table.getDatasource().updateItem(item);
                     }
                 }
             }

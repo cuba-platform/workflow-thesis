@@ -6,8 +6,10 @@
 
 package com.haulmont.workflow.web.folders;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -18,10 +20,10 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebTwinColumn;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcCondition;
 import com.haulmont.workflow.core.entity.ProcState;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -29,10 +31,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class ProcConditionEditWindow extends Window {
-    private static final long serialVersionUID = -3522104911369198300L;
-    private CollectionDatasource procDs;
-    private CollectionDatasource<ProcCondition, UUID> procConditionDatasource;
+
+    protected CollectionDatasource<ProcCondition, UUID> procConditionDatasource;
 
     public ProcConditionEditWindow(CollectionDatasource<ProcCondition, UUID> procConditionDatasource) {
         super(AppBeans.get(Messages.class).getMessage(ProcConditionEditWindow.class, "ProcCondition"));
@@ -55,8 +60,8 @@ public class ProcConditionEditWindow extends Window {
         procField.setWidth("300px");
         grid.addComponent(WebComponentsHelper.unwrap(procField));
 
-        procDs = new DsBuilder()
-                .setMetaClass(MetadataProvider.getSession().getClass("wf$Proc"))
+        CollectionDatasource<Proc, UUID> procDs = new DsBuilder()
+                .setMetaClass(AppBeans.get(Metadata.class).getClass("wf$Proc"))
                 .setViewName(View.LOCAL)
                 .buildCollectionDatasource();
 
@@ -84,10 +89,10 @@ public class ProcConditionEditWindow extends Window {
         statesField.setOptionsDatasource(getStatesList(null));
         statesField.setCaptionProperty("locName");
 
-        procDs.addListener(new CollectionDsListenerAdapter<Entity>() {
+        procDs.addListener(new CollectionDsListenerAdapter<Proc>() {
             @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                statesField.setOptionsDatasource(getStatesList((Proc) item));
+            public void itemChanged(Datasource<Proc> ds, Proc prevItem, Proc item) {
+                statesField.setOptionsDatasource(getStatesList(item));
                 statesField.setValue(null);
             }
         });
@@ -97,16 +102,17 @@ public class ProcConditionEditWindow extends Window {
         procConditionRootLayout.addComponent(btnPane);
 
         Button okBtn = new Button(getMessage("actions.Ok"));
-        okBtn.setIcon(new ThemeResource("icons/ok.png"));
+        okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
         btnPane.addComponent(okBtn);
-        okBtn.addListener(new Button.ClickListener() {
+        okBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 ProcConditionEditWindow.this.close();
                 ProcCondition procCondition = new ProcCondition();
-                Proc proc = (Proc) procField.getValue();
+                Proc proc = procField.getValue();
                 procCondition.setProc(proc);
-                procCondition.setInExpr(BooleanUtils.isTrue((Boolean) inExprField.getValue()));
+                procCondition.setInExpr(BooleanUtils.isTrue(inExprField.getValue()));
                 Collection<ProcState> states = statesField.getValue();
                 procCondition.setStates(states);
                 if (!states.isEmpty() || proc != null) {
@@ -116,19 +122,20 @@ public class ProcConditionEditWindow extends Window {
         });
 
         Button cancelBtn = new Button(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+        cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         btnPane.addComponent(cancelBtn);
-        cancelBtn.addListener(new Button.ClickListener() {
+        cancelBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 ProcConditionEditWindow.this.close();
             }
         });
     }
 
-    private CollectionDatasource getStatesList(Proc proc) {
+    protected CollectionDatasource getStatesList(Proc proc) {
         CollectionDatasource<ProcState, UUID> procStateDs = new DsBuilder()
-                .setMetaClass(MetadataProvider.getSession().getClass("wf$ProcState"))
+                .setMetaClass(AppBeans.get(Metadata.class).getClass("wf$ProcState"))
                 .setViewName("browse")
                 .buildCollectionDatasource();
 
@@ -138,7 +145,7 @@ public class ProcConditionEditWindow extends Window {
         return procStateDs;
     }
 
-    private String getMessage(String key) {
+    protected String getMessage(String key) {
         return AppBeans.get(Messages.class).getMessage(this.getClass(), key);
     }
 }

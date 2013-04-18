@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 14.01.11 18:02
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -17,24 +12,21 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
 import com.haulmont.workflow.core.entity.CardStage;
 import com.haulmont.workflow.core.entity.ProcStageType;
-import com.vaadin.ui.HorizontalLayout;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class CardStagesFrame extends AbstractFrame {
-    private static final String DEFAULT_TYPE = "1";
-    private CollectionDatasource stagesDs;
-    private LookupField type;
-    private Button applyType;
-    private Table stagesTable;
-    private WebHBoxLayout typeFilter;
-
-    public CardStagesFrame(IFrame frame) {
-        super(frame);
-    }
+    protected static final String DEFAULT_TYPE = "1";
+    protected CollectionDatasource stagesDs;
+    protected LookupField type;
+    protected Table stagesTable;
+    protected WebHBoxLayout typeFilter;
 
     public void init() {
         init(DEFAULT_TYPE);
@@ -42,20 +34,20 @@ public class CardStagesFrame extends AbstractFrame {
 
     public void init(String typeCode) {
         stagesDs = getDsContext().get("stagesDs");
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("type", typeCode);
         stagesDs.refresh(params);
 
         stagesTable = getComponent("stagesTable");
         typeFilter = getComponent("typeFilter");
         type = getComponent("type");
-        applyType = getComponent("applyType");
+        Button applyType = getComponent("applyType");
         applyType.setAction(new AbstractAction("applyType") {
 
             public void actionPerform(Component component) {
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
 
-                ProcStageType typeValue = type.<ProcStageType>getValue();
+                ProcStageType typeValue = type.getValue();
                 String code = typeValue == null ? null : typeValue.getCode();
                 params.put("type", code);
                 stagesDs.refresh(params);
@@ -70,7 +62,8 @@ public class CardStagesFrame extends AbstractFrame {
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(stagesTable);
         vTable.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
 
-            public String getStyle(Object itemId, Object propertyId) {
+            @Override
+            public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
                 if (propertyId == null) {
                     if ((itemId instanceof UUID)) {
                         CardStage cardStage = (CardStage) stagesTable.getDatasource().getItem(itemId);
@@ -89,4 +82,3 @@ public class CardStagesFrame extends AbstractFrame {
         typeFilter.setVisible(visible);
     }
 }
-

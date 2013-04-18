@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 25.11.2010 16:21:43
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.attachments;
 
@@ -28,16 +23,19 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class AttachmentsMultiUploader extends AbstractEditor {
-    private static final long serialVersionUID = 5049622742528690083L;
 
-    private List<Attachment> attachments = new ArrayList<Attachment>();
+    private List<Attachment> attachments = new ArrayList<>();
 
     private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
     private Table uploadsTable = null;
-    private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
+    private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
     private AttachmentCreator creator;
     private LookupField attachTypeCombo;
 
@@ -62,7 +60,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         select.select(defaultAttachType);
 
         cancelBtn.setAction(new AbstractAction("actions.Cancel") {
-            private static final long serialVersionUID = 6603819180519108350L;
 
             // OnClose
             public void actionPerform(Component component) {
@@ -73,8 +70,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                             MessageType.CONFIRMATION,
                             new Action[]{
                                     new DialogAction(DialogAction.Type.YES) {
-                                        private static final long serialVersionUID = -1090801189008445909L;
-
                                         @Override
                                         public void actionPerform(Component component) {
                                             AttachmentsMultiUploader.this.close("");
@@ -207,17 +202,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 isUploading = true;
                 okBtn.setEnabled(false);
                 delBtn.setEnabled(false);
-            }
-
-            @Override
-            public void errorNotify(String fileName, String message, int errorCode) {
-                if (errorCode == FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT) {
-                    String locMessage = MessageProvider.getMessage(getClass(), "fileExceedsSizeLimit") + ":" + fileName;
-                    AttachmentsMultiUploader.this.showNotification(locMessage, NotificationType.WARNING);
-                } else {
-                    String locMessage = MessageProvider.getMessage(getClass(), "fileUploadError") + ":" + fileName;
-                    AttachmentsMultiUploader.this.showNotification(locMessage, NotificationType.ERROR);
-                }
             }
         });
     }

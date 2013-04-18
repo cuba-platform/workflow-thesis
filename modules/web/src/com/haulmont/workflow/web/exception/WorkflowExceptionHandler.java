@@ -5,20 +5,20 @@
  */
 package com.haulmont.workflow.web.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.exception.AbstractExceptionHandler;
 import com.haulmont.workflow.core.exception.WorkflowException;
-import com.vaadin.ui.Window;
 
 import javax.annotation.Nullable;
 
 /**
  * Handles {@link WorkflowException}.
  *
- * <p>$Id$</p>
- *
  * @author gorbunkov
+ * @version $Id$
  */
 public class WorkflowExceptionHandler extends AbstractExceptionHandler {
 
@@ -28,24 +28,26 @@ public class WorkflowExceptionHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+        Messages messages = AppBeans.get(Messages.class);
+
         if (throwable != null && throwable instanceof WorkflowException) {
             WorkflowException e = (WorkflowException) throwable;
             if (e.getType().equals(WorkflowException.Type.NO_ACTIVE_EXECUTION)) {
-                String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noExecution");
+                String msg = messages.getMessage(getClass(), "WorkflowException.noExecution");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
-                app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+                app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
                 return;
             }
             if (e.getType().equals(WorkflowException.Type.NO_CARD_ROLE)) {
-                String msg = MessageProvider.getMessage(getClass(), "WorkflowException.noCardRole");
+                String msg = messages.getMessage(getClass(), "WorkflowException.noCardRole");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
-                app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+                app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
                 return;
             }
         }
-        String msg = MessageProvider.getMessage(getClass(), "WorkflowException.undefined");
-        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        String msg = messages.getMessage(getClass(), "WorkflowException.undefined");
+        app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }
