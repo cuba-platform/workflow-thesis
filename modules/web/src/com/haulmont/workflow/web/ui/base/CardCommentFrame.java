@@ -10,12 +10,13 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardComment;
+import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
@@ -56,8 +58,8 @@ public class CardCommentFrame extends AbstractWindow {
             card = ServiceLocator.getDataService().load(ctx);
         }
         commentDs = getDsContext().get("commentDs");
-        buttonCreate = (com.haulmont.cuba.gui.components.Button) getComponent("add");
-        treeComment = (WidgetsTree) getComponent("treeComment");
+        buttonCreate = getComponent("add");
+        treeComment = getComponent("treeComment");
         commentDs.refresh();
         commentDs.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
@@ -67,6 +69,7 @@ public class CardCommentFrame extends AbstractWindow {
         });
         treeComment.expandTree();
         treeComment.setWidgetBuilder(new WebWidgetsTree.WidgetBuilder() {
+            @Override
             public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf) {
                 final CardComment cardComment = (CardComment) commentDs.getItem(itemId);
                 WebVBoxLayout vLayout = new WebVBoxLayout();
@@ -100,19 +103,23 @@ public class CardCommentFrame extends AbstractWindow {
                 WebComponentsHelper.unwrap(hLayoutTo).addStyleName("minsize");
 
                 WebHBoxLayout hLayoutComment = new WebHBoxLayout();
+                AbstractOrderedLayout vhLayoutComment = (AbstractOrderedLayout) WebComponentsHelper.unwrap(hLayoutComment);
+
                 WebTextField labelComment = new WebTextField();
                 labelComment.setValue(cardComment.getComment());
                 final WebButton buttonComment = new WebButton();
                 buttonComment.setCaption(getMessage("answer"));
                 com.vaadin.ui.Button vButtoncomment = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(buttonComment);
-                vButtoncomment.addListener(new com.vaadin.ui.Button.ClickListener() {
+                vButtoncomment.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                    @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                         if (card != null) {
-                            Map paramsCard = new HashMap();
+                            Map<String, Object> paramsCard = new HashMap<>();
                             paramsCard.put("item", card);
                             paramsCard.put("parent", cardComment);
                             Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
                             window.addListener(new CloseListener() {
+                                @Override
                                 public void windowClosed(String actionId) {
                                     commentDs.refresh();
                                 }
@@ -132,7 +139,7 @@ public class CardCommentFrame extends AbstractWindow {
                 hLayoutComment.setSpacing(true);
                 hLayoutComment.setWidth("100%");
                 labelComment.setWidth("100%");
-                hLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment), 1.0f);
+                vhLayoutComment.setExpandRatio(WebComponentsHelper.unwrap(labelComment), 1.0f);
 
                 String descr = cardComment.getComment();
                 String[] parts = descr.split("\n");
@@ -155,9 +162,9 @@ public class CardCommentFrame extends AbstractWindow {
                     content.setHeight("300px");
                     com.vaadin.ui.Component component = new com.vaadin.ui.PopupView(preview, content);
                     component.setStyleName("longtext");
-                    hLayoutComment.replaceComponent((com.vaadin.ui.TextField) WebComponentsHelper.unwrap(labelComment), component);
+                    vhLayoutComment.replaceComponent((com.vaadin.ui.TextField) WebComponentsHelper.unwrap(labelComment), component);
                     component.setWidth("100%");
-                    hLayoutComment.setExpandRatio(component, 1.0f);
+                    vhLayoutComment.setExpandRatio(component, 1.0f);
                 }
                 vLayout.add(hLayoutFrom);
                 vLayout.add(hLayoutTo);
@@ -167,6 +174,7 @@ public class CardCommentFrame extends AbstractWindow {
         });
 
         buttonCreate.setAction(new AbstractAction("add") {
+            @Override
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 refreshCard();
                 if (card != null) {
@@ -201,11 +209,11 @@ public class CardCommentFrame extends AbstractWindow {
         Map paramsCard = new HashMap();
 
         CollectionDatasource cardRolesDs = null;
-        CardProcFrame cardProcFrame = (CardProcFrame) getComponent("cardProcFrame");
+        CardProcFrame cardProcFrame = getComponent("cardProcFrame");
         if (cardProcFrame != null) {
             cardRolesDs = cardProcFrame.getCardRolesFrame().getDsContext().get("tmpCardRolesDs");
         } else {
-            IFrame frame = (IFrame) getComponent("cardRolesFrame");
+            IFrame frame = getComponent("cardRolesFrame");
             if (frame != null)
                 cardRolesDs = frame.getDsContext().get("tmpCardRolesDs");
         }
@@ -214,6 +222,7 @@ public class CardCommentFrame extends AbstractWindow {
         paramsCard.put("rootFrame", this.<IFrame>getFrame());
         Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
         window.addListener(new CloseListener() {
+            @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     commentDs.refresh();
@@ -232,6 +241,7 @@ public class CardCommentFrame extends AbstractWindow {
     protected void openUser(final User user, final WebButton button) {
         Window window = openEditor("sec$User.edit", user, WindowManager.OpenType.THIS_TAB);
         window.addListener(new CloseListener() {
+            @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     LoadContext ctx = new LoadContext(user.getClass()).setId(user.getId()).setView("_local");

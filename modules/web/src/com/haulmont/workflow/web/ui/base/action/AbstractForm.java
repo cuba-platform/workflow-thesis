@@ -36,11 +36,12 @@ public abstract class AbstractForm extends AbstractWindow {
     @Override
     public void applySettings(Settings settings) {
         super.applySettings(settings);
-        Window window = WebComponentsHelper.unwrap(frame).getWindow();
-        if (window.isModal()) {
-            window.setClosable(false);
-            window.setResizable(false);
-        }
+//        vaadin7
+//        Window window = WebComponentsHelper.unwrap(frame).getWindow();
+//        if (window.isModal()) {
+//            window.setClosable(false);
+//            window.setResizable(false);
+//        }
     }
 
     public abstract String getComment();

@@ -2,22 +2,19 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.12.10 10:29
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.design;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
@@ -33,28 +30,30 @@ import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DesignBrowser extends AbstractWindow {
 
     private CollectionDatasource<Design, UUID> ds;
     private Table table;
     private DesignerService service;
 
-    public DesignBrowser(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         ds = getDsContext().get("designDs");
         table = getComponent("designTable");
-        service = ServiceLocator.lookup(DesignerService.NAME);
+        service = AppBeans.get(DesignerService.NAME);
 
         initActions();
         initColumns();
@@ -72,6 +71,7 @@ public class DesignBrowser extends AbstractWindow {
         helper.createRemoveAction();
 
         Action designAction = new AbstractAction("design") {
+            @Override
             public void actionPerform(Component component) {
                 Set<Design> selected = table.getSelected();
                 if (!selected.isEmpty()) {
@@ -90,13 +90,16 @@ public class DesignBrowser extends AbstractWindow {
 
         helper.addListener(
                 new ListActionsHelper.Listener() {
+                    @Override
                     public void entityCreated(Entity entity) {
                         openDesigner(entity.getId().toString());
                     }
 
+                    @Override
                     public void entityEdited(Entity entity) {
                     }
 
+                    @Override
                     public void entityRemoved(Set<Entity> entity) {
                     }
                 }
@@ -121,7 +124,7 @@ public class DesignBrowser extends AbstractWindow {
                             Button button = new Button(getMessage("showNotificationMatrix"));
                             button.setStyleName("link");
                             button.setImmediate(true);
-                            button.addListener(
+                            button.addClickListener(
                                     new Button.ClickListener() {
                                         public void buttonClick(Button.ClickEvent event) {
                                             Design d = getDsContext().getDataService().reload(design, "_local");
@@ -144,22 +147,22 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     private void openDesigner(String id) {
-        String designerUrl = ConfigProvider.getConfig(WfConfig.class).getDesignerUrl();
+        String designerUrl = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getDesignerUrl();
         StringBuilder url = new StringBuilder();
         url.append(ControllerUtils.getWebControllerURL(designerUrl))
                 .append("?id=")
                 .append(id)
                 .append("&s=")
-                .append(UserSessionProvider.getUserSession().getId());
-        String target = String.valueOf(Math.round(Math.random() * 100));
-        App.getInstance().getAppWindow().open(new ExternalResource(url.toString()), target);
+                .append(AppBeans.get(UserSessionSource.class).getUserSession().getId());
+        App.getInstance().getAppUI().getPage().open(url.toString(), "_blank");
     }
 
-    private class CopyAction extends AbstractAction {
+    private class CopyAction extends ItemTrackingAction {
         protected CopyAction() {
             super("copy");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -170,11 +173,12 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ExportAction extends AbstractAction {
+    private class ExportAction extends ItemTrackingAction {
         protected ExportAction() {
             super("export");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -200,9 +204,11 @@ public class DesignBrowser extends AbstractWindow {
             super("import");
         }
 
+        @Override
         public void actionPerform(Component component) {
             final ImportDialog importDialog = openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
             importDialog.addListener(new CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
 
@@ -229,6 +235,7 @@ public class DesignBrowser extends AbstractWindow {
             super("compile");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -256,7 +263,7 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         private void compile(Design design) {
-            DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
+            DesignerService service = AppBeans.get(DesignerService.NAME);
             try {
                 CompilationMessage message = service.compileDesign(design.getId());
                 ds.refresh();
@@ -286,14 +293,14 @@ public class DesignBrowser extends AbstractWindow {
         private String prepareCompilationMessage(CompilationMessage message) {
             StringBuilder result = new StringBuilder();
             if (message.getErrors().size() > 0) {
-                result.append("<b>" + getMessage("notification.errors") + "</b><br />");
+                result.append("<b>").append(getMessage("notification.errors")).append("</b><br />");
             }
             for (DesignCompilationError error : message.getErrors()) {
                 result.append(error.getMessage());
                 result.append("<br />");
             }
             if (message.getWarnings().size() > 0) {
-                result.append("<b>" + getMessage("notification.warnings") + "</b><br />");
+                result.append("<b>").append(getMessage("notification.warnings")).append("</b><br />");
             }
             for (String warning : message.getWarnings()) {
                 result.append(warning);
@@ -343,6 +350,7 @@ public class DesignBrowser extends AbstractWindow {
             super("scripts");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -369,6 +377,7 @@ public class DesignBrowser extends AbstractWindow {
             super("localize");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -395,6 +404,7 @@ public class DesignBrowser extends AbstractWindow {
             super("uploadNotificationMatrix");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -424,6 +434,7 @@ public class DesignBrowser extends AbstractWindow {
             super("clearNotificationMatrix");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -455,6 +466,7 @@ public class DesignBrowser extends AbstractWindow {
             super("downloadNotificationMatrix");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set selected = table.getSelected();
             try {
@@ -477,7 +489,6 @@ public class DesignBrowser extends AbstractWindow {
                         NotificationType.ERROR
                 );
             }
-
         }
     }
 }

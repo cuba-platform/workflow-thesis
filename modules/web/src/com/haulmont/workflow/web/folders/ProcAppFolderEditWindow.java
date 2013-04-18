@@ -8,6 +8,7 @@ package com.haulmont.workflow.web.folders;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
@@ -15,7 +16,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Table.Column;
 import com.haulmont.cuba.gui.components.TwinColumn;
@@ -28,13 +29,12 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcAppFolder;
 import com.haulmont.workflow.core.entity.ProcCondition;
 import com.haulmont.workflow.core.entity.ProcState;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -73,7 +73,8 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
 //        if (!adding) {
         details();
-        setWidth(650, Sizeable.UNITS_PIXELS);
+        setWidth(650, Unit.PIXELS);
+
         TabSheet tabSheet = new TabSheet();
         layout.addComponent(tabSheet, 3);
 
@@ -95,10 +96,11 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
         WebGroupBox webGroupBox = new WebGroupBox();
         webGroupBox.setCaption(getMessage("conditions"));
-        builderTabLayout.addComponent(webGroupBox);
+        ComponentContainer groupBoxContainer = (ComponentContainer) WebComponentsHelper.unwrap(webGroupBox);
+        builderTabLayout.addComponent(groupBoxContainer);
 
-        initEntityField(webGroupBox);
-        initConditionField(webGroupBox);
+        initEntityField(groupBoxContainer);
+        initConditionField(groupBoxContainer);
 
         initApplyButton(builderTabLayout);
 
@@ -107,33 +109,33 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
     }
 
+    @Override
     protected void initButtonOkListener() {
-        okBtn.addListener(new Button.ClickListener() {
+        okBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 AppFolder folder = (AppFolder) ProcAppFolderEditWindow.this.folder;
-                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
+                if (StringUtils.isBlank(nameField.getValue())) {
                     String msg = getMessage("folders.folderEditWindow.emptyName");
-                    showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+
+                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
                     return;
                 }
-                folder.setName((String) nameField.getValue());
-                folder.setTabName((String) tabNameField.getValue());
+                folder.setName(nameField.getValue());
+                folder.setTabName(tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);
                 } else {
                     Object value = sortOrderField.getValue();
                     int sortOrder;
-                    if (value instanceof Integer)
-                        sortOrder = (Integer) value;
-                    else
-                        try {
-                            sortOrder = Integer.parseInt((String) value);
-                        } catch (NumberFormatException e) {
-                            String msg = getMessage("folders.folderEditWindow.invalidSortOrder");
-                            showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
-                            return;
-                        }
+                    try {
+                        sortOrder = Integer.parseInt((String) value);
+                    } catch (NumberFormatException e) {
+                        String msg = getMessage("folders.folderEditWindow.invalidSortOrder");
+                        App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+                        return;
+                    }
                     folder.setSortOrder(sortOrder);
                 }
 
@@ -148,11 +150,11 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
                 }
 
                 if (visibilityScriptField != null) {
-                    String scriptText = (String) visibilityScriptField.getValue();
+                    String scriptText = visibilityScriptField.getValue();
                     folder.setVisibilityScript(scriptText);
                 }
                 if (quantityScriptField != null) {
-                    String scriptText = (String) quantityScriptField.getValue();
+                    String scriptText = quantityScriptField.getValue();
                     folder.setQuantityScript(scriptText);
                 }
                 folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
@@ -188,11 +190,12 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
     private void initApplyButton(Layout layout) {
         Button add = new Button(getMessage("apply"));
-        add.setIcon(new ThemeResource("icons/ok.png"));
+        add.setIcon(new VersionedThemeResource("icons/ok.png"));
         add.setStyleName("icon");
         layout.addComponent(add);
         ((Layout.AlignmentHandler) layout).setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
-        add.addListener(new Button.ClickListener() {
+        add.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 buildFolder(true);
             }
@@ -205,10 +208,11 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
             Element rootEl = doc.addElement("root");
 
-            String entityAlias = StringUtils.trimToNull((String) entityAliasField.getValue());
+            String entityAlias = StringUtils.trimToNull(entityAliasField.getValue());
             if (procConditionDatasource.getItemIds().size() > 0 && entityAlias == null) {
-                showNotification(getMessage("folders.folderEditWindow.emptyEntityAlias"),
-                        Notification.TYPE_TRAY_NOTIFICATION);
+                App.getInstance().getWindowManager().showNotification(
+                        getMessage("folders.folderEditWindow.emptyEntityAlias"),
+                        IFrame.NotificationType.TRAY);
             }
 
             rootEl.addElement("entity").addText(((MetaClass) entityField.getValue()).getName());
@@ -259,10 +263,10 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
             modified = false;
             if (apply)
-                showNotification(getMessage("buildSuccessful"));
+                App.getInstance().getWindowManager().showNotification(getMessage("buildSuccessful"), IFrame.NotificationType.HUMANIZED);
         } catch (Exception e) {
             if (apply)
-                showNotification(getMessage("buildFailed"));
+                App.getInstance().getWindowManager().showNotification(getMessage("buildFailed"), IFrame.NotificationType.HUMANIZED);
             log.error(e);
         }
     }
@@ -305,7 +309,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         entityAliasField = new TextField();
         entityAliasField.setWidth("50px");
         entityAliasField.setRequired(true);
-        entityAliasField.addListener(new Property.ValueChangeListener() {
+        entityAliasField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 modified = true;
@@ -317,13 +321,15 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
     private void initRolesField(Layout layout) {
         WebGroupBox webGroupBox = new WebGroupBox();
         webGroupBox.setCaption(getMessage("roles"));
-        layout.addComponent(webGroupBox);
+
+        ComponentContainer cubaGroupBox = (ComponentContainer) WebComponentsHelper.unwrap(webGroupBox);
+        layout.addComponent(cubaGroupBox);
 
         rolesField = new WebTwinColumn();
         rolesField.setWidth("500px");
         rolesField.setHeight("110px");
 
-        webGroupBox.addComponent(WebComponentsHelper.unwrap(rolesField));
+        cubaGroupBox.addComponent(WebComponentsHelper.unwrap(rolesField));
 
         CollectionDatasource rolesDs = new DsBuilder()
                 .setMetaClass(metadata.getSession().getClass("sec$Role"))
@@ -348,13 +354,15 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
         Button add = new Button(getMessage("add"));
         hBox.addComponent(add);
-        add.addListener(new Button.ClickListener() {
+        add.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 Window window = new ProcConditionEditWindow(procConditionDatasource);
                 window.setWidth("600px");
                 window.setModal(true);
                 window.center();
-                App.getInstance().getAppWindow().addWindow(window);
+
+                App.getInstance().getAppUI().addWindow(window);
             }
         });
 
@@ -370,7 +378,9 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         vTable.setColumnCollapsingAllowed(false);
         vTable.setColumnReorderingAllowed(false);
 
-        remove.addListener(new Button.ClickListener() {
+        remove.addClickListener(new Button.ClickListener() {
+
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 Entity entity = table.getSingleSelected();
                 if (entity != null) {
@@ -478,23 +488,23 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
         ctx.setView("browse");
         LoadContext.Query query = ctx.setQueryString("select e from wf$ProcState e where e.name in (:states)" +
                 (proc != null ? " and e.proc.code = :proc" : ""));
-        HashMap params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
         params.put("states", Arrays.asList(states.split(",")));
         if (proc != null) {
             params.put("proc", proc);
         }
         query.setParameters(params);
-        return ServiceLocator.getDataService().loadList(ctx);
+        return AppBeans.get(DataService.class).loadList(ctx);
     }
 
     private Proc loadProc(String proc) {
         LoadContext ctx = new LoadContext(Proc.class);
         ctx.setView(View.LOCAL);
         LoadContext.Query query = ctx.setQueryString("select p from wf$Proc p where p.code = :proc");
-        HashMap params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
         params.put("proc", proc);
         query.setParameters(params);
-        List<Entity> list = ServiceLocator.getDataService().loadList(ctx);
+        List<Entity> list = AppBeans.get(DataService.class).loadList(ctx);
         return list.isEmpty() ? null : (Proc) list.iterator().next();
     }
 

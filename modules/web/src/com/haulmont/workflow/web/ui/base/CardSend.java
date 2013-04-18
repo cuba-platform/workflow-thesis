@@ -53,6 +53,7 @@ public class CardSend extends AbstractWindow {
         void handleItem(Object value);
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         setHeight("400px");
@@ -307,11 +308,12 @@ public class CardSend extends AbstractWindow {
     @Override
     public void applySettings(Settings settings) {
         super.applySettings(settings);
-        com.vaadin.ui.Window window = WebComponentsHelper.unwrap(frame).getWindow();
-        if (window.isModal()) {
-            window.setClosable(false);
-            window.setResizable(false);
-        }
+//        vaadin7
+//        com.vaadin.ui.Window window = WebComponentsHelper.unwrap(frame).getWindow();
+//        if (window.isModal()) {
+//            window.setClosable(false);
+//            window.setResizable(false);
+//        }
     }
 
     protected CardInfo createCardInfo(Card card, User user, String comment) {

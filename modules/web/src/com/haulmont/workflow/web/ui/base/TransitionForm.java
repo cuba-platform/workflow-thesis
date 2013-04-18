@@ -13,6 +13,13 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.TabSheet;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -25,7 +32,7 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.AbstractForm;
-import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -264,7 +271,8 @@ public class TransitionForm extends AbstractForm {
 
     private void initRequiredAttachmentsPane() {
         WebHBoxLayout requiredAttachmentsPane = getComponent("requiredAttachmentsPane");
-        requiredAttachmentsPane.removeAllComponents();
+        ComponentContainer vRequiredAttachmentPane = (ComponentContainer) WebComponentsHelper.unwrap(requiredAttachmentsPane);
+        vRequiredAttachmentPane.removeAllComponents();
         requiredAttachmentsPane.add(createRequiredAttachmentsLayout());
     }
 
@@ -307,7 +315,7 @@ public class TransitionForm extends AbstractForm {
 
 
     private AttachmentType getAttachmentType(String code) {
-        if (attachmentTypes == null) attachmentTypes = new HashMap<String, AttachmentType>();
+        if (attachmentTypes == null) attachmentTypes = new HashMap<>();
         if (!attachmentTypes.containsKey(code)) {
             DataService dataService = getDataService();
             LoadContext ctx = new LoadContext(AttachmentType.class);
@@ -320,12 +328,12 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected List<Entity> copyAttachments() {
-        List<Entity> commitList = new ArrayList<Entity>();
-        WfService wfService = ServiceLocator.lookup(WfService.NAME);
+        List<Entity> commitList = new ArrayList<>();
+        WfService wfService = AppBeans.get(WfService.NAME);
         for (Map.Entry<Card, AssignmentInfo> entry : cardAssignmentInfoMap.entrySet()) {
             AssignmentInfo assignmentInfo = entry.getValue();
             if (assignmentInfo != null && !assignmentDs.getItem().getUuid().equals(assignmentInfo.getAssignmentId())) {
-                Assignment loadAssignment = ServiceLocator.getDataService().<Assignment>load(new
+                Assignment loadAssignment = ServiceLocator.getDataService().load(new
                         LoadContext(Assignment.class).setView("resolutions").setId(assignmentInfo.getAssignmentId()));
                 for (UUID uuid : (Collection<UUID>) attachmentsDs.getItemIds()) {
                     CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(uuid);
@@ -368,7 +376,7 @@ public class TransitionForm extends AbstractForm {
             getDsContext().getDataService().commit(commitContext);
         } else {
             if (attachmentsDs.size() > 0) {
-                WfService wfService = ServiceLocator.lookup(WfService.NAME);
+                WfService wfService = AppBeans.get(WfService.NAME);
                 wfService.setHasAttachmentsInCard(card, true);
             }
         }
@@ -412,7 +420,7 @@ public class TransitionForm extends AbstractForm {
 
         if (!hideAttachments) {
             if (requiredAttachmentTypes != null) {
-                List<String> missingAttachments = new ArrayList<String>(requiredAttachmentTypes);
+                List<String> missingAttachments = new ArrayList<>(requiredAttachmentTypes);
                 for (Object itemId : attachmentsDs.getItemIds()) {
                     CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(itemId);
                     AttachmentType attachType = attachment.getAttachType();
