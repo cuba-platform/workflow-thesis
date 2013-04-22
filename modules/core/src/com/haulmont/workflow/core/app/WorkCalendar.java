@@ -456,8 +456,10 @@ public class WorkCalendar implements WorkCalendarAPI {
 
         boolean searchingFirstInterval = true;
 
+        Date currentDayTime = currentDay.getTime();
+        Date truncateCurrentDay = DateUtils.truncate(currentDayTime, Calendar.DAY_OF_MONTH);
         for (int i = 0; i < 365; i++) {
-            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
+            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(truncateCurrentDay);
             if (currentDayCalendarItems == null)
                 currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
 
@@ -467,12 +469,12 @@ public class WorkCalendar implements WorkCalendarAPI {
 
                 if (DateUtils.isSameDay(currentDay, endDay)) {
                     if (ci.isDateInInterval(endTime)) {
-                        if (searchingFirstInterval && DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                        if (searchingFirstInterval && DateUtils.isSameDay(currentDayTime, startTime)) {
                             //if necessary interval is in first CI interval
-                            if (ci.isDateInInterval(currentDay.getTime()))
+                            if (ci.isDateInInterval(currentDayTime))
                                 duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
                             else
-                                duration = endDay.getTimeInMillis() - ci.getRealStartDay(currentDay.getTime()).getTimeInMillis();
+                                duration = endDay.getTimeInMillis() - ci.getRealStartDay(currentDayTime).getTimeInMillis();
                         } else {
                             duration += ci.getDurationFromStart(endTime);
                         }
@@ -493,14 +495,14 @@ public class WorkCalendar implements WorkCalendarAPI {
 
                 if (searchingFirstInterval) {
                     //truncate currentDay if we move to next day
-                    if (!DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                    if (!DateUtils.isSameDay(currentDayTime, startTime)) {
                         currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
                     }
 
-                    if (ci.isDateInInterval(currentDay.getTime())) {
-                        duration += ci.getDurationToEnd(currentDay.getTime());
+                    if (ci.isDateInInterval(currentDayTime)) {
+                        duration += ci.getDurationToEnd(currentDayTime);
                         searchingFirstInterval = false;
-                    } else if (ci.isDateBeforeInterval(currentDay.getTime())) {
+                    } else if (ci.isDateBeforeInterval(currentDayTime)) {
                         duration += ci.getDuration();
                         searchingFirstInterval = false;
                     }
