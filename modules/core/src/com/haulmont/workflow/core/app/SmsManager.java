@@ -143,12 +143,13 @@ public class SmsManager implements SmsManagerAPI {
     private List<SendingSms> loadSmsToSend() {
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
-            em.setView(metadata.getViewRepository().getView(SendingSms.class, "_local"));
+            EntityManager em = PersistenceProvider.getEntityManager();
+            em.setView(MetadataProvider.getViewRepository().getView(SendingSms.class, "_local"));
             Query query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0, 400, 500) and " +
-                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.startSendingDate > :startDate order by sms.createTs")
+                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.startSendingDate > :startDate and sms.startSendingDate <=:currentDay order by sms.createTs")
                     .setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
-                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
+                    .setParameter("startDate", DateUtils.addSeconds(TimeProvider.currentTimestamp(), -config.getMaxSendingTimeSec()))
+                    .setParameter("currentDay", TimeProvider.currentTimestamp());
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;

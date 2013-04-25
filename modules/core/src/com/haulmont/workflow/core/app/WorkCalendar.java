@@ -618,6 +618,34 @@ public class WorkCalendar implements WorkCalendarAPI {
         return false;
     }
 
+    @Override
+    public boolean isTimeWorkTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return isTimeWorkTime(calendar);
+    }
+
+    @Override
+    public boolean isTimeWorkTime(Calendar day) {
+        Calendar dayTime = day;
+        day = DateUtils.truncate(day, Calendar.DATE);
+        loadCaches();
+        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
+        if (currentDayCalendarItems == null)
+            return false;
+
+        for (CalendarItem ci : currentDayCalendarItems) {
+            if (ci.getDuration() > 0) {
+                long currentTime = dayTime.getTimeInMillis() - day.getTimeInMillis();
+                if (currentTime < (ci.getEndH() * 60 * 60 * 1000 + ci.getEndM() * 60 * 1000) && currentTime > (ci.getStartH() * 60 * 60 * 1000 + ci.getStartM() * 60 * 1000))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public Long getWorkPeriodDurationInDays(Date startTime, Date endTime) {
         if ((startTime == null) || (endTime == null)) return 0L;
         if (startTime.compareTo(endTime) >= 0) return 0L;
