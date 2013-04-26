@@ -51,19 +51,21 @@ public class SmsSendTask implements Runnable {
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                 String queryString = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek";
                 Query query = em.createQuery(queryString).setParameter("dayOfWeek", dayOfWeek);
-                Date endTime = null;
                 List<WorkCalendarEntity> calendarEntities = query.getResultList();
-                for (WorkCalendarEntity calendarEntity : calendarEntities) {
-                    if (endTime == null) endTime = calendarEntity.getEnd();
-                    else {
-                        endTime = calendarEntity.getEnd().compareTo(endTime) == 1 ? calendarEntity.getEnd() : endTime;
+                if (selectedDateIsWorkDay(nextStartDate)) {
+                    Date endTime = null;
+                    for (WorkCalendarEntity calendarEntity : calendarEntities) {
+                        if (endTime == null) endTime = calendarEntity.getEnd();
+                        else {
+                            endTime = calendarEntity.getEnd().compareTo(endTime) == 1 ? calendarEntity.getEnd() : endTime;
+                        }
                     }
-                }
-                nextStartDate = DateUtils.truncate(nextStartDate, Calendar.DATE);
-                Calendar calendarEndTime = Calendar.getInstance();
-                calendarEndTime.setTime(endTime);
-                if (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime() > (calendarEndTime.getTimeInMillis() + calendarEndTime.getTimeZone().getRawOffset()))
-                    nextStartDate = DateUtils.addDays(nextStartDate, 1);
+                    nextStartDate = DateUtils.truncate(nextStartDate, Calendar.DATE);
+                    Calendar calendarEndTime = Calendar.getInstance();
+                    calendarEndTime.setTime(endTime);
+                    if (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime() > (calendarEndTime.getTimeInMillis() + calendarEndTime.getTimeZone().getRawOffset()))
+                        nextStartDate = DateUtils.addDays(nextStartDate, 1);
+                } else nextStartDate = DateUtils.addDays(nextStartDate, 1);
                 while (!selectedDateIsWorkDay(nextStartDate)) {
                     nextStartDate = DateUtils.addDays(nextStartDate, 1);
                 }
