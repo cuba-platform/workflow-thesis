@@ -9,12 +9,12 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -28,6 +28,7 @@ import com.haulmont.workflow.core.entity.CardComment;
 import com.vaadin.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +40,12 @@ import java.util.Map;
  */
 public class CardCommentFrame extends AbstractWindow {
 
+    @Inject
     protected HierarchicalDatasource commentDs;
+
+    @Inject
     protected WidgetsTree treeComment;
+
     protected com.haulmont.cuba.gui.components.Button buttonCreate;
     protected Card card;
     protected String cardSend;
@@ -48,18 +53,27 @@ public class CardCommentFrame extends AbstractWindow {
     protected int maxWidthDigit = 70;
     protected int maxHeightDigit = 3;
 
+    @Inject
+    protected DataService dataService;
+
+    @Inject
+    protected ViewRepository viewRepository;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
     public void init(Map<String, Object> params) {
         super.init(params);
+
         card = (Card) params.get("item");
         justCreated = (Boolean) params.get("justCreated");
         if (!PersistenceHelper.isNew(card)) {
             LoadContext ctx = new LoadContext(card.getClass()).setId(card.getId())
-                    .setView(MetadataProvider.getViewRepository().getView(card.getClass(), "browse"));
-            card = ServiceLocator.getDataService().load(ctx);
+                    .setView(viewRepository.getView(card.getClass(), "browse"));
+            card = dataService.load(ctx);
         }
-        commentDs = getDsContext().get("commentDs");
+
         buttonCreate = getComponent("add");
-        treeComment = getComponent("treeComment");
         commentDs.refresh();
         commentDs.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
@@ -67,6 +81,7 @@ public class CardCommentFrame extends AbstractWindow {
                 treeComment.expandTree();
             }
         });
+
         treeComment.expandTree();
         treeComment.setWidgetBuilder(new WebWidgetsTree.WidgetBuilder() {
             @Override
@@ -80,7 +95,7 @@ public class CardCommentFrame extends AbstractWindow {
                 labelSender.setValue(getUserNameLogin(cardComment.getSender()));
                 WebLabel dateValueLabel = new WebLabel();
                 Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
-                dateValueLabel.setValue(" (" + datatype.format(cardComment.getCreateTs(), UserSessionProvider.getLocale()) + ") ");
+                dateValueLabel.setValue(" (" + datatype.format(cardComment.getCreateTs(), userSessionSource.getLocale()) + ") ");
                 hLayoutFrom.add(labelFrom);
                 hLayoutFrom.add(labelSender);
                 hLayoutFrom.add(dateValueLabel);
@@ -117,7 +132,8 @@ public class CardCommentFrame extends AbstractWindow {
                             Map<String, Object> paramsCard = new HashMap<>();
                             paramsCard.put("item", card);
                             paramsCard.put("parent", cardComment);
-                            Window window = openWindow(card.getMetaClass().getName() + ".send", WindowManager.OpenType.DIALOG, paramsCard);
+                            Window window = openWindow(card.getMetaClass().getName() + ".send",
+                                    WindowManager.OpenType.DIALOG, paramsCard);
                             window.addListener(new CloseListener() {
                                 @Override
                                 public void windowClosed(String actionId) {
@@ -127,7 +143,7 @@ public class CardCommentFrame extends AbstractWindow {
                         }
                     }
                 });
-                labelComment.setRows(3);
+                labelComment.setHeight("100px");
                 labelComment.setEditable(false);
                 labelComment.setStyleName("noborder");
                 buttonComment.setAlignment(Alignment.MIDDLE_RIGHT);
@@ -162,7 +178,7 @@ public class CardCommentFrame extends AbstractWindow {
                     content.setHeight("300px");
                     com.vaadin.ui.Component component = new com.vaadin.ui.PopupView(preview, content);
                     component.setStyleName("longtext");
-                    vhLayoutComment.replaceComponent((com.vaadin.ui.TextField) WebComponentsHelper.unwrap(labelComment), component);
+                    vhLayoutComment.replaceComponent(WebComponentsHelper.unwrap(labelComment), component);
                     component.setWidth("100%");
                     vhLayoutComment.setExpandRatio(component, 1.0f);
                 }
@@ -206,7 +222,7 @@ public class CardCommentFrame extends AbstractWindow {
     }
 
     protected void openCardSend(Card card) {
-        Map paramsCard = new HashMap();
+        Map<String, Object> paramsCard = new HashMap<>();
 
         CollectionDatasource cardRolesDs = null;
         CardProcFrame cardProcFrame = getComponent("cardProcFrame");
@@ -245,7 +261,7 @@ public class CardCommentFrame extends AbstractWindow {
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     LoadContext ctx = new LoadContext(user.getClass()).setId(user.getId()).setView("_local");
-                    User reloadUser = ServiceLocator.getDataService().load(ctx);
+                    User reloadUser = dataService.load(ctx);
                     button.setCaption(getUserNameLogin(reloadUser));
                 }
             }
