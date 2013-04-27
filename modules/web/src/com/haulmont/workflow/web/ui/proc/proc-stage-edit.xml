@@ -74,7 +74,7 @@
                         </row>
                         <row>
                             <label value="msg://durationScript"/>
-                            <textField id="durationScript" datasource="stageDs" property="durationScript" width="400px" rows="10"/>
+                            <textArea id="durationScript" datasource="stageDs" property="durationScript" width="400px" rows="10"/>
                         </row>
                     </rows>
                 </grid>

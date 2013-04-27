@@ -71,7 +71,7 @@
                         <visible property="commentVisible"/>
                         <hbox id="commentTextPane">
                             <label value="msg://comment" width="${labelWidth}"/>
-                            <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
+                            <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
                         </hbox>
                     </accessControl>
                 </vbox>

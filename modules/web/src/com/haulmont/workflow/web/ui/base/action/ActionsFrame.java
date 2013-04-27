@@ -2,18 +2,12 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2009 11:20:55
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.action;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.app.WfUtils;
@@ -22,16 +16,23 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.AbstractWfAccessData;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ActionsFrame extends AbstractFrame {
 
     private AssignmentInfo info;
 
-    public ActionsFrame(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected TextArea descrText;
+
+    @Inject
+    protected WfService wfs;
 
     public AssignmentInfo getInfo() {
         return info;
@@ -58,7 +59,6 @@ public class ActionsFrame extends AbstractFrame {
             if (accessData != null && accessData.getAssignmentInfo() != null) {
                 info = accessData.getAssignmentInfo();
             } else {
-                WfService wfs = ServiceLocator.lookup(WfService.NAME);
                 info = wfs.getAssignmentInfo(card);
             }
             if (info != null) {
@@ -94,7 +94,7 @@ public class ActionsFrame extends AbstractFrame {
 
             if ((enabledActions != null) && !enabledActions.contains(actionName))
                 button.setEnabled(false);
-            FormManagerChain managerChain = null;
+            FormManagerChain managerChain;
             if (info != null && info.getCard() != null && !card.equals(info.getCard()))
                 managerChain = FormManagerChain.getManagerChain(info.getCard(), actionName);
             else

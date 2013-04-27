@@ -46,7 +46,7 @@
                     </row>
                     <row>
                         <label value="msg://comment"/>
-                        <textField id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
+                        <textArea id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
                     </row>
                     <row>
                         <label value="msg://type"/>

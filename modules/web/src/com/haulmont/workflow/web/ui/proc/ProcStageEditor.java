@@ -12,6 +12,7 @@ package com.haulmont.workflow.web.ui.proc;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -22,11 +23,17 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcStage;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class ProcStageEditor extends AbstractEditor {
+
     private ProcStage stage;
     private LookupField startActivity;
     private LookupField endActivity;
@@ -34,11 +41,12 @@ public class ProcStageEditor extends AbstractEditor {
     private Table procRolesTable;
     private CollectionDatasource procRolesDs;
     private Datasource stageDs;
-    private TextField durationScript;
 
-    public ProcStageEditor(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected TextArea durationScript;
+
+    @Inject
+    protected Messages messages;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -48,13 +56,11 @@ public class ProcStageEditor extends AbstractEditor {
         endActivity = getComponent("endActivity");
         type = getComponent("type");
         procRolesTable = getComponent("procRolesTable");
-        durationScript = getComponent("durationScript");
         procRolesDs = getDsContext().get("procRolesDs");
         stageDs = getDsContext().get("stageDs");
 
-
         TableActionsHelper procRolesHelper = new TableActionsHelper(this, procRolesTable);
-        Map<String, Object> procRoleLookupParams = new HashMap<String, Object>();
+        Map<String, Object> procRoleLookupParams = new HashMap<>();
         procRoleLookupParams.put("proc", ((ProcStage) WindowParams.ITEM.getEntity(params)).getProc());
         procRolesHelper.createAddAction(new Lookup.Handler() {
 
@@ -81,13 +87,13 @@ public class ProcStageEditor extends AbstractEditor {
     }
 
     private void fillActivityLookups() {
-        Map<String, Object> statesMap = new HashMap<String, Object>();
+        Map<String, Object> statesMap = new HashMap<>();
         Proc proc = stage.getProc();
 
         String states = proc.getStates();
         if (StringUtils.isNotBlank(states)) {
             for (String state : states.split("\\s*,\\s*")) {
-                String locState = MessageProvider.getMessage(proc.getMessagesPack(), state);
+                String locState = messages.getMessage(proc.getMessagesPack(), state);
                 statesMap.put(locState, state);
             }
         }
