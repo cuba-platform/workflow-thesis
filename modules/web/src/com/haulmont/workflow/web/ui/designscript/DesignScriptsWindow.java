@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 27.01.11 14:58
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.designscript;
 
@@ -17,21 +12,27 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DesignScriptsWindow extends AbstractWindow {
 
     private Design design;
     private CollectionDatasource<DesignScript, UUID> ds;
     private Table table;
-    private Component actionsPane;
-    private TextField nameField;
-    private TextField contentField;
 
+    @Inject
+    protected Component actionsPane;
 
-    public DesignScriptsWindow(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected TextField nameField;
+
+    @Inject
+    protected TextField contentField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -45,10 +46,6 @@ public class DesignScriptsWindow extends AbstractWindow {
         table.addAction(new RemoveAction(table));
         table.addAction(new NewAction());
         table.addAction(new ModifyAction());
-
-        nameField = getComponent("nameField");
-        contentField = getComponent("contentField");
-        actionsPane = getComponent("actionsPane");
 
         addAction(new SaveAction());
         addAction(new CancelAction());
@@ -75,6 +72,7 @@ public class DesignScriptsWindow extends AbstractWindow {
             super("new");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Collection<UUID> designIds = ds.getItemIds();
             for (UUID id : designIds) {
@@ -99,6 +97,7 @@ public class DesignScriptsWindow extends AbstractWindow {
             super("modify");
         }
 
+        @Override
         public void actionPerform(Component component) {
             if (!table.getSelected().isEmpty()) {
                 enableControls();
@@ -112,6 +111,7 @@ public class DesignScriptsWindow extends AbstractWindow {
             super("save");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Collection<UUID> designIds = ds.getItemIds();
             Set<String> designScriptNames = new HashSet<String>();
@@ -140,6 +140,7 @@ public class DesignScriptsWindow extends AbstractWindow {
             super("cancel");
         }
 
+        @Override
         public void actionPerform(Component component) {
             ds.refresh();
             disableControls();

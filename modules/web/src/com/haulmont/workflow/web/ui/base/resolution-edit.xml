@@ -61,7 +61,7 @@
                     </row>
                     <row>
                         <label value="msg://comment"/>
-                        <textField id="comment" datasource="assignmentDs" property="comment"
+                        <textArea id="comment" datasource="assignmentDs" property="comment"
                                    width="400" rows="6"/>
                     </row>
                 </rows>

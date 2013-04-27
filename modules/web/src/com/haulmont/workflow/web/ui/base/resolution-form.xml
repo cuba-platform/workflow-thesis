@@ -30,7 +30,7 @@
                     </row>
                     <row>
                         <label value="msg://comment"/>
-                        <textField id="commentText" datasource="assignmentDs" property="comment"
+                        <textArea id="commentText" datasource="assignmentDs" property="comment"
                                    width="${width}" rows="6"/>
                     </row>
                 </rows>

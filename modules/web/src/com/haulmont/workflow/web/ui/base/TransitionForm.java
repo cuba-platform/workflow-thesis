@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.TabSheet;
+import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -48,7 +49,7 @@ import static com.haulmont.cuba.gui.ServiceLocator.getDataService;
 public class TransitionForm extends AbstractForm {
 
     @Inject
-    private TextField commentText;
+    private TextArea commentText;
     @Inject
     protected CardRolesFrame cardRolesFrame;
     @Inject
