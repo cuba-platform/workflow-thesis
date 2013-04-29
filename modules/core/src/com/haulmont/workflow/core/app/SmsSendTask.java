@@ -49,42 +49,48 @@ public class SmsSendTask implements Runnable {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(nextStartDate);
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                String queryString = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek";
-                Query query = em.createQuery(queryString).setParameter("dayOfWeek", dayOfWeek);
+                String queryString = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek or c.day=:day";
+                Query query = em.createQuery(queryString).setParameter("dayOfWeek", dayOfWeek).setParameter("day",nextStartDate);
                 List<WorkCalendarEntity> calendarEntities = query.getResultList();
                 if (selectedDateIsWorkDay(nextStartDate)) {
                     Date endTime = null;
                     for (WorkCalendarEntity calendarEntity : calendarEntities) {
                         if (endTime == null) endTime = calendarEntity.getEnd();
                         else {
-                            endTime = calendarEntity.getEnd().compareTo(endTime) == 1 ? calendarEntity.getEnd() : endTime;
+                            endTime = (calendarEntity.getEnd() != null && calendarEntity.getEnd().compareTo(endTime) == 1) ? calendarEntity.getEnd() : endTime;
                         }
                     }
-                    nextStartDate = DateUtils.truncate(nextStartDate, Calendar.DATE);
-                    Calendar calendarEndTime = Calendar.getInstance();
-                    calendarEndTime.setTime(endTime);
-                    if (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime() > (calendarEndTime.getTimeInMillis() + calendarEndTime.getTimeZone().getRawOffset()))
-                        nextStartDate = DateUtils.addDays(nextStartDate, 1);
-                } else nextStartDate = DateUtils.addDays(nextStartDate, 1);
+                    nextStartDate = DateUtils.truncate(nextStartDate,Calendar.DATE);
+                    if (endTime != null) {
+                        Calendar calendarEndTime = Calendar.getInstance();
+                        calendarEndTime.setTime(endTime);
+                        if (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime() > (calendarEndTime.getTimeInMillis() + calendarEndTime.getTimeZone().getRawOffset()))  {
+                            nextStartDate = DateUtils.addDays(nextStartDate, 1);
+                        }
+                    }
+                } else {
+                    nextStartDate = DateUtils.addDays(nextStartDate, 1);
+                    nextStartDate = DateUtils.truncate(nextStartDate,Calendar.DATE);
+                }
                 while (!selectedDateIsWorkDay(nextStartDate)) {
                     nextStartDate = DateUtils.addDays(nextStartDate, 1);
                 }
                 calendar = Calendar.getInstance();
                 calendar.setTime(nextStartDate);
                 dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                queryString = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek";
-                query = em.createQuery(queryString).setParameter("dayOfWeek", dayOfWeek);
+                queryString = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek or c.day=:day";
+                query = em.createQuery(queryString).setParameter("dayOfWeek", dayOfWeek).setParameter("day",nextStartDate);;
                 Date startTime = null;
                 calendarEntities = query.getResultList();
                 for (WorkCalendarEntity calendarEntity : calendarEntities) {
                     if (startTime == null) startTime = calendarEntity.getStart();
                     else {
-                        startTime = calendarEntity.getStart().compareTo(startTime) == -1 ? calendarEntity.getStart() : startTime;
+                        startTime = (calendarEntity.getStart()!=null && calendarEntity.getStart().compareTo(startTime) == -1) ? calendarEntity.getStart() : startTime;
                     }
                 }
                 calendar.setTime(startTime);
-                nextStartDate = DateUtils.addHours(nextStartDate, calendar.get(Calendar.HOUR));
-                nextStartDate = DateUtils.addMinutes(nextStartDate, calendar.get(Calendar.MINUTE));
+                nextStartDate = DateUtils.setHours(nextStartDate, calendar.get(Calendar.HOUR));
+                nextStartDate = DateUtils.setMinutes(nextStartDate, calendar.get(Calendar.MINUTE));
                 sendingSms.setStartSendingDate(nextStartDate);
                 em.merge(sendingSms);
                 tx.commit();
