@@ -89,7 +89,7 @@ public class SmsSendTask implements Runnable {
                     }
                 }
                 calendar.setTime(startTime);
-                nextStartDate = DateUtils.setHours(nextStartDate, calendar.get(Calendar.HOUR));
+                nextStartDate = DateUtils.setHours(nextStartDate, calendar.get(Calendar.HOUR_OF_DAY));
                 nextStartDate = DateUtils.setMinutes(nextStartDate, calendar.get(Calendar.MINUTE));
                 sendingSms.setStartSendingDate(nextStartDate);
                 em.merge(sendingSms);
