@@ -51,7 +51,8 @@ public class SmsSendTask implements Runnable {
 
     @Override
     public void run() {
-        if (selectedTimeIsWorkTime(timeSource.currentTimestamp())) {
+        Date currentTime = timeSource.currentTimestamp();
+        if (selectedTimeIsWorkTime(currentTime)) {
             try {
                 smsSender.scheduledSendSms(sendingSms);
             } catch (Exception e) {
@@ -80,7 +81,8 @@ public class SmsSendTask implements Runnable {
                     if (endTime != null) {
                         Calendar calendarEndTime = Calendar.getInstance();
                         calendarEndTime.setTime(endTime);
-                        if (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime() >
+                        Date currentDate = DateUtils.truncate(currentTime, Calendar.DATE);
+                        if (currentTime.getTime() - currentDate.getTime() >=
                                 ((calendarEndTime.get(Calendar.HOUR_OF_DAY) * 60 + calendarEndTime.get(Calendar.MINUTE)) * 60 * 1000)) {
                             nextStartDate = DateUtils.addDays(nextStartDate, 1);
                         }
@@ -106,10 +108,14 @@ public class SmsSendTask implements Runnable {
                     }
                 }
                 calendar.setTime(startTime);
-                nextStartDate = DateUtils.setHours(nextStartDate, calendar.get(Calendar.HOUR_OF_DAY));
-                nextStartDate = DateUtils.setMinutes(nextStartDate, calendar.get(Calendar.MINUTE));
-                sendingSms.setStartSendingDate(nextStartDate);
-                em.merge(sendingSms);
+                if (!nextStartDate.equals(DateUtils.truncate(sendingSms.getStartSendingDate(), Calendar.DATE))
+                        || (sendingSms.getStartSendingDate().getTime() - nextStartDate.getTime()) <
+                        (calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)) * 60 * 1000) {
+                    nextStartDate = DateUtils.setHours(nextStartDate, calendar.get(Calendar.HOUR_OF_DAY));
+                    nextStartDate = DateUtils.setMinutes(nextStartDate, calendar.get(Calendar.MINUTE));
+                    sendingSms.setStartSendingDate(nextStartDate);
+                    em.merge(sendingSms);
+                }
                 tx.commit();
             } catch (Exception e) {
                 log.error("Error in schedule sendingSms waiting", e);
