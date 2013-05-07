@@ -425,6 +425,9 @@ public class WfEngine implements WfEngineAPI {
         if (card.getProc() == null)
             throw new IllegalStateException("Card.proc required");
 
+        if (card.getJbpmProcessId() != null)
+            throw new IllegalStateException("Another process already started");
+
         ExecutionService es = WfHelper.getExecutionService();
         card.setState(null);
         ProcessInstance pi = es.startProcessInstanceByKey(

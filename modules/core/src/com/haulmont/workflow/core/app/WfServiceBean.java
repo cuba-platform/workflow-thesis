@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -41,6 +42,9 @@ public class WfServiceBean implements WfService {
 
     @Inject
     private UserSessionSource userSessionSource;
+
+    @Inject
+    private Persistence persistence;
 
     private Log log = LogFactory.getLog(WfServiceBean.class);
 
@@ -299,7 +303,7 @@ public class WfServiceBean implements WfService {
     public void removeSubProcCard(Card card) {
         Transaction tx = PersistenceProvider.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             for (CardProc cardProc : card.getProcs())
                 em.remove(cardProc);
             em.remove(card);
@@ -307,6 +311,23 @@ public class WfServiceBean implements WfService {
         } finally {
             tx.end();
         }
+    }
+
+    public boolean processStarted(Card card) {
+        boolean result = false;
+        Transaction tx = persistence.getTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            List resultList = em.createQuery("select c.jbpmProcessId from wf$Card c where c.id = :card")
+                    .setParameter("card", card)
+                    .getResultList();
+            if (!resultList.isEmpty())
+                result = resultList.get(0) != null;
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return result;
     }
 
     //TODO: extract logic into separate helper api

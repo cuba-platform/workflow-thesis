@@ -6,6 +6,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -223,11 +224,8 @@ public class CardProcFrame extends AbstractFrame {
         refreshCard();
         final Proc prevProc = card.getProc();
         DataSupplier ds = getDsContext().getDataService();
-        final Proc proc = ds.reload(cp.getProc(), "start-process");
         final String prevCardProcState = cp.getState();
-        card.setProc(proc);
-        cp.setProc(proc);
-        cp.setState(null);
+
         final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
 
         if (!PersistenceHelper.isNew(card)) {
@@ -248,6 +246,11 @@ public class CardProcFrame extends AbstractFrame {
         if (window instanceof Window.Editor && ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()) {
             refreshCard();
 
+            final Proc proc = ds.reload(cp.getProc(), "start-process");
+            card.setProc(proc);
+            cp.setProc(proc);
+            cp.setState(null);
+
             // starting
             try {
                 final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, WfConstants.ACTION_START);
@@ -257,7 +260,11 @@ public class CardProcFrame extends AbstractFrame {
                         new FormManagerChain.Handler() {
                             @Override
                             public void onSuccess(String comment) {
-                                WfService wfs = ServiceLocator.lookup(WfService.NAME);
+                                List<Entity> commitInstances = new ArrayList<>();
+                                commitInstances.add(card);
+                                AppBeans.get(DataService.class).commit(new CommitContext(commitInstances));
+
+                                WfService wfs = AppBeans.get(WfService.NAME);
                                 wfs.startProcess(card);
                                 window.close(Window.COMMIT_ACTION_ID, true);
                                 managerChain.doManagerAfter();
@@ -311,10 +318,15 @@ public class CardProcFrame extends AbstractFrame {
         DataSupplier ds = getDsContext().getDataService();
 
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
-                new View(Card.class).addProperty("proc")
+                new View(Card.class).addProperty("proc").addProperty("jbpmProcessId")
         );
         Card loadedCard = ds.load(lc);
-        loadedCard.setProc(prevProc);
+
+        //If process start failed because of another concurrently started process, jbpmProcessId will be not empty.
+        //In this case we will not restore previous value of card.proc field
+        if (loadedCard.getJbpmProcessId() == null) {
+            loadedCard.setProc(prevProc);
+        }
 
         lc = new LoadContext(CardProc.class).setId(cp.getId()).setView(
                 new View(CardProc.class).addProperty("active").addProperty("startCount").addProperty("state")
