@@ -86,10 +86,6 @@ public class CardRolesFrame extends AbstractFrame {
     @Inject
     private Metadata metadata;
     
-    public CardRolesFrame(IFrame frame) {
-        super(frame);
-    }
-
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
@@ -1365,7 +1361,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                 public void valueChange(Property.ValueChangeEvent event) {
                     Property eventProperty = event.getProperty();
-                    User selectedUser = (User) usersDs.getItem(eventProperty.getValue());
+                    User selectedUser = (User) eventProperty.getValue();
                     CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
                     if (cr != null)
                         cr.setUser(selectedUser);
