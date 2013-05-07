@@ -75,6 +75,9 @@ public class WfEngine implements WfEngineAPI {
     @Inject
     private NotificationMatrixAPI notificationBean;
 
+    @Inject
+    private Metadata metadata;
+
     static {
         System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getClassLoader");
     }
@@ -249,8 +252,15 @@ public class WfEngine implements WfEngineAPI {
             query.executeUpdate();
 
             for (String state : states) {
-                ProcState procState = new ProcState();
+                ProcState procState = metadata.create(ProcState.class);
                 procState.setName(state);
+                procState.setProc(proc);
+                em.persist(procState);
+            }
+
+            if (!states.contains(WfConstants.CARD_STATE_CANCELED)) {
+                ProcState procState = metadata.create(ProcState.class);
+                procState.setName(WfConstants.CARD_STATE_CANCELED);
                 procState.setProc(proc);
                 em.persist(procState);
             }
