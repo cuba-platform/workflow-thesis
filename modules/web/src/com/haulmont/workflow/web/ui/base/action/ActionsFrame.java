@@ -39,8 +39,6 @@ public class ActionsFrame extends AbstractFrame {
     }
 
     public void initActions(Card card, boolean descriptionVisible) {
-        TextField descrText = getComponent("descrText");
-
         deleteActionButtons();
 
         List<String> actions = new ArrayList<String>();

@@ -33,12 +33,9 @@ import com.haulmont.workflow.core.global.TimeUnit;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -358,7 +355,7 @@ public class CardRolesFrame extends AbstractFrame {
                         orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
                         orderLookup.setValue(cardRole.getSortOrder());
                         orderLookup.setWidth("100%");
-                        final Select orderSelect = (Select) WebComponentsHelper.unwrap(orderLookup);
+                        final AbstractSelect orderSelect = (AbstractSelect) WebComponentsHelper.unwrap(orderLookup);
                         orderSelect.setNullSelectionAllowed(false);
 
                         orderLookup.addListener(new ValueListener() {
@@ -1363,9 +1360,8 @@ public class CardRolesFrame extends AbstractFrame {
             addGroupButton = null;
 //            actionsField.setHeight("25px");
             LookupField usersLookup = actionsField.getLookupField();
-            com.vaadin.ui.Select usersSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
+            AbstractSelect usersSelect = (AbstractSelect) WebComponentsHelper.unwrap(usersLookup);
             usersSelect.addListener(new Property.ValueChangeListener() {
-                private static final long serialVersionUID = 8930855523874560855L;
 
                 public void valueChange(Property.ValueChangeEvent event) {
                     Property eventProperty = event.getProperty();
@@ -1379,11 +1375,11 @@ public class CardRolesFrame extends AbstractFrame {
                 }
             });
 
-            usersSelect.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT);
+            usersSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
             for (Object itemId : usersDs.getItemIds()) {
                 User user = (User) usersDs.getItem(itemId);
                 String userCaption = generateUserCaption(user);
-                usersSelect.setItemCaption(user.getId(), userCaption);
+                usersSelect.setItemCaption(user, userCaption);
             }
 
             final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
