@@ -8,6 +8,7 @@ package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -16,8 +17,10 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.core.entity.Card;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -72,7 +75,12 @@ public class NewVersionAction extends CreateAction {
         }
 
         attachmentsDs.updateItem(newVersion);
-        attachmentsDs.commit();
+        Map<String, Object> initialValues = getInitialValues();
+        if (initialValues != null && initialValues.containsKey("card")) {
+            Card card = (Card) initialValues.get("card");
+            if (!PersistenceHelper.isNew(card))
+                attachmentsDs.commit();
+        }
         owner.setSelected((Entity) null);
     }
 

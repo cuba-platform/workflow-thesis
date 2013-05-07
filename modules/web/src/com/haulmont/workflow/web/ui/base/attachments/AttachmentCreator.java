@@ -11,7 +11,12 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.core.entity.Card;
 
 public interface AttachmentCreator {
     Attachment createObject();
+
+    public interface CardAttachmentCreator extends AttachmentCreator {
+        Card getCard();
+    }
 }
