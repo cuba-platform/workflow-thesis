@@ -226,6 +226,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             for (CardAttachment ca : cas) {
                 attachmentsDs.addItem(ca);
             }
+            item.setAttachments(null);
         }
     }
 }

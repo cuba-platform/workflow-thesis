@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -18,7 +17,9 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
-import com.vaadin.ui.Select;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.ComboBox;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -44,10 +45,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private CollectionDatasourceImpl attachDs, attachTypesDs, filesDs;
     private AttachmentType defaultAttachType;
 
-    public AttachmentsMultiUploader(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void setItem(Entity item) {
         // Do nothing
@@ -56,7 +53,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         }
         okBtn.setEnabled(false);
 
-        Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
+        ComboBox select = (ComboBox) WebComponentsHelper.unwrap(attachTypeCombo);
         select.select(defaultAttachType);
 
         cancelBtn.setAction(new AbstractAction("actions.Cancel") {
@@ -132,11 +129,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         uploadField = getComponent("multiUpload");
         uploadField.setCaption(getMessage("upload"));
 
-        Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
+        ComboBox select = (ComboBox) WebComponentsHelper.unwrap(attachTypeCombo);
         select.setImmediate(true);
         select.setNullSelectionAllowed(true);
-        select.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
-        select.setItemCaptionMode(Select.ITEM_CAPTION_MODE_EXPLICIT);
+        select.setFilteringMode(FilteringMode.CONTAINS);
+        select.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
 
         Collection ids = attachTypesDs.getItemIds();
         for (Object id : ids) {
@@ -182,7 +179,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     attach.setName(StringUtils.substringBeforeLast(fDesc.getName(), "."));
                     attach.setFile(fDesc);
 
-                    Select select = (Select) WebComponentsHelper.unwrap(attachTypeCombo);
+                    ComboBox select = (ComboBox) WebComponentsHelper.unwrap(attachTypeCombo);
                     AttachmentType aType = (AttachmentType) select.getValue();
 
                     if (aType != null)
@@ -243,6 +240,11 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         return closeResult;
     }
 
+    @Override
+    protected boolean postCommit(boolean committed, boolean close) {
+        return true;
+    }
+
     private AttachmentType getDefaultAttachmentType() {
         String defaultAttachmentCode = AppContext.getProperty("cuba.defaultAttachmentType");
 
@@ -274,6 +276,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 Attachment attach = (Attachment) attachDs.getItem(id);
                 UUID fileId = descriptors.get(attach.getFile());
                 fileUploading.putFileIntoStorage(fileId, attach.getFile());
+                attach.setFile((FileDescriptor) filesDs.getItem(attach.getFile().getId()));
                 attachments.add(attach);
             }
         } catch (FileStorageException e) {

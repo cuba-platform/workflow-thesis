@@ -13,6 +13,7 @@ package com.haulmont.workflow.web.ui.base.attachments;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -80,7 +81,7 @@ public class AttachmentActionsHelper {
      * @param creator          Custom method for set object properties
      * @return Action
      */
-    public static Action createPasteAction(Table attachmentsTable, AttachmentCreator creator) {
+    public static Action createPasteAction(Table attachmentsTable, final AttachmentCreator creator) {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
@@ -115,10 +116,14 @@ public class AttachmentActionsHelper {
                             if (!find) {
                                 //noinspection unchecked
                                 attachDs.addItem(attachment);
-                                if (!(attachDs instanceof PropertyDatasource)) {
-                                    attachDs.commit();
+                                if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                                        !PersistenceHelper.isNew(
+                                                ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                                    if (!(attachDs instanceof PropertyDatasource)) {
+                                        attachDs.commit();
+                                    }
+                                    attachments.refresh();
                                 }
-                                attachments.refresh();
                             }
                         }
                     }
@@ -180,7 +185,7 @@ public class AttachmentActionsHelper {
      * @param params           Dialog params
      * @return Multifile upload action
      */
-    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
+    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, final AttachmentCreator creator,
                                                  final WindowManager.OpenType openType, final Map<String, Object> params) {
         final Table attachments = attachmentsTable;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
@@ -209,11 +214,14 @@ public class AttachmentActionsHelper {
                             for (Attachment attach : items) {
                                 attachDs.addItem(attach);
                             }
-                            CollectionDatasource datasource = attachments.getDatasource();
-                            if (!(datasource instanceof PropertyDatasource)) {
-                                datasource.commit();
+                            if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                                    !PersistenceHelper.isNew(
+                                            ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                                if (!(attachDs instanceof PropertyDatasource)) {
+                                    attachDs.commit();
+                                }
+                                attachments.refresh();
                             }
-                            attachments.refresh();
                         }
                     }
                 });
@@ -233,11 +241,12 @@ public class AttachmentActionsHelper {
 
     /**
      * Create single click upload button in {@link ButtonsPanel}
+     *
      * @param attachmentsTable table
-     * @param creator Attachment creator
-     * @param uploadScreenId Attachment editor screen
-     * @param windowParams Additional params
-     * @param openType Screen open type
+     * @param creator          Attachment creator
+     * @param uploadScreenId   Attachment editor screen
+     * @param windowParams     Additional params
+     * @param openType         Screen open type
      * @return FileUploadField button
      */
     public static FileUploadField createFastUploadButton(final Table attachmentsTable,
@@ -286,11 +295,15 @@ public class AttachmentActionsHelper {
                         if (Window.Editor.COMMIT_ACTION_ID.equals(actionId)) {
                             CollectionDatasource attachDs = attachmentsTable.getDatasource();
                             attachDs.addItem(editor.getItem());
-                            CollectionDatasource datasource = attachmentsTable.getDatasource();
-                            if (!(datasource instanceof PropertyDatasource)) {
-                                datasource.commit();
+                            if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                                    !PersistenceHelper.isNew(
+                                            ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                                CollectionDatasource datasource = attachmentsTable.getDatasource();
+                                if (!(datasource instanceof PropertyDatasource)) {
+                                    datasource.commit();
+                                }
+                                attachmentsTable.refresh();
                             }
-                            attachmentsTable.refresh();
                         }
                     }
                 });
@@ -300,7 +313,7 @@ public class AttachmentActionsHelper {
             public void uploadFailed(Event event) {
             }
         });
-
+        fileUploadField.setCaption(MessageProvider.getMessage(AttachmentActionsHelper.class, "wf.upload.submit"));
         buttonsPanel.add(fileUploadField);
 
         return fileUploadField;

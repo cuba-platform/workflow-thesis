@@ -52,7 +52,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         attachmentsTable = getComponent("attachmentsTable");
 
 
-        attachmentCreator = new AttachmentCreator() {
+        attachmentCreator = new AttachmentCreator.CardAttachmentCreator() {
             public Attachment createObject() {
                 CardAttachment attachment = new CardAttachment();
                 Card card = cardDs.getItem();
@@ -60,6 +60,11 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 attachment.setCreateTs(TimeProvider.currentTimestamp());
                 attachment.setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
                 return attachment;
+            }
+
+            @Override
+            public Card getCard() {
+                return cardDs.getItem();
             }
         };
 
@@ -83,7 +88,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         attachmentsTable.addAction(newVersionAction);
         attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit"));
-        attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, true, "remove"));
+        attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, false, "remove"));
 
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
@@ -152,7 +157,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         }
 
         public void actionPerform(Component component) {
-            if (PersistenceHelper.isNew(cardDs.getItem()) && cardCommitCheckRequired) {
+            if (!PersistenceHelper.isNew(cardDs.getItem()) && cardCommitCheckRequired) {
                 showOptionDialog(
                         getMessage("cardAttachmentFrame.dialogHeader"),
                         getMessage("cardAttachmentFrame.dialogMessage"),
