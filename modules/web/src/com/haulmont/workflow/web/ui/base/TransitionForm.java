@@ -71,6 +71,9 @@ public class TransitionForm extends AbstractForm {
     @Inject
     private CheckBox refusedOnly;
 
+    @Inject
+    protected TimeSource timeSource;
+
     protected Boolean hideAttachments = false;
 
     @Inject
@@ -386,6 +389,14 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected boolean validated() {
+        if (card.getJbpmProcessId() == null) {
+            WfService wfService = ServiceLocator.lookup(WfService.NAME);
+            if (wfService.processStarted(card)) {
+                showNotification(getMessage("processAlreadyStarted"), IFrame.NotificationType.ERROR);
+                return false;
+            }
+        }
+
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;

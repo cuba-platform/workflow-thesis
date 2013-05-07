@@ -54,4 +54,6 @@ public interface WfService {
     Card createSubProcCard(Card parentCard, String subProcCode);
 
     void removeSubProcCard(Card card);
+
+    boolean processStarted(Card card);
 }
