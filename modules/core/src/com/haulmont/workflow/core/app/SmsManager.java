@@ -144,11 +144,13 @@ public class SmsManager implements SmsManagerAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            TypedQuery<SendingSms> query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0, 400, 500) and " +
-                    "sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and sms.startSendingDate > :startDate and sms.startSendingDate <=:currentDay order by sms.createTs",
+            TypedQuery<SendingSms> query = em.createQuery("select sms from wf$SendingSms sms where " +
+                    "sms.status in (0, 400, 500) and sms.attemptsCount < :attemptsCount and sms.errorCode = 0 and " +
+                    "sms.startSendingDate > :startDate and sms.startSendingDate <=:currentDay order by sms.createTs",
                     SendingSms.class);
             query.setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
-                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()))
+                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(),
+                            -config.getMaxSendingTimeSec()))
                     .setParameter("currentDay", timeSource.currentTimestamp());
             query.setViewName("_local");
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
@@ -163,10 +165,12 @@ public class SmsManager implements SmsManagerAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            TypedQuery<SendingSms> query = em.createQuery("select sms from wf$SendingSms sms where sms.status in (0) and " +
-                    "(sms.attemptsCount > :attemptsCount or sms.startSendingDate <= :startDate) and sms.errorCode = 0 order by sms.createTs",SendingSms.class);
+            TypedQuery<SendingSms> query = em.createQuery("select sms from wf$SendingSms sms where " +
+                    "sms.status in (0) and (sms.attemptsCount > :attemptsCount or sms.startSendingDate <= :startDate) and " +
+                    "sms.errorCode = 0 order by sms.createTs", SendingSms.class);
             query.setParameter("attemptsCount", config.getDefaultSendingAttemptsCount())
-                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()));
+                    .setParameter("startDate", DateUtils.addSeconds(timeSource.currentTimestamp(),
+                            -config.getMaxSendingTimeSec()));
             query.setViewName("_local");
             List<SendingSms> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();

@@ -68,17 +68,22 @@ public class SmsSendTask implements Runnable {
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                 String queryForDayOfWeek = "select c from wf$Calendar c where c.dayOfWeek=:dayOfWeek";
                 String queryForDay = "select c from wf$Calendar c where c.day=:day";
-                Query queryDayOfWeek = em.createQuery(queryForDayOfWeek).setParameter("dayOfWeek", dayOfWeek);
-                Query queryDay = em.createQuery(queryForDay).setParameter("day", nextStartDate);
-                List<WorkCalendarEntity> calendarEntitiesDayOfWeek = queryDayOfWeek.getResultList();
+                TypedQuery<WorkCalendarEntity> queryDayOfWeek =
+                        em.createQuery(queryForDayOfWeek, WorkCalendarEntity.class);
+                queryDayOfWeek.setParameter("dayOfWeek", dayOfWeek);
+                TypedQuery<WorkCalendarEntity> queryDay = em.createQuery(queryForDay, WorkCalendarEntity.class);
+                queryDay.setParameter("day", nextStartDate);
                 List<WorkCalendarEntity> calendarEntitiesDay = queryDay.getResultList();
-                List<WorkCalendarEntity> calendarEntities = calendarEntitiesDay.isEmpty() ? calendarEntitiesDayOfWeek : calendarEntitiesDay;
+                List<WorkCalendarEntity> calendarEntities = calendarEntitiesDay.isEmpty() ?
+                        queryDayOfWeek.getResultList() : calendarEntitiesDay;
                 if (selectedDateIsWorkDay(nextStartDate)) {
                     Date endTime = null;
                     for (WorkCalendarEntity calendarEntity : calendarEntities) {
                         if (endTime == null) endTime = calendarEntity.getEnd();
                         else {
-                            endTime = (calendarEntity.getEnd() != null && calendarEntity.getEnd().compareTo(endTime) == 1) ? calendarEntity.getEnd() : endTime;
+                            endTime = (calendarEntity.getEnd() != null &&
+                                    calendarEntity.getEnd().compareTo(endTime) == 1) ?
+                                    calendarEntity.getEnd() : endTime;
                         }
                     }
                     nextStartDate = DateUtils.truncate(nextStartDate, Calendar.DATE);
@@ -87,7 +92,8 @@ public class SmsSendTask implements Runnable {
                         calendarEndTime.setTime(endTime);
                         Date currentDate = DateUtils.truncate(currentTime, Calendar.DATE);
                         if (currentTime.getTime() - currentDate.getTime() >=
-                                ((calendarEndTime.get(Calendar.HOUR_OF_DAY) * 60 + calendarEndTime.get(Calendar.MINUTE)) * 60 * 1000)) {
+                                ((calendarEndTime.get(Calendar.HOUR_OF_DAY) * 60 +
+                                        calendarEndTime.get(Calendar.MINUTE)) * 60 * 1000)) {
                             nextStartDate = DateUtils.addDays(nextStartDate, 1);
                         }
                     }
@@ -100,16 +106,19 @@ public class SmsSendTask implements Runnable {
                 }
                 calendar.setTime(nextStartDate);
                 dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                queryDayOfWeek = em.createQuery(queryForDayOfWeek).setParameter("dayOfWeek", dayOfWeek);
-                queryDay = em.createQuery(queryForDay).setParameter("day", nextStartDate);
-                calendarEntitiesDayOfWeek = queryDayOfWeek.getResultList();
+                queryDayOfWeek = em.createQuery(queryForDayOfWeek, WorkCalendarEntity.class);
+                queryDayOfWeek.setParameter("dayOfWeek", dayOfWeek);
+                queryDay = em.createQuery(queryForDay, WorkCalendarEntity.class);
+                queryDay.setParameter("day", nextStartDate);
                 calendarEntitiesDay = queryDay.getResultList();
                 Date startTime = null;
-                calendarEntities = calendarEntitiesDay.isEmpty() ? calendarEntitiesDayOfWeek : calendarEntitiesDay;
+                calendarEntities = calendarEntitiesDay.isEmpty() ? queryDayOfWeek.getResultList() : calendarEntitiesDay;
                 for (WorkCalendarEntity calendarEntity : calendarEntities) {
                     if (startTime == null) startTime = calendarEntity.getStart();
                     else {
-                        startTime = (calendarEntity.getStart() != null && calendarEntity.getStart().compareTo(startTime) == -1) ? calendarEntity.getStart() : startTime;
+                        startTime = (calendarEntity.getStart() != null &&
+                                calendarEntity.getStart().compareTo(startTime) == -1) ?
+                                calendarEntity.getStart() : startTime;
                     }
                 }
                 calendar.setTime(startTime);
