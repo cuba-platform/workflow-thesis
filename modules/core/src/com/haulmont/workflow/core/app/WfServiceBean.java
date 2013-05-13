@@ -180,16 +180,15 @@ public class WfServiceBean implements WfService {
     }
 
     public void deleteNotifications(Card card, User user) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("update wf$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
-                    "where ci.card.id = ?3 and ci.user.id = ?4");
-            query.setParameter(1, TimeProvider.currentTimestamp());
-            query.setParameter(2, user.getLogin());
-            query.setParameter(3, card.getId());
-            query.setParameter(4, user.getId());
-            query.executeUpdate();
+            EntityManager em = persistence.getEntityManager();
+            Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = ?1 and ci.user.id = ?2");
+            query.setParameter(1, card.getId());
+            query.setParameter(2, user.getId());
+            List<CardInfo> cardInfoList = query.getResultList();
+            for (CardInfo ci : cardInfoList)
+                em.remove(ci);
             tx.commit();
         } finally {
             tx.end();
@@ -197,17 +196,17 @@ public class WfServiceBean implements WfService {
     }
 
     public void deleteNotifications(Card card, User user, int type) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("update wf$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
-                    "where ci.card.id = ?3 and ci.user.id = ?4 and ci.type = ?5");
-            query.setParameter(1, TimeProvider.currentTimestamp());
-            query.setParameter(2, user.getLogin());
-            query.setParameter(3, card.getId());
-            query.setParameter(4, user.getId());
-            query.setParameter(5, type);
-            query.executeUpdate();
+            EntityManager em = persistence.getEntityManager();
+            Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = ?1 and ci.user.id = ?2 and " +
+                    "ci.type = ?3");
+            query.setParameter(1, card.getId());
+            query.setParameter(2, user.getId());
+            query.setParameter(3, type);
+            List<CardInfo> cardInfoList = query.getResultList();
+            for (CardInfo ci : cardInfoList)
+                em.remove(ci);
             tx.commit();
         } finally {
             tx.end();
@@ -215,16 +214,15 @@ public class WfServiceBean implements WfService {
     }
 
     public void deleteNotification(CardInfo cardInfo, User user) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("update wf$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
-                    "where ci.id = ?3 and ci.user.id = ?4");
-            query.setParameter(1, TimeProvider.currentTimestamp());
-            query.setParameter(2, user.getLogin());
-            query.setParameter(3, cardInfo.getId());
-            query.setParameter(4, user.getId());
-            query.executeUpdate();
+            EntityManager em = persistence.getEntityManager();
+            Query query = em.createQuery("select ci from wf$CardInfo ci where ci.id = ?1 and ci.user.id = ?2");
+            query.setParameter(1, cardInfo.getId());
+            query.setParameter(2, user.getId());
+            List<CardInfo> cardInfoList = query.getResultList();
+            for (CardInfo ci : cardInfoList)
+                em.remove(ci);
             tx.commit();
         } finally {
             tx.end();
