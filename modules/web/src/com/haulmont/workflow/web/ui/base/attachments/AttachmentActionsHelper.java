@@ -157,7 +157,7 @@ public class AttachmentActionsHelper {
                 if (selected.size() == 1) {
                     FileDescriptor fd = selected.iterator().next().getFile();
 
-                    new WebExportDisplay().show(fd);
+                    new WebExportDisplay(false).show(fd);
                 }
             }
         });

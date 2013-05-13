@@ -7,7 +7,7 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -15,10 +15,11 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.core.entity.Card;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ import java.util.*;
  */
 public class RemoveAttachmentAction extends RemoveAction {
     private static final long serialVersionUID = -5912958394607863731L;
+    protected AttachmentCreator.CardGetter cardGetter;
 
     public RemoveAttachmentAction(ListComponent owner) {
         super(owner);
@@ -40,6 +42,11 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     public RemoveAttachmentAction(ListComponent owner, boolean autocommit, String id) {
         super(owner, autocommit, id);
+    }
+
+    public RemoveAttachmentAction(ListComponent owner, AttachmentCreator.CardGetter cardGetter, String id) {
+        super(owner, false, id);
+        this.cardGetter = cardGetter;
     }
 
     @Override
@@ -55,6 +62,8 @@ public class RemoveAttachmentAction extends RemoveAction {
             }
         }
 
+        if (this.cardGetter != null)
+            this.autocommit = !PersistenceHelper.isNew(this.cardGetter.getCard());
         if (!versionExists) {
             super.confirmAndRemove(selected);
         } else {
@@ -178,6 +187,16 @@ public class RemoveAttachmentAction extends RemoveAction {
                     datasource.updateItem(newVersion);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void afterRemove(Set selected) {
+        super.afterRemove(selected);
+        if (this.cardGetter != null) {
+            Card card = cardGetter.getCard();
+            if (CollectionUtils.isNotEmpty(card.getAttachments()))
+                card.getAttachments().removeAll(selected);
         }
     }
 

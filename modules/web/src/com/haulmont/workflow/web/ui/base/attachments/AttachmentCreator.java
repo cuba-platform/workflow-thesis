@@ -16,7 +16,9 @@ import com.haulmont.workflow.core.entity.Card;
 public interface AttachmentCreator {
     Attachment createObject();
 
-    public interface CardAttachmentCreator extends AttachmentCreator {
+    public interface CardAttachmentCreator extends AttachmentCreator, CardGetter {}
+
+    public interface CardGetter {
         Card getCard();
     }
 }

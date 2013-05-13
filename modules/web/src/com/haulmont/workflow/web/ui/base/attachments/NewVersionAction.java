@@ -51,6 +51,20 @@ public class NewVersionAction extends CreateAction {
             return;
         }
 
+        Map<String, Object> map = getInitialValues();
+        if (map != null && map.containsKey("card")) {
+            Card card = (Card) map.get("card");
+            if (!PersistenceHelper.isNew(card)) {
+                owner.getDatasource().refresh();
+                prevVersion = (Attachment) owner.getDatasource().getItem(prevVersion.getId());
+                if (prevVersion == null) {
+                    App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(getClass(), "warning.itemWasDeleted"), IFrame.NotificationType.HUMANIZED);
+                    owner.setSelected((Entity) null);
+                    return;
+                }
+            }
+        }
+
         prevVersion = prevVersion.getVersionOf() == null ? prevVersion : prevVersion.getVersionOf();
 
         super.actionPerform(component);
@@ -78,8 +92,10 @@ public class NewVersionAction extends CreateAction {
         Map<String, Object> initialValues = getInitialValues();
         if (initialValues != null && initialValues.containsKey("card")) {
             Card card = (Card) initialValues.get("card");
-            if (!PersistenceHelper.isNew(card))
+            if (!PersistenceHelper.isNew(card)) {
                 attachmentsDs.commit();
+                attachmentsDs.refresh();
+            }
         }
         owner.setSelected((Entity) null);
     }

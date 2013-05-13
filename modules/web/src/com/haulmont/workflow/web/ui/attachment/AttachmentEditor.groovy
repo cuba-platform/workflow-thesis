@@ -49,6 +49,7 @@ public class AttachmentEditor extends AbstractEditor {
 
     protected boolean needSave
     protected UUID fileId
+    protected boolean isEdit = false
 
     public AttachmentEditor(IFrame frame) {
         super(frame)
@@ -91,15 +92,20 @@ public class AttachmentEditor extends AbstractEditor {
             if (((Attachment) item).getAttachType() == null) {
                 defaultAType = getDefaultAttachmentType()
                 attachType.setValue(defaultAType)
-            }
+            } else
+                isEdit = true
 
             def fdItem = fileDs.getItem()
             if ((fdItem != null) && (fdItem.createDate != null)) {
-                uploadField.setVisible(false)
-                needSave = true
                 String fileName = fdItem.name
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
-                fileDs.setItem(fdItem)
+                uploadField.setVisible(false)
+                if (isEdit)
+                    needSave = false
+                else {
+                    needSave = true
+                    fileDs.setItem(fdItem)
+                }
             } else {
                 def attachItem = attachmentDs.getItem()
                 attachItem.setFile(new FileDescriptor())
@@ -148,17 +154,17 @@ public class AttachmentEditor extends AbstractEditor {
                 ] as Listener)
             }
         } else {
-            if (item != null && item instanceof CardAttachment) {
-                CardAttachment cardAttachment = (CardAttachment) item
-                FileDescriptor file = cardAttachment.file
-                if (file) {
-                    if (file.size != null) {
-                        sizeLab.setValue(formatSize(file.size, 0) + " (" + file.size + ")")
-                    }
-                }
-            }
             uploadField.setEnabled(false)
             fileNameText.setEditable(false)
+        }
+        if (item != null) {
+            Attachment attachment = (Attachment) item
+            FileDescriptor file = attachment.file
+            if (file) {
+                if (file.size != null) {
+                    sizeLab.setValue(formatSize(file.size, 0) + " (" + file.size + ")")
+                }
+            }
         }
     }
 
@@ -179,14 +185,16 @@ public class AttachmentEditor extends AbstractEditor {
     }
 
     def void commitAndClose() {
-        if (needSave) {
+        if (needSave)
             saveFile()
-        }
         Attachment attachment = attachmentDs.getItem();
         if (attachment != null && attachment.getVersionNum() == null)
             attachment.setVersionNum(1);
-        if (attachment.card && PersistenceHelper.isNew(attachment.card))
+        if (attachment instanceof CardAttachment && attachment.card && PersistenceHelper.isNew(attachment.card)) {
+            if (needSave)
+                getDsContext().getDataService().commit(new CommitContext(Arrays.asList(fileDs.item)))
             super.close(COMMIT_ACTION_ID, true)
+        }
         else
             super.commitAndClose();
     }

@@ -8,9 +8,8 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -18,10 +17,8 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
@@ -29,6 +26,7 @@ import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.web.ui.base.attachments.*;
 import com.vaadin.ui.Layout;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +59,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 Card card = cardDs.getItem();
                 attachment.setCard(card.getFamilyTop());
                 attachment.setCreateTs(TimeProvider.currentTimestamp());
-                attachment.setCreatedBy(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().getLoginLowerCase());
+                attachment.setCreatedBy(UserSessionProvider.getUserSession().getUser().getLogin());
                 return attachment;
             }
 
@@ -75,7 +73,8 @@ public class CardAttachmentsFrame extends AbstractFrame {
         Action multiUploadAction = AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this,
                 attachmentCreator, WindowManager.OpenType.DIALOG);
 
-        createPopup.addAction(new CommitCardAction("actions.MultiUpload", multiUploadAction));
+        createPopup.addAction(multiUploadAction);
+//        createPopup.addAction(new CommitCardAction("actions.MultiUpload", multiUploadAction));
 
         NewVersionAction newVersionAction = new NewVersionAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
             @Override
@@ -90,8 +89,15 @@ public class CardAttachmentsFrame extends AbstractFrame {
         createPopup.addAction(newVersionAction);
 
         attachmentsTable.addAction(newVersionAction);
-        attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit"));
-        attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, false, "remove"));
+        EditAction editAction = new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit");
+        editAction.setWindowParams(Collections.<String, Object>singletonMap("edit", true));
+        attachmentsTable.addAction(editAction);
+        attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, new AttachmentCreator.CardGetter() {
+            @Override
+            public Card getCard() {
+                return cardDs.getItem();
+            }
+        }, "remove"));
 
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
@@ -99,7 +105,8 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator);
-        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
+        pasteAttachBtn.setAction(pasteAction);
+//        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
@@ -161,41 +168,41 @@ public class CardAttachmentsFrame extends AbstractFrame {
         return cardCommitCheckRequired;
     }
 
-    protected class CommitCardAction extends AbstractAction {
-
-        private Action afterPerformAction;
-
-        public CommitCardAction(String id, Action afterPerformAction) {
-            super(id);
-            this.afterPerformAction = afterPerformAction;
-        }
-
-        public void actionPerform(Component component) {
-            if (!PersistenceHelper.isNew(cardDs.getItem()) && cardCommitCheckRequired) {
-                showOptionDialog(
-                        getMessage("cardAttachmentFrame.dialogHeader"),
-                        getMessage("cardAttachmentFrame.dialogMessage"),
-                        IFrame.MessageType.CONFIRMATION,
-                        new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        ((DatasourceImpl) getDsContext().get("cardDs")).setModified(true);
-                                        boolean isCommited = true;
-                                        if (getFrame() instanceof WebWindow.Editor)
-                                            isCommited = ((AbstractEditor) ((WebWindow.Editor) getFrame()).getWrapper()).commit();
-                                        else
-                                            getFrame().getDsContext().commit();
-
-                                        if (isCommited)
-                                            afterPerformAction.actionPerform(null);
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.NO)
-                        });
-            } else {
-                afterPerformAction.actionPerform(null);
-            }
-        }
-    }
+//    protected class CommitCardAction extends AbstractAction {
+//
+//        private Action afterPerformAction;
+//
+//        public CommitCardAction(String id, Action afterPerformAction) {
+//            super(id);
+//            this.afterPerformAction = afterPerformAction;
+//        }
+//
+//        public void actionPerform(Component component) {
+//            if (!PersistenceHelper.isNew(cardDs.getItem()) && cardCommitCheckRequired) {
+//                showOptionDialog(
+//                        getMessage("cardAttachmentFrame.dialogHeader"),
+//                        getMessage("cardAttachmentFrame.dialogMessage"),
+//                        IFrame.MessageType.CONFIRMATION,
+//                        new Action[]{
+//                                new DialogAction(DialogAction.Type.YES) {
+//                                    @Override
+//                                    public void actionPerform(Component component) {
+//                                        ((DatasourceImpl) getDsContext().get("cardDs")).setModified(true);
+//                                        boolean isCommited = true;
+//                                        if (getFrame() instanceof WebWindow.Editor)
+//                                            isCommited = ((AbstractEditor) ((WebWindow.Editor) getFrame()).getWrapper()).commit();
+//                                        else
+//                                            getFrame().getDsContext().commit();
+//
+//                                        if (isCommited)
+//                                            afterPerformAction.actionPerform(null);
+//                                    }
+//                                },
+//                                new DialogAction(DialogAction.Type.NO)
+//                        });
+//            } else {
+//                afterPerformAction.actionPerform(null);
+//            }
+//        }
+//    }
 }
