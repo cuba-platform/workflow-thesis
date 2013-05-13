@@ -99,6 +99,7 @@ public class AttachmentEditor extends AbstractEditor {
                 needSave = true
                 String fileName = fdItem.name
                 nameText.setValue(fileName[0..fileName.lastIndexOf('.') - 1])
+                fileDs.setItem(fdItem)
             } else {
                 def attachItem = attachmentDs.getItem()
                 attachItem.setFile(new FileDescriptor())
