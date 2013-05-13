@@ -22,13 +22,13 @@ import com.haulmont.workflow.core.entity.UserGroup
 import com.haulmont.cuba.gui.components.*
 
 class UserGroupAdd extends AbstractWindow {
-    private TwinColumn twinColumn
-    private CollectionDatasourceImpl userGroupsDs
-    private Set selectedUsers = []
+    protected TwinColumn twinColumn
+    protected CollectionDatasourceImpl userGroupsDs
+    protected Set selectedUsers = []
     protected Role secRole
     protected Boolean hasInActiveUser = false;
-    private Button searchButton;
-    private TextField searchText;
+    protected Button searchButton;
+    protected TextField searchText;
 
     def UserGroupAdd(IFrame frame) {
         super(frame);
