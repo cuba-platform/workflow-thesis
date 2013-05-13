@@ -1006,7 +1006,8 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected boolean isNeedRole(ProcRole pr) {
-        return BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr);
+        Set<String> visibleRoles = tmpCardRolesDs.getVisibleRoles();
+        return (visibleRoles == null || visibleRoles.contains(pr.getCode())) && (BooleanUtils.isTrue(pr.getMultiUser()) || !alreadyAdded(pr));
     }
 
     protected boolean alreadyAdded(ProcRole pr) {
@@ -1228,6 +1229,7 @@ public class CardRolesFrame extends AbstractFrame {
         private CollectionDatasource<CardRole, UUID> activeDs;
         private Map<UUID, CollectionDatasource<CardRole, UUID>> dsRegistry = new HashMap<UUID, CollectionDatasource<CardRole, UUID>>();
         public boolean fill;
+        protected Set<String> visibleRoles;
 
         @Override
         public void setup(DsContext dsContext, DataSupplier dataSupplier, String id, MetaClass metaClass, @Nullable View view) {
@@ -1236,18 +1238,25 @@ public class CardRolesFrame extends AbstractFrame {
             this.activeDs = this.cardRolesDs;
         }
 
-        public void setCard(Card card) {
-            if (card == null)
-                this.activeDs = this.cardRolesDs;
-            else
-                this.activeDs = getDsInternal(card);
+        public void setVisibleRoles(Set<String> visibleRoles) {
+            this.visibleRoles = visibleRoles;
+        }
+
+        public Set<String> getVisibleRoles() {
+            return visibleRoles;
         }
 
         @Override
         public void addItem(CardRole item) throws UnsupportedOperationException {
-            super.addItem(item);
-            if (!fill)
-                activeDs.addItem(item);
+            if (CollectionUtils.isEmpty(visibleRoles) || visibleRoles.contains(item.getCode())) {
+                beforeItemAdded(item);
+                super.addItem(item);
+                if (!fill)
+                    cardRolesDs.addItem(item);
+            }
+        }
+
+        protected void beforeItemAdded(CardRole item) {
         }
 
         @Override

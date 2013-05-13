@@ -96,6 +96,7 @@ public class TransitionForm extends AbstractForm {
     private static final int DEFAULT_FORM_HEIGHT = 500;
 
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
+    protected String visibleRoles;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -125,6 +126,7 @@ public class TransitionForm extends AbstractForm {
             }
 
             cardRolesFrame.init();
+            initVisibleRoles(params);
             cardRolesFrame.setCard(card);
             cardRolesDs = getDsContext().get("cardRolesDs");
             cardRolesDs.addListener(new DsListenerAdapter() {
@@ -252,6 +254,13 @@ public class TransitionForm extends AbstractForm {
         });
 
         cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
+    }
+
+    protected void initVisibleRoles(Map<String, Object> params) {
+        visibleRoles = (String) params.get("visibleRoles");
+        if (StringUtils.isNotBlank(visibleRoles))
+            cardRolesFrame.tmpCardRolesDs.setVisibleRoles(new HashSet(Arrays.asList(visibleRoles.split("\\s*,\\s*"))));
+
     }
 
     private String getAttachmentsTabCaption() {
