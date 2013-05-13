@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -380,6 +381,7 @@ public class TransitionForm extends AbstractForm {
             getDsContext().getDataService().commit(commitContext);
         } else {
             if (attachmentsDs.size() > 0) {
+                attachmentsDs.commit();
                 WfService wfService = AppBeans.get(WfService.NAME);
                 wfService.setHasAttachmentsInCard(card, true);
             }
