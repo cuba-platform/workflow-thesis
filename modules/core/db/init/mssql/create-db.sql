@@ -76,6 +76,7 @@ create table WF_PROC (
     DESIGN_ID uniqueidentifier,
     AVAILABLE_ROLE_ID uniqueidentifier,
     COMBINED_STAGES_ENABLED tinyint,
+    DURATION_ENABLED tinyint,
     primary key (ID)
 )^
 

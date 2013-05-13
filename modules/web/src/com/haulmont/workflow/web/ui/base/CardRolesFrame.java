@@ -13,6 +13,10 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -31,9 +35,10 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.TimeUnit;
 import com.vaadin.data.Property;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -63,7 +68,6 @@ public class CardRolesFrame extends AbstractFrame {
     protected CardProcRolesDatasource tmpCardRolesDs;
     protected LookupField createRoleLookup;
     protected Table rolesTable;
-    protected CheckBox showSortOrderCheckBox;
     protected CollectionDatasource rolesTableDs;
 
     protected List<Component> rolesActions = new ArrayList<>();
@@ -76,7 +80,6 @@ public class CardRolesFrame extends AbstractFrame {
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
     protected boolean editable = true;
-    private static final String[] extendedModeColumns = {"sortOrder", "duration", "timeUnit"};
 
     @Inject
     WebButton moveDown;
@@ -113,8 +116,6 @@ public class CardRolesFrame extends AbstractFrame {
 
         rolesTableDs = rolesTable.getDatasource();
 
-        showSortOrderCheckBox = getComponent("showSortOrder");
-
         initRolesTable();
 
         rolesTH.createRemoveAction(false);
@@ -122,33 +123,6 @@ public class CardRolesFrame extends AbstractFrame {
         initMoveButtons();
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         final MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
-
-        showSortOrderCheckBox.setValue(true);
-        showSortOrderCheckBox.setVisible(false);
-
-        rolesTable.addColumnCollapsedListener(new Table.ColumnCollapseListener() {
-            @Override
-            public void columnCollapsed(Table.Column collapsedColumn, boolean collapsed) {
-                if (collapsedColumn != null) {
-                    MetaPropertyPath m = (MetaPropertyPath) collapsedColumn.getId();
-                    if ("sortOrder".equals(m.getMetaProperty().getName())) {
-                        showSortOrderCheckBox.setValue(!collapsed);
-                    }
-                }
-            }
-        });
-
-        showSortOrderCheckBox.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                for (String columnName : extendedModeColumns) {
-                    MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath(columnName);
-                    if (mpp != null) {
-                        vRolesTable.setColumnCollapsed(mpp, !(Boolean) value);
-                    }
-                }
-            }
-        });
 
         procRolePermissionsService = getProcRolePermissionsService();
 
@@ -259,11 +233,12 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        addSortOrderColumn(vRolesTable);
-
+        initSortOrderColumn(vRolesTable);
         initDurationColumns();
         initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+
+//        vRolesTable.setColumnCollapsingAllowed(false);
     }
 
     private void initDurationColumns() {
@@ -337,7 +312,7 @@ public class CardRolesFrame extends AbstractFrame {
             });
     }
 
-    private void addSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
+    private void initSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath sortOrderProperty = rolesTableDs.getMetaClass().getPropertyPath("sortOrder");
         vRolesTable.addGeneratedColumn(sortOrderProperty, new com.vaadin.ui.Table.ColumnGenerator() {
 
@@ -689,30 +664,37 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         if (proc != null) {
-            com.vaadin.ui.Table vRolesTable = ((com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable));
+            com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+            Object[] visibleColumns = vRolesTable.getVisibleColumns();
+
+            MetaPropertyPath sortOrderMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("sortOrder");
+            MetaPropertyPath durationMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("duration");
+            MetaPropertyPath timeUnitMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("timeUnit");
+
             if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
-                showSortOrderCheckBox.setVisible(true);
-                if (rolesTable.getColumn("sortOrder") == null) {
-                    try {
-                        addSortOrderColumn(vRolesTable);
-                    } catch (IllegalArgumentException iae) {
-                    }
-                    if (vRolesTable.getColumnHeader("sortOrder") != null) {
-                        MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
-                        vRolesTable.setColumnHeader(mpp, MessageProvider.getMessage(CardRolesFrame.class, "sortOrder"));
-                    }
+                if (!ArrayUtils.contains(visibleColumns, sortOrderMpp)) {
+                    visibleColumns = ArrayUtils.add(visibleColumns, sortOrderMpp);
+                    vRolesTable.setColumnHeader(sortOrderMpp, MessageProvider.getMessage(CardRole.class, "CardRole.sortOrder"));
                 }
             } else {
-                showSortOrderCheckBox.setValue(false);
-                showSortOrderCheckBox.setVisible(false);
-                if (vRolesTable.getColumnHeader("sortOrder") != null) {
-                    vRolesTable.removeGeneratedColumn("sortOrder");
-                }
-                if (rolesTable.getColumn("sortOrder") != null) {
-                    rolesTable.removeGeneratedColumn("sortOrder");
-                    rolesTable.removeColumn(rolesTable.getColumn("sortOrder"));
-                }
+                visibleColumns = ArrayUtils.removeElement(visibleColumns, sortOrderMpp);
             }
+
+            if (BooleanUtils.isTrue(proc.getDurationEnabled())) {
+                if (!ArrayUtils.contains(visibleColumns, durationMpp)) {
+                    visibleColumns = ArrayUtils.add(visibleColumns, durationMpp);
+                    vRolesTable.setColumnHeader(durationMpp, MessageProvider.getMessage(CardRole.class, "CardRole.duration"));
+                }
+                if (!ArrayUtils.contains(visibleColumns, timeUnitMpp)) {
+                    visibleColumns = ArrayUtils.add(visibleColumns, timeUnitMpp);
+                    vRolesTable.setColumnHeader(timeUnitMpp, MessageProvider.getMessage(CardRole.class, "CardRole.timeUnit"));
+                }
+            } else {
+                visibleColumns = ArrayUtils.removeElement(visibleColumns, durationMpp);
+                visibleColumns = ArrayUtils.removeElement(visibleColumns, timeUnitMpp);
+            }
+
+            vRolesTable.setVisibleColumns(visibleColumns);
         }
     }
 
@@ -906,16 +888,13 @@ public class CardRolesFrame extends AbstractFrame {
         if (cardRole == null) {
             cardRole = metadata.create(CardRole.class);
 
-            if (proc.getRoles() == null) {
-                proc = getDsContext().getDataService().reload(proc, "edit");
-            }
-
             cardRole.setProcRole(procRole);
             cardRole.setCode(procRole.getCode());
             cardRole.setCard(card);
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setNotifyByCardInfo(notifyByCardInfo);
             assignNextSortOrder(cardRole);
+            assignDurationAndTimeUnit(cardRole);
             cardRole.setUser(user);
             tmpCardRolesDs.addItem(cardRole);
         } else {
@@ -959,6 +938,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setUser(user);
             cardRole.setSortOrder(sortOrder);
             assignNextSortOrder(cardRole);
+            assignDurationAndTimeUnit(cardRole);
             tmpCardRolesDs.addItem(cardRole);
         } else {
             setProcActor(proc, procRole, user, notifyByEmail, notifyByCardInfo);

@@ -86,6 +86,10 @@
                                     <label value="msg://combinedStagesEnabled"/>
                                     <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
                                 </row>
+                                <row>
+                                    <label value="msg://com.haulmont.workflow.core.entity/Proc.durationEnabled"/>
+                                    <checkBox id="durationEnabled" datasource="procDs" property="durationEnabled"/>
+                                </row>
                             </rows>
                         </grid>
                     </vbox>

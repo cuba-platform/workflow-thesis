@@ -66,6 +66,9 @@ public class Proc extends StandardEntity {
     @Column(name = "COMBINED_STAGES_ENABLED")
     protected Boolean combinedStagesEnabled = false;
 
+    @Column(name = "DURATION_ENABLED")
+    protected Boolean durationEnabled = false;
+
     public String getName() {
         return name;
     }
@@ -160,5 +163,13 @@ public class Proc extends StandardEntity {
 
     public void setCombinedStagesEnabled(Boolean combinedStagesEnabled) {
         this.combinedStagesEnabled = combinedStagesEnabled;
+    }
+
+    public Boolean getDurationEnabled() {
+        return durationEnabled;
+    }
+
+    public void setDurationEnabled(Boolean durationEnabled) {
+        this.durationEnabled = durationEnabled;
     }
 }
