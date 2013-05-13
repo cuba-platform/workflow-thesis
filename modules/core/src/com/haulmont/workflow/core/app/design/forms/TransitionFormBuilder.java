@@ -27,6 +27,7 @@ public class TransitionFormBuilder extends FormBuilder {
         addFormParam(el, "dueDateVisible", Boolean.toString(jsProperties.optBoolean("dueDateVisible")));
         addFormParam(el, "refusedOnlyVisible", Boolean.toString(jsProperties.optBoolean("refusedOnlyVisible")));
         addFormParam(el, "requiredRoles", jsProperties.optString("requiredRoles"));
+        addFormParam(el, "visibleRoles", jsProperties.optString("visibleRoles"));
         addFormParam(el, "hideAttachments", Boolean.toString(jsProperties.optBoolean("hideAttachments")));
         addFormParam(el, "requiredAttachmentTypes", jsProperties.optString("requiredAttachmentTypes"));
         addFormParam(el, "formHeight", jsProperties.optString("formHeight"));

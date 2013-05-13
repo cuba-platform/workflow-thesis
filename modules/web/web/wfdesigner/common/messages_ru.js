@@ -53,6 +53,7 @@ var i18nDict = {
     dueDateVisible: "Выполнить до",
     refusedOnlyVisible: "Только отклонившим",
     requiredRoles: "Требуемые роли",
+    visibleRoles: "Отображаемые роли",
     hideAttachments: "Скрыть вложения",
     requiredAttachmentTypes: "Требуемые вложения",
     formHeight: "Высота формы",
