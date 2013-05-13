@@ -206,6 +206,11 @@ public class ProcessAction extends AbstractAction {
         window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
+
+        afterFinish();
+    }
+
+    protected void afterFinish() {
     }
 
     private void removeSubProcCard(Card card) {
