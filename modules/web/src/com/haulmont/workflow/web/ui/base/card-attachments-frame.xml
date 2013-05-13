@@ -14,7 +14,10 @@
     <layout expandLayout="true" height="100%" spacing="true">
         <treeTable id="attachmentsTable" editable="false" sortable="true" multiselect="true">
             <buttonsPanel>
-                <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
+                <hbox id="createBox">
+                    <label id="fastUpload"/>
+                    <popupButton id="createAttachBtn"/>
+                </hbox>
                 <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
                 <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
                 <button id="copyAttach" icon="icons/copy.png"/>
