@@ -7,14 +7,33 @@
 package com.haulmont.workflow.web.folders;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.QueryParserRegex;
+import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.DsContextImpl;
+import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
+import com.haulmont.cuba.gui.xml.data.DsContextLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
+import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.ProcAppFolder;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>$Id$</p>
@@ -24,7 +43,7 @@ import java.util.List;
 
 public class FolderBuilder {
     private ProcAppFolder procAppFolder;
-    private String entityAlias;
+    public String entity;
 
     public FolderBuilder(ProcAppFolder procAppFolder) {
         this.procAppFolder = procAppFolder;
@@ -34,8 +53,7 @@ public class FolderBuilder {
         Document doc = Dom4j.readDocument(procAppFolder.getProcAppFolderXml());
         Element rootElem = doc.getRootElement();
 
-        String entity = rootElem.elementText("entity");
-        entityAlias = rootElem.elementText("entityAlias");
+        entity = rootElem.elementText("entity");
 
         visibilityScript(rootElem);
         String procCondition = getProcCondition(rootElem);
@@ -47,9 +65,9 @@ public class FolderBuilder {
         List<Element> roles = Dom4j.elements(element.element("roles"), "role");
         if (roles != null && roles.size() > 0) {
             StringBuilder sb = new StringBuilder("import com.haulmont.cuba.core.global.UserSessionProvider\n");
-            sb.append("String[] roles = UserSessionProvider.getUserSession().getRoles()\nreturn ");
+            sb.append("List<String> roles = (List<String>) UserSessionProvider.getUserSession().getRoles()\nreturn ");
             for (Element roleEl : roles) {
-                sb.append("Arrays.binarySearch(roles, '").append(roleEl.getText()).append("') > 0 ||\n");
+                sb.append("roles.contains('").append(roleEl.getText()).append("') ||\n");
             }
             sb.setLength(sb.length() - 3);
             procAppFolder.setVisibilityScript(sb.toString());
@@ -94,7 +112,7 @@ public class FolderBuilder {
 
         sb.append("and exists (select a from wf$Assignment a where a.card = {E} and ")
                 .append("a.user.id = :session$userId and a.finished is null)");
-        return sb.toString().replaceAll("\\{E\\}", entityAlias);
+        return sb.toString().replaceAll("\\{E\\}", getEntityAlias());
     }
 
     private void filter(String entityName, String procQuery) {
@@ -142,12 +160,10 @@ public class FolderBuilder {
                 addAttribute("hidden", "true").
                 addAttribute("type", "CUSTOM").
                 addAttribute("locCaption", "PROC_APP_FOLDER").
-                addAttribute("entityAlias", entityAlias).
                 addText(procCondition.replaceAll("\\\\", ""));
         cEl.addElement("param").
                 addAttribute("name", "component$genericFilter.xVZxBACBsT13577").
-                addAttribute("javaClass", "java.lang.Boolean").
-                addText("NULL");
+                addText("true");
         return cEl;
     }
 
@@ -178,6 +194,55 @@ public class FolderBuilder {
         sb.append("style = (count != null && count > 0) ? 'cardremind' : null\n");
         sb.append("return result");
 
-        procAppFolder.setQuantityScript(sb.toString().replace("{E}", entityAlias).replace("$", "\\$"));
+        procAppFolder.setQuantityScript(sb.toString().replace("{E}", getEntityAlias()).replace("$", "\\$"));
+    }
+
+    public String getEntityAlias(){
+        Element element = getWindowXml();
+        return parseWindowXml(element);
+    }
+
+    private String parseWindowXml(Element element) {
+        String alias = null;
+        DsContextLoader dsContextLoader = new DsContextLoader(null);
+        DsContext dsContext = dsContextLoader.loadDatasources(element.element("dsContext"), null);
+        for (Datasource ds : dsContext.getAll()) {
+            if (entity.equals(ds.getMetaClass().getName()) && ds instanceof CollectionDatasource) {
+                String query = ((CollectionDatasource) ds).getQuery();
+                Pattern entityPattern = Pattern.compile(QueryParserRegex.ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+                Matcher entityMatcher = entityPattern.matcher(query);
+                while (entityMatcher.find()) {
+                    if (entity.equals(entityMatcher.group(1))) {
+                        alias = entityMatcher.group(3);
+                        break;
+                    }
+                }
+            }
+        }
+        return alias;
+    }
+
+    private Element getWindowXml() {
+        WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+        WindowInfo windowInfo = windowConfig.getWindowInfo(entity + ".browse");
+        Scripting scripting = AppContext.getBean(Scripting.NAME);
+        String templatePath = windowInfo.getTemplate();
+
+        InputStream stream = scripting.getResourceAsStream(templatePath);
+        if (stream == null) {
+            stream = getClass().getResourceAsStream(templatePath);
+            if (stream == null) {
+                throw new RuntimeException("Bad template path: " + templatePath);
+            }
+        }
+
+        Document document = null;
+        try {
+            document = LayoutLoader.parseDescriptor(stream, Collections.<String, Object>emptyMap());
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, Collections.<String, Object>emptyMap());
+        return processor.getResultRoot();
     }
 }

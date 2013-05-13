@@ -282,7 +282,7 @@ public class ProcAppFolderEditWindow extends AppFolderEditWindow {
 
         entityField = new WebLookupField();
         entityField.setWidth("250px");
-        entityField.setRequired(true);
+        entityField.setRequired(false);
         entityField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object o, String s, Object o1, Object o2) {
