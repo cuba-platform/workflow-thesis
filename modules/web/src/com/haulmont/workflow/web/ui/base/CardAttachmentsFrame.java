@@ -40,6 +40,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
     protected Datasource<Card> cardDs;
     protected Table attachmentsTable;
     protected AttachmentCreator attachmentCreator;
+    protected FileUploadField fastUploadButton;
 
     private boolean generatedColumnInited = false;
     private boolean cardCommitCheckRequired = true;
@@ -149,10 +150,14 @@ public class CardAttachmentsFrame extends AbstractFrame {
         Label fastUpload = getComponent("fastUpload");
         com.vaadin.ui.Component parent = WebComponentsHelper.unwrap(fastUpload).getParent();
 
-        FileUploadField fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
+        fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
                 attachmentCreator, "wf$CardAttachment.edit", null, WindowManager.OpenType.DIALOG);
 
         ((Layout) parent).replaceComponent(WebComponentsHelper.unwrap(fastUpload), WebComponentsHelper.unwrap(fastUploadButton));
+    }
+
+    public FileUploadField getFastUploadButton(){
+        return fastUploadButton;
     }
 
 
