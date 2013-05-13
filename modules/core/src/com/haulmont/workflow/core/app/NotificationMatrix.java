@@ -295,10 +295,14 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
         boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
 
+        postLoad(processPath, matrix);
+
         if (mailMatrixFilled || trayMatrixFilled || smsMatrixFilled)
             cache.put(processPath, matrix);
     }
 
+    protected void postLoad(String processPath, Map<String, String> matrix) {
+    }
 
     @Override
     public void reload(String processPath) throws Exception {
