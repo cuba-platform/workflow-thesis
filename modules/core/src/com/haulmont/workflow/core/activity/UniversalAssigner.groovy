@@ -97,7 +97,6 @@ public class UniversalAssigner extends MultiAssigner {
             onSuccess(execution, signalName, assignment)
             afterSignal(execution, signalName, parameters)
         } else {
-            removeTimers(execution, assignment)
             //todo change log message
             log.debug("Trying to finish assignment")
 
@@ -120,9 +119,7 @@ public class UniversalAssigner extends MultiAssigner {
                     resultTransition = sibling.getOutcome()
             }
             processSignal(assignment, resultTransition, execution, signalName, parameters)
-            if (timersFactory) {
-                timersFactory.removeTimers(execution, assignment)
-            }
+            removeTimers(execution, assignment)
         }
     }
 
