@@ -356,17 +356,7 @@ public class CardRolesFrame extends AbstractFrame {
             private static final long serialVersionUID = -3820323886456571938L;
 
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("secRole", cardRole.getProcRole().getRole());
-
-                List<User> users = new ArrayList<>();
-                for (Object o : tmpCardRolesDs.getItemIds()) {
-                    CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                    if (cr.getCode().equals(cardRole.getCode()) && cr.getUser() != null) {
-                        users.add(cr.getUser());
-                    }
-                }
-                params.put("Users", users);
+                Map<String, Object> params = getUsergroupAddParams(cardRole);
                 App.getInstance().getWindowManager().getDialogParams().setWidth(680);
                 final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
@@ -463,6 +453,21 @@ public class CardRolesFrame extends AbstractFrame {
                 /*&& procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD)*/);
         return addUserGroupButton;
 
+    }
+
+    protected Map<String, Object> getUsergroupAddParams(CardRole cardRole) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("secRole", cardRole.getProcRole().getRole());
+
+        List<User> users = new ArrayList<User>();
+        for (Object o : tmpCardRolesDs.getItemIds()) {
+            CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+            if (cr.getCode().equals(cardRole.getCode()) && cr.getUser() != null) {
+                users.add(cr.getUser());
+            }
+        }
+        params.put("Users", users);
+        return params;
     }
 
     //fills users datasource with users with necessary security role (if set)
