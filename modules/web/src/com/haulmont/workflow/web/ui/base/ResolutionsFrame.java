@@ -124,7 +124,7 @@ public class ResolutionsFrame extends AbstractFrame {
     private void openResolution(Entity entity) {
         final Window window = openEditor("wf$Assignment.edit", entity, WindowManager.OpenType.DIALOG);
         window.addListener(new Window.CloseListener() {
-            @Deprecated
+            @SuppressWarnings("unchecked")
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                     Entity item = ((Window.Editor) window).getItem();
