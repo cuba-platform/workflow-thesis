@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.entity.FileDescriptor
 import com.haulmont.cuba.gui.UserSessionClient
 import com.haulmont.cuba.gui.components.FileUploadField.Listener
+import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.upload.FileUploadingAPI
