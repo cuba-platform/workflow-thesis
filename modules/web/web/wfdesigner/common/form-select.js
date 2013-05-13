@@ -183,6 +183,7 @@ Wf.registerForms = function() {
             {type: "boolean", name: "dueDateVisible", label: i18n.get("dueDateVisible")},
             {type: "boolean", name: "refusedOnlyVisible", label: i18n.get("refusedOnlyVisible")},
             {type: "string", name: "requiredRoles", label: i18n.get("requiredRoles")},
+            {type: "string", name: "visibleRoles", label: i18n.get("visibleRoles")},
             {type: "boolean", name: "hideAttachments", label: i18n.get("hideAttachments")},
             {type: "string", name: "requiredAttachmentTypes", label: i18n.get("requiredAttachmentTypes")},
             {type: "string", name: "formHeight", label: i18n.get("formHeight")}
@@ -197,7 +198,8 @@ Wf.registerForms = function() {
             {type: "boolean", name: "dueDateVisible", label: i18n.get("dueDateVisible")},
             {type: "boolean", name: "cardRolesVisible", label: i18n.get("cardRolesVisible")},
             {type: "WfJbpmProcSelect", name: "subProcCode", label: i18n.get("SubProc.proc")},
-            {type: "string", name: "requiredRoles", label: i18n.get("requiredRoles")}
+            {type: "string", name: "requiredRoles", label: i18n.get("requiredRoles")},
+            {type: "string", name: "visibleRoles", label: i18n.get("visibleRoles")}
         ]
     });
 };

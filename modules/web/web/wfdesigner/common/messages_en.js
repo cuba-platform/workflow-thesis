@@ -43,6 +43,7 @@ var i18nDict = {
     dueDateVisible: "Due Date",
     refusedOnlyVisible: "Refused Only",
     requiredRoles: "Required Roles",
+    visibleRoles: "Visible Roles",
     hideAttachments: "Hide Attachments",
     requiredAttachmentTypes: "Required Attachments",
     formHeight: "Form Height",
