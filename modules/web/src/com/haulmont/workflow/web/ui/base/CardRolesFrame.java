@@ -225,8 +225,7 @@ public class CardRolesFrame extends AbstractFrame {
                     return cardRoleField;
                 }
 
-                cardRoleField = new CardRoleField();
-                actorActionsFieldsMap.put(cardRole, cardRoleField.initField(cardRole, cardRole.getUser()));
+                cardRoleField = fillActorActionsFieldsMap(cardRole);
 //                refreshFieldsWithRole(cardRole);
 
                 return cardRoleField;
@@ -239,6 +238,12 @@ public class CardRolesFrame extends AbstractFrame {
         initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
 
 //        vRolesTable.setColumnCollapsingAllowed(false);
+    }
+
+    protected CardRoleField fillActorActionsFieldsMap(CardRole cardRole) {
+        CardRoleField cardRoleField = new CardRoleField();
+        actorActionsFieldsMap.put(cardRole, cardRoleField.initField(cardRole, cardRole.getUser()));
+        return cardRoleField;
     }
 
     private void initDurationColumns() {
@@ -1341,17 +1346,17 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private class CardRoleField extends CustomComponent {
+    protected class CardRoleField extends CustomComponent {
 
         private static final long serialVersionUID = 20978973521879151L;
         private WebActionsField actionsField;
         private com.haulmont.cuba.gui.components.Button addGroupButton;
 
-        private CardRoleField() {
+        public CardRoleField() {
 
         }
 
-        CardRoleField initField(final CardRole cardRole, Object value) {
+        public CardRoleField initField(final CardRole cardRole, Object value) {
             final CollectionDatasource usersDs = createUserOptionsDs(cardRole);
 
             actionsField = new WebActionsField();
@@ -1408,7 +1413,7 @@ public class CardRolesFrame extends AbstractFrame {
             actionsField.setValue(value);
         }
 
-        void setEditable(boolean editable) {
+        public void setEditable(boolean editable) {
             actionsField.setEditable(editable);
             if (addGroupButton != null) {
                 addGroupButton.setVisible(editable);
