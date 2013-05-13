@@ -11,8 +11,11 @@ package com.haulmont.workflow.core.activity
 import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Locator
+import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.Transaction
+import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.app.WfService
@@ -123,72 +126,89 @@ public class UniversalAssigner extends MultiAssigner {
         }
     }
 
-    private void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
+    protected void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
         ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
         Map<String, Object> params = new HashMap<String, Object>()
         params.put("assignment", assignment.getMasterAssignment())
 
         if (resultTransition != successTransition) {
-            log.debug("Non-success transition has taken, signal master")
-
-            es.signalExecutionById(execution.getId(), resultTransition, params)
-            afterSignal(execution, signalName, parameters)
+            processNotSuccessfullTransition(assignment, resultTransition, execution, signalName, parameters)
         } else {
-            def cardRoles = getCardRoles(execution, assignment.card)
-            List<UUID> uuids = getCardRoleUuidsFromProcessVariables(assignment.card);
-            def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user && (uuids.contains(cr.id) || uuids.isEmpty())}
-            def nextCardRoles = []
-            int nextSortOrder = Integer.MAX_VALUE
-
-            //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
-//                we don't know exactly)
-            cardRoles.each {CardRole cr ->
-                if (cr.sortOrder == nextSortOrder) {
-                    nextCardRoles.add(cr)
-                } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
-                    nextSortOrder = cr.sortOrder
-                    nextCardRoles = [cr]
-                }
-            }
-
-//                def nextCardRoles = cardRoles.findAll {CardRole cr -> cr.sortOrder == currentCardRole.sortOrder + 1}
-            if (nextCardRoles.isEmpty()) {
-                log.debug("Last user assignment finished, taking $signalName")
-
-                es.signalExecutionById(execution.getId(), signalName, params)
-                afterSignal(execution, signalName, parameters)
-            } else {
-                log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
-                setCardRoleUuidsToProcessVariables(assignment.card, nextCardRoles);
-                nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
-                execution.waitForSignal()
-            }
+            processSuccessfullTransition(assignment, resultTransition, execution, signalName, parameters)
         }
     }
 
-    private List<UUID> getCardRoleUuidsFromProcessVariables(Card card) {
-         Map<String, Object> processVariables = wfService.getProcessVariables(card);
-         if (processVariables) {
-             List<UUID> uuids = processVariables.get("cardRoleUuids");
-             return uuids ? uuids : Collections.<UUID>emptyList();
-         } else {
-             return Collections.<CardRole>emptyList();
-         }
+    protected void processNotSuccessfullTransition(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
+        ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
+        Map<String, Object> params = new HashMap<String, Object>()
+        params.put("assignment", assignment.getMasterAssignment())
+
+        log.debug("Non-success transition has taken, signal master")
+        setRoleIds(assignment.card, null)
+        es.signalExecutionById(execution.getId(), resultTransition, params)
+        afterSignal(execution, signalName, parameters)
     }
 
-    private void setCardRoleUuidsToProcessVariables(Card card, List<CardRole> cardRoles) {
-         Map<String, Object> processVariables = wfService.getProcessVariables(card);
-         if (processVariables) {
-             processVariables = new java.util.HashMap<String, Object>(processVariables);
-         } else {
-             processVariables = new java.util.HashMap<String, Object>();
-         }
-         List<UUID> uuids = new ArrayList<UUID>(cardRoles.size());
-         for (CardRole cr: cardRoles) {
-             uuids.add(cr.id);
-         }
-         processVariables.put("cardRoleUuids", uuids);
-         wfService.setProcessVariables(card, processVariables);
+    protected void processSuccessfullTransition(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
+        ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
+        Map<String, Object> params = new HashMap<String, Object>()
+        params.put("assignment", assignment.getMasterAssignment())
+
+        def cardRoles = getCardRoles(execution, assignment.card)
+        List<UUID> ids = getRoleIds(assignment.card);
+        def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user && (ids.contains(cr.id) || ids.isEmpty())}
+        //Use for processes where variable "cardRoleUuids" is not correctly cleared after not-success transition
+        if (currentCardRole == null)
+            currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user}
+
+        def nextCardRoles = []
+        int nextSortOrder = Integer.MAX_VALUE
+
+        //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
+//                we don't know exactly)
+        cardRoles.each {CardRole cr ->
+            if (cr.sortOrder == nextSortOrder) {
+                nextCardRoles.add(cr)
+            } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
+                nextSortOrder = cr.sortOrder
+                nextCardRoles = [cr]
+            }
+        }
+
+//                def nextCardRoles = cardRoles.findAll {CardRole cr -> cr.sortOrder == currentCardRole.sortOrder + 1}
+        if (nextCardRoles.isEmpty()) {
+            log.debug("Last user assignment finished, taking $signalName")
+            setRoleIds(assignment.card, null)
+            es.signalExecutionById(execution.getId(), signalName, params)
+            afterSignal(execution, signalName, parameters)
+        } else {
+            log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
+            setRoleIds(assignment.card, nextCardRoles);
+            nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
+            execution.waitForSignal()
+        }
+    }
+
+    protected List<UUID> getRoleIds(Card card) {
+        List<UUID> ids = (List<UUID>) WfHelper.getExecutionService().getVariable(card.jbpmProcessId, "cardRoleUuids")
+        return ids ? ids : Collections.<UUID> emptyList()
+    }
+
+    protected void setRoleIds(Card card, List<CardRole> cardRoles) {
+        List<UUID> ids = null;
+        if (cardRoles) {
+            ids = new ArrayList<UUID>(cardRoles.size())
+            cardRoles.each {CardRole cr -> ids.add(cr.id)}
+        } else
+            ids = new ArrayList<UUID>();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        try {
+            WfHelper.getExecutionService().setVariable(card.jbpmProcessId, "cardRoleUuids", ids)
+            tx.commit();
+        }
+        finally {
+            tx.end();
+        }
     }
 
     protected List<Assignment> getSiblings(Assignment assignment) {
