@@ -85,10 +85,10 @@ public class CardRolesFrame extends AbstractFrame {
     WebButton moveDown;
     @Inject
     WebButton moveUp;
-    
+
     @Inject
     private Metadata metadata;
-    
+
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
@@ -425,6 +425,18 @@ public class CardRolesFrame extends AbstractFrame {
                                         validUsers.remove(oldUser);
                                         tmpCardRolesDs.updateItem(cardRole);
                                     }
+                                }
+                            } else {
+                                if (selectedUsers.size() == 0) {
+                                    CardRole cr = new CardRole();
+                                    cr.setUser(null);
+                                    cr.setProcRole(cardRole.getProcRole());
+                                    cr.setCode(cardRole.getCode());
+                                    cr.setNotifyByEmail(true);
+                                    cr.setNotifyByCardInfo(true);
+                                    cr.setCard(card);
+                                    assignNextSortOrder(cr);
+                                    tmpCardRolesDs.addItem(cr);
                                 }
                             }
                             List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);
@@ -1077,7 +1089,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRoleField.setEditable(editable);
         }
     }
-	
+
     private void refreshFieldsWithRole(CardRole cardRole) {
         for (CardRole cr : actorActionsFieldsMap.keySet()) {
             if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
