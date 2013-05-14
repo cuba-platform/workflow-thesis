@@ -218,7 +218,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             List<CardAttachment> cas = new LinkedList<CardAttachment>();
             if (item.getAttachments() != null && !item.getAttachments().isEmpty()) {
                 for (CardAttachment ca : item.getAttachments()) {
-                    if (PersistenceHelper.isNew(ca)) {
+                    if (PersistenceHelper.isNew(ca) && !attachmentsDs.containsItem(ca.getId())) {
                         cas.add(ca);
                     }
                 }
