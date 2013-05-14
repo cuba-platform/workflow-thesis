@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebButtonsPanel;
 import com.haulmont.workflow.core.entity.Attachment;
+import com.haulmont.workflow.core.entity.AttachmentType;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -82,15 +83,40 @@ public class AttachmentActionsHelper {
      * @return Action
      */
     public static Action createPasteAction(Table attachmentsTable, final AttachmentCreator creator) {
+        return createPasteAction(attachmentsTable,creator,null);
+    }
+
+    public static Action createPasteAction(Table attachmentsTable, final AttachmentCreator creator, @Nullable Map<String,Object> params) {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final UserSession userSession = UserSessionProvider.getUserSession();
+        final List<String> exclTypes = params == null ? null: (List<String>)params.get("exclTypes");
         return new AbstractAction(PASTE_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
+                Set<String> bufferIncludedTypes = new HashSet<String>();
                 if ((buffer != null) && (buffer.size() > 0)) {
+                    if (exclTypes != null) {
+                        for (Attachment attachment : buffer) {
+                            if (exclTypes.contains(attachment.getAttachType().getCode())) {
+                                String type = attachment.getAttachType().getLocName();
+                                bufferIncludedTypes.add(type);
+                            }
+                        }
+                        if (!bufferIncludedTypes.isEmpty()) {
+                            StringBuilder info = new StringBuilder(MessageProvider.getMessage(getClass(), "messages.bufferContainsExclTypes"));
+                            info.append("<ul>");
+                            for (String type : bufferIncludedTypes) {
+                                info.append("<li>" + type + "</li>");
+                            }
+                            info.append("</ul>");
+                            attachments.getFrame().showNotification(info.toString(), IFrame.NotificationType.WARNING);
+                            bufferIncludedTypes.clear();
+                            return;
+                        }
+                    }
                     for (Attachment attach : buffer) {
                         Attachment attachment = propsSetter.createObject();
                         attachment.setFile(attach.getFile());

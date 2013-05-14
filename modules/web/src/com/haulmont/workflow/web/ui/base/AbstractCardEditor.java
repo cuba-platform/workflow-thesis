@@ -81,23 +81,19 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
         initFields();
 
-        if (cardAttachmentsFrame != null) {
-            cardAttachmentsFrame.init();
-        } else {
+        if (cardAttachmentsFrame == null && attachmentsTable != null) {
             //leave table init for editors which don't use cardAttachmentsFrame
-            if (attachmentsTable != null) {
-                attachmentsTable.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
-                    @Override
-                    public Map<String, Object> getInitialValues() {
-                        HashMap<String, Object> values = new HashMap<String, Object>();
-                        values.put("card", cardDs.getItem());
-                        values.put("file", new FileDescriptor());
-                        return values;
-                    }
-                });
-                attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG));
-                attachmentsTable.addAction(new RemoveAction(attachmentsTable, false));
-            }
+            attachmentsTable.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
+                @Override
+                public Map<String, Object> getInitialValues() {
+                    HashMap<String, Object> values = new HashMap<String, Object>();
+                    values.put("card", cardDs.getItem());
+                    values.put("file", new FileDescriptor());
+                    return values;
+                }
+            });
+            attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG));
+            attachmentsTable.addAction(new RemoveAction(attachmentsTable, false));
         }
 
         if (cardProcFrame != null) {
