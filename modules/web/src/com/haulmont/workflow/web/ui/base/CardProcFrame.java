@@ -49,7 +49,7 @@ public class CardProcFrame extends AbstractFrame {
     protected LookupField createProcLookup;
     protected LookupField subProcessLookup;
     protected Label subProcessLookupLabel;
-    private Table cardProcTable;
+    protected Table cardProcTable;
     protected AbstractAction startProcessAction;
     protected CardRolesFrame cardRolesFrame;
     private Button removeProc;
@@ -127,12 +127,8 @@ public class CardProcFrame extends AbstractFrame {
 
         AbstractWfAccessData accessData = getContext().getParamValue("accessData");
         if (accessData == null || accessData.getStartCardProcessEnabled()) {
-            startProcessAction = new StartProcessAction();
-            startProcessAction.setEnabled(false);
-            cardProcTable.addAction(startProcessAction);
-            Button startProcBtn = getComponent("startProc");
-            startProcBtn.setAction(startProcessAction);
-            startProcBtn.setVisible(true);
+            createStartProcessAction();
+            initStartProcessAction();
         }
 
         final boolean removeActionEnabled = accessData == null || accessData.getRemoveCardProcessEnabled();
@@ -210,6 +206,18 @@ public class CardProcFrame extends AbstractFrame {
                 cardRolesFrame.initDefaultActors((Proc) value);
             }
         });
+    }
+
+    protected void createStartProcessAction() {
+        startProcessAction = new StartProcessAction();
+    }
+
+    protected void initStartProcessAction() {
+        startProcessAction.setEnabled(false);
+        cardProcTable.addAction(startProcessAction);
+        Button startProcBtn = getComponent("startProc");
+        startProcBtn.setAction(startProcessAction);
+        startProcBtn.setVisible(true);
     }
 
     public int calculateSortOrder() {
@@ -405,7 +413,7 @@ public class CardProcFrame extends AbstractFrame {
         cardRolesFrame.setEnabled(enabled);
     }
 
-    private class StartProcessAction extends AbstractAction {
+    protected class StartProcessAction extends AbstractAction {
 
         public StartProcessAction() {
             super("runProc");
