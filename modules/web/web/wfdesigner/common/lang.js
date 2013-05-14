@@ -265,7 +265,7 @@ var wfLanguage = {
                         "value": ""
                     },
                     {
-                        "type": "wfOutputSelect",
+                        "type": "string",
                         "label": "msg://ParallelAssignment.successTransition",
                         "name": "successTransition",
                         "value": ""

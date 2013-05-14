@@ -27,7 +27,7 @@ public class ParallelAssignmentModule extends AssignmentModule {
         if (jsOptions != null) {
             String successTransition = jsOptions.optString("successTransition");
             if (!StringUtils.isBlank(successTransition)) {
-                writeJpdlStringPropertyEl(element, "successTransition", WfUtils.encodeKey(successTransition));
+                writeJpdlStringPropertyEl(element, "successTransition", encodeSuccessTransition(successTransition));
             }
 
             boolean refusedOnly = jsOptions.optBoolean("refusedOnly");
@@ -41,5 +41,15 @@ public class ParallelAssignmentModule extends AssignmentModule {
             }
         }
         return element;
+    }
+
+    private String encodeSuccessTransition(String successTransition) {
+        StringBuilder sb = new StringBuilder();
+        String[] transitions = successTransition.split(",");
+        for (int i = 0; i < transitions.length; i++) {
+            sb.append(WfUtils.encodeKey(transitions[i]));
+            if (i < transitions.length - 1) sb.append(",");
+        }
+        return sb.toString();
     }
 }
