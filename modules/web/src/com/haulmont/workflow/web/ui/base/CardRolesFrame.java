@@ -34,6 +34,7 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.TimeUnit;
+import com.haulmont.workflow.web.ui.usergroup.UserGroupAdd;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -369,14 +370,10 @@ public class CardRolesFrame extends AbstractFrame {
 
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            Set<User> selectedUsers;
-                            Set<User> validUsers = new HashSet<>();
-                            Set<User> invalidUsers = new HashSet<>();
-                            try {
-                                selectedUsers = (Set<User>) userGroupAddClass.getMethod("getSelectedUsers").invoke(window);
-                            } catch (Exception e) {
-                                throw new IllegalStateException("Can't invoke UserGroupAdd.getCardRoles(): " + e);
-                            }
+                            Set<User> validUsers = new HashSet<User>();
+                            Set<User> invalidUsers = new HashSet<User>();
+
+                            Set<User> selectedUsers = getSelectedUsers(window);
 
                             User oldUser = cardRole.getUser();
                             //if code is right worked, then this comment need to REMOVE
@@ -485,6 +482,15 @@ public class CardRolesFrame extends AbstractFrame {
         }
         params.put("Users", users);
         return params;
+    }
+
+    protected Set<User> getSelectedUsers(Window window) {
+        try {
+            UserGroupAdd userGroup = (UserGroupAdd) window;
+            return userGroup.getSelectedUsers();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //fills users datasource with users with necessary security role (if set)
