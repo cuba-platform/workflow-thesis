@@ -208,7 +208,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private void initRolesTable() {
+    protected void initRolesTable() {
         final ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         vRolesTable.setPageLength(5);
@@ -689,9 +689,11 @@ public class CardRolesFrame extends AbstractFrame {
             com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
             Object[] visibleColumns = vRolesTable.getVisibleColumns();
 
-            MetaPropertyPath sortOrderMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("sortOrder");
-            MetaPropertyPath durationMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("duration");
-            MetaPropertyPath timeUnitMpp = MetadataProvider.getSession().getClass(CardRole.class).getPropertyPath("timeUnit");
+            MetaClass cardRoleMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(CardRole.class);
+
+            MetaPropertyPath sortOrderMpp = cardRoleMetaClass.getPropertyPath("sortOrder");
+            MetaPropertyPath durationMpp = cardRoleMetaClass.getPropertyPath("duration");
+            MetaPropertyPath timeUnitMpp = cardRoleMetaClass.getPropertyPath("timeUnit");
 
             if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
                 if (!ArrayUtils.contains(visibleColumns, sortOrderMpp)) {
