@@ -61,6 +61,7 @@ public class ParallelAssigner extends MultiAssigner {
     master.setJbpmProcessId(execution.getProcessInstance().getId())
     master.setCard(card)
     em.persist(master)
+    afterCreateAssignment(master)
 
     Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment,CardRole>();
     Assignment familyAssignment = findFamilyAssignment(card)
@@ -86,6 +87,8 @@ public class ParallelAssigner extends MultiAssigner {
         timersFactory.createTimers(execution, assignment)
       }
       em.persist(assignment)
+
+      afterCreateAssignment(assignment)
 
       assignmentsCardRoleMap.put(assignment, cr)
     }
