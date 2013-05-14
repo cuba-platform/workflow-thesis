@@ -5,6 +5,9 @@
         <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
                 select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault
+                <filter>
+                    <c>att.code not in (:param$exclTypes)</c>
+                </filter>
             </query>
         </collectionDatasource>
     </dsContext>

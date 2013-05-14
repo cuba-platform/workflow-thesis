@@ -29,6 +29,7 @@ public class StartProcessButtonsFrame extends AbstractFrame {
     private CollectionDatasource<CardProc, UUID> cardProcDs;
     private Datasource cardDs;
     private java.util.List<Action> actions = new ArrayList<Action>();
+    private List<String> excludedProcessesCodes = new ArrayList<String>();
 
     public StartProcessButtonsFrame(IFrame frame) {
         super(frame);
@@ -48,23 +49,24 @@ public class StartProcessButtonsFrame extends AbstractFrame {
             WebVBoxLayout startButtonsPanel = getComponent("startButtonsPanel");
             for (UUID uuid : procDs.getItemIds()) {
                 final Proc proc = (Proc) procDs.getItem(uuid);
+                if(!excludedProcessesCodes.contains(proc.getCode())){
+                    Button button = new WebButton();
 
-                Button button = new WebButton();
+                    button.setWidth("100%");
+                    AbstractAction buttonAction = new AbstractAction("start" + proc.getJbpmProcessKey()) {
+                        public void actionPerform(Component component) {
+                            startProcess(proc);
+                        }
 
-                button.setWidth("100%");
-                AbstractAction buttonAction = new AbstractAction("start" + proc.getJbpmProcessKey()) {
-                    public void actionPerform(Component component) {
-                        startProcess(proc);
-                    }
-
-                    @Override
-                    public String getCaption() {
-                        return proc.getName();
-                    }
-                };
-                actions.add(buttonAction);
-                button.setAction(buttonAction);
-                startButtonsPanel.add(button);
+                        @Override
+                        public String getCaption() {
+                            return proc.getName();
+                        }
+                    };
+                    actions.add(buttonAction);
+                    button.setAction(buttonAction);
+                    startButtonsPanel.add(button);
+                }
             }
 
         }
@@ -95,6 +97,10 @@ public class StartProcessButtonsFrame extends AbstractFrame {
             }
         }
         return false;
+    }
+
+    public void setExcludedProcesses(List<String> excludedProcessesCodes){
+        this.excludedProcessesCodes = excludedProcessesCodes;
     }
 
     public boolean isProcessesAvailable() {

@@ -221,7 +221,6 @@ public class TransitionForm extends AbstractForm {
             }
         });
 
-        attachmentsFrame.init();
         attachmentsFrame.setCardCommitCheckRequired(false);
         attachmentsTab.setCaption(getAttachmentsTabCaption());
         initRequiredAttachmentsPane();

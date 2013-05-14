@@ -27,6 +27,7 @@ import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.web.ui.base.attachments.*;
 import com.vaadin.ui.Layout;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class CardAttachmentsFrame extends AbstractFrame {
     }
 
     public void init() {
+        init(new HashMap<String, Object>());
+    }
+
+    public void init(@Nullable Map<String,Object> params){
         cardDs = getDsContext().get("cardDs");
         attachmentsTable = getComponent("attachmentsTable");
 
@@ -73,7 +78,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         PopupButton createPopup = getComponent("createAttachBtn");
         Action multiUploadAction = AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this,
-                attachmentCreator, WindowManager.OpenType.DIALOG);
+                attachmentCreator, WindowManager.OpenType.DIALOG, params);
 
         createPopup.addAction(multiUploadAction);
 //        createPopup.addAction(new CommitCardAction("actions.MultiUpload", multiUploadAction));
@@ -88,6 +93,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
             }
         };
 
+        newVersionAction.setWindowParams(params);
         createPopup.addAction(newVersionAction);
 
         attachmentsTable.addAction(newVersionAction);
@@ -97,7 +103,9 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 super.setEnabled(CardAttachmentsFrame.this.isEnabled() && enabled);
             }
         };
-        editAction.setWindowParams(Collections.<String, Object>singletonMap("edit", true));
+        Map<String,Object> map = params == null ? new HashMap<String, Object>() : params;
+        map.put("edit",true);
+        editAction.setWindowParams(map);
         attachmentsTable.addAction(editAction);
         attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, new AttachmentCreator.CardGetter() {
             @Override
@@ -111,7 +119,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
-        Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator);
+        Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator, params);
         pasteAttachBtn.setAction(pasteAction);
 //        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
         pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
@@ -149,17 +157,20 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         attachmentDs.refresh();
 
-        initFastUpload();
+        initFastUpload(params);
+
     }
 
-    private void initFastUpload() {
+    private void initFastUpload(Map<String,Object> excludedAttachTypes) {
         Label fastUpload = getComponent("fastUpload");
         com.vaadin.ui.Component parent = WebComponentsHelper.unwrap(fastUpload).getParent();
 
         fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
-                attachmentCreator, "wf$CardAttachment.edit", null, WindowManager.OpenType.DIALOG);
+                attachmentCreator, "wf$CardAttachment.edit", excludedAttachTypes, WindowManager.OpenType.DIALOG);
+        if(parent != null){
+            ((Layout) parent).replaceComponent(WebComponentsHelper.unwrap(fastUpload), WebComponentsHelper.unwrap(fastUploadButton));
+        }
 
-        ((Layout) parent).replaceComponent(WebComponentsHelper.unwrap(fastUpload), WebComponentsHelper.unwrap(fastUploadButton));
     }
 
     public FileUploadField getFastUploadButton(){
