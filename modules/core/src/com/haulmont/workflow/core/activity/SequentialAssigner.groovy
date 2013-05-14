@@ -83,7 +83,7 @@ class SequentialAssigner extends MultiAssigner {
       Map<String, Object> params = new HashMap<String, Object>()
       params.put("assignment", assignment.getMasterAssignment())
 
-      if (successTransition != signalName) {
+      if (!successTransitions.contains(signalName)) {
         log.debug("Non-success transition has taken, signal master")
         es.signalExecutionById(execution.getId(), signalName, params)
         afterSignal(execution, signalName, parameters)

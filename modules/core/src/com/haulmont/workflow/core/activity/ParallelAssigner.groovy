@@ -138,7 +138,7 @@ public class ParallelAssigner extends MultiAssigner {
           execution.waitForSignal()
           return
         }
-        if (sibling.getOutcome() != successTransition)
+        if (!successTransitions.contains(sibling.getOutcome()))
           resultTransition = sibling.getOutcome()
       }
 
@@ -146,7 +146,7 @@ public class ParallelAssigner extends MultiAssigner {
       Map<String, Object> params = new HashMap<String, Object>()
       params.put("assignment", assignment.getMasterAssignment())
 
-      if (resultTransition != successTransition)
+      if (!successTransitions.contains(resultTransition))
         log.debug("Some of parallel assignments have been finished unsuccessfully")
       else {
         log.debug("All of parallel assignments have been finished successfully")
