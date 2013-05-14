@@ -20,13 +20,27 @@ import com.haulmont.workflow.core.entity.Card
 abstract class MultiAssigner extends Assigner {
 
   String successTransition
+  def successTransitions = []
   Boolean refusedOnly
 
   protected boolean forRefusedOnly(ActivityExecution execution) {
     return refusedOnly || execution.getVariable("refusedOnly")
   }
 
-  protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
+    @Override
+    void execute(ActivityExecution execution) {
+        super.execute(execution)
+    }
+
+    public void setSuccessTransition(String value) {
+        successTransition = value
+        if (successTransition) {
+            String[] parts = successTransition.split('\\s*;\\s*')
+            successTransitions.addAll(parts)
+        }
+    }
+
+    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
     EntityManager em = PersistenceProvider.getEntityManager()
     Query q = em.createQuery('''
           select cr from wf$CardRole cr where cr.card.id = ?1 and cr.procRole.code = ?2 and cr.procRole.proc.id = ?3
@@ -50,7 +64,7 @@ abstract class MultiAssigner extends Assigner {
         if (list.isEmpty()) {
           return true
         } else {
-          return list.last() != successTransition
+          return !successTransitions.contains(list.last())
         }
       }
     }

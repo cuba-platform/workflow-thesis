@@ -115,7 +115,7 @@ public class UniversalAssigner extends MultiAssigner {
                     return
                 }
 
-                if (sibling.getOutcome() != successTransition)
+                if (sibling.getOutcome() != null && !successTransitions.contains(sibling.getOutcome()))
                     resultTransition = sibling.getOutcome()
             }
             processSignal(assignment, resultTransition, execution, signalName, parameters)
@@ -128,7 +128,7 @@ public class UniversalAssigner extends MultiAssigner {
         Map<String, Object> params = new HashMap<String, Object>()
         params.put("assignment", assignment.getMasterAssignment())
 
-        if (resultTransition != successTransition) {
+        if (!successTransitions.contains(resultTransition)) {
             processNotSuccessfullTransition(assignment, resultTransition, execution, signalName, parameters)
         } else {
             processSuccessfullTransition(assignment, resultTransition, execution, signalName, parameters)
