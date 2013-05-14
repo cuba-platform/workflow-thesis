@@ -46,6 +46,7 @@ public class CardProcFrame extends AbstractFrame {
     protected CollectionDatasource<Proc, UUID> procDs;
     protected CollectionDatasource<CardProc, UUID> cardProcDs;
     protected CollectionDatasource<CardProc, UUID> subProcessCardProcDs;
+    private List<String> excludedProcessesCodes = new ArrayList<String>();
     protected LookupField createProcLookup;
     protected LookupField subProcessLookup;
     protected Label subProcessLookupLabel;
@@ -159,7 +160,8 @@ public class CardProcFrame extends AbstractFrame {
                                     }
                                 }
                             }
-                            startProcessAction.setEnabled(enabled);
+                            Boolean notExcluded = item == null ? true : !excludedProcessesCodes.contains(item.getProc().getCode());
+                            startProcessAction.setEnabled(enabled && notExcluded);
                         }
                     }
 
@@ -456,5 +458,9 @@ public class CardProcFrame extends AbstractFrame {
 
     private void refreshCard() {
         card = (Card) getDsContext().get("cardDs").getItem();
+    }
+
+    public void setExcludedProcesses(List<String> excludedProcessesCodes){
+        this.excludedProcessesCodes = excludedProcessesCodes;
     }
 }
