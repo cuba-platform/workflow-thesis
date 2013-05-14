@@ -35,7 +35,7 @@ abstract class MultiAssigner extends Assigner {
     public void setSuccessTransition(String value) {
         successTransition = value
         if (successTransition) {
-            String[] parts = successTransition.split('\\s*;\\s*')
+            String[] parts = successTransition.split('[;,]')
             successTransitions.addAll(parts)
         }
     }
