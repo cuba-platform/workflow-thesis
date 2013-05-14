@@ -8,6 +8,7 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -56,7 +57,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         attachmentCreator = new AttachmentCreator.CardAttachmentCreator() {
             public Attachment createObject() {
-                CardAttachment attachment = new CardAttachment();
+                CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
                 Card card = cardDs.getItem();
                 attachment.setCard(card.getFamilyTop());
                 attachment.setCreateTs(TimeProvider.currentTimestamp());
@@ -90,7 +91,12 @@ public class CardAttachmentsFrame extends AbstractFrame {
         createPopup.addAction(newVersionAction);
 
         attachmentsTable.addAction(newVersionAction);
-        EditAction editAction = new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit");
+        EditAction editAction = new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit") {
+            @Override
+            public void setEnabled(boolean enabled) {
+                super.setEnabled(CardAttachmentsFrame.this.isEnabled() && enabled);
+            }
+        };
         editAction.setWindowParams(Collections.<String, Object>singletonMap("edit", true));
         attachmentsTable.addAction(editAction);
         attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, new AttachmentCreator.CardGetter() {
