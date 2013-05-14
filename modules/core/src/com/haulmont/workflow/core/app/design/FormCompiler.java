@@ -11,6 +11,7 @@
 package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -73,7 +74,8 @@ public class FormCompiler {
         return builderClasses;
     }
 
-    public void writeFormEl(Element parentEl, String formName, String transitionStyle, JSONObject jsProperties) throws DesignCompilationException {
+    public void writeFormEl(Element parentEl, String formName, String transitionStyle, JSONObject jsProperties,
+                            Design design) throws DesignCompilationException {
         Class<? extends FormBuilder> cls = getBuilderClasses().get(formName);
         if (cls == null) {
             throw new RuntimeException("Unsupported form name: " + formName);
@@ -84,6 +86,7 @@ public class FormCompiler {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        builder.init(design);
         builder.writeFormEl(parentEl, jsProperties);
         TransitionStyle style = TransitionStyle.fromId(transitionStyle);
         if (style != null) {

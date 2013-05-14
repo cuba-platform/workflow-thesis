@@ -202,5 +202,12 @@ Wf.registerForms = function() {
             {type: "string", name: "visibleRoles", label: i18n.get("visibleRoles")}
         ]
     });
+
+    Wf.FormSelect.registerForm("invoke", {
+        label: i18n.get("invoke"),
+        fields: [
+            {type: "wfScriptSelect", name: "script", label: i18n.get("script")}
+        ]
+    });
 };
 

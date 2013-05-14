@@ -135,7 +135,8 @@ public class AssignmentModule extends Module {
                 String transitionStyle = jsForm.optString("transitionStyle");
                 JSONObject jsProperties = jsForm.getJSONObject("properties");
                 try {
-                    context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName, transitionStyle, jsProperties);
+                    context.getFormCompiler().writeFormEl(getTransitionEl(rootEl, transition), formName,
+                            transitionStyle, jsProperties, context.getDesign());
                 } catch (DesignCompilationException e) {
                     if (error.length() != 0)
                         error.append("<br />");

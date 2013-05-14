@@ -64,7 +64,7 @@ public class StartModule extends Module {
                 String formName = jsForm.getString("name");
                 String transitionStyle = jsForm.optString("transitionStyle");
                 JSONObject jsProperties = jsForm.getJSONObject("properties");
-                context.getFormCompiler().writeFormEl(el, formName, transitionStyle, jsProperties);
+                context.getFormCompiler().writeFormEl(el, formName, transitionStyle, jsProperties, context.getDesign());
             }
         } catch (JSONException e) {
             throw new DesignCompilationException("Unable to compile forms for module " + name, e);

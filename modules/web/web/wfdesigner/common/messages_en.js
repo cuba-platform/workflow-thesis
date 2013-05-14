@@ -48,6 +48,7 @@ var i18nDict = {
     requiredAttachmentTypes: "Required Attachments",
     formHeight: "Form Height",
     transitionStyle : "Transition Style",
+    invoke : "Script execution",
     success: "Success",
     failure: "Failure",
 

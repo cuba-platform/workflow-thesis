@@ -54,6 +54,7 @@
                 <entry key="resolution" value="com.haulmont.workflow.core.app.design.forms.ResolutionFormBuilder"/>
                 <entry key="transition" value="com.haulmont.workflow.core.app.design.forms.TransitionFormBuilder"/>
                 <entry key="subProc" value="com.haulmont.workflow.core.app.design.forms.SubProcFormBuilder"/>
+                <entry key="invoke" value="com.haulmont.workflow.core.app.design.forms.InvokeFormBuilder"/>
             </map>
         </property>
     </bean>
