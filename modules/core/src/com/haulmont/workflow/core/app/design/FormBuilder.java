@@ -10,11 +10,18 @@
  */
 package com.haulmont.workflow.core.app.design;
 
+import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
 public abstract class FormBuilder {
+
+    protected Design design;
+
+    public void init(Design design) {
+        this.design = design;
+    }
 
     public abstract Element writeFormEl(Element parentEl, JSONObject jsProperties) throws DesignCompilationException;
 

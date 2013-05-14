@@ -58,6 +58,7 @@ var i18nDict = {
     requiredAttachmentTypes: "Требуемые вложения",
     formHeight: "Высота формы",
     transitionStyle : "Вид перехода",
+    invoke : "Выполнение скрипта",
     success: "Успешный",
     failure: "Неуспешный",
 
