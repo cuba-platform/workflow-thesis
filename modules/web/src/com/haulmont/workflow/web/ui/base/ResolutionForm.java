@@ -35,7 +35,7 @@ import java.util.*;
  */
 public class ResolutionForm extends AbstractForm {
 
-    private TextField commentText;
+    private TextArea commentText;
     private Table attachmentsTable;
     private Assignment assignment;
     protected AttachmentType attachmentType;
