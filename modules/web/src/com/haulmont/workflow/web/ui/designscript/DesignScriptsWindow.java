@@ -32,7 +32,7 @@ public class DesignScriptsWindow extends AbstractWindow {
     protected TextField nameField;
 
     @Inject
-    protected TextField contentField;
+    protected TextArea contentField;
 
     @Override
     public void init(Map<String, Object> params) {
