@@ -6,9 +6,9 @@
         caption="msg://stageEditor.caption"
         focusComponent="name"
         >
-
-    <assign name="width" value="250"/>
-    <assign name="timeUnitWidth" value="90"/>
+    <!--Should use platform tag assign-->
+    <#assign width=250/>
+    <#assign timeUnitWidth=90/>
 
     <dsContext>
         <datasource
@@ -62,7 +62,7 @@
                             <label value="msg://duration"/>
                             <hbox>
                                 <textField id="duration" datasource="stageDs" property="duration"
-                                           width="${width-timeUnitWidth-10}" required="true"
+                                           width="${width - timeUnitWidth - 10}" required="true"
                                            requiredMessage="msg://durationMsg"/>
                                 <lookupField id="timeUnit" datasource="stageDs" property="timeUnit"
                                              width="${timeUnitWidth}"/>
