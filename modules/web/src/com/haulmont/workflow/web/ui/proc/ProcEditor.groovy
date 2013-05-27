@@ -495,7 +495,7 @@ public class ProcEditor extends AbstractEditor {
                   usersLookup.setValue(pr.getRole());
                   usersLookup.setWidth("100%");
                   usersLookup.setEditable(rolesTable.isEditable());
-                  final com.vaadin.ui.Select rolesSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(usersLookup);
+                  final com.vaadin.ui.AbstractSelect rolesSelect = (com.vaadin.ui.AbstractSelect) WebComponentsHelper.unwrap(usersLookup);
                   rolesSelect.addListener({ValueChangeEvent event ->
                     Role role = secRolesDs.getItem(rolesSelect.getValue());
                     ((ProcRole) rolesDs.getItem(uuid)).setRole(role);
@@ -532,7 +532,8 @@ public class ProcEditor extends AbstractEditor {
                   orderFillingTypeLookup.setVisible(pr.getMultiUser());
                   orderFillingTypeLookup.setEditable(rolesTable.isEditable());
 
-                  final com.vaadin.ui.Select orderFillingTypeSelect = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(orderFillingTypeLookup);
+                  final com.vaadin.ui.AbstractSelect orderFillingTypeSelect =
+                      (com.vaadin.ui.AbstractSelect) WebComponentsHelper.unwrap(orderFillingTypeLookup);
                   orderFillingTypeSelect.setNullSelectionAllowed(false);
                   orderFillingTypeSelect.addListener({ValueChangeEvent event ->
                     ((ProcRole)rolesDs.getItem(uuid)).setOrderFillingType((String) orderFillingTypeSelect.getValue());
