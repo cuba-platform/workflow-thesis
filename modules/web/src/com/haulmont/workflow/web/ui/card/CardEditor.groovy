@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.IFrame
 import com.haulmont.cuba.gui.components.LookupField
 import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
 import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.workflow.web.ui.base.AbstractCardEditor
