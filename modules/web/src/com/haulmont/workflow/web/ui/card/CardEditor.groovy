@@ -13,13 +13,11 @@ package com.haulmont.workflow.web.ui.card
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.gui.components.IFrame
 import com.haulmont.cuba.gui.components.LookupField
+import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.data.CollectionDatasource
-
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
 import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
 import com.haulmont.workflow.web.ui.base.AbstractCardEditor
-import com.haulmont.cuba.gui.components.Table
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 
 public class CardEditor extends AbstractCardEditor {
@@ -43,7 +41,7 @@ public class CardEditor extends AbstractCardEditor {
       cardRolesDs.addListener(
               [
                       collectionChanged:
-                      { CollectionDatasource ds, Operation operation ->
+                      { CollectionDatasource ds, Operation operation, List items ->
                         procLookup.setEnabled(ds.getItemIds().isEmpty())
                       }
               ] as CollectionDsListenerAdapter
