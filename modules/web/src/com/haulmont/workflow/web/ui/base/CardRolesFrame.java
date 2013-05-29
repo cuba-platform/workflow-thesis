@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
@@ -752,31 +751,41 @@ public class CardRolesFrame extends AbstractFrame {
     public void initAssignedToCreatorActors() {
         // if there is a role with AssignToCreator property set up, and this role is not assigned,
         // assign this role to the current user
-        WfService wfService = ServiceLocator.lookup(WfService.NAME);
+        WfService wfService = AppBeans.get(WfService.NAME);
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         for (UUID procRoleId : procRolesDs.getItemIds()) {
             ProcRole procRole = procRolesDs.getItem(procRoleId);
             if (BooleanUtils.isTrue(procRole.getAssignToCreator()) && wfService.isCurrentUserContainsRole(procRole.getRole())) {
                 boolean found = false;
                 boolean addAssignedActor = true;
                 boolean singleUserIsNull = false;
+                CardRole foundCardRole = null;
                 for (UUID cardRoleId : tmpCardRolesDs.getItemIds()) {
                     CardRole cardRole = tmpCardRolesDs.getItem(cardRoleId);
                     if (procRole.equals(cardRole.getProcRole())) {
                         found = true;
+                        foundCardRole = cardRole;
                         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
-                            if (addAssignedActor)
-                                addAssignedActor = !UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(cardRole != null ? cardRole.getUser() : null);
+                            if (addAssignedActor) {
+                                addAssignedActor = !user.equals(cardRole.getUser());
+                            }
                         } else {
                             if (cardRole.getUser() == null) {
-                                addAssignedActor = !UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(cardRole != null ? cardRole.getUser() : null);
+                                addAssignedActor = true;
                                 singleUserIsNull = true;
                             }
                             break;
                         }
                     }
                 }
-                if (!found || (BooleanUtils.isTrue(procRole.getMultiUser()) || singleUserIsNull) && addAssignedActor) {
-                    addProcActor(procRole.getProc(), procRole.getCode(), UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser(), true);
+                if (!found || (procRole.getMultiUser() || singleUserIsNull) && addAssignedActor) {
+                    if (foundCardRole != null) {
+                        addProcActor(procRole.getProc(), procRole.getCode(), user,
+                                foundCardRole.getNotifyByEmail(), foundCardRole.getNotifyByCardInfo());
+                    } else {
+                        addProcActor(procRole.getProc(), procRole.getCode(), user, true, true);
+                    }
                 }
             }
         }
