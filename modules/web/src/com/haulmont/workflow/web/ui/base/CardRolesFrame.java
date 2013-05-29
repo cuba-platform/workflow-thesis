@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -24,10 +25,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebActionsField;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
@@ -88,6 +86,9 @@ public class CardRolesFrame extends AbstractFrame {
 
     @Inject
     private Metadata metadata;
+
+    @Inject
+    protected Messages messages;
 
     public void addListener(Listener listener) {
         listeners.add(listener);
@@ -450,9 +451,9 @@ public class CardRolesFrame extends AbstractFrame {
                                 usersList = usersList.substring(0, usersList.length() - 2);
                                 String invalidUsersMessage;
                                 if (invalidUsers.size() == 1)
-                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
+                                    invalidUsersMessage = messages.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
                                 else
-                                    invalidUsersMessage = MessageProvider.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
+                                    invalidUsersMessage = messages.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
 
                                 showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
                             }
@@ -703,7 +704,7 @@ public class CardRolesFrame extends AbstractFrame {
             if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
                 if (!ArrayUtils.contains(visibleColumns, sortOrderMpp)) {
                     visibleColumns = ArrayUtils.add(visibleColumns, sortOrderMpp);
-                    vRolesTable.setColumnHeader(sortOrderMpp, MessageProvider.getMessage(CardRole.class, "CardRole.sortOrder"));
+                    vRolesTable.setColumnHeader(sortOrderMpp, messages.getMessage(CardRole.class, "CardRole.sortOrder"));
                 }
             } else {
                 visibleColumns = ArrayUtils.removeElement(visibleColumns, sortOrderMpp);
@@ -712,11 +713,34 @@ public class CardRolesFrame extends AbstractFrame {
             if (BooleanUtils.isTrue(proc.getDurationEnabled())) {
                 if (!ArrayUtils.contains(visibleColumns, durationMpp)) {
                     visibleColumns = ArrayUtils.add(visibleColumns, durationMpp);
-                    vRolesTable.setColumnHeader(durationMpp, MessageProvider.getMessage(CardRole.class, "CardRole.duration"));
+                    vRolesTable.setColumnHeader(durationMpp, messages.getMessage(CardRole.class, "CardRole.duration"));
                 }
+                rolesTable.addGeneratedColumn("duration", new Table.ColumnGenerator() {
+                    @Override
+                    public Component generateCell(Entity entity) {
+                        final TextField durationTF = new WebTextField();
+                        final CardRole cardRole = (CardRole)entity;
+                        durationTF.addListener(new ValueListener() {
+
+                            @Override
+                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                try {
+                                    Integer duration = Integer.parseInt((String) value);
+                                    cardRole.setDuration(duration);
+                                } catch (NumberFormatException ex) {
+                                    String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
+                                    String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
+                                    showNotification(caption, msg, NotificationType.TRAY);
+                                    durationTF.setValue(null);
+                                }
+                            }
+                        });
+                        return durationTF;
+                    }
+                });
                 if (!ArrayUtils.contains(visibleColumns, timeUnitMpp)) {
                     visibleColumns = ArrayUtils.add(visibleColumns, timeUnitMpp);
-                    vRolesTable.setColumnHeader(timeUnitMpp, MessageProvider.getMessage(CardRole.class, "CardRole.timeUnit"));
+                    vRolesTable.setColumnHeader(timeUnitMpp, messages.getMessage(CardRole.class, "CardRole.timeUnit"));
                 }
             } else {
                 visibleColumns = ArrayUtils.removeElement(visibleColumns, durationMpp);
@@ -1211,7 +1235,7 @@ public class CardRolesFrame extends AbstractFrame {
         for (String roleCode : emptyRequiredRolesCodes) {
             if (roleCode.contains("|")) {
                 String formattingCode = "";
-                String orStr = " " + MessageProvider.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
+                String orStr = " " + messages.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
                 String[] roles = roleCode.split("\\|");
                 for (String role : roles) {
                     formattingCode += procRolesNames.get(role) + orStr;
