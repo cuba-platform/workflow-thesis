@@ -10,6 +10,7 @@
  */
 package com.haulmont.workflow.web.ui.base.action;
 
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -36,6 +37,9 @@ public class ProcessAction extends AbstractAction {
     private String actionName;
     private ActionsFrame frame;
 
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected WfService wfService = AppBeans.get(WfService.NAME);
+
     protected ProcessAction(Card card, String actionName, ActionsFrame frame) {
         super(actionName);
         this.card = card;
@@ -47,12 +51,12 @@ public class ProcessAction extends AbstractAction {
         AssignmentInfo assignmentInfo = frame.getInfo();
         if (assignmentInfo != null && !card.equals(frame.getInfo().getCard()) && frame.getInfo().getCard() != null) {
             if (frame.getInfo().getCard().getProc() != null)
-                return MessageProvider.getMessage(frame.getInfo().getCard().getProc().getMessagesPack(), getId());
+                return messages.getMessage(frame.getInfo().getCard().getProc().getMessagesPack(), getId());
         }
         if (card.getProc() != null)
-            return MessageProvider.getMessage(card.getProc().getMessagesPack(), getId());
+            return messages.getMessage(card.getProc().getMessagesPack(), getId());
         else
-            return MessageProvider.getMessage(AppConfig.getMessagesPack(), getId());
+            return messages.getMessage(AppConfig.getMessagesPack(), getId());
     }
 
     public void actionPerform(Component component) {
@@ -88,30 +92,46 @@ public class ProcessAction extends AbstractAction {
 
         //we won't commit the editor if user presses no in cancel process confirmation form
         if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-            App.getInstance().getWindowManager().showOptionDialog(
-                    MessageProvider.getMessage(getClass(), "cancelProcess.title"),
-                    MessageProvider.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
-                    IFrame.MessageType.CONFIRMATION,
-                    new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    if (((Window.Editor) window).commit()) {
-                                        managerChain.setHandler(new FormManagerChain.Handler() {
-                                            public void onSuccess(String comment) {
-                                                cancelProcess(window, managerChain);
-                                            }
+            if (isCardInProcess(card)) {
+                App.getInstance().getWindowManager().showOptionDialog(
+                        messages.getMessage(getClass(), "cancelProcess.title"),
+                        messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
+                        IFrame.MessageType.CONFIRMATION,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        if (((Window.Editor) window).commit()) {
+                                            managerChain.setHandler(new FormManagerChain.Handler() {
+                                                public void onSuccess(String comment) {
+                                                    cancelProcess(window, managerChain);
+                                                }
 
-                                            public void onFail() {
-                                            }
-                                        });
-                                        managerChain.doManagerBefore("", formManagerParams);
+                                                public void onFail() {
+                                                }
+                                            });
+                                            managerChain.doManagerBefore("", formManagerParams);
+                                        }
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO)
+                        }
+                );
+            } else {
+                window.showOptionDialog(
+                        messages.getMessage(getClass(), "failCancelProcCaption"),
+                        messages.getMessage(getClass(), "failCancelProcDescription"),
+                        IFrame.MessageType.CONFIRMATION,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.OK) {
+                                    @Override
+                                    public void actionPerform(Component c) {
+                                        window.close(Window.CLOSE_ACTION_ID, true);
                                     }
                                 }
-                            },
-                            new DialogAction(DialogAction.Type.NO)
-                    }
-            );
+                        }
+                );
+            }
         } else if ((window instanceof WebWindow) ? ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()
                 : ((Window.Editor) window).commit()) {
 
@@ -147,9 +167,7 @@ public class ProcessAction extends AbstractAction {
                 managerChain.doManagerBefore("", formManagerParams);
 
             } else if (WfConstants.ACTION_START.equals(actionName)) {
-                LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
-                Card loadedCard = ServiceLocator.getDataService().load(lc);
-                if (loadedCard.getJbpmProcessId() != null) {
+                if (isCardInProcess(card)) {
                     String msg = AppBeans.get(Messages.class).getMainMessage("assignmentAlreadyFinished.message");
                     App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
                     return;
@@ -192,17 +210,15 @@ public class ProcessAction extends AbstractAction {
 
 
     private void startProcess(Window window, FormManagerChain managerChain) {
-        WfService wfs = ServiceLocator.lookup(WfService.NAME);
-        wfs.startProcess(card);
+        wfService.startProcess(card);
         window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
     }
 
     private void finishAssignment(Window window, String comment, FormManagerChain managerChain, Card subProcCard) {
-        WfService wfs = ServiceLocator.lookup(WfService.NAME);
         String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
-        wfs.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment, subProcCard);
+        wfService.finishAssignment(frame.getInfo().getAssignmentId(), outcome, comment, subProcCard);
         window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
@@ -215,16 +231,20 @@ public class ProcessAction extends AbstractAction {
 
     private void removeSubProcCard(Card card) {
         if (card != null) {
-            WfService wfs = ServiceLocator.lookup(WfService.NAME);
-            wfs.removeSubProcCard(card);
+            wfService.removeSubProcCard(card);
         }
     }
 
     private void cancelProcess(Window window, FormManagerChain managerChain) {
-        WfService wfs = ServiceLocator.lookup(WfService.NAME);
-        wfs.cancelProcess(card);
+        wfService.cancelProcess(card);
         window.close(Window.COMMIT_ACTION_ID, true);
         managerChain.doManagerAfter();
     }
 
+    protected boolean isCardInProcess(Card card) {
+        LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
+        DataService dataService = AppBeans.get(DataService.NAME);
+        Card reloadedCard = dataService.load(lc);
+        return (reloadedCard.getJbpmProcessId() != null);
+    }
 }
