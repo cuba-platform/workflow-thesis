@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebHBoxLayout;
@@ -386,7 +385,7 @@ public class TransitionForm extends AbstractForm {
         if (cardAssignmentInfoMap != null) {
             CommitContext commitContext = new CommitContext();
             commitContext.getCommitInstances().addAll(copyAttachments());
-            getDsContext().getDataService().commit(commitContext);
+            getDsContext().getDataSupplier().commit(commitContext);
         } else {
             if (attachmentsDs.size() > 0) {
                 attachmentsDs.commit();

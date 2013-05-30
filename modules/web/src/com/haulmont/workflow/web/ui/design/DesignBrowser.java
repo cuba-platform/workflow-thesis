@@ -127,7 +127,7 @@ public class DesignBrowser extends AbstractWindow {
                             button.addClickListener(
                                     new Button.ClickListener() {
                                         public void buttonClick(Button.ClickEvent event) {
-                                            Design d = getDsContext().getDataService().reload(design, "_local");
+                                            Design d = getDsContext().getDataSupplier().reload(design, "_local");
                                             WebExportDisplay export = new WebExportDisplay();
                                             export.show(
                                                     new ByteArrayDataProvider(d.getNotificationMatrix()),
@@ -183,7 +183,7 @@ public class DesignBrowser extends AbstractWindow {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
                 Design design = selected.iterator().next();
-                design = getDsContext().getDataService().reload(design, "export");
+                design = getDsContext().getDataSupplier().reload(design, "export");
                 try {
                     new WebExportDisplay().show(new ByteArrayDataProvider(service.exportDesign(design)), "Design", ExportFormat.ZIP);
                 } catch (Exception e) {
@@ -438,7 +438,7 @@ public class DesignBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
-                final DataSupplier dataSupplier = getDsContext().getDataService();
+                final DataSupplier dataSupplier = getDsContext().getDataSupplier();
                 final Design design = dataSupplier.reload(selected.iterator().next(), "_local");
                 showOptionDialog(
                         getMessage("confirmNMClear.title"),

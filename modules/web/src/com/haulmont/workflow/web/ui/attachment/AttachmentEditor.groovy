@@ -192,7 +192,7 @@ public class AttachmentEditor extends AbstractEditor {
             attachment.setVersionNum(1);
         if (attachment instanceof CardAttachment && attachment.card && PersistenceHelper.isNew(attachment.card)) {
             if (needSave)
-                getDsContext().getDataService().commit(new CommitContext(Arrays.asList(fileDs.item)))
+                getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.item)))
             super.close(COMMIT_ACTION_ID, true)
         }
         else
