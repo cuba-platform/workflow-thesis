@@ -233,7 +233,7 @@ public class CardProcFrame extends AbstractFrame {
     public void startProcess(final CardProc cp) {
         refreshCard();
         final Proc prevProc = card.getProc();
-        DataSupplier ds = getDsContext().getDataService();
+        DataSupplier ds = getDsContext().getDataSupplier();
         final String prevCardProcState = cp.getState();
 
         final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
@@ -325,7 +325,7 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     private void rollbackStartProcess(Proc prevProc, int prevStartCount, CardProc cp, String prevCardProcState) {
-        DataSupplier ds = getDsContext().getDataService();
+        DataSupplier ds = getDsContext().getDataSupplier();
 
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
                 new View(Card.class).addProperty("proc").addProperty("jbpmProcessId")

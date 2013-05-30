@@ -82,7 +82,7 @@ class UserGroupBrowser extends AbstractWindow {
                                         }
                                         CommitContext ctx = new CommitContext()
                                         ctx.commitInstances << userGroup
-                                        Set commited = getDsContext().getDataService().commit(ctx)
+                                        Set commited = getDsContext().getDataSupplier().commit(ctx)
                                         usersDs.refresh()
                                         userGroup = commited.iterator().next();
                                         userGroupsDs.updateItem(userGroup)
@@ -165,7 +165,7 @@ class UserGroupBrowser extends AbstractWindow {
                                     userGroup.users.remove(selectedUser)
                                     CommitContext ctx = new CommitContext()
                                     ctx.getCommitInstances().add(userGroup)
-                                    Set commited = getDsContext().getDataService().commit(ctx)
+                                    Set commited = getDsContext().getDataSupplier().commit(ctx)
                                     CollectionDatasource usersDs = getDsContext().get("usersDs")
                                     usersDs.refresh()
                                     userGroup = commited.iterator().next();

@@ -983,7 +983,7 @@ public class CardRolesFrame extends AbstractFrame {
         ProcRole procRole = null;
 
         if (proc.getRoles() == null) {
-            proc = getDsContext().getDataService().reload(proc, "edit");
+            proc = getDsContext().getDataSupplier().reload(proc, "edit");
         }
 
         for (ProcRole pr : proc.getRoles()) {
