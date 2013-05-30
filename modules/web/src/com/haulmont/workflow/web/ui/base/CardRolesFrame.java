@@ -720,13 +720,17 @@ public class CardRolesFrame extends AbstractFrame {
                     public Component generateCell(Entity entity) {
                         final TextField durationTF = new WebTextField();
                         final CardRole cardRole = (CardRole)entity;
+                        if(cardRole != null && cardRole.getDuration() != null)
+                            durationTF.setValue(cardRole.getDuration().toString());
                         durationTF.addListener(new ValueListener() {
 
                             @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                                 try {
                                     Integer duration = Integer.parseInt((String) value);
-                                    cardRole.setDuration(duration);
+                                    if(cardRole != null)
+                                        cardRole.setDuration(duration);
+
                                 } catch (NumberFormatException ex) {
                                     String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
                                     String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
