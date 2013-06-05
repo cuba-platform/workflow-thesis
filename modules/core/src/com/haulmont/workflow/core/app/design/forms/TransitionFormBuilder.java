@@ -31,6 +31,7 @@ public class TransitionFormBuilder extends FormBuilder {
         addFormParam(el, "hideAttachments", Boolean.toString(jsProperties.optBoolean("hideAttachments")));
         addFormParam(el, "requiredAttachmentTypes", jsProperties.optString("requiredAttachmentTypes"));
         addFormParam(el, "formHeight", jsProperties.optString("formHeight"));
+        addFormParam(el, "commentRequired", jsProperties.optString("commentRequired"));
 
         return el;
     }
