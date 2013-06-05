@@ -179,6 +179,7 @@ Wf.registerForms = function() {
         label: i18n.get("transition"),
         fields: [
             {type: "boolean", name: "commentVisible", label: i18n.get("commentVisible")},
+            {type: "boolean", name: "commentRequired", label: i18n.get("commentRequired")},
             {type: "boolean", name: "cardRolesVisible", label: i18n.get("cardRolesVisible")},
             {type: "boolean", name: "dueDateVisible", label: i18n.get("dueDateVisible")},
             {type: "boolean", name: "refusedOnlyVisible", label: i18n.get("refusedOnlyVisible")},
