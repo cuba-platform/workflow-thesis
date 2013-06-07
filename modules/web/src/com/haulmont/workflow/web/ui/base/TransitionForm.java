@@ -89,7 +89,6 @@ public class TransitionForm extends AbstractForm {
     protected Card cardCopy;
     protected List<String> requiredAttachmentTypes = new ArrayList<>();
 
-    private String requiredRolesCodesStr;
     private Map<String, AttachmentType> attachmentTypes;
 
     private static final int DEFAULT_FORM_HEIGHT = 500;
@@ -118,12 +117,6 @@ public class TransitionForm extends AbstractForm {
 
 
         if (cardRolesFrame != null) {
-            requiredRolesCodesStr = (String) params.get("requiredRoles");
-            String additionalRolesCodes = (String) params.get("additionalRoles");
-            if (!StringUtils.isEmpty(additionalRolesCodes)) {
-                requiredRolesCodesStr += "," + additionalRolesCodes;
-            }
-
             cardRolesFrame.init();
             initVisibleRoles(params);
             cardRolesFrame.setCard(card);
@@ -133,7 +126,7 @@ public class TransitionForm extends AbstractForm {
                 public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                     if (state == Datasource.State.VALID) {
                         cardRolesFrame.procChanged(card.getProc());
-                        cardRolesFrame.setRequiredRolesCodesStr(requiredRolesCodesStr);
+                        cardRolesFrame.setRequiredRolesCodesStr(getRequiredRoles());
                         cardRolesFrame.fillMissingRoles();
                     }
                 }
@@ -259,6 +252,10 @@ public class TransitionForm extends AbstractForm {
         if (StringUtils.isNotBlank(visibleRoles))
             cardRolesFrame.tmpCardRolesDs.setVisibleRoles(new HashSet(Arrays.asList(visibleRoles.split("\\s*,\\s*"))));
 
+    }
+
+    protected String getRequiredRoles() {
+        return getContext().getParamValue("param$requiredRoles");
     }
 
     private String getAttachmentsTabCaption() {
