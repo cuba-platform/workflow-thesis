@@ -100,6 +100,9 @@ WireIt.WiringEditor.adapters.WfAdapter = {
                         Wf.loadScripts(function(val) {
                             Wf.scriptsCache = val;
                         }, null);
+                        Wf.loadSubDesigns(function(val) {
+                            Wf.subdesignCache = val;
+                         }, null);
                     },
                     failure: function(o) {
                         var error = o.status + " " + o.statusText;

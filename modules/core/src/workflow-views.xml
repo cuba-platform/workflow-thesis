@@ -11,12 +11,21 @@
 
     <view class="com.haulmont.workflow.core.entity.Design" name="browse">
         <property name="name"/>
+        <property name="type"/>
+        <property name="createTs"/>
         <property name="compileTs"/>
         <property name="notificationMatrixUploaded"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Design" name="export" extends="_local">
         <property name="scripts" view="_local"/>
+        <property name="designProcessVariables" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.workflow.core.entity.Design" name="remove" extends="_minimal">
+        <property name="scripts" view="_minimal"/>
+        <property name="designProcessVariables" view="_minimal"/>
+        <property name="designFiles" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Design" name="localize" extends="_local">
@@ -257,11 +266,35 @@
         <property name="procStage" view="_minimal"/>
     </view>
 
+    <view entity="wf$Design" name="load-subdesign" extends="_minimal">
+        <property name="name"/>
+        <property name="src"/>
+    </view>
+
+    <view entity="wf$Design" name="for-subdesign-module" extends="_local">
+        <property name="scripts" view="_local"/>
+        <property name="designProcessVariables" view="_local"/>
+    </view>
+
     <view class="com.haulmont.workflow.core.entity.ProcState" name="browse" extends="_local">
         <property name="proc" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.UserNotifiedBySms" name="browse" extends="_local">
         <property name="user" view="_minimal"/>
+    </view>
+
+    <view entity="wf$DesignProcessVariable" name="designProcessVariable.edit" extends="_local">
+        <property name="design" view="_minimal"/>
+    </view>
+    <view entity="wf$ProcVariable" name="procVariable.browse">
+        <property name="proc" view="_minimal"/>
+    </view>
+    <view entity="wf$ProcVariable" name="procVariable.edit" extends="_local">
+        <property name="proc" view="_minimal"/>
+    </view>
+
+    <view entity="wf$CardVariable" name="cardVariable.edit" extends="_local">
+        <property name="card" view="_minimal"/>
     </view>
 </views>

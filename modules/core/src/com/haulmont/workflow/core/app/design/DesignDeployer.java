@@ -12,29 +12,24 @@ package com.haulmont.workflow.core.app.design;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.WfEngineAPI;
-import com.haulmont.workflow.core.entity.Design;
-import com.haulmont.workflow.core.entity.DesignFile;
-import com.haulmont.workflow.core.entity.DesignScript;
-import com.haulmont.workflow.core.entity.Proc;
+import com.haulmont.workflow.core.entity.*;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DesignDeployer {
 
@@ -47,18 +42,18 @@ public class DesignDeployer {
 
         log.info("Deploying design " + designId + " into process " + procId);
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
             if (design.getCompileTs() == null)
                 throw new IllegalStateException("Design is not compiled");
 
-            String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(TimeProvider.currentTimestamp());
+            String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(AppBeans.get(TimeSource.class).currentTimestamp());
 
             Proc proc = procId != null ? em.find(Proc.class, procId) : null;
 
-            File dir = new File(ConfigProvider.getConfig(GlobalConfig.class).getConfDir(), "process/" + procKey);
+            File dir = new File(AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getConfDir(), "process/" + procKey);
             if (dir.exists()) {
                 backupExisting(dir);
             }
@@ -144,7 +139,7 @@ public class DesignDeployer {
     }
 
     private void deployScripts(Design design, File dir) throws IOException {
-        List<DesignScript> designScripts = PersistenceProvider.getEntityManager().createQuery(
+        List<DesignScript> designScripts = AppBeans.get(Persistence.class).getEntityManager().createQuery(
                 "select s from wf$DesignScript s where s.design.id = ?1")
                 .setParameter(1, design.getId())
                 .getResultList();
@@ -160,6 +155,65 @@ public class DesignDeployer {
         }
     }
 
+    private static String toXML(Object o) {
+        XStream xStream = createXStream(o.getClass());
+        return xStream.toXML(o);
+    }
+
+    private static XStream createXStream(Class clazz) {
+        XStream xStream = new XStream();
+        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
+        xStream.alias(clazz.getSimpleName(), clazz);
+        for (Field field : clazz.getDeclaredFields()) {
+            Class cl = field.getType();
+            xStream.alias(cl.getSimpleName(), cl);
+        }
+        return xStream;
+    }
+
+    private void deployProcessVariables(Proc proc, Design design, File dir) throws IOException {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        List<DesignProcessVariable> designProcessVariables = AppBeans.get(Persistence.class).getEntityManager().createQuery(
+                "select s from wf$DesignProcessVariable s where s.design.id = ?1")
+                .setParameter(1, design.getId())
+                .setView(MetadataProvider.getViewRepository().getView(DesignProcessVariable.class, View.LOCAL))
+                .getResultList();
+
+        List<ProcVariable> existsProcVariables = AppBeans.get(Persistence.class).getEntityManager().createQuery(
+                "select s from wf$ProcVariable s where s.proc.id = ?1")
+                .setParameter(1, proc.getId())
+                .setView(AppBeans.get(Metadata.class).getViewRepository().getView(ProcVariable.class, View.LOCAL))
+                .getResultList();
+
+        List<ProcVariable> procVariables = new ArrayList<ProcVariable>();
+
+        Map<String, DesignProcessVariable> designProcessVariableMap = new HashMap<String, DesignProcessVariable>();
+        for (DesignProcessVariable designProcessVariable : designProcessVariables) {
+            designProcessVariableMap.put(designProcessVariable.getAlias(), designProcessVariable);
+        }
+
+        for (ProcVariable procVariable : existsProcVariables) {
+            DesignProcessVariable existDesignProcessVariable = designProcessVariableMap.get(procVariable.getAlias());
+            if (existDesignProcessVariable != null) {
+                if (BooleanUtils.isNotTrue(procVariable.getOverridden())) {
+                    procVariable.setValue(existDesignProcessVariable.getValue());
+                }
+                procVariables.add(em.merge(procVariable));
+                designProcessVariables.remove(existDesignProcessVariable);
+            }
+        }
+
+        for (DesignProcessVariable designProcessVariable : designProcessVariables) {
+            ProcVariable procVariable = (ProcVariable) designProcessVariable.copyTo(new ProcVariable());
+            procVariable.setProc(proc);
+            em.persist(procVariable);
+            procVariables.add(procVariable);
+        }
+
+        File file = new File(dir, "variables.xml");
+        FileUtils.writeStringToFile(file, toXML(procVariables), "UTF-8");
+    }
+
     private void deployNotificationMatrix(List<DesignFile> designFiles, File dir) throws IOException {
         for (DesignFile df : designFiles) {
             if (df.getType().equals("notification")) {
@@ -171,7 +225,7 @@ public class DesignDeployer {
     }
 
     private void backupExisting(File dir) throws IOException {
-        String tmpDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        String tmpDir = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTempDir();
         File backupDir = new File(tmpDir, dir.getName() + ".backup");
         int i = 0;
         while (backupDir.exists()) {

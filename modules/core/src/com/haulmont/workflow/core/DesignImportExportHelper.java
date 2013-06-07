@@ -10,15 +10,14 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Design;
+import com.haulmont.workflow.core.entity.DesignFile;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
@@ -31,7 +30,9 @@ import org.apache.commons.io.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
@@ -40,6 +41,10 @@ public class DesignImportExportHelper {
     protected static final String ENCODING = "UTF-8";
 
     public static byte[] exportDesign(Design design) throws IOException, FileStorageException {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        em.setView(AppBeans.get(Metadata.class).getViewRepository().getView(design.getClass(), "export"));
+        design = em.find(design.getClass(), design.getId());
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
@@ -58,6 +63,37 @@ public class DesignImportExportHelper {
 
         zipOutputStream.close();
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public static byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException {
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
+            zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
+            zipOutputStream.setEncoding(ENCODING);
+            for (Design design : designs) {
+                try {
+                    byte[] designBytes = exportDesign(design);
+                    ArchiveEntry singleDesignEntry = newStoredEntry(replaceForbiddenCharacters(design.getName()) + ".zip", designBytes);
+                    zipOutputStream.putArchiveEntry(singleDesignEntry);
+                    zipOutputStream.write(designBytes);
+                    zipOutputStream.closeArchiveEntry();
+                } catch (Exception ex) {
+                    throw new RuntimeException("Exception occured while exporting design\"" + design.getName() + "\".", ex);
+                }
+            }
+            zipOutputStream.close();
+            tx.commit();
+            return byteArrayOutputStream.toByteArray();
+        } finally {
+            tx.end();
+        }
+    }
+
+    private static String replaceForbiddenCharacters(String fileName) {
+        return fileName.replaceAll("[\\,/,:,\\*,\",<,>,\\|]", "");
     }
 
     private static ArchiveEntry newStoredEntry(String name, byte[] data) {
@@ -87,46 +123,137 @@ public class DesignImportExportHelper {
         return xStream;
     }
 
-    public static Design importDesign(byte[] zipBytes) throws IOException, FileStorageException {
-        Design design = null;
+    //TODO remove
+    public static void checkAndRemoveAlreadyRemovedDesign(Design design) {
+
+    }
+
+    private static Design findExistsDesign(Design design) {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        Boolean softDeleteion = em.isSoftDeletion();
+        em.setSoftDeletion(false);
+        em.setView(AppBeans.get(Metadata.class).getViewRepository().getView(Design.class, "remove"));
+        Design existsDesign = em.find(design.getClass(), design.getId());
+        em.setView(null);
+        em.setSoftDeletion(softDeleteion);
+        return existsDesign;
+    }
+
+    public static Collection<Design> importDesigns(byte[] zipBytes) throws IOException, FileStorageException {
+        LinkedList<Design> designs = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
         ZipArchiveInputStream archiveReader;
         archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
-        ZipArchiveEntry archiveEntry;
-
-        while ((archiveEntry = archiveReader.getNextZipEntry()) != null) {
-            if (archiveEntry.getName().equals(DESIGN)) {
-                String xml = new String(IOUtils.toByteArray(archiveReader));
-                design = fromXML(Design.class, xml);
-                break;
+        ZipArchiveEntry nextZipEntry = null;
+        while ((nextZipEntry = archiveReader.getNextZipEntry()) != null) {
+            if (designs == null) {
+                designs = new LinkedList<Design>();
             }
+            final byte[] buffer = readBytesFromEntry(archiveReader);
+            Design design = importDesign(buffer, !nextZipEntry.getName().equals(DESIGN));
+            designs.add(design);
         }
         byteArrayInputStream.close();
+        return designs;
+    }
 
-        changeAttributes(design);
+    private static byte[] readBytesFromEntry(ZipArchiveInputStream archiveReader) throws IOException {
+        return IOUtils.toByteArray(archiveReader);
+    }
 
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            if (PersistenceHelper.isNew(design)) {
-                em.persist(design);
-                for (DesignScript script : design.getScripts()) {
-                    em.persist(script);
+    public static Design importDesign(byte[] zipBytes, Boolean isArchive) throws IOException, FileStorageException {
+        Design design = null;
+        if (isArchive) {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
+            ZipArchiveInputStream archiveReader;
+            archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
+            ZipArchiveEntry archiveEntry;
+
+            while ((archiveEntry = archiveReader.getNextZipEntry()) != null) {
+                if (archiveEntry.getName().equals(DESIGN)) {
+                    String xml = new String(IOUtils.toByteArray(archiveReader));
+                    design = fromXML(Design.class, xml);
+                    break;
                 }
-            } else {
-                em.merge(design);
             }
+            byteArrayInputStream.close();
+        } else {
+            String xml = new String(zipBytes);
+            design = fromXML(Design.class, xml);
+        }
+
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        try {
+            Design existsDesign = findExistsDesign(design);
+
+            if (existsDesign != null) {
+                cleanExistDesign(existsDesign);
+                copyFields(design, existsDesign);
+                existsDesign.setScripts(design.getScripts());
+                existsDesign.setDesignProcessVariables(design.getDesignProcessVariables());
+                design = existsDesign;
+            }
+            changeAttributes(design);
+            design = persistDesign(design);
             tx.commit();
+            return design;
         } finally {
             tx.end();
+        }
+    }
+
+    private static void copyFields(Design design, Design existsDesign) {
+        MetaClass caseMetaClass = AppBeans.get(Metadata.class).getSession().getClass(design.getClass());
+        Collection<MetaProperty> metaProperties = caseMetaClass.getProperties();
+
+        for (MetaProperty metaProperty : metaProperties) {
+            final String propertyName = metaProperty.getName();
+            if ((MetaProperty.Type.DATATYPE.equals(metaProperty.getType()) || MetaProperty.Type.ENUM.equals(metaProperty.getType()))
+                    && !metaProperty.isReadOnly()) {
+                Object value = design.getValue(propertyName);
+                existsDesign.setValue(propertyName, value);
+            }
+        }
+    }
+
+    private static Design persistDesign(Design design) {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        if (PersistenceHelper.isNew(design)) {
+            em.persist(design);
+        } else {
+            design = em.merge(design);
+        }
+        for (DesignScript script : design.getScripts()) {
+            em.persist(script);
+        }
+        for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
+            em.persist(variable);
         }
         return design;
     }
 
+
+    private static void cleanExistDesign(Design existsDesign) {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        for (DesignFile file : existsDesign.getDesignFiles()) {
+            em.remove(file);
+        }
+        for (DesignScript script : existsDesign.getScripts()) {
+            em.remove(script);
+        }
+        for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
+            em.remove(variable);
+        }
+        for (DesignFile designFile : existsDesign.getDesignFiles()) {
+            em.remove(designFile);
+        }
+        existsDesign.setDeleteTs(null);
+        existsDesign.setDeletedBy(null);
+    }
+
     private static Design changeAttributes(Design design) {
-        User user = UserSessionProvider.getUserSession().getUser();
+        User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
         design.setCreatedBy(user.getName());
-        design.setUuid(UUID.randomUUID());
         design.setCompileTs(null);
         design.setCreateTs(new Date());
         design.setUpdatedBy(null);
@@ -138,6 +265,14 @@ public class DesignImportExportHelper {
             script.setCreatedBy(user.getName());
             script.setUpdatedBy(null);
             script.setUpdateTs(null);
+        }
+
+        for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
+            variable.setUuid(UUID.randomUUID());
+            variable.setCreateTs(new Date());
+            variable.setCreatedBy(user.getName());
+            variable.setUpdatedBy(null);
+            variable.setUpdateTs(null);
         }
         return design;
     }

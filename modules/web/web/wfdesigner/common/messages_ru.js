@@ -114,6 +114,10 @@ var i18nDict = {
     "SubProc.description" : "Запуск подпроцесса",
     "SubProc.subProcCompleted" : "Завершен",
     "SubProc.proc" : "Процесс",
+
+    "SubDesign" : "Поддизайн",
+    "Variable": "Псевдоним переменной",
+    "OpenDesign" : "Открыть дизайн",
     ////////////////////////////////
     ///Messages
 
@@ -125,5 +129,4 @@ var i18nDict = {
     "TurnTheChromeFrame" : "Пожалуйста, включите дополнение ChromeFrame \nи перезапустите браузер",
     "DuplicateName" : "Неуникальное имя модуля",
     "EmptyName" : "Имя модуля не может быть пустым"
-
     };

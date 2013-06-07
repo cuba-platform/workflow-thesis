@@ -498,6 +498,15 @@ lang.extend(WireIt.WiringEditor, WireIt.BaseEditor, {
 		            var container = this.layer.addContainer(m.config);
 		            Dom.addClass(container.el, "WiringEditor-module-"+m.name);
 		            container.setValue(m.value);
+                    if (container.fields != null){
+                        for (var j = 0; j < container.fields.length; j++){
+                            var field = container.form.inputs[j];
+                            field.setContainer(container);
+                            if ("name" != container.fields[j].name){
+                                field.setVariableStyle();
+                            }
+                        }
+                    }
 		         }
 		         else {
 		            throw new Error("WiringEditor: module '"+m.name+"' not found !");

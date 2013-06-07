@@ -25,4 +25,10 @@ public class WfConstants {
     public static final String CARD_CREATOR = "CARD_CREATOR";
 
     public static final String PROC_NOT_ACTIVE = "PROC_NOT_ACTIVE";
+
+    public static final String VARIABLE_PREFIX = "var_";
+
+    public static final String CARD_VARIABLES_SEPARATOR = ";";
+
+    public static final String SUBDESIGN_SEPARATOR = "_";
 }

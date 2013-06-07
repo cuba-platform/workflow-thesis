@@ -7,11 +7,11 @@
         >
 
     <dsContext>
-        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="browse">
+        <groupDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="browse">
             <query>
                 select p from wf$Proc p order by p.name
             </query>
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
 
     <layout expand="procTable" spacing="true">
@@ -19,14 +19,16 @@
             <button action="procTable.refresh" icon="icons/refresh.png"/>
             <button action="procTable.edit" icon="icons/edit.png"/>
             <button action="procTable.remove" icon="icons/remove.png" />
+            <button action="procTable.editProcessVariables" icon="icons/edit.png"/>
         </hbox>
-        <table id="procTable" editable="false" width="100%">
+        <groupTable id="procTable" editable="false" width="100%">
             <columns>
+                <column id="updateTs"/>
                 <column id="name"/>
                 <column id="jbpmProcessKey"/>
                 <column id="design"/>
             </columns>
             <rows datasource="procDs"/>
-        </table>
+        </groupTable>
     </layout>
 </window>

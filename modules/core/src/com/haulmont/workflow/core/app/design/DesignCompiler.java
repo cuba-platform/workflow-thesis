@@ -11,11 +11,13 @@
 package com.haulmont.workflow.core.app.design;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.WfUtils;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.error.DesignError;
 import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.error.ModuleError;
@@ -43,6 +45,8 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
+import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
+
 public class DesignCompiler {
 
     private Map<String, String> moduleClassNames;
@@ -66,7 +70,7 @@ public class DesignCompiler {
                 moduleClasses = new HashMap<String, Class<? extends Module>>();
 
                 for (Map.Entry<String, String> entry : moduleClassNames.entrySet()) {
-                    moduleClasses.put(entry.getKey(), ScriptingProvider.loadClass(entry.getValue()));
+                    moduleClasses.put(entry.getKey(), AppBeans.get(Scripting.class).<Module>loadClass(entry.getValue()));
                 }
             }
         }
@@ -89,9 +93,9 @@ public class DesignCompiler {
         Preconditions.checkArgument(designId != null, "designId is null");
         log.info("Compiling design " + designId);
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
 
             List<Module> modules = new ArrayList<Module>();
@@ -102,10 +106,14 @@ public class DesignCompiler {
 
             cleanup(design);
 
+            Collection<DesignProcessVariable> designProcessVariables = getProcessVariables(modules);
+
+            saveParameters(design, designProcessVariables);
+
             String jpdl = compileJpdl(modules, errors);
 
             if (BooleanUtils.isFalse(checkEndReachable(jpdl))) {
-                errors.add(new DesignError(MessageProvider.getMessage(getClass(), "exception.unreachableEndOfTheProcess")));
+                errors.add(new DesignError(AppBeans.get(Messages.class).getMessage(getClass(), "exception.unreachableEndOfTheProcess")));
             }
 
             Map<String, String> unusedModules = checkUnusedModules(jpdl, modules);
@@ -126,9 +134,9 @@ public class DesignCompiler {
             if (unusedModules.size() > 0) {
                 StringBuilder modulesList = new StringBuilder();
                 for (String moduleName : unusedModules.values()) {
-                    modulesList.append("<li>" + (moduleName == null ? MessageProvider.getMessage(getClass(), "unnamed") : moduleName) + "</li>");
+                    modulesList.append("<li>" + (moduleName == null ? AppBeans.get(Messages.class).getMessage(getClass(), "unnamed") : moduleName) + "</li>");
                 }
-                warnings.add(MessageProvider.formatMessage(getClass(), "warning.unusedModules", modulesList.toString()));
+                warnings.add(AppBeans.get(Messages.class).formatMessage(getClass(), "warning.unusedModules", modulesList.toString()));
             }
 
             String forms = compileForms(modules, errors);
@@ -156,7 +164,7 @@ public class DesignCompiler {
                     && design.getNotificationMatrix().length > 0)
                 saveDesignFile(design, "", "notification", null, design.getNotificationMatrix());
 
-            design.setCompileTs(TimeProvider.currentTimestamp());
+            design.setCompileTs(AppBeans.get(TimeSource.class).currentTimestamp());
 
             tx.commit();
 
@@ -179,7 +187,7 @@ public class DesignCompiler {
             }
         }
         if (!startExist)
-            errors.add(new DesignError(MessageProvider.getMessage(getClass(), "exception.StartModuleNotExist")));
+            errors.add(new DesignError(AppBeans.get(Messages.class).getMessage(getClass(), "exception.StartModuleNotExist")));
         return errors;
     }
 
@@ -288,6 +296,40 @@ public class DesignCompiler {
         }
     }
 
+    private Collection<DesignProcessVariable> getProcessVariables(List<Module> modules) throws DesignCompilationException {
+        Map<String, DesignProcessVariable> designProcessVariables = new HashMap<>();
+        for (Module module : modules) {
+            for (DesignProcessVariable processVariable : module.getDesignProcessVariables()) {
+                if (!designProcessVariables.containsKey(processVariable.getAlias())) {
+                    designProcessVariables.put(processVariable.getAlias(), processVariable);
+                } else {
+                    DesignProcessVariable designProcessVariable = designProcessVariables.get(processVariable.getAlias());
+                    if (isSameVariable(processVariable, designProcessVariable)) {
+                        designProcessVariable.setModuleName(designProcessVariable.getModuleName() + CARD_VARIABLES_SEPARATOR + processVariable.getModuleName());
+                        designProcessVariable.setPropertyName(designProcessVariable.getPropertyName() + CARD_VARIABLES_SEPARATOR + processVariable.getPropertyName());
+                        if (designProcessVariable.getAttributeType() == null) {
+                            designProcessVariable.setAttributeType(processVariable.getAttributeType());
+                            designProcessVariable.setMetaClassName(processVariable.getMetaClassName());
+                        }
+
+                        if (StringUtils.isBlank(designProcessVariable.getValue())) {
+                            designProcessVariable.setValue(processVariable.getValue());
+                        }
+                    } else {
+                        throw new DesignCompilationException(String.format(AppBeans.get(Messages.class).getMessage(getClass(), "variablesWithoutSameAttributeType"), designProcessVariable.getAlias()));
+                    }
+                }
+            }
+        }
+        return designProcessVariables.values();
+    }
+
+    private boolean isSameVariable(DesignProcessVariable processVariable, DesignProcessVariable designProcessVariable) {
+        if (designProcessVariable.getAttributeType() == null || processVariable.getAttributeType() == null) return true;
+        return designProcessVariable.getAttributeType() == processVariable.getAttributeType()
+                && ObjectUtils.equals(designProcessVariable.getMetaClassName(), processVariable.getMetaClassName());
+    }
+
     private List<String> parseRoles(Document document) {
         List<String> rolesList = new LinkedList<String>();
         List<Element> elements = document.getRootElement().elements("custom");
@@ -368,8 +410,8 @@ public class DesignCompiler {
                     return true;
                 }
                 if (classAttr != null) {
-                    Class assignerClass = ScriptingProvider.loadClass("com.haulmont.workflow.core.activity.Assigner");
-                    Class currentClass = ScriptingProvider.loadClass(classAttr.getValue());
+                    Class assignerClass = AppBeans.get(Scripting.class).loadClass("com.haulmont.workflow.core.activity.Assigner");
+                    Class currentClass = AppBeans.get(Scripting.class).loadClass(classAttr.getValue());
                     if (assignerClass.isAssignableFrom(currentClass))
                         return true;
                 }
@@ -476,10 +518,10 @@ public class DesignCompiler {
 
 
     public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         List<DesignFile> files = null;
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Query q = em.createQuery();
             q.setQueryString("select  df from wf$DesignFile df where df.design.id=?1 and (df.type='messages' or df.type='jpdl' )");
             q.setParameter(1, designId);
@@ -490,7 +532,7 @@ public class DesignCompiler {
         }
         try {
 
-            Locale locale = UserSessionProvider.getLocale();
+            Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
             String lang = locale.getLanguage();
             String fileName = "messages" + ("en".equals(lang) ? ("") : ("_" + lang)) + ".properties";
             //Find current locale messages
@@ -514,8 +556,8 @@ public class DesignCompiler {
             }
 
             Document document = DocumentHelper.parseText(jpdl);
-            String templatePath = ConfigProvider.getConfig(WfConfig.class).getNotificationTemplatePath();
-            Workbook wb = new HSSFWorkbook(ScriptingProvider.getResourceAsStream(templatePath));
+            String templatePath = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getNotificationTemplatePath();
+            Workbook wb = new HSSFWorkbook(AppBeans.get(Resources.class).getResourceAsStream(templatePath));
 
             List<String> rolesList = parseRoles(document);
             Map<String, String> states = parseStates(document, properties);
@@ -528,9 +570,7 @@ public class DesignCompiler {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             wb.write(buffer);
             return buffer.toByteArray();
-        } catch (DocumentException e) {
-            throw new TemplateGenerationException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new TemplateGenerationException(e);
         } finally {
             tx.end();
@@ -609,7 +649,7 @@ public class DesignCompiler {
                         continue;
                     }
                     errors.add(new ModuleError(WfUtils.encodeKey(jsModule.getJSONObject("value").getString("name")),
-                            MessageProvider.formatMessage(
+                            AppBeans.get(Messages.class).formatMessage(
                                     getClass(),
                                     "exception.emptyTransition",
                                     jsModule.getJSONObject("value").getString("name"))));
@@ -674,15 +714,47 @@ public class DesignCompiler {
     }
 
     private void cleanup(Design design) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         Query q = em.createQuery("delete from wf$DesignFile df where df.design.id = ?1");
         q.setParameter(1, design.getId());
         q.executeUpdate();
     }
 
+    private void saveParameters(Design design, Collection<DesignProcessVariable> designProcessVariables) {
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+
+        Map<Pair<String, String>, DesignProcessVariable> designProcessVariableMap = new HashMap<>();
+        for (DesignProcessVariable processVariable : designProcessVariables) {
+            designProcessVariableMap.put(new Pair<String, String>(processVariable.getModuleName(), processVariable.getAlias()), processVariable);
+        }
+
+        Query existsParametersQuery = em.createQuery("select dp from wf$DesignProcessVariable dp where dp.design.id = :designId");
+        existsParametersQuery.setParameter("designId", design.getId());
+        existsParametersQuery.setView(MetadataProvider.getViewRepository().getView(DesignProcessVariable.class, View.LOCAL));
+        List<DesignProcessVariable> existsDesignProcessVariables = existsParametersQuery.getResultList();
+
+        for (DesignProcessVariable exists : existsDesignProcessVariables) {
+            DesignProcessVariable designProcessVariable = designProcessVariableMap.get(new Pair<String, String>(exists.getModuleName(), exists.getAlias()));
+            if (designProcessVariable != null) {
+                if (BooleanUtils.isNotTrue(exists.getOverridden())) {
+                    exists.setValue(designProcessVariable.getValue());
+                }
+                designProcessVariables.remove(designProcessVariable);
+                em.merge(exists);
+            } else if (StringUtils.isNotBlank(exists.getModuleName())) {
+                em.remove(exists);
+            }
+        }
+
+        for (DesignProcessVariable designProcessVariable : designProcessVariables) {
+            designProcessVariable.setDesign(design);
+            em.persist(designProcessVariable);
+        }
+    }
+
     private void saveDesignFile(Design design, String name, String type, String content, byte[] binaryContent) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         DesignFile df = new DesignFile();
         df.setDesign(design);
@@ -749,7 +821,7 @@ public class DesignCompiler {
     }
 
     private void compileMessage(Properties properties, Locale locale, String key, String messagePack) {
-        properties.setProperty(key, MessageProvider.getMessage(messagePack, key, locale));
+        properties.setProperty(key, AppBeans.get(Messages.class).getMessage(messagePack, key, locale));
     }
 
     private String compileForms(List<Module> modules, List<DesignCompilationError> errors) {

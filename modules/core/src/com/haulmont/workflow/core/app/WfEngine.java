@@ -11,10 +11,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -424,6 +421,9 @@ public class WfEngine implements WfEngineAPI {
         card = em.find(Card.class, card.getId());
         if (card.getProc() == null)
             throw new IllegalStateException("Card.proc required");
+
+        ProcessVariableAPI processVariableAPI = Locator.lookup(ProcessVariableAPI.NAME);
+        processVariableAPI.createVariablesForCard(card);
 
         if (card.getJbpmProcessId() != null)
             throw new IllegalStateException("Another process already started");

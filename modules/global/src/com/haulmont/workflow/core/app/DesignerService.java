@@ -18,10 +18,7 @@ import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public interface DesignerService {
 
@@ -40,6 +37,10 @@ public interface DesignerService {
     byte[] exportDesign(Design design) throws IOException, FileStorageException;
 
     Design importDesign(byte[] bytes) throws IOException, FileStorageException;
+
+    byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException;
+
+    Collection<Design> importDesigns(byte[] bytes) throws IOException, FileStorageException;
 
     void saveNotificationMatrixFile(Design design);
 }

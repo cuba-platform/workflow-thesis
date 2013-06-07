@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.entity.Card;
+import org.apache.commons.lang.StringUtils;
 import org.jbpm.api.Execution;
 import org.jbpm.api.activity.ActivityExecution;
 
@@ -23,6 +24,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActivityHelper {
+
+    static int searchInStringWithSplit(String search, String stringForSplit, String splitSymbol) {
+        if (StringUtils.isBlank(search) || StringUtils.isBlank(stringForSplit)) return -1;
+        if (StringUtils.equals(search, stringForSplit)) return 0;
+        String[] strings = stringForSplit.split(splitSymbol);
+        if (strings == null || strings.length == 0) return -1;
+        for (int i = 0; i < strings.length; i++) {
+            if (StringUtils.equals(search, strings[i])) return i;
+        }
+        return -1;
+    }
 
     public static Card findCard(Execution execution) {
         String key = null;

@@ -13,10 +13,14 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "wf$Proc")
 @Table(name = "WF_PROC")
@@ -57,11 +61,16 @@ public class Proc extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
+    @OnDeleteInverse(DeletePolicy.UNLINK)
     protected Design design;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AVAILABLE_ROLE_ID")
     protected Role availableRole;
+
+    @OneToMany(mappedBy = "proc", fetch = FetchType.LAZY)
+    @OnDelete(DeletePolicy.CASCADE)
+    private Set<ProcVariable> processVariables;
 
     @Column(name = "COMBINED_STAGES_ENABLED")
     protected Boolean combinedStagesEnabled = false;
@@ -171,5 +180,13 @@ public class Proc extends StandardEntity {
 
     public void setDurationEnabled(Boolean durationEnabled) {
         this.durationEnabled = durationEnabled;
+    }
+
+    public Set<ProcVariable> getProcessVariables() {
+        return processVariables;
+    }
+
+    public void setProcessVariables(Set<ProcVariable> processVariables) {
+        this.processVariables = processVariables;
     }
 }

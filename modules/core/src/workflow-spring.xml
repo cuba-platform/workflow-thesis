@@ -38,6 +38,7 @@
                 <entry key="IsRoleAssigned" value="com.haulmont.workflow.core.app.design.modules.IsRoleAssignedModule"/>
                 <entry key="SubProc" value="com.haulmont.workflow.core.app.design.modules.SubProcModule" />
                 <entry key="EmptyModule" value="com.haulmont.workflow.core.app.design.modules.EmptyModule" />
+                <entry key="SubDesign" value="com.haulmont.workflow.core.app.design.modules.SubDesignModule"/>
             </map>
         </property>
         <property name="formCompiler" ref="workflow_FormCompiler"/>
@@ -61,7 +62,13 @@
 
     <bean id="workflow_FormCompiler" parent="base_workflow_FormCompiler"/>
 
-    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor"/>
+    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor">
+        <property name="processors">
+            <list>
+                <bean class="com.haulmont.workflow.core.app.design.postprocessors.SubDesignPostProcessor"/>
+            </list>
+        </property>
+    </bean>
 
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 

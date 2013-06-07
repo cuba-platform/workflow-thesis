@@ -22,16 +22,50 @@ import java.util.Properties;
  */
 public class DesignPostProcessor {
 
-    public void processForms(Element rootElement, List<Module> modules, List<DesignCompilationError> errors) {
+    private List<BaseDesignPostProcessor> processors;
+
+    public List<BaseDesignPostProcessor> getProcessors() {
+        return processors;
     }
 
-    public void processMessages(Properties properties, Locale locale){
+    public void setProcessors(List<BaseDesignPostProcessor> processors) {
+        this.processors = processors;
+    }
+
+    public void processForms(Element rootElement, List<Module> modules, List<DesignCompilationError> errors) {
+        if (processors == null) {
+            return;
+        }
+        for (BaseDesignPostProcessor processor : processors) {
+            processor.processForms(rootElement, modules, errors);
+        }
+    }
+
+    public void processMessages(Properties properties, Locale locale) {
+        if (processors == null) {
+            return;
+        }
+        for (BaseDesignPostProcessor processor : processors) {
+            processor.processMessages(properties, locale);
+        }
     }
 
     public void processJpdl(Element rootElement, List<DesignCompilationError> compileErrors) {
+        if (processors == null) {
+            return;
+        }
+        for (BaseDesignPostProcessor processor : processors) {
+            processor.processJpdl(rootElement, compileErrors);
+        }
     }
 
-    public void processStates(Map<String,String> states,Document document, Properties properties){
+    public void processStates(Map<String, String> states, Document document, Properties properties) {
+        if (processors == null) {
+            return;
+        }
+        for (BaseDesignPostProcessor processor : processors) {
+            processor.processStates(states, document, properties);
+        }
     }
 
 }

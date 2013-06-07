@@ -11,14 +11,17 @@
 package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.DesignImportExportHelper;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
@@ -31,10 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 @Service(DesignerService.NAME)
 public class DesignerServiceBean implements DesignerService {
@@ -49,13 +49,13 @@ public class DesignerServiceBean implements DesignerService {
     private ProcessMigrator migrator;
 
     public UUID copyDesign(UUID srcId) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design src = em.find(Design.class, srcId);
 
             Design design = new Design();
-            String name = MessageProvider.getMessage(getClass(), "copyPrefix") + " " + src.getName();
+            String name = AppBeans.get(Messages.class).getMessage(getClass(), "copyPrefix") + " " + src.getName();
             design.setName(name);
 
             if (!StringUtils.isBlank(src.getSrc())) {
@@ -84,6 +84,14 @@ public class DesignerServiceBean implements DesignerService {
                 em.persist(designScript);
             }
 
+            for (DesignProcessVariable variable : src.getDesignProcessVariables()) {
+                DesignProcessVariable processVariable = new DesignProcessVariable();
+                processVariable.setDesign(design);
+                processVariable.setShouldBeOverridden(variable.getShouldBeOverridden());
+                processVariable = (DesignProcessVariable) variable.copyTo(processVariable);
+                em.persist(processVariable);
+            }
+
             tx.commit();
 
             return design.getId();
@@ -98,7 +106,7 @@ public class DesignerServiceBean implements DesignerService {
         return compiler.compileDesign(designId);
     }
 
-    public void deployDesign(UUID designId, UUID procId,Role role) throws DesignDeploymentException {
+    public void deployDesign(UUID designId, UUID procId, Role role) throws DesignDeploymentException {
         ProcessMigrator.Result result = null;
         if (procId != null) {
             result = migrator.checkMigrationPossibility(designId, procId);
@@ -118,12 +126,22 @@ public class DesignerServiceBean implements DesignerService {
         return compiler.compileMessagesForLocalization(design, languages);
     }
 
+    @Override
     public byte[] exportDesign(Design design) throws IOException, FileStorageException {
-        return DesignImportExportHelper.exportDesign(design);
+        return DesignImportExportHelper.exportDesigns(Arrays.asList(design));
     }
 
+    @Override
     public Design importDesign(byte[] bytes) throws IOException, FileStorageException {
-        return DesignImportExportHelper.importDesign(bytes);
+        return DesignImportExportHelper.importDesigns(bytes).iterator().next();
+    }
+
+    public byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException {
+        return DesignImportExportHelper.exportDesigns(designs);
+    }
+
+    public Collection<Design> importDesigns(byte[] bytes) throws IOException, FileStorageException {
+        return DesignImportExportHelper.importDesigns(bytes);
     }
 
     public byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException {
@@ -133,13 +151,13 @@ public class DesignerServiceBean implements DesignerService {
     public void saveNotificationMatrixFile(Design design) {
         if (BooleanUtils.isTrue(design.getNotificationMatrixUploaded()) &&
                 (design.getNotificationMatrix().length > 0)) {
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = AppBeans.get(Persistence.class).createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
                 //Delete previos notifications file
                 Query query = em.createQuery();
                 query.setQueryString("delete from wf$DesignFile df where df.type='notification' and df.design.id=:design");
-                query.setParameter("design",design);
+                query.setParameter("design", design);
                 query.executeUpdate();
 
                 DesignFile df = new DesignFile();

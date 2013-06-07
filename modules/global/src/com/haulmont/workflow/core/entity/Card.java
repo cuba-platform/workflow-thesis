@@ -82,6 +82,10 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
     protected List<CardRole> roles;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    @Composition
+    protected List<CardVariable> cardVariables;
+
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("startDate")
     @Composition
     protected List<CardStage> stages;
@@ -330,5 +334,13 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     public void setCardInfos(Set<CardInfo> cardInfos) {
         this.cardInfos = cardInfos;
+    }
+
+    public List<CardVariable> getCardVariables() {
+        return cardVariables;
+    }
+
+    public void setCardVariables(List<CardVariable> cardVariables) {
+        this.cardVariables = cardVariables;
     }
 }

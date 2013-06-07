@@ -93,7 +93,7 @@
             template="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
 
     <screen id="wf$Card.send"
-            template="workflow/web/ui/base/card-send.xml"/>
+            template="/com/haulmont/workflow/web/ui/base/card-send.xml"/>
 
     <screen id="wf$UserGroup.browse"
             template="/com/haulmont/workflow/web/ui/usergroup/usergroup-browse.xml"/>
@@ -130,5 +130,22 @@
 
     <screen id="wf$SendingSms.browse"
             template="/com/haulmont/workflow/web/ui/sms/sending-sms-browse.xml"/>
+
+    <screen id="wf$DesignProcessVariable.browse"
+            template="/com/haulmont/workflow/web/ui/designprocessvariables/browse/design-process-variable-browse.xml"/>
+
+    <screen id="wf$DesignProcessVariable.edit"
+            template="/com/haulmont/workflow/web/ui/designprocessvariables/edit/design-process-variable-edit.xml"/>
+
+    <screen id="wf$ProcVariable.browse"
+            template="/com/haulmont/workflow/web/ui/procvariable/browse/proc-variable-browse.xml"/>
+
+    <screen id="wf$ProcVariable.edit" template="/com/haulmont/workflow/web/ui/procvariable/edit/proc-variable-edit.xml"/>
+
+    <screen id="wf$CardVariable.browse"
+            template="/com/haulmont/workflow/web/ui/cardvariables/browse/card-variable-browse.xml"/>
+
+    <screen id="wf$CardVariable.edit" template="/com/haulmont/workflow/web/ui/cardvariables/edit/card-variable-edit.xml"/>
+
 
 </screen-config>

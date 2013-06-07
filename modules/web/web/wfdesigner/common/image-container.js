@@ -117,6 +117,7 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
     getValue: function() {
         var value = Wf.ImageContainer.superclass.getValue.call(this);
         value.options = Wf.OptionFieldsHelper.getValue(this);
+        value.variables = Wf.OptionFieldsHelper.getVariables(this);
         value.name=value.options['name'];
         value.outputs = [];
         var outputs = this.getOutputs();
@@ -130,5 +131,6 @@ YAHOO.lang.extend(Wf.ImageContainer, WireIt.ImageContainer, {
     setValue: function(val) {
         Wf.ImageContainer.superclass.setValue.call(this, val);
         Wf.OptionFieldsHelper.setValue(this, val.options);
+        Wf.OptionFieldsHelper.setVariables(this, val.variables);
     }
 });

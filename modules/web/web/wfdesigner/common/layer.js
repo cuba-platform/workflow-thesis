@@ -118,7 +118,21 @@ YAHOO.lang.extend(Wf.Layer, WireIt.Layer, {
             return;
         args['width'] -= 200;
         WireIt.sn(args['el'], null, { width:args['width'] + 'px' });
-    }
+    },
+
+    addWire: function(wireConfig) {
+
+          var src = wireConfig.src;
+          var tgt = wireConfig.tgt;
+
+          var terminal1 = this.containers[src.moduleId].getTerminal(src.terminal);
+          var terminal2 = this.containers[tgt.moduleId].getTerminal(tgt.terminal);
+          if (terminal1==null || terminal2==null){
+                return;
+          }
+
+          return Wf.Layer.superclass.addWire.call(this,wireConfig);
+       },
 
 });
 

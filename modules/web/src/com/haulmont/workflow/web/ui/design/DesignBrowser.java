@@ -5,6 +5,7 @@
  */
 package com.haulmont.workflow.web.ui.design;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -14,17 +15,22 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebLabel;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
+import com.haulmont.workflow.core.app.ProcessVariableService;
+import com.haulmont.workflow.core.entity.AbstractProcessVariable;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
@@ -34,10 +40,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import javax.inject.Inject;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -45,9 +49,15 @@ import java.util.UUID;
  */
 public class DesignBrowser extends AbstractWindow {
 
-    private CollectionDatasource<Design, UUID> ds;
-    private Table table;
-    private DesignerService service;
+    protected CollectionDatasource<Design, UUID> ds;
+    protected Table table;
+    protected DesignerService service;
+
+    @Inject
+    protected Table variablesTable;
+
+    @Inject
+    protected ProcessVariableService processVariableService;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -59,15 +69,14 @@ public class DesignBrowser extends AbstractWindow {
         initColumns();
     }
 
-    private void initActions() {
+    protected void initActions() {
         final TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createRefreshAction();
         helper.createCreateAction(WindowManager.OpenType.DIALOG);
 
         table.addAction(new CopyAction());
         table.addAction(new ImportAction());
         table.addAction(new ExportAction());
-
+        table.addAction(new EditAction(table, WindowManager.OpenType.DIALOG));
         helper.createRemoveAction();
 
         Action designAction = new AbstractAction("design") {
@@ -85,8 +94,60 @@ public class DesignBrowser extends AbstractWindow {
 
         table.addAction(new ScriptsAction());
         table.addAction(new LocalizeAction());
-        table.addAction(new CompileAction());
+        table.addAction(new CompileAction(table));
         table.addAction(new DeployAction());
+
+        table.addAction(new AbstractEntityAction<Design>("showAffectedDesigns", table) {
+            private static final long serialVersionUID = 3614979071137901211L;
+
+            @Override
+            protected Boolean isShowAfterActionNotification() {
+                return false;
+            }
+
+            @Override
+            protected Boolean isUpdateSelectedEntities() {
+                return false;
+            }
+
+            @Override
+            public void _actionPerform(Component component) {
+                Window window = openWindow("wf$Design.browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>singletonMap("subprocId", "%" + getEntity().getId().toString() + "%"));
+                window.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        table.getDatasource().refresh();
+                    }
+                });
+            }
+        });
+
+        table.addAction(new AbstractEntityAction<Design>("editProcessVariables", table) {
+
+            @Override
+            protected Boolean isShowAfterActionNotification() {
+                return false;
+            }
+
+            @Override
+            protected Boolean isUpdateSelectedEntities() {
+                return false;
+            }
+
+            @Override
+            public void _actionPerform(Component component) {
+                App.getInstance().getWindowManager().getDialogParams().setWidth(900);
+                App.getInstance().getWindowManager().getDialogParams().setHeight(600);
+                final Window window = openWindow("wf$DesignProcessVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", getEntity()));
+                window.addListener(
+                        new CloseListener() {
+                            public void windowClosed(String actionId) {
+                                ds.refresh();
+                            }
+                        }
+                );
+            }
+        });
 
         helper.addListener(
                 new ListActionsHelper.Listener() {
@@ -144,6 +205,17 @@ public class DesignBrowser extends AbstractWindow {
                     }
                 }
         );
+
+        variablesTable.addGeneratedColumn("value", new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Entity entity) {
+                final AbstractProcessVariable designProcessVariable = (AbstractProcessVariable) entity;
+                Component componentValue = new WebLabel();
+                String localizedValue = processVariableService.getLocalizedValue(designProcessVariable);
+                ((com.haulmont.cuba.gui.components.Label) componentValue).setValue(localizedValue);
+                return componentValue;
+            }
+        });
     }
 
     private void openDesigner(String id) {
@@ -173,19 +245,16 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ExportAction extends ItemTrackingAction {
+    private class ExportAction extends AbstractAction {
         protected ExportAction() {
             super("export");
         }
 
-        @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set selected = table.getSelected();
             if (!selected.isEmpty()) {
-                Design design = selected.iterator().next();
-                design = getDsContext().getDataSupplier().reload(design, "export");
                 try {
-                    new WebExportDisplay().show(new ByteArrayDataProvider(service.exportDesign(design)), "Design", ExportFormat.ZIP);
+                    new WebExportDisplay().show(new ByteArrayDataProvider(service.exportDesigns(selected)), "Designs", ExportFormat.ZIP);
                 } catch (Exception e) {
 
                     showNotification(
@@ -204,16 +273,14 @@ public class DesignBrowser extends AbstractWindow {
             super("import");
         }
 
-        @Override
         public void actionPerform(Component component) {
             final ImportDialog importDialog = openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
             importDialog.addListener(new CloseListener() {
-                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
 
                         try {
-                            service.importDesign(importDialog.getBytes());
+                            service.importDesigns(importDialog.getBytes());
                         } catch (Exception ex) {
 
                             showNotification(
@@ -230,63 +297,66 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class CompileAction extends AbstractAction {
-        public CompileAction() {
-            super("compile");
+    private class CompileAction extends AbstractEntityAction<Design> {
+
+        private final static String ACTION_ID = "compile";
+
+        public CompileAction(Design entity, IFrame frame) {
+            super(ACTION_ID, entity, frame);
+        }
+
+        public CompileAction(Table table) {
+            super(ACTION_ID, table);
+        }
+
+        public CompileAction(Datasource<Design> datasource, IFrame frame) {
+            super(ACTION_ID, datasource, frame);
         }
 
         @Override
-        public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
-            if (!selected.isEmpty()) {
-                final Design design = selected.iterator().next();
-                if (design.getCompileTs() != null) {
-                    showOptionDialog(
-                            getMessage("confirmCompile.title"),
-                            String.format(getMessage("confirmCompile.msg"), design.getName()),
-                            MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new DialogAction(DialogAction.Type.YES) {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            compile(design);
-                                        }
-                                    },
-                                    new DialogAction(DialogAction.Type.NO)
-                            }
-                    );
-
-                } else {
-                    compile(design);
-                }
-            }
+        protected Boolean isSupportMultiselect() {
+            return true;
         }
 
-        private void compile(Design design) {
+        @Override
+        protected Boolean isShowAfterActionNotification() {
+            return false;
+        }
+
+        @Override
+        protected Boolean isConfirmation() {
+            return true;
+        }
+
+        @Override
+        public void _actionPerform(Component component) {
+            StringBuilder result = new StringBuilder();
+            for (Design design : getEntities()) {
+                Pair<String, String> compileResult = compile(design);
+                result.append("<b>").append(design.getName()).append(":</b> ").append(compileResult.getFirst());
+                if (compileResult.getSecond() != null) {
+                    result.append("<br>").append(compileResult.getSecond());
+                }
+                result.append("<br>");
+            }
+            showMessageDialog(getMessage("compilationResult"), result.toString(), MessageType.CONFIRMATION);
+        }
+
+        private Pair<String, String> compile(Design design) {
             DesignerService service = AppBeans.get(DesignerService.NAME);
             try {
                 CompilationMessage message = service.compileDesign(design.getId());
                 ds.refresh();
-                if (message.getErrors().size() == 0 && message.getWarnings().size() == 0)
-                    showNotification(getMessage("notification.compileSuccess"), NotificationType.HUMANIZED);
-                else if (message.getErrors().size() == 0 && message.getWarnings().size() > 0)
-                    showOptionDialog(getMessage("notification.compileWithWarnings"), prepareCompilationMessage(message), IFrame.MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new DialogAction(DialogAction.Type.OK)
-                            });
+                if (message.getErrors().size() == 0 && message.getWarnings().size() == 0) {
+                    return new Pair<>(getMessage("notification.compileSuccess"), prepareCompilationMessage(message));
+                } else if (message.getErrors().size() == 0 && message.getWarnings().size() > 0)
+                    return new Pair<>(getMessage("notification.compileWithWarnings"), prepareCompilationMessage(message));
                 else {
-                    showOptionDialog(getMessage("notification.compileFailed"), prepareCompilationMessage(message), IFrame.MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new DialogAction(DialogAction.Type.OK)
-                            });
+                    return new Pair<>(getMessage("notification.compileFailed"), prepareCompilationMessage(message));
                 }
 
             } catch (DesignCompilationException e) {
-                showNotification(
-                        getMessage("notification.compileFailed"),
-                        e.getMessage(),
-                        NotificationType.ERROR
-                );
+                return new Pair<>(getMessage("notification.compileFailed"), e.getMessage());
             }
         }
 
@@ -399,6 +469,39 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
+    protected class EditProcessVariablesAction extends AbstractAction {
+        private static final long serialVersionUID = -1170007555308549776L;
+
+        public EditProcessVariablesAction() {
+            super("editProcessVariables");
+        }
+
+        public void actionPerform(Component component) {
+            Set selected = table.getSelected();
+            if (!selected.isEmpty()) {
+                final Design design = (Design) selected.iterator().next();
+                if (design.getCompileTs() == null) {
+                    showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
+                } else {
+                    showDesignProcessVariables(design);
+                }
+            }
+        }
+    }
+
+    private void showDesignProcessVariables(Design design) {
+        App.getInstance().getWindowManager().getDialogParams().setWidth(900);
+        App.getInstance().getWindowManager().getDialogParams().setHeight(600);
+        final Window window = openWindow("wf$DesignProcessVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", design));
+        window.addListener(
+                new CloseListener() {
+                    public void windowClosed(String actionId) {
+                        ds.refresh();
+                    }
+                }
+        );
+    }
+
     private class UploadNotificationMatrixAction extends AbstractAction {
         protected UploadNotificationMatrixAction() {
             super("uploadNotificationMatrix");
@@ -409,12 +512,12 @@ public class DesignBrowser extends AbstractWindow {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
                 Design selectedDesign = selected.iterator().next();
-                final Design design = ds.getDataSupplier().reload(selectedDesign,"_local");
+                final Design design = ds.getDataSupplier().reload(selectedDesign, "_local");
                 final NotificationMatrixWindow window = openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
                         new CloseListener() {
                             public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId)){
+                                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                                     design.setNotificationMatrix(window.getBytes());
                                     design.setNotificationMatrixUploaded(true);
                                     ds.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));

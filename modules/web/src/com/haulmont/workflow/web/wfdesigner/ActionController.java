@@ -10,20 +10,23 @@
  */
 package com.haulmont.workflow.web.wfdesigner;
 
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignScript;
+import com.haulmont.workflow.core.entity.DesignType;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONWriter;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,6 +50,9 @@ import java.util.UUID;
 public class ActionController {
 
     protected Log log = LogFactory.getLog(getClass());
+
+    @Inject
+    protected DataService dataService;
 
     @RequestMapping(method = RequestMethod.POST)
     public String handlePostRequest(
@@ -65,7 +72,7 @@ public class ActionController {
                     design.setCompileTs(null);
 
                     CommitContext commitContext = new CommitContext(Collections.singleton(design));
-                    ServiceLocator.getDataService().commit(commitContext);
+                    dataService.commit(commitContext);
 
                     setHeaders(response);
                     PrintWriter out = response.getWriter();
@@ -109,6 +116,33 @@ public class ActionController {
                                     .endObject();
                         json.endArray();
                         printJson(response, json.toString());
+                    } else if (request.getPathInfo().endsWith("/loadSubDesigns.json")) {
+                        JSONWriter json = new JSONStringer().array();
+                        for (Design subDesign : loadSubDesigns()) {
+                            JSONObject subDesignJson = new JSONObject(subDesign.getSrc());
+
+                            JSONObject jsWorking = subDesignJson.getJSONObject("working");
+                            JSONArray jsModules = jsWorking.getJSONArray("modules");
+
+                            json.object()
+                                    .key("value").value(subDesign.getId().toString())
+                                    .key("label").value(subDesign.getName())
+                                    .key("outs").array();
+
+                            for (int i = 0; i < jsModules.length(); i++) {
+                                JSONObject jsModule = jsModules.getJSONObject(i);
+                                String name = jsModule.getString("name");
+                                if (name.equals("End")) {
+                                    String outName = jsModule.getJSONObject("value").getJSONObject("options").getString("name");
+                                    json.object()
+                                            .key("name").value(outName).endObject();
+                                }
+                            }
+
+                            json.endArray().endObject();
+                        }
+                        json.endArray();
+                        printJson(response, json.toString());
                     } else {
                         log.warn("Illegal request path info: " + request.getPathInfo());
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -135,6 +169,14 @@ public class ActionController {
         PrintWriter out = response.getWriter();
         out.println(json);
         out.close();
+    }
+
+
+    private List<Design> loadSubDesigns() {
+        LoadContext ctx = new LoadContext(Design.class).setView("load-subdesign");
+        ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").addParameter("type", DesignType.SUBDESIGN.getId());
+        return dataService.loadList(ctx);
+
     }
 
     protected Design findDesign(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
@@ -174,17 +216,17 @@ public class ActionController {
         View view = new View(Proc.class).addProperty("code").addProperty("name");
         LoadContext ctx = new LoadContext(Proc.class).setView(view);
         ctx.setQueryString("select p from wf$Proc p order by p.name");
-        return ServiceLocator.getDataService().loadList(ctx);
+        return dataService.loadList(ctx);
     }
 
     private Design loadDesign(UUID designId) {
         LoadContext ctx = new LoadContext(Design.class).setId(designId).setView("_local");
-        return ServiceLocator.getDataService().load(ctx);
+        return dataService.load(ctx);
     }
 
     private List<DesignScript> loadDesignScripts(UUID designId) {
         LoadContext ctx = new LoadContext(DesignScript.class).setView("_minimal");
         ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").addParameter("designId", designId);
-        return ServiceLocator.getDataService().loadList(ctx);
+        return dataService.loadList(ctx);
     }
 }
