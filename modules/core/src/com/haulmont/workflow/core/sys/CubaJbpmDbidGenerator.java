@@ -69,7 +69,7 @@ public class CubaJbpmDbidGenerator extends DbidGenerator {
 
         Transaction tx = persistence.getTransaction();
         try {
-            Object value = executeScript(sequenceSupport, nextValueSql);
+            Object value = executeScript(nextValueSql);
             tx.commit();
             if (value instanceof Long)
                 nextId = (Long) value;
@@ -113,9 +113,9 @@ public class CubaJbpmDbidGenerator extends DbidGenerator {
             throw new UnsupportedOperationException("DB sequences not supported");
     }
 
-    private Object executeScript(SequenceSupport support, String sqlScript) {
+    private Object executeScript(String sqlScript) {
         EntityManager em = persistence.getEntityManager();
-        StrTokenizer tokenizer = new StrTokenizer(sqlScript, support.getScriptSeparator());
+        StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
