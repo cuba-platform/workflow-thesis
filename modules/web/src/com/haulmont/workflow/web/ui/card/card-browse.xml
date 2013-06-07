@@ -28,6 +28,7 @@
                     <button action="cardTable.open" icon="icons/edit.png"/>
                     <button action="cardTable.create" icon="icons/create.png"/>
                     <button action="cardTable.remove" icon="icons/remove.png"/>
+                    <button action="cardTable.viewVariables"/>
                 </hbox>
                 <table id="cardTable" editable="false">
                     <rowsCount/>

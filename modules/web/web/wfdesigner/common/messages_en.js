@@ -107,6 +107,10 @@ var i18nDict = {
     "SubProc.description" : "Start Sub-Process",
     "SubProc.subProcCompleted" : "Completed",
     "SubProc.proc" : "Process",
+
+    SubDesign : "Subdesign",
+    Variable: "Variable alias",
+    OpenDesign : "Open design",
     ////////////////////////////////
     ///Messages
 
@@ -117,5 +121,6 @@ var i18nDict = {
     "SaveChanges" : "Warning!\nThe designer has unsaved changes.\nDo you want to leave the page and discard your changes?",
     "TurnTheChromeFrame" : "Please, turn the ChromeFrame plugin \nand reopen browser",
     "DuplicateName" : "Duplicate module name",
-    "EmptyName" : "Empty module name"
+    "EmptyName" : "Empty module name",
+    "NotSupportedBrowser" : "Sorry, your browser is not supported.Please use Google Chrome or Mozilla Firefox"
 };

@@ -11,12 +11,14 @@
 package com.haulmont.workflow.web.ui.design;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.Design;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,17 +27,19 @@ import java.util.Map;
 
 public class DesignEditor extends AbstractEditor {
 
-    public DesignEditor(IFrame frame) {
-        super(frame);
+    public DesignEditor() {
+        super();
     }
 
     @Override
     public void init(Map<String, Object> params) {
+
         getDsContext().get("designDs").addListener(
                 new DsListenerAdapter() {
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (property.equals("name")) {
+                        Design design = (Design) getItem();
+                        if ("name".equals(property)) {
                             InputStream stream = getClass().getResourceAsStream("new-design-src.ftl");
                             if (stream == null)
                                 throw new IllegalStateException("Resource new-design-src.ftl not found");
@@ -51,11 +55,19 @@ public class DesignEditor extends AbstractEditor {
                                     //
                                 }
                             }
-                            String src = TemplateHelper.processTemplate(
-                                    template,
-                                    Collections.singletonMap("name", value)
-                            );
-                            ((Design) source).setSrc(src);
+                            String name = StringUtils.trimToNull(design.getName());
+                            if (StringUtils.isNotBlank(name)) {
+                                if (PersistenceHelper.isNew(design)) {
+                                    String src = TemplateHelper.processTemplate(
+                                            template,
+                                            Collections.singletonMap("name", value)
+                                    );
+                                    design.setSrc(src);
+
+                                } else {
+                                    design.setSrc(design.getSrc().replace("\"name\":\"" + prevValue + "\",", "\"name\":\"" + name + "\","));
+                                }
+                            }
                         }
                     }
                 }

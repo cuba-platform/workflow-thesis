@@ -582,6 +582,61 @@ var wfLanguage = {
             }
         },
         {
+             "name": "SubDesign",
+             "label": "msg://SubDesign",
+             "description": "msg://SubDesign",
+             "category": "common",
+             "container": {
+                 "xtype": "Wf.DesignContainer",
+                 "icon": "../common/res/icons/assignment_icon.png",
+                 "width": 250,
+
+                 "optFields": [
+                     {
+                          "type":"string",
+                          "label":"msg://name",
+                          "name":"name",
+                          "required":false,
+                          "value":"msg://SubDesign",
+                          "readonly":"true"
+                     },
+                     {
+                          "type": "wfDesignSelect",
+                          "name": "design",
+                          "label": "msg://SubDesign",
+                          "required": false,
+                          "readonly":"true"
+                     }
+                 ],
+                 "fields": [
+                     {
+                          "type": "string",
+                          "name": "name",
+                          "label": "msg://name",
+                          "required": false
+                     },
+                     {
+                          "type": "wfDesignSelect",
+                          "name": "design",
+                          "label": "msg://SubDesign",
+                          "required": false
+                     }
+                 ],
+
+                 "terminals": [
+                     {
+                          "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
+                          "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                     },
+                     {
+                          "name": "out", "direction": [0,1], "offsetPosition": {"left": 112, "bottom": -15},
+                          "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true,
+                          "nMaxWires" : 1
+                     }
+                 ]
+             }
+        },
+        {
             "name": "EmptyModule",
             "label": "msg://EmptyModule",
             "category": "common",

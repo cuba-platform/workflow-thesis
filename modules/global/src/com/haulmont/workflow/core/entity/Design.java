@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "wf$Design")
@@ -34,6 +35,9 @@ public class Design extends StandardEntity {
     @Column(name = "SRC", length = 0)
     protected String src;
 
+    @Column(name = "TYPE")
+    protected String type = DesignType.COMMON.getId();;
+
     @Column(name = "NOTIFICATION_MATRIX")
     protected byte[] notificationMatrix;
 
@@ -46,6 +50,14 @@ public class Design extends StandardEntity {
     @OneToMany(mappedBy = "design", fetch = FetchType.LAZY)
     @OnDelete(DeletePolicy.CASCADE)
     protected Set<DesignScript> scripts;
+
+    @OneToMany(mappedBy = "design", fetch = FetchType.LAZY)
+    @OnDelete(DeletePolicy.CASCADE)
+    private Set<DesignProcessVariable> designProcessVariables;
+
+    @OneToMany(mappedBy = "design", fetch = FetchType.LAZY)
+    @OnDelete(DeletePolicy.CASCADE)
+    private List<DesignFile> designFiles;
 
     @Column(name = "COMPILE_TS")
     protected Date compileTs;
@@ -104,5 +116,29 @@ public class Design extends StandardEntity {
 
     public void setCompileTs(Date compileTs) {
         this.compileTs = compileTs;
+    }
+
+    public DesignType getType() {
+        return DesignType.fromId(type);
+    }
+
+    public void setType(DesignType type) {
+        this.type = type == null ? null : type.getId();
+    }
+
+    public Set<DesignProcessVariable> getDesignProcessVariables() {
+        return designProcessVariables;
+    }
+
+    public void setDesignProcessVariables(Set<DesignProcessVariable> designProcessVariables) {
+        this.designProcessVariables = designProcessVariables;
+    }
+
+    public List<DesignFile> getDesignFiles() {
+        return designFiles;
+    }
+
+    public void setDesignFiles(List<DesignFile> designFiles) {
+        this.designFiles = designFiles;
     }
 }

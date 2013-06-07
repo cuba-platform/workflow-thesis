@@ -404,7 +404,7 @@ div.WireIt-ImageContainer:hover div.WireIt-ImageContainer-turnbutton{
     overflow-y: hidden;
 }
 
-.Wf-MultiOutContainer-link .addButton{
+.Wf-MultiOutContainer-link .addButton, .Wf-Container-with-variable .addButton{
     background:url('./res/icons/add.png') no-repeat;
     background-position:center;
     height:16px;
@@ -413,7 +413,22 @@ div.WireIt-ImageContainer:hover div.WireIt-ImageContainer-turnbutton{
     letter-spacing: normal;
 
  }
-.Wf-MultiOutContainer-link .deleteButton{
+
+.Wf-Container-with-variable .variableButton, .Wf-Container-hasVariable{
+     background:url('./res/icons/param.png') no-repeat;
+     background-position:center;
+     height:16px;
+     width:16px;
+     display: inline-block;
+     letter-spacing: normal;
+
+  }
+
+  .Wf-Container-hasVariable{
+     margin: 4px;
+  }
+
+.Wf-MultiOutContainer-link .deleteButton, .Wf-Container-with-variable .deleteButton{
     background:url('./res/icons/delete.png') no-repeat;
     background-position:center;
     height:16px;
@@ -440,3 +455,27 @@ a.inputEx-List-link {
 .bd #alertPanelButton {
    padding: 3px 5px;
 }
+
+#optionsForm div.inputEx-Group div.inputEx-fieldWrapper div.inputEx-CheckBox{
+    width: 60px;
+}
+#optionsForm div.inputEx-Group div.inputEx-CheckBox.inputEx-Field input{
+    width: auto;
+    float: left;
+}
+
+#optionsForm div.inputEx-Group div.Wf-Container-with-variable-input{
+    padding-left: 20px;
+    padding-right: 5px;
+    border-bottom: 1px solid black;
+    padding-bottom: 5px;
+}
+
+#optionsForm div.inputEx-Group div.Wf-Container-with-variable-input .inputEx-label label{
+    font-size:11px;
+
+}
+
+div.designLink {
+        padding-left: 80px;
+  }

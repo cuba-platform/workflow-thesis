@@ -116,6 +116,10 @@ Wf = {
         this.loadJson('action/loadJbpmProcs.json', callback, scope);
     },
 
+    loadSubDesigns: function(callback, scope) {
+        this.loadJson('action/loadSubDesigns.json', callback, scope);
+    },
+
     initTerminalLabels: function(container, terminalConfigs) {
         for (var i = 0; i < terminalConfigs.length; i++) {
             var tc = terminalConfigs[i];
@@ -339,6 +343,9 @@ Wf.OptionFieldsHelper.showOptions = function(container) {
         for(var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
             var field = container.optionsForm.inputs[i];
             field.setContainer(container);
+            if ("name" != container.optFields[i].name){
+                field.initVariableButtons();
+            }
 
         }
 
@@ -383,10 +390,72 @@ Wf.OptionFieldsHelper.onNameChanged = function(type, args, scope) {
 Wf.OptionFieldsHelper.hideOptions = function(container) {
     if (container.optionsForm) {
         container.optionsValue = container.optionsForm.getValue();
+        for (var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
+             var v = container.optionsForm.inputs[i];
+             if (v.variableAliasInput!=null){
+                var key = v.options.name;
+                if(key) {
+                    container.variables[key] = v.variableAliasInput.getValue();
+                }
+             }
+        }
     }
+
+    if (container.fields){
+        for (var j = 0; j < container.fields.length; j++){
+            var field = container.form.inputs[j];
+            field.setContainer(container);
+            if ("name" != container.fields[j].name){
+                field.setVariableStyle();
+            }
+        }
+    }
+
     container.optionsForm = null;
     var optionsParentEl = YAHOO.util.Dom.get("optionsForm");
     optionsParentEl.innerHTML = "";
+};
+
+Wf.OptionFieldsHelper.getVariables = function(container) {
+    if (container.optionsForm) {
+        for (var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
+            var v = container.optionsForm.inputs[i];
+            if (v.variableAliasInput!=null){
+                var key = v.options.name;
+                if(key) {
+                    var value = v.variableAliasInput.getValue();
+                    container.variables[key] = value;
+                }
+            }
+        }
+    }
+    for (key in container.variables) {
+            if (container.variables[key]==null || container.variables[key] == ''){
+                delete container.variables[key];
+            }
+        }
+    return container.variables;
+};
+
+Wf.OptionFieldsHelper.setVariables = function(container, val) {
+    if (!val) val = new Object();
+        container.variables = new Object();
+        for (key in val) {
+             if (val[key]!=null){
+                container.variables[key] = val[key];
+             }
+        }
+        if (container.optionsForm) {
+                for (var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
+                    var v = container.optionsForm.inputs[i];
+                    if (v.variableAliasInput!=null){
+                        var key = v.options.name;
+                        if(key) {
+                             v.variableAliasInput.setValue(container.variables[key]);
+                        }
+                    }
+                }
+            }
 };
 
 Wf.OptionFieldsHelper.getValue = function(container) {

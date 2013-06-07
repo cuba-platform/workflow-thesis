@@ -6,12 +6,15 @@
 
 package com.haulmont.workflow.web.ui.proc;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Proc;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +36,25 @@ public class ProcBrowser extends AbstractWindow {
         table.addAction(new RefreshAction(table));
         table.addAction(new EditAction(table));
         table.addAction(new RemoveProc(table, true));
+        table.addAction(new AbstractEntityAction<Proc>("editProcessVariables", table) {
+
+            @Override
+            protected Boolean isShowAfterActionNotification() {
+                return false;
+            }
+
+            @Override
+            protected Boolean isUpdateSelectedEntities() {
+                return false;
+            }
+
+            @Override
+            public void _actionPerform(Component component) {
+                App.getInstance().getWindowManager().getDialogParams().setWidth(900);
+                App.getInstance().getWindowManager().getDialogParams().setHeight(600);
+                final Window window = openWindow("wf$ProcVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
+            }
+        });
     }
 
     protected class RemoveProc extends RemoveAction {

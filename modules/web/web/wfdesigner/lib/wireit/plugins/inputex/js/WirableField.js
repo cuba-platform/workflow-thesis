@@ -21,6 +21,11 @@ inputEx.Field = function(options) {
 
 lang.extend(inputEx.Field, inputEx.BaseField, {
 
+    addVariableBtn: null,
+    delVariableBtn: null,
+    variableAliasInput: null,
+    hasVariableBlock: null,
+
    /**
     * Adds a wirable option to every field
     * @method setOptions
@@ -30,6 +35,9 @@ lang.extend(inputEx.Field, inputEx.BaseField, {
       
       this.options.wirable = lang.isUndefined(options.wirable) ? false : options.wirable;
       this.options.container = options.container;
+      if (options.allowVariable!=null) {
+        this.options.allowVariable = options.allowVariable;
+      }
       //options.container = null;
    },
    
@@ -43,7 +51,94 @@ lang.extend(inputEx.Field, inputEx.BaseField, {
       if(this.options.wirable) {
          this.renderTerminal();
       }
+      this.initVariableStyle();
    },
+
+    setVariableStyle: function(){
+        if (this.allowVariable != false){
+            this.allowVariable = this.options.allowVariable;
+        }
+        if (this.allowVariable != false){
+             if (this.options.container.variables == null) this.options.container.variables = new Object();
+             var variableAlias = this.options.container.variables[this.options.name];
+             var parent = this.el;
+             if (this.el.type == "checkbox"){
+                 parent = this.el.parentElement
+             }
+             if (variableAlias != null && variableAlias!=""){
+                 WireIt.sn(parent, null, {width : "120px"});
+                 WireIt.sn(this.hasVariableBlock, null, {display : "block"});
+             }
+             else {
+                WireIt.sn(this.hasVariableBlock, null, {display : "none"});
+                WireIt.sn(parent, null, {width : "140px"});
+             }
+        }
+   },
+
+
+    initVariableStyle: function(){
+             if (this.el!=null){
+                var parent = this.el;
+                if (this.el.type == "checkbox"){
+                    parent = this.el.parentElement
+                 }
+                 var className = "Wf-Container-hasVariable";
+                 this.hasVariableBlock = WireIt.cn('div', {className: className}, {float : "right", display : "none"}, null);
+                 YAHOO.util.Dom.insertAfter(this.hasVariableBlock, parent);
+             }
+   },
+
+    initVariableButtons: function(){
+        if (this.allowVariable!=false){
+            this.allowVariable = this.options.allowVariable;
+        }
+        if (this.allowVariable!=false)
+        {
+             var className = "Wf-Container-with-variable";
+             var parent=this.el;
+             var buttonsDiv = WireIt.cn('div', {className: className}, {float : "right"}, null);
+             if (this.el.type == "checkbox"){
+                 parent = this.el.parentElement.parentElement
+             }
+             YAHOO.util.Dom.insertBefore(buttonsDiv,parent);
+             //parent.appendChild(buttonsDiv);
+
+             this.addVariableBtn = WireIt.cn('div', {className: 'variableButton'}, null, null);
+             buttonsDiv.appendChild(this.addVariableBtn);
+             YAHOO.util.Event.addListener(this.addVariableBtn, "click", this.addVariable, this, true);
+
+             this.delVariableBtn = WireIt.cn('div', { className: 'deleteButton'}, null, null);
+             buttonsDiv.appendChild(this.delVariableBtn);
+             YAHOO.util.Event.addListener(this.delVariableBtn, "click", this.deleteVariable, this, true);
+
+             this.variableAliasInput = inputEx({type: 'string', name: 'variable', label: i18nDict.Variable});
+             WireIt.sn(this.variableAliasInput.divEl,{className:"Wf-Container-with-variable-input"},null);
+             YAHOO.util.Dom.insertAfter(this.variableAliasInput.divEl,parent);
+             if (this.options.container.variables==null) this.options.container.variables = new Object();
+             var variableAlias = this.options.container.variables[this.options.name];
+             if (variableAlias!=null && variableAlias!=""){
+                 this.variableAliasInput.setValue(variableAlias);
+                 this.addVariable();
+             }
+             else {
+                 this.deleteVariable();
+             }
+        }
+    },
+
+    addVariable: function(){
+            WireIt.sn(this.delVariableBtn,null,{display : "block"});
+            WireIt.sn(this.addVariableBtn,null,{display : "none"});
+            WireIt.sn(this.variableAliasInput.divEl,null,{display : "block"});
+    },
+
+    deleteVariable: function() {
+            WireIt.sn(this.delVariableBtn,null,{display : "none"});
+            WireIt.sn(this.addVariableBtn,null,{display : "block"});
+            WireIt.sn(this.variableAliasInput.divEl,null,{display : "none"});
+            this.variableAliasInput.setValue(null);
+    },
    
    /**
     * Render the associated input terminal

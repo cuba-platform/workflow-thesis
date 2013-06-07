@@ -64,6 +64,7 @@
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/SelectField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/EmailField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/UrlField.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/UneditableField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/ListField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/CheckBox.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/Textarea.js"></script>
@@ -95,6 +96,8 @@
 <script type="text/javascript" src="../common/multiout-container.js"></script>
 <script type="text/javascript" src="../common/bezierarrowwire.js"></script>
 <script type="text/javascript" src="../common/layer.js"></script>
+<script type="text/javascript" src="../common/design-container.js"></script>
+<script type="text/javascript" src="../common/design-select.js"></script>
 
 <!--confirm-to-leave-page-->
 <script type="text/javascript"> window.onbeforeunload = (function() {

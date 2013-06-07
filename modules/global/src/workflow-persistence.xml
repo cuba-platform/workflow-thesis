@@ -31,5 +31,10 @@
         <class>com.haulmont.workflow.core.entity.ProcFamily</class>
         <class>com.haulmont.workflow.core.entity.SendingSms</class>
         <class>com.haulmont.workflow.core.entity.UserNotifiedBySms</class>
+
+        <class>com.haulmont.workflow.core.entity.AbstractProcessVariable</class>
+        <class>com.haulmont.workflow.core.entity.DesignProcessVariable</class>
+        <class>com.haulmont.workflow.core.entity.ProcVariable</class>
+        <class>com.haulmont.workflow.core.entity.CardVariable</class>
     </persistence-unit>
 </persistence>

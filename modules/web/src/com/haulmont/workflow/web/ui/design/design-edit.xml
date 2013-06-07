@@ -4,7 +4,6 @@
         messagesPack="com.haulmont.workflow.web.ui.design"
         caption="msg://editor.caption"
         datasource="designDs"
-        focusComponent="nameField"
         >
 
     <dsContext>
@@ -13,8 +12,12 @@
 
     <layout>
         <vbox id="content" stylename="edit-area" margin="true" spacing="true">
-            <label value="msg://com.haulmont.workflow.core.entity/Design.name"/>
-            <textField id="nameField" datasource="designDs" property="name" required="true" width="100%"/>
+            <fieldGroup datasource="designDs" >
+                <column width="100%">
+                    <field id="name" required="true"/>
+                    <field id="type" required="true"/>
+                </column>
+            </fieldGroup>
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

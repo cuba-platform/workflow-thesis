@@ -10,20 +10,17 @@
  */
 package com.haulmont.workflow.core.activity
 
-import org.jbpm.api.activity.ActivityBehaviour
-import org.jbpm.api.activity.ActivityExecution
-import com.haulmont.workflow.core.entity.Card
-
 import com.haulmont.cuba.core.Locator
-
+import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.workflow.core.app.NotificationMatrixAPI
+import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.CardProc
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import com.haulmont.workflow.core.entity.CardProc
-
-import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import org.jbpm.api.Execution
+import org.jbpm.api.activity.ActivityExecution
 
-public class CardActivity implements ActivityBehaviour {
+public class CardActivity extends ProcessVariableActivity {
 
   public static String PREV_ACTIVITY_VAR_NAME = 'prevActivityName';
   String observers
@@ -36,7 +33,9 @@ public class CardActivity implements ActivityBehaviour {
   private Log log = LogFactory.getLog(CardActivity.class)
 
   public void execute(ActivityExecution execution) throws Exception {
-    notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME);
+    super.execute(execution);
+
+    notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
 
     Card card = findCard(execution)
 

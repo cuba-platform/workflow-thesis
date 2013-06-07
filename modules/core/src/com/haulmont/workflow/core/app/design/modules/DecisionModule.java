@@ -10,13 +10,18 @@
  */
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class DecisionModule extends Module {
 
@@ -41,15 +46,26 @@ public class DecisionModule extends Module {
 
         String script = null;
         this.scriptFileName = null;
-        if (jsOptions != null) {
-            script = jsOptions.optString("script");
-            if (StringUtils.trimToNull(script) == null) {
-                throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.decisionScriptNotDefined", caption));
-            }
-            this.scriptFileName = scriptNamesMap.get(script);
+        script = jsOptions.optString("script");
+
+        Messages messages = AppBeans.get(Messages.class);
+
+        if (StringUtils.trimToNull(script) == null) {
+            throw new DesignCompilationException(messages.formatMessage(getClass(), "exception.decisionScriptNotDefined", caption));
         }
+        this.scriptFileName = scriptNamesMap.get(script);
         if (this.scriptFileName == null)
-            throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.decisionScriptNotFound", caption, script));
+            throw new DesignCompilationException(messages.formatMessage(getClass(), "exception.decisionScriptNotFound", caption, script));
+    }
+
+    @Override
+    public List<DesignProcessVariable> getDesignProcessVariables() throws DesignCompilationException {
+        super.getDesignProcessVariables();
+        DesignProcessVariable variable = getVariableByPropertyName("script");
+        if (variable != null) {
+            variable.setPropertyName("scriptName");
+        }
+        return designProcessVariables;
     }
 
     @Override

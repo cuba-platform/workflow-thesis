@@ -42,6 +42,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
 
     xtype: "Wf.Container",
     direction :"down",
+    variables: null,
 
 
     render: function() {
@@ -109,7 +110,8 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     getValue: function() {
         var value = Wf.Container.superclass.getValue.call(this);
         value.options = Wf.OptionFieldsHelper.getValue(this);
-         value.outputs = [];
+        value.variables = Wf.OptionFieldsHelper.getVariables(this);
+        value.outputs = [];
 
         var outputs = this.getOutputs();
         for (var i = 0; i < outputs.length; i++) {
@@ -122,6 +124,7 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     setValue: function(val) {
         Wf.Container.superclass.setValue.call(this, val);
         Wf.OptionFieldsHelper.setValue(this, val.options);
+        Wf.OptionFieldsHelper.setVariables(this, val.variables);
     },
 
     getOutputs: function() {

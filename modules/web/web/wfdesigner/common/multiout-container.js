@@ -9,10 +9,8 @@
  * $Id$
  */
 Wf.MultiOutContainer = function(options, layer) {
-    Wf.MultiOutContainer.superclass.constructor.call(this, options, layer);
-
     this.outputLabels = {};
-
+    Wf.MultiOutContainer.superclass.constructor.call(this, options, layer);
     this.eventAddOutput = new YAHOO.util.CustomEvent("eventAddOutput");
     this.eventDelOutput = new YAHOO.util.CustomEvent("eventDelOutput");
 };
@@ -137,8 +135,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
 
             var labelEditor = this.outputLabels[output.name];
             if (!labelEditor) {
-                    labelEditor = new inputEx.StringField({
-                    className: "terminalLabel", parentEl: this.bodyEl , value:output.name});
+                    labelEditor = this.createLabelEditor(output.name);
                 //labelEditor.setValue(output.name);
                 WireIt.sn(labelEditor.getEl(), null, style);
                 labelEditor.updatedEvt.subscribe(this.onLabelChanged, [labelEditor,output,this.outputLabels, this.layer], true);
@@ -148,6 +145,11 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
             }
         }
         this.redrawAllWires();
+    },
+
+    createLabelEditor: function(name){
+        return new inputEx.StringField({
+                                   className: "terminalLabel", parentEl: this.bodyEl , value:name});
     },
 
     onLabelChanged: function(type, args, scope) {

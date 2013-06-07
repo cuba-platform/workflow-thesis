@@ -10,9 +10,13 @@
  */
 package com.haulmont.workflow.core.app.design;
 
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Design;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +72,8 @@ public abstract class Module {
 
     protected Map<String, String> scriptNamesMap = new HashMap<String, String>();
 
+    protected List<DesignProcessVariable> designProcessVariables = new ArrayList<>();
+
     public void init(Context context) throws DesignCompilationException {
         try {
             this.context = context;
@@ -80,7 +86,7 @@ public abstract class Module {
                 this.caption = name;
             } else {
                 throw new DesignCompilationException(
-                        MessageProvider.getMessage(Module.class, "exception.emptyName"));
+                        AppBeans.get(Messages.class).getMessage(Module.class, "exception.emptyName"));
             }
         } catch (JSONException e) {
             throw new DesignCompilationException(e);
@@ -146,8 +152,7 @@ public abstract class Module {
     protected Element writeJpdlBooleanPropertyEl(Element parentEl, String name, boolean value) {
         Element propEl = parentEl.addElement("property");
         propEl.addAttribute("name", name);
-        Element valEl = propEl.addElement(value ? "true" : "false");
-        return valEl;
+        return propEl.addElement(value ? "true" : "false");
     }
 
     protected Element writeJpdlObjectPropertyEl(Element parentEl, String name, String className) {
@@ -163,5 +168,58 @@ public abstract class Module {
     }
 
     public void writeFormsXml(Element rootEl) throws DesignCompilationException {
+    }
+
+    public Boolean variableExists(String key) throws DesignCompilationException {
+        try {
+            if (jsValue.isNull("variables")) return false;
+            JSONObject variables = jsValue.getJSONObject("variables");
+            Iterator keys = variables.keys();
+            while (keys.hasNext()) {
+                String variableKey = (String) keys.next();
+                if (key.equals(variableKey)) return true;
+
+            }
+            return false;
+        } catch (JSONException e) {
+            throw new DesignCompilationException("Unable to get variables for module " + caption, e);
+        }
+    }
+
+    public List<DesignProcessVariable> getDesignProcessVariables() throws DesignCompilationException {
+        try {
+            if (jsValue.isNull("variables")) return designProcessVariables;
+            if (jsValue.isNull("options")) return designProcessVariables;
+            JSONObject variables = jsValue.getJSONObject("variables");
+            JSONObject options = jsValue.getJSONObject("options");
+            Iterator keys = variables.keys();
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                String alias = variables.getString(key);
+                if (StringUtils.isNotBlank(alias)) {
+                    DesignProcessVariable variable = new DesignProcessVariable();
+                    variable.setAlias(alias);
+                    variable.setName(alias);
+                    variable.setPropertyName(key);
+                    variable.setModuleName(name);
+                    String value = options.getString(key);
+                    variable.setValue(value);
+                    variable.setShouldBeOverridden(StringUtils.isBlank(value));
+                    designProcessVariables.add(variable);
+                }
+            }
+            return designProcessVariables;
+        } catch (JSONException e) {
+            throw new DesignCompilationException("Unable to get variables for module " + caption, e);
+        }
+    }
+
+    protected DesignProcessVariable getVariableByPropertyName(String propertyName) {
+        for (DesignProcessVariable variable : designProcessVariables) {
+            if (propertyName.equals(variable.getPropertyName())) {
+                return variable;
+            }
+        }
+        return null;
     }
 }
