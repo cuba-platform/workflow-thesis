@@ -49,7 +49,7 @@ public class ProcBrowser extends AbstractWindow {
             }
 
             @Override
-            public void _actionPerform(Component component) {
+            public void doActionPerform(Component component) {
                 App.getInstance().getWindowManager().getDialogParams().setWidth(900);
                 App.getInstance().getWindowManager().getDialogParams().setHeight(600);
                 final Window window = openWindow("wf$ProcVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
