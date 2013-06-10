@@ -20,6 +20,7 @@ create table WF_DESIGN_PROCESS_VARIABLE (
     SHOULD_BE_OVERRIDDEN boolean default false,
     ATTRIBUTE_TYPE varchar(25),
     OVERRIDDEN boolean default false,
+    VARIABLE_COMMENT text,
     primary key (ID)
 )^
 
@@ -45,6 +46,7 @@ create table WF_PROC_VARIABLE (
     META_CLASS_NAME varchar(255),
     PROC_ID uuid,
     OVERRIDDEN boolean default false,
+    VARIABLE_COMMENT text,
     primary key (ID)
 )^
 
@@ -69,12 +71,15 @@ create table WF_CARD_VARIABLE (
     ATTRIBUTE_TYPE varchar(25),
     META_CLASS_NAME varchar(255),
     OVERRIDDEN boolean default false,
+    VARIABLE_COMMENT text,
     CARD_ID uuid,
     primary key (ID)
 )^
 
 alter table WF_CARD_VARIABLE add constraint FK_WF_CARD_VARIABLE_TO_WF_CARD
 foreign key (CARD_ID) references WF_CARD(ID)^
+
+create index IDX_WF_CARD_VARIABLE on WF_CARD_VARIABLE(CARD_ID)^
 
 
 

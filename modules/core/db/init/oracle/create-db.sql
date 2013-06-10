@@ -261,6 +261,7 @@ create table WF_DESIGN (
     NOTIFICATION_MATRIX_UPLOADED char(1),
     LOCALIZATION clob,
     COMPILE_TS timestamp,
+    DESIGN_TYPE varchar2(50),
     primary key(ID)
 )^
 
@@ -562,3 +563,84 @@ alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_US
 
 insert into WF_ATTACHMENTTYPE (ID, CODE, ISDEFAULT)
 values ('6c9c8ccce76111df94cb6f884bc56e70', 'AttachmentType.attachment', 1)^
+
+----- WF_DESIGN_PROCESS_VARIABLE creation -----
+create table WF_DESIGN_PROCESS_VARIABLE (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar2(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar2(50),
+    DESIGN_ID varchar2(32),
+    NAME varchar2(100),
+    META_CLASS_NAME varchar2(255),
+    ALIAS varchar2(100),
+    PROPERTY_NAME varchar2(100),
+    VALUE clob,
+    MODULE_NAME varchar2(255),
+    SHOULD_BE_OVERRIDDEN char(1),
+    ATTRIBUTE_TYPE varchar2(25),
+    OVERRIDDEN boolean char(1),
+    VARIABLE_COMMENT clob,
+    primary key(ID)
+)^
+
+alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DESIGN_PROCESS_VARIABLE_TO_WF_DESIGN
+foreign key (DESIGN_ID) references WF_DESIGN(ID)^
+
+----- WF_PROC_VARIABLE creation -----
+create table WF_PROC_VARIABLE (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar2(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar2(50),
+    PROC_ID varchar2(32),
+    NAME varchar2(100),
+    META_CLASS_NAME varchar2(255),
+    ALIAS varchar2(100),
+    PROPERTY_NAME varchar2(100),
+    VALUE clob,
+    MODULE_NAME varchar2(255),
+    ATTRIBUTE_TYPE varchar2(25),
+    OVERRIDDEN boolean char(1),
+    VARIABLE_COMMENT clob,
+    primary key (ID)
+)^
+
+alter table WF_PROC_VARIABLE add constraint FK_WF_PROC_VARIABLE_TO_WF_PROC
+foreign key (PROC_ID) references WF_PROC(ID)^
+
+----- WF_CARD_VARIABLE creation -----
+create table WF_CARD_VARIABLE (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar2(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar2(50),
+    CARD_ID varchar2(32),
+    NAME varchar2(100),
+    META_CLASS_NAME varchar2(255),
+    ALIAS varchar2(100),
+    PROPERTY_NAME varchar2(100),
+    VALUE clob,
+    MODULE_NAME varchar2(255),
+    ATTRIBUTE_TYPE varchar2(25),
+    OVERRIDDEN boolean char(1),
+    VARIABLE_COMMENT clob,
+    primary key (ID)
+)^
+
+alter table WF_CARD_VARIABLE add constraint FK_WF_CARD_VARIABLE_TO_WF_CARD
+foreign key (CARD_ID) references WF_CARD(ID)^
+
+create index IDX_WF_CARD_VARIABLE on WF_CARD_VARIABLE(CARD_ID)^

@@ -35,7 +35,7 @@ public class Design extends StandardEntity {
     @Column(name = "SRC", length = 0)
     protected String src;
 
-    @Column(name = "TYPE")
+    @Column(name = "DESIGN_TYPE")
     protected String type = DesignType.COMMON.getId();;
 
     @Column(name = "NOTIFICATION_MATRIX")

@@ -1,2 +1,2 @@
 --$Id$
-alter table WF_DESIGN add column TYPE varchar(50);
+alter table WF_DESIGN add column DESIGN_TYPE varchar(50);
