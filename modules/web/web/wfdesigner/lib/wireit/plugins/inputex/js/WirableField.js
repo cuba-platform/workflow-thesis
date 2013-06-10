@@ -78,18 +78,18 @@ lang.extend(inputEx.Field, inputEx.BaseField, {
 
 
     initVariableStyle: function(){
-             if (this.el!=null){
-                var parent = this.el;
-                if (this.el.type == "checkbox"){
-                    parent = this.el.parentElement
-                 }
-                 var className = "Wf-Container-hasVariable";
-                 this.hasVariableBlock = WireIt.cn('div', {className: className}, {float : "right", display : "none"}, null);
-                 YAHOO.util.Dom.insertAfter(this.hasVariableBlock, parent);
-             }
+        if (this.el==null) return;
+        var parent = this.el;
+        if (this.el.type == "checkbox"){
+             parent = this.el.parentElement
+        }
+        var className = "Wf-Container-hasVariable";
+        this.hasVariableBlock = WireIt.cn('div', {className: className}, {float : "right", display : "none"}, null);
+        YAHOO.util.Dom.insertAfter(this.hasVariableBlock, parent);
    },
 
     initVariableButtons: function(){
+        if (this.el==null) return;
         if (this.allowVariable!=false){
             this.allowVariable = this.options.allowVariable;
         }

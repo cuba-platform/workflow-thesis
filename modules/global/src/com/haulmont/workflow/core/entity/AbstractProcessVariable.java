@@ -40,7 +40,7 @@ public abstract class AbstractProcessVariable extends StandardEntity {
     @Column(name = "OVERRIDDEN")
     protected Boolean overridden;
 
-    @Column(name = "COMMENT")
+    @Column(name = "VARIABLE_COMMENT")
     protected String comment;
 
     public String getName() {
