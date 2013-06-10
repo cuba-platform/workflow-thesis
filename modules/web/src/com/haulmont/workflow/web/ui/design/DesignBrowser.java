@@ -111,7 +111,7 @@ public class DesignBrowser extends AbstractWindow {
             }
 
             @Override
-            public void _actionPerform(Component component) {
+            public void doActionPerform(Component component) {
                 Window window = openWindow("wf$Design.browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>singletonMap("subprocId", "%" + getEntity().getId().toString() + "%"));
                 window.addListener(new CloseListener() {
                     @Override
@@ -135,7 +135,7 @@ public class DesignBrowser extends AbstractWindow {
             }
 
             @Override
-            public void _actionPerform(Component component) {
+            public void doActionPerform(Component component) {
                 App.getInstance().getWindowManager().getDialogParams().setWidth(900);
                 App.getInstance().getWindowManager().getDialogParams().setHeight(600);
                 final Window window = openWindow("wf$DesignProcessVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", getEntity()));
@@ -329,7 +329,7 @@ public class DesignBrowser extends AbstractWindow {
         }
 
         @Override
-        public void _actionPerform(Component component) {
+        public void doActionPerform(Component component) {
             StringBuilder result = new StringBuilder();
             for (Design design : getEntities()) {
                 Pair<String, String> compileResult = compile(design);
