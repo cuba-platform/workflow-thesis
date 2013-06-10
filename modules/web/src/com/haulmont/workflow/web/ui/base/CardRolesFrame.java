@@ -87,9 +87,6 @@ public class CardRolesFrame extends AbstractFrame {
     @Inject
     private Metadata metadata;
 
-    @Inject
-    protected Messages messages;
-
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
