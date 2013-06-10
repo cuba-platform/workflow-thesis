@@ -43,7 +43,6 @@
                 <column id="user" caption="msg://user"/>
                 <column id="sortOrder" caption="msg://sortOrder" width="95"/>
                 <column id="duration" width="60" editable="true"/>
-                <column id="timeUnit" width="60" editable="true"/>
                 <column id="notifyByEmail" caption="msg://notifyByEmail" width="45"/>
                 <column id="notifyByCardInfo" caption="msg://notifyByCardInfo" width="45"/>
             </columns>

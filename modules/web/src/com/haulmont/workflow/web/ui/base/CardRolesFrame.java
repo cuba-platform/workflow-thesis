@@ -696,7 +696,7 @@ public class CardRolesFrame extends AbstractFrame {
 
             MetaPropertyPath sortOrderMpp = cardRoleMetaClass.getPropertyPath("sortOrder");
             MetaPropertyPath durationMpp = cardRoleMetaClass.getPropertyPath("duration");
-            MetaPropertyPath timeUnitMpp = cardRoleMetaClass.getPropertyPath("timeUnit");
+            final MetaPropertyPath timeUnitMpp = cardRoleMetaClass.getPropertyPath("timeUnit");
 
             if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
                 if (!ArrayUtils.contains(visibleColumns, sortOrderMpp)) {
@@ -737,6 +737,28 @@ public class CardRolesFrame extends AbstractFrame {
                             }
                         });
                         return durationTF;
+                    }
+                });
+                rolesTable.addGeneratedColumn("timeUnit", new Table.ColumnGenerator() {
+                    @Override
+                    public Component generateCell(Entity entity) {
+                        final WebLookupField timeUnitField = new WebLookupField();
+                        timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
+                        timeUnitField.setWidth("60");
+                        timeUnitField.setNullOption(TimeUnit.HOUR);
+                        final CardRole cardRole = (CardRole)entity;
+                        if(cardRole != null && cardRole.getTimeUnit() != null) {
+                            timeUnitField.setValue(cardRole.getTimeUnit());
+                        }
+                        timeUnitField.addListener(new ValueListener() {
+                            @Override
+                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                if(cardRole != null)
+                                    cardRole.setTimeUnit((TimeUnit)value);
+                            }
+                        });
+
+                        return timeUnitField;
                     }
                 });
                 if (!ArrayUtils.contains(visibleColumns, timeUnitMpp)) {
