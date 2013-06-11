@@ -170,7 +170,7 @@ public abstract class Module {
     public void writeFormsXml(Element rootEl) throws DesignCompilationException {
     }
 
-    public Boolean variableExists(String key) throws DesignCompilationException {
+    public Boolean isVariableExists(String key) throws DesignCompilationException {
         try {
             if (jsValue.isNull("variables")) return false;
             JSONObject variables = jsValue.getJSONObject("variables");
@@ -186,7 +186,7 @@ public abstract class Module {
         }
     }
 
-    public List<DesignProcessVariable> getDesignProcessVariables() throws DesignCompilationException {
+    public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
         try {
             if (jsValue.isNull("variables")) return designProcessVariables;
             if (jsValue.isNull("options")) return designProcessVariables;

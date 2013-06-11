@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.global.AppBeans
@@ -18,6 +18,12 @@ import org.jbpm.pvm.internal.util.ReflectUtil
 
 import java.lang.reflect.Method
 
+/**
+ *
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 public class ProcessVariableActivity implements ActivityBehaviour {
 
     private ProcessVariableAPI processVariableAPI;

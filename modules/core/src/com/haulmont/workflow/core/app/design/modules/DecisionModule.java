@@ -11,7 +11,6 @@
 package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
@@ -59,8 +58,8 @@ public class DecisionModule extends Module {
     }
 
     @Override
-    public List<DesignProcessVariable> getDesignProcessVariables() throws DesignCompilationException {
-        super.getDesignProcessVariables();
+    public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
+        super.generateDesignProcessVariables();
         DesignProcessVariable variable = getVariableByPropertyName("script");
         if (variable != null) {
             variable.setPropertyName("scriptName");

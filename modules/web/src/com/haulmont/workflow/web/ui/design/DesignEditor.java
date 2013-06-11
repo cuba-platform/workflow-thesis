@@ -27,10 +27,6 @@ import java.util.Map;
 
 public class DesignEditor extends AbstractEditor {
 
-    public DesignEditor() {
-        super();
-    }
-
     @Override
     public void init(Map<String, Object> params) {
 

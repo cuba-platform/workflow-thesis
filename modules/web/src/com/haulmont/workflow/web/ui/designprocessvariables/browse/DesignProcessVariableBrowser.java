@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.workflow.web.ui.designprocessvariables.browse;
 
 import com.haulmont.workflow.core.entity.Design;
@@ -13,12 +19,6 @@ import java.util.Map;
 public class DesignProcessVariableBrowser extends AbstractProcVariableBrowser {
 
     private Design design;
-
-    private static final long serialVersionUID = 4880567976812400606L;
-
-    public DesignProcessVariableBrowser() {
-        super();
-    }
 
     @Override
     public void init(Map<String, Object> params) {

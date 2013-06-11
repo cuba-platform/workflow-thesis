@@ -1,15 +1,21 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
 
+/**
+ *
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 @Entity(name = "wf$ProcVariable")
 @Table(name = "WF_PROC_VARIABLE")
 @NamePattern("%s|name")

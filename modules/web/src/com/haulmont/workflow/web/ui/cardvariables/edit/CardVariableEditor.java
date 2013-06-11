@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id: CardVariableEditor.java 10533 2013-02-12 08:55:55Z zaharchenko $</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.web.ui.cardvariables.edit;
 
 import com.haulmont.cuba.core.entity.Entity;
@@ -12,11 +12,13 @@ import com.haulmont.workflow.web.ui.designprocessvariables.edit.AbstractProcVari
 
 import java.util.Map;
 
-
+/**
+ *
+ * <p>$Id: CardVariableEditor.java 10533 2013-02-12 08:55:55Z zaharchenko $</p>
+ *
+ * @author Zaharchenko
+ */
 public class CardVariableEditor extends AbstractProcVariableEditor {
-
-
-    private static final long serialVersionUID = 5057040239669432847L;
 
     public CardVariableEditor() {
         super();

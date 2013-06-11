@@ -123,11 +123,6 @@ public class DesignImportExportHelper {
         return xStream;
     }
 
-    //TODO remove
-    public static void checkAndRemoveAlreadyRemovedDesign(Design design) {
-
-    }
-
     private static Design findExistsDesign(Design design) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Boolean softDeleteion = em.isSoftDeletion();

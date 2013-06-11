@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -26,6 +26,12 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ *
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 @ManagedBean(ProcessVariableAPI.NAME)
 public class ProcessVariableManager implements ProcessVariableAPI {
 

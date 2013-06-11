@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id: ProcVariableEditor.java 10533 2013-02-12 08:55:55Z zaharchenko $</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.web.ui.procvariable.edit;
 
 import com.haulmont.cuba.core.entity.Entity;
@@ -16,7 +16,12 @@ import com.haulmont.workflow.web.ui.designprocessvariables.edit.AbstractProcVari
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ *
+ * <p>$Id: ProcVariableEditor.java 10533 2013-02-12 08:55:55Z zaharchenko $</p>
+ *
+ * @author Zaharchenko
+ */
 public class ProcVariableEditor extends AbstractProcVariableEditor {
 
     public ProcVariableEditor() {

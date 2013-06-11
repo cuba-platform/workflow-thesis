@@ -19,7 +19,8 @@
 
     <!-- Various beans -->
 
-    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.workflow.core.sys.querymacro.WorkingTimeBetweenQueryMacroHandler"
+    <bean id="cuba_TimeBetweenQueryMacroHandler"
+          class="com.haulmont.workflow.core.sys.querymacro.WorkingTimeBetweenQueryMacroHandler"
           scope="prototype"/>
 
     <bean id="base_workflow_DesignCompiler" abstract="true"
@@ -30,14 +31,15 @@
                 <entry key="End" value="com.haulmont.workflow.core.app.design.modules.EndModule"/>
                 <entry key="CardState" value="com.haulmont.workflow.core.app.design.modules.CardStateModule"/>
                 <entry key="Assignment" value="com.haulmont.workflow.core.app.design.modules.AssignmentModule"/>
-                <entry key="ParallelAssignment" value="com.haulmont.workflow.core.app.design.modules.ParallelAssignmentModule"/>
+                <entry key="ParallelAssignment"
+                       value="com.haulmont.workflow.core.app.design.modules.ParallelAssignmentModule"/>
                 <entry key="Decision" value="com.haulmont.workflow.core.app.design.modules.DecisionModule"/>
                 <entry key="Fork" value="com.haulmont.workflow.core.app.design.modules.ForkModule"/>
                 <entry key="ForEachUser" value="com.haulmont.workflow.core.app.design.modules.ForEachUserModule"/>
                 <entry key="Join" value="com.haulmont.workflow.core.app.design.modules.JoinModule"/>
                 <entry key="IsRoleAssigned" value="com.haulmont.workflow.core.app.design.modules.IsRoleAssignedModule"/>
-                <entry key="SubProc" value="com.haulmont.workflow.core.app.design.modules.SubProcModule" />
-                <entry key="EmptyModule" value="com.haulmont.workflow.core.app.design.modules.EmptyModule" />
+                <entry key="SubProc" value="com.haulmont.workflow.core.app.design.modules.SubProcModule"/>
+                <entry key="EmptyModule" value="com.haulmont.workflow.core.app.design.modules.EmptyModule"/>
                 <entry key="SubDesign" value="com.haulmont.workflow.core.app.design.modules.SubDesignModule"/>
             </map>
         </property>
@@ -62,13 +64,7 @@
 
     <bean id="workflow_FormCompiler" parent="base_workflow_FormCompiler"/>
 
-    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor">
-        <property name="processors">
-            <list>
-                <bean class="com.haulmont.workflow.core.app.design.postprocessors.SubDesignPostProcessor"/>
-            </list>
-        </property>
-    </bean>
+    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor"/>
 
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 

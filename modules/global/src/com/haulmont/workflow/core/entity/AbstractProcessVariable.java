@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
@@ -12,6 +12,12 @@ import com.haulmont.workflow.core.enums.AttributeType;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+/**
+ *
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 @MappedSuperclass
 public abstract class AbstractProcessVariable extends StandardEntity {
     private static final long serialVersionUID = -8393724105946755178L;
