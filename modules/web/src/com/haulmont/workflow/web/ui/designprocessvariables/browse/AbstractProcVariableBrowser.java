@@ -1,12 +1,11 @@
-/**
- *
- * <p>$Id: AbstractProcVariableBrowser.java 11002 2013-03-29 11:31:42Z zaharchenko $</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.web.ui.designprocessvariables.browse;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -15,7 +14,6 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
 import com.haulmont.workflow.core.app.ProcessVariableService;
 import com.haulmont.workflow.core.entity.AbstractProcessVariable;
@@ -26,6 +24,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ *
+ * <p>$Id: AbstractProcVariableBrowser.java 11002 2013-03-29 11:31:42Z zaharchenko $</p>
+ *
+ * @author Zaharchenko
+ */
 public abstract class AbstractProcVariableBrowser extends AbstractLookup {
 
     @Inject

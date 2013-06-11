@@ -1,13 +1,19 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.workflow.core.enums;
+
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
 /**
  *
  * <p>$Id$</p>
  *
  * @author zaharchenko
  */
-package com.haulmont.workflow.core.enums;
-
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-
 public enum AttributeType implements EnumClass<String> {
     STRING("STRING"),
     INTEGER("INTEGER"),

@@ -1,14 +1,20 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.entity.Design;
@@ -28,6 +34,11 @@ import java.util.*;
 import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
 import static com.haulmont.workflow.core.global.WfConstants.SUBDESIGN_SEPARATOR;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 public class SubDesignModule extends Module {
 
     protected JSONObject jsOptions;
@@ -36,7 +47,7 @@ public class SubDesignModule extends Module {
     protected Map<String, String> transitionsMap;
     protected Design design;
 
-    public static final String SUBDESIGN_ELEMENT_NAME="subdesign";
+    public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
 
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
@@ -45,7 +56,7 @@ public class SubDesignModule extends Module {
             jsOptions = jsValue.optJSONObject("options");
             subDesignId = jsOptions.getString("design");
             if (StringUtils.isEmpty(subDesignId)) {
-                throw new DesignCompilationException("Unable to compile module " + caption + ". Subdesign is empty");
+                throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(AssignmentModule.class, "exception.subdesignIsEmpty", caption));
             }
             checkDesignExist(subDesignId);
             tx.commit();
@@ -138,8 +149,8 @@ public class SubDesignModule extends Module {
     }
 
     @Override
-    public List<DesignProcessVariable> getDesignProcessVariables() throws DesignCompilationException {
-        super.getDesignProcessVariables();
+    public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
+        super.generateDesignProcessVariables();
         for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
             DesignProcessVariable newDesignParameter = (DesignProcessVariable) designProcessVariable.copyTo(new DesignProcessVariable());
             newDesignParameter.setModuleName(prepareModuleNames(designProcessVariable.getModuleName()));

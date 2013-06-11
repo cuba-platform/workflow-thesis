@@ -1,9 +1,9 @@
-/**
- *
- * <p>$Id$</p>
- *
- * @author Zaharchenko
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.Persistence;
@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
+/**
+ *
+ * <p>$Id$</p>
+ *
+ * @author Zaharchenko
+ */
 @Service(ProcessVariableService.NAME)
 public class ProcessVariableServiceBean implements ProcessVariableService {
 

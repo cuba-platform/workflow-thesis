@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.workflow.web.ui.cardvariables.browse;
 
 import com.haulmont.cuba.gui.components.Action;
@@ -16,8 +22,6 @@ import java.util.Map;
 public class CardVariableBrowser extends AbstractProcVariableBrowser {
 
     private Card card;
-
-    private static final long serialVersionUID = 4880567976812400606L;
 
     public CardVariableBrowser() {
         super();

@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.WfUtils;
+import com.haulmont.workflow.core.app.design.modules.SubDesignModule;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.error.DesignError;
 import com.haulmont.workflow.core.error.DesignCompilationError;
@@ -299,7 +300,7 @@ public class DesignCompiler {
     private Collection<DesignProcessVariable> getProcessVariables(List<Module> modules) throws DesignCompilationException {
         Map<String, DesignProcessVariable> designProcessVariables = new HashMap<>();
         for (Module module : modules) {
-            for (DesignProcessVariable processVariable : module.getDesignProcessVariables()) {
+            for (DesignProcessVariable processVariable : module.generateDesignProcessVariables()) {
                 if (!designProcessVariables.containsKey(processVariable.getAlias())) {
                     designProcessVariables.put(processVariable.getAlias(), processVariable);
                 } else {
@@ -781,9 +782,33 @@ public class DesignCompiler {
         onEl.addAttribute("event", "end");
         Element listenerEl = onEl.addElement("event-listener");
         listenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
-
+        processSubdesignJpdl(rootEl);
         postProcessor.processJpdl(rootEl, compileErrors);
         return Dom4j.writeDocument(document, true);
+    }
+
+    public void processSubdesignJpdl(Element rootElement) {
+        Map<String, String> subDesigns = new HashMap<String, String>();
+        List<Element> subDesign = (List<Element>) rootElement.elements(SubDesignModule.SUBDESIGN_ELEMENT_NAME);
+        if (!subDesign.isEmpty()) {
+            for (Element element : subDesign) {
+                subDesigns.put(element.attributeValue("name"), element.attributeValue("startTransitionName"));
+            }
+            for (Element element : (List<Element>) rootElement.elements()) {
+                List<Element> transitions = element.elements("transition");
+                if (!transitions.isEmpty()) {
+                    for (Element transition : transitions) {
+                        String to = transition.attributeValue("to");
+                        if (StringUtils.isNotBlank(to)) {
+                            String newDest = subDesigns.get(to);
+                            if (newDest != null) {
+                                transition.addAttribute("to", newDest);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private String compileMessages(List<Module> modules, String lang, Element localization) {

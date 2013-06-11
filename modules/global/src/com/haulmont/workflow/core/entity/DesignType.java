@@ -1,13 +1,19 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.workflow.core.entity;
+
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
 /**
  *
  * <p>$Id$</p>
  *
  * @author Zaharchenko
  */
-package com.haulmont.workflow.core.entity;
-
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-
 public enum DesignType implements EnumClass<String> {
     COMMON("COMMON"),
     SUBDESIGN("SUBDESIGN");

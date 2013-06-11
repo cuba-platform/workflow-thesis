@@ -98,7 +98,6 @@ public class DesignBrowser extends AbstractWindow {
         table.addAction(new DeployAction());
 
         table.addAction(new AbstractEntityAction<Design>("showAffectedDesigns", table) {
-            private static final long serialVersionUID = 3614979071137901211L;
 
             @Override
             protected Boolean isShowAfterActionNotification() {
@@ -464,26 +463,6 @@ public class DesignBrowser extends AbstractWindow {
                                 }
                             }
                     );
-                }
-            }
-        }
-    }
-
-    protected class EditProcessVariablesAction extends AbstractAction {
-        private static final long serialVersionUID = -1170007555308549776L;
-
-        public EditProcessVariablesAction() {
-            super("editProcessVariables");
-        }
-
-        public void actionPerform(Component component) {
-            Set selected = table.getSelected();
-            if (!selected.isEmpty()) {
-                final Design design = (Design) selected.iterator().next();
-                if (design.getCompileTs() == null) {
-                    showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
-                } else {
-                    showDesignProcessVariables(design);
                 }
             }
         }
