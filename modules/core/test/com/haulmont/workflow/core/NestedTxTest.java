@@ -36,7 +36,7 @@ public class NestedTxTest extends WfTestCase {
         try {
             WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
-            Proc res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/nested-tx-test.jpdl.xml");
+            Proc res = mBean.deployJpdlXml("/process/nested-tx-test.jpdl.xml");
             assertTrue(res != null);
 
             tx.commitRetaining();

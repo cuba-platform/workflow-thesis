@@ -45,7 +45,7 @@ public class SequentialAssignerTest extends WfTestCase {
         try {
             WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
-            Proc res = mBean.deployJpdlXml(curDir + "/modules/core/test/process/sequential-assigner-test.jpdl.xml");
+            Proc res = mBean.deployJpdlXml("/process/sequential-assigner-test.jpdl.xml");
             assertTrue(res != null);
 
             tx.commitRetaining();
