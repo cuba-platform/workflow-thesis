@@ -50,6 +50,7 @@ def webModule = project(':workflow-web')
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
+def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
@@ -105,6 +106,11 @@ configure(globalModule) {
 }
 
 configure(coreModule) {
+    configurations {
+        jdbc
+        dbscripts
+    }
+
     dependencies {
         compile(globalModule)
         compile(sharedLibModule)
@@ -118,6 +124,8 @@ configure(coreModule) {
         runtime(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.5.2')
         runtime(group: 'javassist', name: 'javassist', version: '3.4.GA')
         provided(servletApi)
+        jdbc(hsqldb)
+        dbscripts(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'db', ext: 'zip')
     }
 
     assembleDbScripts << {
@@ -125,6 +133,31 @@ configure(coreModule) {
             from new File(projectDir, 'db')
             into "$buildDir/db/20-workflow"
         }
+    }
+
+    def hsqlDbName = 'cubadb'
+
+    task startDb(description: 'Starts local HSQLDB server', type: CubaHsqlStart) {
+        dbName = hsqlDbName
+    }
+
+    task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop)  {
+        dbName = hsqlDbName
+    }
+
+    task killDb(description: 'Kill local HSQLDB server process running on port 9001', type: CubaKillProcess) {
+        port = 9001
+    }
+
+    task removeDb(description: 'Removes local HSQL database', type: Delete) {
+        delete new File("$rootProject.projectDir/data")
+    }
+
+    task createDb(dependsOn: assemble, description: 'Creates local HSQL database', type: CubaDbCreation) {
+        dbms = 'hsql'
+        dbName = hsqlDbName
+        dbUser = 'sa'
+        dbPassword = ''
     }
 }
 
