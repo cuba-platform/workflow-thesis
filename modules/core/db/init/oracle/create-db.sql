@@ -313,6 +313,7 @@ create table WF_PROC (
     DESIGN_ID varchar2(32),
     AVAILABLE_ROLE_ID varchar2(32),
     COMBINED_STAGES_ENABLED char(1),
+    DURATION_ENABLED char(1),
     primary key(ID)
 )^
 create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC(CODE, DELETE_TS)^
