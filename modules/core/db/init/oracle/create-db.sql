@@ -583,12 +583,12 @@ create table WF_DESIGN_PROCESS_VARIABLE (
     MODULE_NAME varchar2(255),
     SHOULD_BE_OVERRIDDEN char(1),
     ATTRIBUTE_TYPE varchar2(25),
-    OVERRIDDEN boolean char(1),
+    OVERRIDDEN char(1),
     VARIABLE_COMMENT clob,
     primary key(ID)
 )^
 
-alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DESIGN_PROCESS_VARIABLE_TO_WF_DESIGN
+alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DES_PROC_VAR_TO_WF_DES
 foreign key (DESIGN_ID) references WF_DESIGN(ID)^
 
 ----- WF_PROC_VARIABLE creation -----
@@ -609,7 +609,7 @@ create table WF_PROC_VARIABLE (
     VALUE clob,
     MODULE_NAME varchar2(255),
     ATTRIBUTE_TYPE varchar2(25),
-    OVERRIDDEN boolean char(1),
+    OVERRIDDEN char(1),
     VARIABLE_COMMENT clob,
     primary key (ID)
 )^
@@ -635,7 +635,7 @@ create table WF_CARD_VARIABLE (
     VALUE clob,
     MODULE_NAME varchar2(255),
     ATTRIBUTE_TYPE varchar2(25),
-    OVERRIDDEN boolean char(1),
+    OVERRIDDEN char(1),
     VARIABLE_COMMENT clob,
     primary key (ID)
 )^
