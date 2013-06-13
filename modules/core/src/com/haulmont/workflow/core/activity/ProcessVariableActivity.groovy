@@ -56,7 +56,8 @@ public class ProcessVariableActivity implements ActivityBehaviour {
     private void injectCardVariables() {
         for (CardVariable cardVariable : cardVariables.values()) {
             injectValue(WfConstants.VARIABLE_PREFIX + cardVariable.getAlias(), cardVariable);
-            int moduleIndex = ActivityHelper.searchInStringWithSplit(activityName, cardVariable.getModuleName(), WfConstants.CARD_VARIABLES_SEPARATOR)
+            int moduleIndex = ActivityHelper.searchInStringWithSplit(activityName,
+                    cardVariable.getModuleName(), WfConstants.CARD_VARIABLES_SEPARATOR)
             if (StringUtils.isNotBlank(cardVariable.getModuleName())
                     && StringUtils.isNotBlank(cardVariable.getPropertyName())
                     && moduleIndex >= 0) {

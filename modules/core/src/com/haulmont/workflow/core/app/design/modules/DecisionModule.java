@@ -50,11 +50,13 @@ public class DecisionModule extends Module {
         Messages messages = AppBeans.get(Messages.class);
 
         if (StringUtils.trimToNull(script) == null) {
-            throw new DesignCompilationException(messages.formatMessage(getClass(), "exception.decisionScriptNotDefined", caption));
+            throw new DesignCompilationException(messages.formatMessage(getClass(),
+                    "exception.decisionScriptNotDefined", caption));
         }
         this.scriptFileName = scriptNamesMap.get(script);
         if (this.scriptFileName == null)
-            throw new DesignCompilationException(messages.formatMessage(getClass(), "exception.decisionScriptNotFound", caption, script));
+            throw new DesignCompilationException(messages.formatMessage(getClass(),
+                    "exception.decisionScriptNotFound", caption, script));
     }
 
     @Override
