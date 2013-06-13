@@ -111,7 +111,9 @@ public class DesignBrowser extends AbstractWindow {
 
             @Override
             public void doActionPerform(Component component) {
-                Window window = openWindow("wf$Design.browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>singletonMap("subprocId", "%" + getEntity().getId().toString() + "%"));
+                Window window = openWindow("wf$Design.browse",
+                        WindowManager.OpenType.THIS_TAB,
+                        Collections.<String, Object>singletonMap("subprocId", "%" + getEntity().getId().toString() + "%"));
                 window.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
@@ -137,7 +139,9 @@ public class DesignBrowser extends AbstractWindow {
             public void doActionPerform(Component component) {
                 App.getInstance().getWindowManager().getDialogParams().setWidth(900);
                 App.getInstance().getWindowManager().getDialogParams().setHeight(600);
-                final Window window = openWindow("wf$DesignProcessVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", getEntity()));
+                final Window window = openWindow("wf$DesignProcessVariable.browse",
+                        WindowManager.OpenType.DIALOG,
+                        Collections.<String, Object>singletonMap("design", getEntity()));
                 window.addListener(
                         new CloseListener() {
                             public void windowClosed(String actionId) {
@@ -392,7 +396,9 @@ public class DesignBrowser extends AbstractWindow {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
                     App.getInstance().getWindowManager().getDialogParams().setWidth(500);
-                    final DeployDesignWindow window = openWindow("wf$Design.deploy", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", design));
+                    final DeployDesignWindow window = openWindow("wf$Design.deploy",
+                            WindowManager.OpenType.DIALOG,
+                            Collections.<String, Object>singletonMap("design", design));
                     window.addListener(
                             new CloseListener() {
                                 public void windowClosed(String actionId) {
@@ -429,14 +435,6 @@ public class DesignBrowser extends AbstractWindow {
                         WindowManager.OpenType.THIS_TAB,
                         Collections.<String, Object>singletonMap("design", design)
                 );
-//                window.addListener(
-//                        new CloseListener() {
-//                            public void windowClosed(String actionId) {
-//                                if (Window.COMMIT_ACTION_ID.equals(actionId))
-//                                    ds.refresh();
-//                            }
-//                        }
-//                );
             }
         }
     }
@@ -471,7 +469,9 @@ public class DesignBrowser extends AbstractWindow {
     private void showDesignProcessVariables(Design design) {
         App.getInstance().getWindowManager().getDialogParams().setWidth(900);
         App.getInstance().getWindowManager().getDialogParams().setHeight(600);
-        final Window window = openWindow("wf$DesignProcessVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", design));
+        final Window window = openWindow("wf$DesignProcessVariable.browse",
+                WindowManager.OpenType.DIALOG,
+                Collections.<String, Object>singletonMap("design", design));
         window.addListener(
                 new CloseListener() {
                     public void windowClosed(String actionId) {

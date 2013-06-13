@@ -135,9 +135,11 @@ public class DesignCompiler {
             if (unusedModules.size() > 0) {
                 StringBuilder modulesList = new StringBuilder();
                 for (String moduleName : unusedModules.values()) {
-                    modulesList.append("<li>" + (moduleName == null ? AppBeans.get(Messages.class).getMessage(getClass(), "unnamed") : moduleName) + "</li>");
+                    modulesList.append("<li>" + (moduleName == null ? AppBeans.get(Messages.class).getMessage(getClass(),
+                            "unnamed") : moduleName) + "</li>");
                 }
-                warnings.add(AppBeans.get(Messages.class).formatMessage(getClass(), "warning.unusedModules", modulesList.toString()));
+                warnings.add(AppBeans.get(Messages.class).formatMessage(getClass(),
+                        "warning.unusedModules", modulesList.toString()));
             }
 
             String forms = compileForms(modules, errors);
@@ -306,8 +308,10 @@ public class DesignCompiler {
                 } else {
                     DesignProcessVariable designProcessVariable = designProcessVariables.get(processVariable.getAlias());
                     if (isSameVariable(processVariable, designProcessVariable)) {
-                        designProcessVariable.setModuleName(designProcessVariable.getModuleName() + CARD_VARIABLES_SEPARATOR + processVariable.getModuleName());
-                        designProcessVariable.setPropertyName(designProcessVariable.getPropertyName() + CARD_VARIABLES_SEPARATOR + processVariable.getPropertyName());
+                        designProcessVariable.setModuleName(designProcessVariable.getModuleName()
+                                + CARD_VARIABLES_SEPARATOR + processVariable.getModuleName());
+                        designProcessVariable.setPropertyName(designProcessVariable.getPropertyName()
+                                + CARD_VARIABLES_SEPARATOR + processVariable.getPropertyName());
                         if (designProcessVariable.getAttributeType() == null) {
                             designProcessVariable.setAttributeType(processVariable.getAttributeType());
                             designProcessVariable.setMetaClassName(processVariable.getMetaClassName());
@@ -317,7 +321,8 @@ public class DesignCompiler {
                             designProcessVariable.setValue(processVariable.getValue());
                         }
                     } else {
-                        throw new DesignCompilationException(String.format(AppBeans.get(Messages.class).getMessage(getClass(), "variablesWithoutSameAttributeType"), designProcessVariable.getAlias()));
+                        throw new DesignCompilationException(String.format(AppBeans.get(Messages.class).getMessage(getClass(),
+                                "variablesWithoutSameAttributeType"), designProcessVariable.getAlias()));
                     }
                 }
             }
@@ -354,7 +359,8 @@ public class DesignCompiler {
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
-            if (elementKey != null && (element.getName().equals("start") || (element.getName().equals("join")) || checkState(elementKey, elements))) {
+            if (elementKey != null && (element.getName().equals("start")
+                    || (element.getName().equals("join")) || checkState(elementKey, elements))) {
                 List<Element> transitions = element.elements("transition");
                 for (Element transition : transitions) {
                     String stateKey = transition.attributeValue("to");
@@ -611,7 +617,8 @@ public class DesignCompiler {
                 errors.add(new ModuleError(module.getName(), e.getMessage()));
             }
             if (module.getName() != null && modulesNames.contains(module.getName())) {
-                errors.add(new DesignError(MessageProvider.formatMessage(getClass(), "exception.duplicateModuleName", module.getCaption())));
+                errors.add(new DesignError(MessageProvider.formatMessage(getClass(),
+                        "exception.duplicateModuleName", module.getCaption())));
             } else
                 modulesNames.add(module.getName());
             modules.add(module);
@@ -727,16 +734,16 @@ public class DesignCompiler {
 
         Map<Pair<String, String>, DesignProcessVariable> designProcessVariableMap = new HashMap<>();
         for (DesignProcessVariable processVariable : designProcessVariables) {
-            designProcessVariableMap.put(new Pair<String, String>(processVariable.getModuleName(), processVariable.getAlias()), processVariable);
+            designProcessVariableMap.put(new Pair<>(processVariable.getModuleName(), processVariable.getAlias()), processVariable);
         }
 
         Query existsParametersQuery = em.createQuery("select dp from wf$DesignProcessVariable dp where dp.design.id = :designId");
         existsParametersQuery.setParameter("designId", design.getId());
-        existsParametersQuery.setView(MetadataProvider.getViewRepository().getView(DesignProcessVariable.class, View.LOCAL));
+        existsParametersQuery.setView(AppBeans.get(Metadata.class).getViewRepository().getView(DesignProcessVariable.class, View.LOCAL));
         List<DesignProcessVariable> existsDesignProcessVariables = existsParametersQuery.getResultList();
 
         for (DesignProcessVariable exists : existsDesignProcessVariables) {
-            DesignProcessVariable designProcessVariable = designProcessVariableMap.get(new Pair<String, String>(exists.getModuleName(), exists.getAlias()));
+            DesignProcessVariable designProcessVariable = designProcessVariableMap.get(new Pair<>(exists.getModuleName(), exists.getAlias()));
             if (designProcessVariable != null) {
                 if (BooleanUtils.isNotTrue(exists.getOverridden())) {
                     exists.setValue(designProcessVariable.getValue());

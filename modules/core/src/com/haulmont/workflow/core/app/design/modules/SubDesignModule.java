@@ -56,7 +56,8 @@ public class SubDesignModule extends Module {
             jsOptions = jsValue.optJSONObject("options");
             subDesignId = jsOptions.getString("design");
             if (StringUtils.isEmpty(subDesignId)) {
-                throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(AssignmentModule.class, "exception.subdesignIsEmpty", caption));
+                throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(AssignmentModule.class,
+                        "exception.subdesignIsEmpty", caption));
             }
             checkDesignExist(subDesignId);
             tx.commit();
@@ -67,7 +68,8 @@ public class SubDesignModule extends Module {
             tx.end();
         }
         if (StringUtils.isEmpty(subDesignId)) {
-            throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(getClass(), "exception.noSubDesign", caption));
+            throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(getClass(),
+                    "exception.noSubDesign", caption));
         }
     }
 
@@ -90,7 +92,8 @@ public class SubDesignModule extends Module {
     public void writeMessages(Properties properties, String lang) {
         super.writeMessages(properties, lang);
 
-        List<String> propertiesForExclude = Arrays.asList("SAVE_ACTION", "SAVE_AND_CLOSE_ACTION", "START_PROCESS_ACTION", "CANCEL_PROCESS_ACTION", "Canceled");
+        List<String> propertiesForExclude = Arrays.asList("SAVE_ACTION",
+                "SAVE_AND_CLOSE_ACTION", "START_PROCESS_ACTION", "CANCEL_PROCESS_ACTION", "Canceled");
 
         String fileName = "messages";
         if (!lang.equals("en")) {

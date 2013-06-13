@@ -91,7 +91,8 @@ public class ProcessVariableManager implements ProcessVariableAPI {
                     break;
 
                 case ENTITY:
-                    Class entityClass = AppBeans.get(Metadata.class).getSession().getClass(designProcessVariable.getMetaClassName()).getJavaClass();
+                    Class entityClass = AppBeans.get(Metadata.class).getSession()
+                            .getClass(designProcessVariable.getMetaClassName()).getJavaClass();
                     EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
                     Entity entity = em.find(entityClass, UUID.fromString(stringValue));
                     if (entity != null) {

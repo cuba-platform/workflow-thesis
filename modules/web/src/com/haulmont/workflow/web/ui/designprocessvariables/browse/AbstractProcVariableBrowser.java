@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- *
  * <p>$Id: AbstractProcVariableBrowser.java 11002 2013-03-29 11:31:42Z zaharchenko $</p>
  *
  * @author Zaharchenko
@@ -62,7 +61,7 @@ public abstract class AbstractProcVariableBrowser extends AbstractLookup {
     }
 
     protected void generateValueColumnForVariablesTable() {
-        table.addGeneratedColumn("value",new Table.ColumnGenerator() {
+        table.addGeneratedColumn("value", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 final AbstractProcessVariable designProcessVariable = (AbstractProcessVariable) entity;
@@ -88,7 +87,9 @@ public abstract class AbstractProcVariableBrowser extends AbstractLookup {
             }
         }
         if (notInitiatedVariables.length() > 0) {
-            showOptionDialog(getMessage("warning"), String.format(getMessage("attributeTypeNotsetForVariable"), notInitiatedVariables.toString()), MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK) {
+            showOptionDialog(getMessage("warning"), String.format(getMessage("attributeTypeNotsetForVariable"),
+                    notInitiatedVariables.toString()),
+                    MessageType.WARNING, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK) {
                 @Override
                 public void actionPerform(Component component) {
                     AbstractProcVariableBrowser.super.close(actionId, force);
