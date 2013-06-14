@@ -1484,6 +1484,12 @@ public class CardRolesFrame extends AbstractFrame {
                 addGroupButton.setVisible(editable);
             }
         }
+
+        public void setVisibleAddGroup(boolean visible) {
+            if (addGroupButton != null) {
+                addGroupButton.setVisible(visible);
+            }
+        }
     }
 
     public void setCombinedStagesEnabled(boolean combinedStagesEnabled) {
