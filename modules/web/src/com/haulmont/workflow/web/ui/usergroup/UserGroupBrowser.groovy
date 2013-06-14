@@ -71,6 +71,7 @@ class UserGroupBrowser extends AbstractWindow {
                     openLookup('sec$User.lookup',
                             [
                                     handleLookup: {Collection<User> items ->
+                                        userGroupsDs.refresh()
                                         UserGroup userGroup = userGroupsDs.getItem()
                                         if (userGroup.users == null) {
                                             boolean modified = userGroupsDs.modified
