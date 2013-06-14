@@ -9,6 +9,7 @@ package com.haulmont.workflow.core.listeners;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.listener.*;
+import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 
@@ -33,10 +34,12 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
 
     public void onBeforeInsert(Card card) {
         setHasAttributesForCard(card);
+        setHasAttachmentsInCard(card);
     }
 
     public void onBeforeUpdate(Card card) {
         setHasAttributesForCard(card);
+        setHasAttachmentsInCard(card);
     }
 
     private void setHasAttributesForCard(Card card) {
@@ -63,5 +66,20 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
         } finally {
             tx.end();
         }
+    }
+
+    private void setHasAttachmentsInCard(Card card) {
+        if (card.getAttachments() == null || card.getAttachments().isEmpty()) {
+            card.setHasAttachments(false);
+            setHasAttachmentsInCard(card, false);
+        } else {
+            card.setHasAttachments(true);
+            setHasAttachmentsInCard(card, true);
+        }
+    }
+
+    private void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
+        WfService wfService = Locator.lookup(WfService.NAME);
+        wfService.setHasAttachmentsInCard(card, hasAttachments);
     }
 }
