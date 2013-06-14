@@ -78,6 +78,7 @@ public class CardRolesFrame extends AbstractFrame {
     private String requiredRolesCodesStr;
     private List deletedEmptyRoleCodes;
     protected boolean editable = true;
+    protected boolean combinedStagesEnabled;
 
     @Inject
     WebButton moveDown;
@@ -698,7 +699,7 @@ public class CardRolesFrame extends AbstractFrame {
             MetaPropertyPath durationMpp = cardRoleMetaClass.getPropertyPath("duration");
             final MetaPropertyPath timeUnitMpp = cardRoleMetaClass.getPropertyPath("timeUnit");
 
-            if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled())) {
+            if (BooleanUtils.isTrue(proc.getCombinedStagesEnabled()) || combinedStagesEnabled) {
                 if (!ArrayUtils.contains(visibleColumns, sortOrderMpp)) {
                     visibleColumns = ArrayUtils.add(visibleColumns, sortOrderMpp);
                     vRolesTable.setColumnHeader(sortOrderMpp, messages.getMessage(CardRole.class, "CardRole.sortOrder"));
@@ -1483,6 +1484,10 @@ public class CardRolesFrame extends AbstractFrame {
                 addGroupButton.setVisible(editable);
             }
         }
+    }
+
+    public void setCombinedStagesEnabled(boolean combinedStagesEnabled) {
+        this.combinedStagesEnabled = combinedStagesEnabled;
     }
 
     public Map<CardRole, CardRoleField> getActorActionsFieldsMap() {
