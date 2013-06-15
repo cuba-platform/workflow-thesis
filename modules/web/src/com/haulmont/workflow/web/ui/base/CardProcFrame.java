@@ -27,6 +27,7 @@ import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
+import com.haulmont.workflow.web.ui.base.action.ProcessAction;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -235,6 +236,7 @@ public class CardProcFrame extends AbstractFrame {
         final Proc prevProc = card.getProc();
         DataSupplier ds = getDsContext().getDataSupplier();
         final String prevCardProcState = cp.getState();
+        final Window window = ComponentsHelper.getWindow(frame);
 
         final int prevStartCount = cp.getStartCount() == null ? 0 : cp.getStartCount();
 
@@ -243,6 +245,15 @@ public class CardProcFrame extends AbstractFrame {
                     new View(Card.class).addProperty("jbpmProcessId")
             );
             Card loadedCard = ds.load(lc);
+            if (loadedCard == null) {
+                Messages messages = AppBeans.get(Messages.NAME);
+                App.getInstance().getWindowManager().showNotification(
+                        messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
+                        IFrame.NotificationType.WARNING
+                );
+                App.getInstance().getWindowManager().close(window);
+                return;
+            }
             if (loadedCard.getJbpmProcessId() != null) {
                 // already started in another transaction
                 String msg = AppBeans.get(Messages.class).getMainMessage("assignmentAlreadyFinished.message");
@@ -252,7 +263,6 @@ public class CardProcFrame extends AbstractFrame {
             }
         }
 
-        final Window window = ComponentsHelper.getWindow(frame);
         if (window instanceof Window.Editor && ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()) {
             refreshCard();
 
