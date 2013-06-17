@@ -329,7 +329,7 @@ public class TransitionForm extends AbstractForm {
             DataService dataService = getDataService();
             LoadContext ctx = new LoadContext(AttachmentType.class);
             ctx.setView("_local");
-            ctx.setQueryString("select att from wf$AttachmentType att where att.code = :code").addParameter("code", code);
+            ctx.setQueryString("select att from wf$AttachmentType att where att.code = :code").setParameter("code", code);
             List list = dataService.loadList(ctx);
             attachmentTypes.put(code, list.isEmpty() ? null : (AttachmentType) list.get(0));
         }

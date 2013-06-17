@@ -310,7 +310,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
             loadContext.setQueryString(queryString);
             if (where != null) {
                 for (String key : where.getSecond().keySet()) {
-                    loadContext.getQuery().addParameter(key, where.getSecond().get(key));
+                    loadContext.getQuery().setParameter(key, where.getSecond().get(key));
                 }
             }
             loadContext.getQuery().setMaxResults(persistenceManager.getMaxFetchUI(metaClassName));
