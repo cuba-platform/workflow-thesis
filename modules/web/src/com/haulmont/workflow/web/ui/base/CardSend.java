@@ -271,7 +271,7 @@ public class CardSend extends AbstractWindow {
         ctx.setView("card-edit");
         ctx.setQueryString("select cr from wf$CardRole cr where cr.card.id = :cardId and cr.procRole.invisible = false and " +
                 "cr.procRole.id in (select pr.id from wf$ProcRole pr where pr.proc.id = :procId)")
-                .addParameter("cardId", card).addParameter("procId", card.getProc());
+                .setParameter("cardId", card).setParameter("procId", card.getProc());
         return AppBeans.get(DataService.class).loadList(ctx);
     }
 

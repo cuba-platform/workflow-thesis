@@ -527,7 +527,7 @@ public class CardRolesFrame extends AbstractFrame {
             String view = View.MINIMAL;
             LoadContext ctx = new LoadContext(User.class).setView(view);
             LoadContext.Query query = ctx.setQueryString("select u from sec$User u join u.userRoles ur where ur.role.id = :role order by u.name");
-            query.addParameter("role", secRole);
+            query.setParameter("role", secRole);
             List<User> loadedUsers = ServiceLocator.getDataService().loadList(ctx);
             if (loadedUsers == null) {
                 roleUsers = new ArrayList<User>();
@@ -781,7 +781,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
         ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null")
-                .addParameter("procId", proc.getId());
+                .setParameter("procId", proc.getId());
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
         for (DefaultProcActor dpa : dpaList) {
@@ -1214,7 +1214,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (procRoles == null) {
             LoadContext ctx = new LoadContext(ProcRole.class);
             LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
-            query.addParameter("proc", card.getProc());
+            query.setParameter("proc", card.getProc());
             procRoles = ServiceLocator.getDataService().loadList(ctx);
         }
         for (ProcRole procRole : procRoles) {

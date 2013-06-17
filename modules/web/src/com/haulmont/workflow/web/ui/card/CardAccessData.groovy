@@ -48,8 +48,8 @@ public class CardAccessData extends AbstractWfAccessData {
       else {
         LoadContext ctx = new LoadContext(CardRole.class)
         Query q = ctx.setQueryString('select cr.id from wf$CardRole cr where cr.card.id = :card and cr.user.id = :user')
-        q.addParameter('card', card.getId())
-        q.addParameter('user', UserSessionClient.currentOrSubstitutedUserId())
+        q.setParameter('card', card.getId())
+        q.setParameter('user', UserSessionClient.currentOrSubstitutedUserId())
         List list = ServiceLocator.getDataService().loadList(ctx)
         saveEnabled = !list.isEmpty()
       }

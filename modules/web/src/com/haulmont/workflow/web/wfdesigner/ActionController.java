@@ -174,7 +174,7 @@ public class ActionController {
 
     private List<Design> loadSubDesigns() {
         LoadContext ctx = new LoadContext(Design.class).setView("load-subdesign");
-        ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").addParameter("type", DesignType.SUBDESIGN.getId());
+        ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").setParameter("type", DesignType.SUBDESIGN.getId());
         return dataService.loadList(ctx);
 
     }
@@ -226,7 +226,7 @@ public class ActionController {
 
     private List<DesignScript> loadDesignScripts(UUID designId) {
         LoadContext ctx = new LoadContext(DesignScript.class).setView("_minimal");
-        ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").addParameter("designId", designId);
+        ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").setParameter("designId", designId);
         return dataService.loadList(ctx);
     }
 }

@@ -66,7 +66,7 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
 
         LoadContext ctx = new LoadContext(User.class).setView("usergroup-add");
         LoadContext.Query query = ctx.setQueryString(queryString);
-        query.addParameter("secRole", secRole);
+        query.setParameter("secRole", secRole);
 
         return dataSupplier.loadList(ctx);
     }

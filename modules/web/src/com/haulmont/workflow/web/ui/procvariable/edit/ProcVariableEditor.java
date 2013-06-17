@@ -43,9 +43,9 @@ public class ProcVariableEditor extends AbstractProcVariableEditor {
         ProcVariable procVariable = (ProcVariable) processVariable;
         LoadContext loadContext = new LoadContext(ProcVariable.class);
         loadContext.setQueryString("select dpv from wf$ProcVariable dpv where dpv.proc.id = :proc and dpv.alias = :alias and dpv.id <> :id");
-        loadContext.getQuery().addParameter("proc", procVariable.getProc());
-        loadContext.getQuery().addParameter("alias", procVariable.getAlias());
-        loadContext.getQuery().addParameter("id", procVariable.getId());
+        loadContext.getQuery().setParameter("proc", procVariable.getProc());
+        loadContext.getQuery().setParameter("alias", procVariable.getAlias());
+        loadContext.getQuery().setParameter("id", procVariable.getId());
         List<DesignProcessVariable> variableList = getDsContext().getDataSupplier().loadList(loadContext);
         if (variableList.size() > 0) {
             showNotification(getMessage("parameterWithSameAliasAlreadyExists"), IFrame.NotificationType.ERROR);
