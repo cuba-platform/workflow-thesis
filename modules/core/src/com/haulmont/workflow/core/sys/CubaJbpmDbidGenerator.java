@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.pvm.internal.id.DbidGenerator;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -73,6 +74,8 @@ public class CubaJbpmDbidGenerator extends DbidGenerator {
             tx.commit();
             if (value instanceof Long)
                 nextId = (Long) value;
+            else if (value instanceof BigDecimal)
+                nextId = ((BigDecimal) value).longValue();
             else
                 throw new IllegalStateException("Unsupported value type: " + value.getClass());
         } finally {
