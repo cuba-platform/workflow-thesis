@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 28.12.10 14:48
- *
- * $Id$
  */
 package com.haulmont.workflow.core.app.design;
 
@@ -48,6 +43,10 @@ import java.util.*;
 
 import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DesignCompiler {
 
     private Map<String, String> moduleClassNames;
@@ -68,7 +67,7 @@ public class DesignCompiler {
     private Map<String, Class<? extends Module>> getModuleClasses() {
         if (moduleClasses == null) {
             synchronized (this) {
-                moduleClasses = new HashMap<String, Class<? extends Module>>();
+                moduleClasses = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : moduleClassNames.entrySet()) {
                     moduleClasses.put(entry.getKey(), AppBeans.get(Scripting.class).<Module>loadClass(entry.getValue()));
@@ -89,8 +88,8 @@ public class DesignCompiler {
     }
 
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
-        List<DesignCompilationError> errors = new LinkedList<DesignCompilationError>();
-        List<String> warnings = new LinkedList<String>();
+        List<DesignCompilationError> errors = new LinkedList<>();
+        List<String> warnings = new LinkedList<>();
         Preconditions.checkArgument(designId != null, "designId is null");
         log.info("Compiling design " + designId);
 
@@ -99,7 +98,7 @@ public class DesignCompiler {
             EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
 
-            List<Module> modules = new ArrayList<Module>();
+            List<Module> modules = new ArrayList<>();
 
             errors.addAll(createModules(design, modules));
 
@@ -118,7 +117,7 @@ public class DesignCompiler {
             }
 
             Map<String, String> unusedModules = checkUnusedModules(jpdl, modules);
-            List<DesignCompilationError> errorsToRemove = new LinkedList<DesignCompilationError>();
+            List<DesignCompilationError> errorsToRemove = new LinkedList<>();
             for (DesignCompilationError error : errors) {
                 if (error instanceof ModuleError) {
                     String name = ((ModuleError) error).getModuleName();
@@ -183,7 +182,7 @@ public class DesignCompiler {
 
     private List<DesignCompilationError> checkRequiredModules(List<Module> modules) {
         boolean startExist = false;
-        List<DesignCompilationError> errors = new LinkedList<DesignCompilationError>();
+        List<DesignCompilationError> errors = new LinkedList<>();
         for (Module module : modules) {
             if (StartModule.class.isAssignableFrom(module.getClass())) {
                 startExist = true;
@@ -196,8 +195,8 @@ public class DesignCompiler {
 
     private Boolean checkEndReachable(String jpdl) {
         Map<String, Element> modulesByName = getModulesByName(jpdl);
-        List<String> visitedModules = new ArrayList<String>();
-        List<String> visitingModules = new ArrayList<String>();
+        List<String> visitedModules = new ArrayList<>();
+        List<String> visitingModules = new ArrayList<>();
         Element startEl = getStartElement(modulesByName.values());
         if (startEl == null)
             return null;
@@ -231,7 +230,7 @@ public class DesignCompiler {
     }
 
     private Map<String, Element> getModulesByName(String jpdl) {
-        Map<String, Element> modulesByName = new HashMap<String, Element>();
+        Map<String, Element> modulesByName = new HashMap<>();
         Document document;
         try {
             document = DocumentHelper.parseText(jpdl);
@@ -257,10 +256,10 @@ public class DesignCompiler {
     }
 
     private Map<String, String> checkUnusedModules(String jpdl, List<Module> modules) {
-        Map<String, String> errors = new HashMap<String, String>();
+        Map<String, String> errors = new HashMap<>();
 
         Map<String, Element> modulesByName;
-        Map<String, String> modulesNames = new HashMap<String, String>();
+        Map<String, String> modulesNames = new HashMap<>();
         for (Module module : modules) {
             modulesNames.put(module.getName(), module.getCaption());
         }
@@ -337,7 +336,7 @@ public class DesignCompiler {
     }
 
     private List<String> parseRoles(Document document) {
-        List<String> rolesList = new LinkedList<String>();
+        List<String> rolesList = new LinkedList<>();
         List<Element> elements = document.getRootElement().elements("custom");
         for (Element e : elements) {
             List<Element> properties = e.elements("property");
@@ -355,7 +354,7 @@ public class DesignCompiler {
     }
 
     private Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
-        Map<String, String> states = new LinkedHashMap<String, String>();
+        Map<String, String> states = new LinkedHashMap<>();
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
@@ -375,6 +374,8 @@ public class DesignCompiler {
                 }
             }
         }
+        states.put("Canceled", properties.getProperty("Canceled"));
+        states.put("Reassign", properties.getProperty("Reassign"));
         postProcessor.processStates(states, document, properties);
         return states;
     }
@@ -448,7 +449,7 @@ public class DesignCompiler {
         Set<Map.Entry<String, String>> set = statesMap.entrySet();
         Iterator<Row> rowIt = statesSheet.rowIterator();
         Iterator<Map.Entry<String, String>> stateIt = set.iterator();
-        Map.Entry<String, String> stateEntry = null;
+        Map.Entry<String, String> stateEntry;
         while (rowIt.hasNext()) {
             Row row = rowIt.next();
             if (stateIt.hasNext()) {
@@ -586,8 +587,8 @@ public class DesignCompiler {
 
 
     private List<DesignCompilationError> createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
-        List<DesignCompilationError> errors = new LinkedList<DesignCompilationError>();
-        List<String> modulesNames = new ArrayList<String>();
+        List<DesignCompilationError> errors = new LinkedList<>();
+        List<String> modulesNames = new ArrayList<>();
 
         JSONObject json = new JSONObject(design.getSrc());
 
@@ -634,7 +635,7 @@ public class DesignCompiler {
     }
 
     private void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires, List<DesignCompilationError> errors) throws JSONException, DesignCompilationException {
-        Map<Integer, Module> otherModules = new HashMap<Integer, Module>();
+        Map<Integer, Module> otherModules = new HashMap<>();
 
         for (int i = 0; i < modules.size(); i++) {
             //Key - terminal name
@@ -689,7 +690,7 @@ public class DesignCompiler {
     }
 
     private Map<String, List<TransitionParams>> getModuleTransitionsParams(Module module, int moduleId, JSONArray jsWires) throws JSONException {
-        Map<String, List<TransitionParams>> wires = new HashMap<String, List<TransitionParams>>();
+        Map<String, List<TransitionParams>> wires = new HashMap<>();
 
         for (int i = 0; i < jsWires.length(); i++) {
             JSONObject jsWire = jsWires.getJSONObject(i);
@@ -701,7 +702,7 @@ public class DesignCompiler {
                             new TransitionParams(jsWireDst.getInt("moduleId"), jsWireDst.getString("terminal")));
                 } else {
                     TransitionParams params = new TransitionParams(jsWireDst.getInt("moduleId"), jsWireDst.getString("terminal"));
-                    List<TransitionParams> list = new LinkedList<TransitionParams>();
+                    List<TransitionParams> list = new LinkedList<>();
                     list.add(params);
                     wires.put(jsWireSrc.getString("terminal"), list);
                 }
@@ -795,7 +796,7 @@ public class DesignCompiler {
     }
 
     public void processSubdesignJpdl(Element rootElement) {
-        Map<String, String> subDesigns = new HashMap<String, String>();
+        Map<String, String> subDesigns = new HashMap<>();
         List<Element> subDesign = (List<Element>) rootElement.elements(SubDesignModule.SUBDESIGN_ELEMENT_NAME);
         if (!subDesign.isEmpty()) {
             for (Element element : subDesign) {
@@ -828,7 +829,9 @@ public class DesignCompiler {
         compileMessage(properties, locale, "SAVE_AND_CLOSE_ACTION", mp);
         compileMessage(properties, locale, "START_PROCESS_ACTION", mp);
         compileMessage(properties, locale, "CANCEL_PROCESS_ACTION", mp);
+        compileMessage(properties, locale, "REASSIGN_ACTION", mp);
         compileMessage(properties, locale, "Canceled", mp);
+        compileMessage(properties, locale, "Reassign", mp);
 
         for (Module module : modules) {
             module.writeMessages(properties, lang);
@@ -872,9 +875,9 @@ public class DesignCompiler {
     }
 
     public Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages) throws DesignCompilationException {
-        Map<String, Properties> result = new HashMap<String, Properties>();
+        Map<String, Properties> result = new HashMap<>();
 
-        List<Module> modules = new ArrayList<Module>();
+        List<Module> modules = new ArrayList<>();
         try {
             createModules(design, modules);
         } catch (JSONException e) {

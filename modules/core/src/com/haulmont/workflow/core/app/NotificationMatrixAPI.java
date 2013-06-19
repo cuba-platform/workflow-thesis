@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 29.07.2010 15:16:31
- *
- * $Id$
  */
 package com.haulmont.workflow.core.app;
 
@@ -18,6 +13,10 @@ import com.haulmont.workflow.core.entity.CardRole;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public interface NotificationMatrixAPI {
     String NAME = "workflow_NotificationMatrix";
 
@@ -25,7 +24,8 @@ public interface NotificationMatrixAPI {
         NO,
         SIMPLE,  //grey
         ACTION,  //green
-        WARNING; //red
+        WARNING, //red
+        REASSIGN;
 
         public static NotificationType fromId(String id) {
             if (id == null) {

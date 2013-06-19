@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -41,7 +41,7 @@ public class ActionsFrame extends AbstractFrame {
     public void initActions(Card card, boolean descriptionVisible) {
         deleteActionButtons();
 
-        List<String> actions = new ArrayList<String>();
+        List<String> actions = new ArrayList<>();
 
         AbstractWfAccessData accessData = getContext().getParamValue("accessData");
         if (accessData == null || accessData.getSaveAndCloseEnabled()) {
@@ -73,6 +73,9 @@ public class ActionsFrame extends AbstractFrame {
             if (!WfUtils.isCardInState(card, WfConstants.CARD_STATE_CANCELED) && (accessData == null || accessData.getCancelProcessEnabled())) {
                 actions.add(WfConstants.ACTION_CANCEL);
             }
+            if (accessData != null && accessData.getReassignInfo() != null) {
+                actions.add(WfConstants.ACTION_REASSIGN);
+            }
         } else if (card.getProc() != null && card.getJbpmProcessId() == null &&
                 (accessData == null || accessData.getStartProcessEnabled())) {
             actions.add(WfConstants.ACTION_START);
@@ -87,7 +90,7 @@ public class ActionsFrame extends AbstractFrame {
 
         for (String actionName : actions) {
             Button button = AppConfig.getFactory().createComponent(Button.NAME);
-            button.setAction(new ProcessAction(card, actionName, this));
+            button.setAction(createAction(card, actionName));
             button.setWidth("100%");
 
             if ((enabledActions != null) && !enabledActions.contains(actionName))
@@ -101,7 +104,6 @@ public class ActionsFrame extends AbstractFrame {
             if (style != null) {
                 button.setStyleName(style);
             }
-
             add(button);
         }
 
@@ -127,5 +129,12 @@ public class ActionsFrame extends AbstractFrame {
             return;
         }
         remove(button);
+    }
+
+    protected Action createAction(Card card, String actionName) {
+        if (WfConstants.ACTION_REASSIGN.equals(actionName))
+            return new ReassignAction(card, this);
+        else
+            return new ProcessAction(card, actionName, this);
     }
 }

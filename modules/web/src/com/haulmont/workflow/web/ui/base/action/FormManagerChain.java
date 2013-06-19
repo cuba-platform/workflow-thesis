@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 04.02.2010 9:41:48
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.action;
 
@@ -22,6 +17,10 @@ import org.dom4j.Element;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class FormManagerChain {
 
     public interface Handler {
@@ -31,18 +30,18 @@ public class FormManagerChain {
     }
 
     private static FormManagerChain nullObject = new FormManagerChain();
-    private static Map<String, FormManagerChain> cache = new ConcurrentHashMap<String, FormManagerChain>();
+    private static Map<String, FormManagerChain> cache = new ConcurrentHashMap<>();
 
     private Handler handler;
 
     //activity and transitions params fills when reading FormManagerChain from xml
     //card and assignmentId fills before usage
-    private Map<String, Object> commonParams = new HashMap<String, Object>();
+    private Map<String, Object> commonParams = new HashMap<>();
 
-    private List<FormManager> managersBefore = new ArrayList<FormManager>();
+    private List<FormManager> managersBefore = new ArrayList<>();
     private int positionBefore = 0;
 
-    private List<FormManager> managersAfter = new ArrayList<FormManager>();
+    private List<FormManager> managersAfter = new ArrayList<>();
     private int positionAfter = 0;
 
     public static FormManagerChain getManagerChain(Card card, String actionName) {
@@ -79,7 +78,12 @@ public class FormManagerChain {
                     activity = actionName;
                     transition = null;
                     element = root.element("cancel");
-                } else {
+                } else if (WfConstants.ACTION_REASSIGN.equals(actionName)) {
+                    activity = actionName;
+                    transition = null;
+                    element = root.element("reassign");
+                }
+                else {
                     int dot = actionName.lastIndexOf('.');
                     activity = actionName.substring(0, dot);
                     transition = actionName.substring(actionName.lastIndexOf('.') + 1);
@@ -98,7 +102,7 @@ public class FormManagerChain {
                 if (element != null) {
                     FormManagerChain managerChain = new FormManagerChain();
 
-                    Map<String, Object> commonParams = new HashMap<String, Object>();
+                    Map<String, Object> commonParams = new HashMap<>();
                     commonParams.put("activity", activity);
                     commonParams.put("transition", transition);
                     
