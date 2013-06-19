@@ -1,0 +1,46 @@
+<!--
+  ~ Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.workflow.web.ui.base.ReassignForm"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        caption="msg://reassign.caption">
+
+    <dsContext>
+        <!--todo: remove view with attachments-->
+        <datasource id="cardDs" class="com.haulmont.workflow.core.entity.Card" view="w-attachments"/>
+
+        <collectionDatasource id="cardRolesDs" class="com.haulmont.workflow.core.entity.CardRole"
+                              view="transition-form">
+            <query>
+                <![CDATA[select cr from wf$CardRole cr
+                where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
+                order by cr.code]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <#assign width=400>
+    <#assign labelWidth=90>
+
+    <layout expand="cardRolesFrame" spacing="true">
+        <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
+        <accessControl data="com.haulmont.workflow.web.ui.base.ReassignFormAccessData" param="accessData">
+            <visible property="commentVisible"/>
+            <hbox id="commentTextPane">
+                <label value="msg://comment" width="${labelWidth}"/>
+                <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
+            </hbox>
+        </accessControl>
+        <vbox margin="true">
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>
+
+
+

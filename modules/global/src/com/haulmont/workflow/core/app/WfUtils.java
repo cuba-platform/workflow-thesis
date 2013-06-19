@@ -1,25 +1,26 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 18.11.2010 14:07:37
- *
- * $Id$
  */
+
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 
-
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class WfUtils {
 
     public static final String ENC = "UTF-8";
 
     /**
      * Checks whether card's state field contains sended state
+     *
      * @param card
      * @param state
      * @return
@@ -38,6 +39,7 @@ public class WfUtils {
 
     /**
      * Checks whether card's state field contains one or more state from states param
+     *
      * @param card
      * @param states
      * @return
@@ -49,13 +51,16 @@ public class WfUtils {
         return false;
     }
 
-    public static String encodeKey(String msg) {
-           return Translit.toTranslit(msg);
+    public static String trimState(Card card) {
+        String[] states = StringUtils.substringsBetween(card.getState(), ",", ",");
+        return (states != null && states.length != 0) ? states[0] : null;
     }
 
+    public static String encodeKey(String msg) {
+        return Translit.toTranslit(msg);
+    }
 
     public static class Translit {
-
 
         private static final String[] charTable = new String[65536];
 
@@ -107,7 +112,6 @@ public class WfUtils {
             }
         }
 
-
         public static String toTranslit(String text) {
             char charBuffer[] = text.toCharArray();
             StringBuilder sb = new StringBuilder(text.length());
@@ -122,7 +126,6 @@ public class WfUtils {
             }
             return sb.toString();
         }
-
 
     }
 }

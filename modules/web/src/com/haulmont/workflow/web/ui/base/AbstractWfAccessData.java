@@ -1,28 +1,29 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.12.2009 13:25:20
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAccessData;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
+import com.haulmont.workflow.core.global.ReassignInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class AbstractWfAccessData extends AbstractAccessData {
     protected WfService wfService;
 
@@ -40,13 +41,14 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
 
     public void setItem(Entity item) {
         this.item = item;
-        wfService = ServiceLocator.lookup(WfService.NAME);
+        wfService = AppBeans.get(WfService.NAME);
         info = wfService.getAssignmentInfo((Card) item);
     }
 
     /**
      * Assignment info for current user and card
      * if accessData exists then it used in ActionsFrame
+     *
      * @return AssignmentInfo
      */
     public AssignmentInfo getAssignmentInfo() {
@@ -87,12 +89,17 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         return false;
     }
 
+    public ReassignInfo getReassignInfo() {
+        return null;
+    }
+
     public List<String> getVisibleActions(Card card) {
-        List<String> visibleActions = new ArrayList<String>();
+        List<String> visibleActions = new ArrayList<>();
         visibleActions.add(WfConstants.ACTION_SAVE);
         visibleActions.add(WfConstants.ACTION_SAVE_AND_CLOSE);
         visibleActions.add(WfConstants.ACTION_START);
         visibleActions.add(WfConstants.ACTION_CANCEL);
+        visibleActions.add(WfConstants.ACTION_REASSIGN);
         if (info != null) {
             visibleActions.addAll(info.getActions());
         }

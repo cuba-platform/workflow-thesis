@@ -89,6 +89,9 @@
     <screen id="subproc.form"
             template="/com/haulmont/workflow/web/ui/base/subproc-form.xml"/>
 
+    <screen id="reassign.form"
+            template="/com/haulmont/workflow/web/ui/base/reassign-form.xml"/>
+
     <screen id="cardRolesFrame"
             template="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
 

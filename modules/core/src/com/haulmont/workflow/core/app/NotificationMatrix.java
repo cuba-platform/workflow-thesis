@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 01.07.2010 13:40:36
- *
- * $Id$
  */
 package com.haulmont.workflow.core.app;
 
@@ -33,6 +28,10 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 @ManagedBean(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixAPI {
 
@@ -58,12 +57,12 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     @Inject
     protected Resources resources;
 
-    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
-    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
+    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
-        Map<String, String> rolesMap = new HashMap();
+        Map<String, String> rolesMap = new HashMap<>();
         for (Iterator it = sheet.rowIterator(); it.hasNext();) {
             HSSFRow row = (HSSFRow) it.next();
 
@@ -97,7 +96,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
 
     private Map<String, String> readStates(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(STATES_SHEET);
-        Map<String, String> statesMap = new HashMap<String, String>();
+        Map<String, String> statesMap = new HashMap<>();
         for (Iterator it = sheet.rowIterator(); it.hasNext();) {
             HSSFRow row = (HSSFRow) it.next();
 
@@ -256,7 +255,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     private Card reloadCard(Card card) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Card reloadedCard = em.find(Card.class, card.getId());
         if (reloadedCard == null)
             throw new RuntimeException(String.format("Card not found: %s", card.getId()));
@@ -265,7 +264,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     private Assignment reloadAssignment(Assignment assignment) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Assignment reloadedAssignment = em.find(Assignment.class, assignment.getId());
         if (reloadedAssignment == null)
             throw new RuntimeException(String.format("Assignment not found: %s", assignment.getId()));
@@ -278,7 +277,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (matrix != null)
             return;
 
-        InputStream fis = ScriptingProvider.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
+        InputStream fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
         if (fis == null)
             return;
 
@@ -290,7 +289,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         messageCache.put(processPath, new HashMap<String, NotificationMessageBuilder>());
         loadMessages(hssfWorkbook, processPath);
 
-        matrix = new HashMap<String, String>();
+        matrix = new HashMap<>();
         boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
         boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
         boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
@@ -345,7 +344,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            MailService mailService = Locator.lookup(MailService.NAME);
+            MailService mailService = AppBeans.get(MailService.NAME);
             try {
                 mailService.sendEmail(user, message.getSubject(), message.getBody());
             } catch (EmailException e) {
@@ -387,9 +386,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     private boolean isUserNotifiedBySms(User user) {
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select e from wf$UserNotifiedBySms e where e.user.id = :user").setParameter("user", user);
             List list = query.getResultList();
             tx.commit();
@@ -418,12 +417,12 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (matrix == null)
             return;
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
             User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
-            List<User> mailList = new ArrayList<User>();
-            List<User> trayList = new ArrayList<User>();
-            List<User> smsList = new ArrayList<User>();
+            List<User> mailList = new ArrayList<>();
+            List<User> trayList = new ArrayList<>();
+            List<User> smsList = new ArrayList<>();
 
             Card reloadedCard = reloadCard(card);
 
@@ -451,13 +450,13 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (matrix == null)
             return;
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
             User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
-            List<User> mailList = new ArrayList<User>();
-            List<User> trayList = new ArrayList<User>();
-            List<User> smsList = new ArrayList<User>();
-            List<String> excludeRoleCodes = new ArrayList<String>();
+            List<User> mailList = new ArrayList<>();
+            List<User> trayList = new ArrayList<>();
+            List<User> smsList = new ArrayList<>();
+            List<String> excludeRoleCodes = new ArrayList<>();
 
             NotificationMatrixMessage.MessageGenerator messageGenerator = new DefaultMessageGenerator();
 
@@ -500,11 +499,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (matrix == null)
             return;
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            List<User> mailList = new ArrayList<User>();
-            List<User> trayList = new ArrayList<User>();
-            List<User> smsList = new ArrayList<User>();
+            List<User> mailList = new ArrayList<>();
+            List<User> trayList = new ArrayList<>();
+            List<User> smsList = new ArrayList<>();
 
             Card reloadedCard = reloadCard(card);
 
@@ -530,6 +529,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     /**
      * Notifies user of given <code>cardRole</code> by notification, specified for <code>state</code>
      * in notification matrix
+     *
      * @param state
      * @param cardRole
      */
@@ -542,9 +542,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             if (matrix == null)
                 return;
 
-            List<User> mailList = new ArrayList<User>();
-            List<User> trayList = new ArrayList<User>();
-            List<User> smsList = new ArrayList<User>();
+            List<User> mailList = new ArrayList<>();
+            List<User> trayList = new ArrayList<>();
+            List<User> smsList = new ArrayList<>();
 
             notifyUser(card, cardRole, assignment, matrix, state, mailList, trayList, smsList, new DefaultMessageGenerator());
 
@@ -614,14 +614,14 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
         ci.setUser(user);
         ci.setDescription(message.getSubject());
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         em.persist(ci);
     }
 
     private int getCardInfoTypeByState(String type) {
         if (type.endsWith(NotificationType.SIMPLE.toString())) {
             return CardInfo.TYPE_SIMPLE;
-        } else if (type.endsWith(NotificationType.ACTION.toString())) {
+        } else if (type.equals(NotificationType.ACTION.toString()) || type.equals(NotificationType.REASSIGN.toString())) {
             return CardInfo.TYPE_NOTIFICATION;
         } else if (type.endsWith(NotificationType.WARNING.toString())) {
             return CardInfo.TYPE_OVERDUE;
