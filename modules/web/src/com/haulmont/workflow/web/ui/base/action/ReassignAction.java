@@ -9,7 +9,6 @@ package com.haulmont.workflow.web.ui.base.action;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -22,7 +21,7 @@ import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.ReassignInfo;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.web.ui.base.AbstractWfAccessData;
+import com.haulmont.workflow.gui.base.AbstractWfAccessData;
 
 import java.util.Collections;
 

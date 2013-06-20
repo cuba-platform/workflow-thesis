@@ -3,11 +3,10 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-package com.haulmont.workflow.web.ui.base;
+package com.haulmont.workflow.gui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAccessData;
 import com.haulmont.workflow.core.app.WfService;
@@ -44,6 +43,7 @@ public abstract class AbstractWfAccessData extends AbstractAccessData {
         wfService = AppBeans.get(WfService.NAME);
         info = wfService.getAssignmentInfo((Card) item);
     }
+
 
     /**
      * Assignment info for current user and card

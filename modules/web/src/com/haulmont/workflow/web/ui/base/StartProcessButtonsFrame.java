@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 
 package com.haulmont.workflow.web.ui.base;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -15,8 +15,12 @@ import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.entity.Proc;
+import com.haulmont.workflow.gui.base.AbstractWfAccessData;
 
-import java.util.*;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -24,19 +28,17 @@ import java.util.*;
  * @author gorbunkov
  */
 public class StartProcessButtonsFrame extends AbstractFrame {
-    private CollectionDatasource<Proc, UUID> procDs;
-    private CardProcFrame cardProcFrame;
-    private CollectionDatasource<CardProc, UUID> cardProcDs;
-    private Datasource cardDs;
-    private java.util.List<Action> actions = new ArrayList<Action>();
-    private List<String> excludedProcessesCodes = new ArrayList<String>();
+    protected CollectionDatasource<Proc, UUID> procDs;
+    protected CardProcFrame cardProcFrame;
+    protected CollectionDatasource<CardProc, UUID> cardProcDs;
+    protected Datasource cardDs;
+    protected List<Action> actions = new ArrayList<>();
+    protected List<String> excludedProcessesCodes = new ArrayList<>();
 
-    public StartProcessButtonsFrame(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected Messages messages;
 
     public void init() {
-
         cardProcFrame = getComponent("cardProcFrame");
         cardDs = getDsContext().get("cardDs");
 
@@ -48,8 +50,8 @@ public class StartProcessButtonsFrame extends AbstractFrame {
         if (isStartProcessEnabled() && !isActiveProcess()) {
             WebVBoxLayout startButtonsPanel = getComponent("startButtonsPanel");
             for (UUID uuid : procDs.getItemIds()) {
-                final Proc proc = (Proc) procDs.getItem(uuid);
-                if(!excludedProcessesCodes.contains(proc.getCode())){
+                final Proc proc = procDs.getItem(uuid);
+                if (!excludedProcessesCodes.contains(proc.getCode())) {
                     Button button = new WebButton();
 
                     button.setWidth("100%");
@@ -90,8 +92,8 @@ public class StartProcessButtonsFrame extends AbstractFrame {
     }
 
     public boolean isActiveProcess() {
-        for (UUID uuid : (Collection<UUID>) cardProcDs.getItemIds()) {
-            CardProc cpt = (CardProc) cardProcDs.getItem(uuid);
+        for (UUID uuid : cardProcDs.getItemIds()) {
+            CardProc cpt = cardProcDs.getItem(uuid);
             if (cpt.getActive()) {
                 return true;
             }
@@ -99,7 +101,7 @@ public class StartProcessButtonsFrame extends AbstractFrame {
         return false;
     }
 
-    public void setExcludedProcesses(List<String> excludedProcessesCodes){
+    public void setExcludedProcesses(List<String> excludedProcessesCodes) {
         this.excludedProcessesCodes = excludedProcessesCodes;
     }
 
@@ -109,15 +111,15 @@ public class StartProcessButtonsFrame extends AbstractFrame {
 
     private void startProcess(final Proc proc) {
         showOptionDialog(
-                MessageProvider.getMessage(cardProcFrame.getClass(), "runProc.title"),
-                String.format(MessageProvider.getMessage(cardProcFrame.getClass(), "runProc.msg"), proc.getName()),
+                messages.getMessage(cardProcFrame.getClass(), "runProc.title"),
+                String.format(messages.getMessage(cardProcFrame.getClass(), "runProc.msg"), proc.getName()),
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.YES) {
                             @Override
                             public void actionPerform(Component component) {
                                 CardProc cp = null;
-                                for (UUID uuid : (Collection<UUID>)cardProcDs.getItemIds()) {
+                                for (UUID uuid : cardProcDs.getItemIds()) {
                                     CardProc cpt = cardProcDs.getItem(uuid);
                                     if (cpt.getProc().getId().equals(proc.getId())) {
                                         cp = cpt;

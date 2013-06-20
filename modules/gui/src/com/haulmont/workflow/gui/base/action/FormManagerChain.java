@@ -3,7 +3,7 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-package com.haulmont.workflow.web.ui.base.action;
+package com.haulmont.workflow.gui.base.action;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.ResourceService;

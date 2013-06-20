@@ -45,6 +45,7 @@ apply(plugin: 'cuba')
 def sharedLibModule = project(':workflow-shared-lib')
 def globalModule = project(':workflow-global')
 def coreModule = project(':workflow-core')
+def guiModule = project(':workflow-gui')
 def webModule = project(':workflow-web')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
@@ -55,7 +56,7 @@ def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
-configure([sharedLibModule, globalModule, coreModule, webModule]) {
+configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -161,6 +162,23 @@ configure(coreModule) {
     }
 }
 
+configure(guiModule) {
+    dependencies {
+        compile(globalModule)
+        compile(group: 'com.haulmont.cuba', name: 'cuba-gui', version: baseVersion)
+    }
+
+	task testsJar(dependsOn: testClasses, type: Jar) {
+        from sourceSets.main.output.classesDir
+        from sourceSets.test.output.classesDir
+        classifier = 'tests'
+    }
+
+    artifacts {
+        archives testsJar
+    }
+}
+
 configure(webModule) {
     configurations {
         webcontent
@@ -169,6 +187,7 @@ configure(webModule) {
     dependencies {
         compile(sharedLibModule)
         compile(globalModule)
+        compile(guiModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: baseVersion)
         compile(json)
         provided(servletApi)

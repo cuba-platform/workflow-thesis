@@ -8,20 +8,23 @@
  *
  * $Id$
  */
-package com.haulmont.workflow.web.ui.base.action;
+package com.haulmont.workflow.gui.base;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -29,12 +32,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public abstract class FormManager {
+public abstract class FormManager implements Serializable {
 
     protected Element element;
     protected String activity;
@@ -46,8 +52,6 @@ public abstract class FormManager {
 
     protected transient Log log = LogFactory.getLog(getClass());
 
-
-
     protected FormManager(Element element, String activity, String transition, FormManagerChain chain) {
         this.element = element;
         this.activity = activity;
@@ -58,6 +62,11 @@ public abstract class FormManager {
         after = Boolean.valueOf(element.attributeValue("after"));
         if (!before && !after)
             before = true;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        log = LogFactory.getLog(getClass());
     }
 
     public boolean isAfter() {
@@ -141,7 +150,7 @@ public abstract class FormManager {
         private String screenId;
         private Map<String, Object> params;
 
-        protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        protected WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
 
         public ScreenFormManager(Element element, String activity, String transition, FormManagerChain chain) {
             super(element, activity, transition, chain);
@@ -155,14 +164,14 @@ public abstract class FormManager {
             params.putAll(this.params);
 
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
-            WebWindowManager windowManager = App.getInstance().getWindowManager();
+            WindowManagerProvider wmp = ServiceLocator.lookup(WindowManagerProvider.NAME);
 
-            final Window window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final Window window = wmp.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        String comment = window instanceof AbstractForm ?
-                                ((AbstractForm) window).getComment() : "";
+                        String comment = window instanceof WfForm ?
+                                ((WfForm) window).getComment() : "";
                         try {
                             chain.doManagerBefore(comment);
                         } catch (RuntimeException e) {
@@ -182,9 +191,9 @@ public abstract class FormManager {
             params.putAll(this.params);
 
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
-            WebWindowManager windowManager = App.getInstance().getWindowManager();
+            WindowManagerProvider wmp = ServiceLocator.lookup(WindowManagerProvider.NAME);
 
-            final Window window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final Window window = wmp.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
@@ -198,16 +207,11 @@ public abstract class FormManager {
     public static class ClassFormManager extends FormManager {
 
         private String className;
-        private String script;
         private Map<String, Object> params;
 
         public ClassFormManager(Element element, String activity, String transition, FormManagerChain chain) {
             super(element, activity, transition, chain);
             className = element.attributeValue("class");
-            Element scriptEl = element.element("script");
-            if (scriptEl != null) {
-                script = scriptEl.getStringValue();
-            }
             params = getScreenParams(element);
         }
 
@@ -228,21 +232,14 @@ public abstract class FormManager {
             return runnable;
         }
 
-        private Boolean call(Map<String, Object> params) throws Exception {
-            if (className != null) {
-                return getCallable(params).call();
-            } else {
-                return ScriptingProvider.evaluateGroovy(script, params);
-            }
-        }
-
         @Override
         public void doBefore(Map<String, Object> params) {
             params.put("before", true);
             params.putAll(this.params);
 
+            Callable<Boolean> runnable = getCallable(params);
             try {
-                Boolean result = call(params);
+                Boolean result = runnable.call();
                 if (!BooleanUtils.isFalse(result)) {
                     chain.doManagerBefore("", params);
                 } else {
@@ -258,8 +255,9 @@ public abstract class FormManager {
             params.put("after", true);
             params.putAll(this.params);
 
+            Callable<Boolean> runnable = getCallable(params);
             try {
-                Boolean result = call(params);
+                Boolean result = runnable.call();
                 if (!BooleanUtils.isFalse(result)) {
                     chain.doManagerAfter();
                 }
@@ -278,14 +276,14 @@ public abstract class FormManager {
 
         @Override
         public void doBefore(Map<String, Object> params) {
-            WebWindowManager wm = App.getInstance().getWindowManager();
+            WindowManagerProvider wmp = ServiceLocator.lookup(WindowManagerProvider.NAME);
             Card card = (Card)chain.getCommonParams().get("card");
-            wm.showOptionDialog(
+            wmp.get().showOptionDialog(
                     MessageProvider.getMessage(getClass(), "confirmationForm.title"),
                     MessageProvider.formatMessage(getClass(), "confirmationForm.msg",
                             MessageProvider.getMessage(card.getProc().getMessagesPack(), activity + "." + transition)),
                     IFrame.MessageType.CONFIRMATION,
-                    new Action[] {
+                    new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
