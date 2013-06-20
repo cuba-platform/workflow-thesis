@@ -1,25 +1,24 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.12.2009 9:43:08
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.card
 
-import com.haulmont.workflow.core.entity.Card
-import com.haulmont.cuba.core.global.PersistenceHelper
-import com.haulmont.workflow.web.ui.base.AbstractWfAccessData
-import com.haulmont.workflow.core.entity.CardRole
-import com.haulmont.cuba.gui.UserSessionClient
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.LoadContext.Query
+import com.haulmont.cuba.core.global.PersistenceHelper
 import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.gui.UserSessionClient
+import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.cuba.gui.WindowParams
+import com.haulmont.workflow.gui.base.AbstractWfAccessData
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CardAccessData extends AbstractWfAccessData {
 
   private Card card
@@ -60,6 +59,4 @@ public class CardAccessData extends AbstractWfAccessData {
   public boolean getStartProcessEnabled() {
     return true;
   }
-
-
 }

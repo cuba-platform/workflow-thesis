@@ -14,7 +14,9 @@ import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.web.ui.base.AbstractWfAccessData;
+import com.haulmont.workflow.gui.base.AbstractWfAccessData;
+import com.haulmont.workflow.gui.base.action.FormManagerChain;
+import com.haulmont.workflow.gui.base.action.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -51,7 +53,6 @@ public class ActionsFrame extends AbstractFrame {
         if (accessData == null || accessData.getSaveEnabled()) {
             actions.add(WfConstants.ACTION_SAVE);
         }
-
 
         if (card.getJbpmProcessId() != null) {
             if (accessData != null && accessData.getAssignmentInfo() != null) {
@@ -95,13 +96,14 @@ public class ActionsFrame extends AbstractFrame {
 
             if ((enabledActions != null) && !enabledActions.contains(actionName))
                 button.setEnabled(false);
-            FormManagerChain managerChain;
+            com.haulmont.workflow.gui.base.action.FormManagerChain managerChain;
             if (info != null && info.getCard() != null && !card.equals(info.getCard()))
-                managerChain = FormManagerChain.getManagerChain(info.getCard(), actionName);
+                managerChain = com.haulmont.workflow.gui.base.action.FormManagerChain.getManagerChain(info.getCard(), actionName);
             else
-                managerChain = FormManagerChain.getManagerChain(card, actionName);
+                managerChain = com.haulmont.workflow.gui.base.action.FormManagerChain.getManagerChain(card, actionName);
             String style = (String) managerChain.getCommonParams().get("style");
             if (style != null) {
+
                 button.setStyleName(style);
             }
             add(button);

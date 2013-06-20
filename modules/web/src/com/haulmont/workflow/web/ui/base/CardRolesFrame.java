@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -10,13 +10,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -31,9 +27,11 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.TimeUnit;
+import com.haulmont.workflow.gui.base.action.CardRolesFrameHelper;
 import com.haulmont.workflow.web.ui.usergroup.UserGroupAdd;
 import com.vaadin.data.Property;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -55,38 +53,51 @@ public class CardRolesFrame extends AbstractFrame {
         void afterInitDefaultActors(Proc proc);
     }
 
-    private Set<Listener> listeners = new HashSet<>();
+    protected Set<Listener> listeners = new HashSet<>();
 
     protected Card card;
-    private boolean enabled = true;
+    protected boolean enabled = true;
     protected CardProc cardProc;
 
+    @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
+
+    @Inject
     protected CollectionDatasource<ProcRole, UUID> procRolesDs;
+
+    @Inject
     protected CardProcRolesDatasource tmpCardRolesDs;
+
+    @Inject
     protected LookupField createRoleLookup;
+
+    @Inject
     protected Table rolesTable;
-    protected CollectionDatasource rolesTableDs;
+
+    @Inject
+    protected Button moveDown;
+
+    @Inject
+    protected Button moveUp;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected Scripting scripting;
+
+    @Inject
+    protected ProcRolePermissionsService procRolePermissionsService;
 
     protected List<Component> rolesActions = new ArrayList<>();
-
     protected String createRoleCaption;
-    protected ProcRolePermissionsService procRolePermissionsService;
     protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<>();
     protected List<User> users;
     protected Map<Role, Collection<User>> roleUsersMap = new HashMap<>();
-    private String requiredRolesCodesStr;
-    private List deletedEmptyRoleCodes;
+    protected String requiredRolesCodesStr;
+    protected List deletedEmptyRoleCodes;
     protected boolean editable = true;
     protected boolean combinedStagesEnabled;
-
-    @Inject
-    WebButton moveDown;
-    @Inject
-    WebButton moveUp;
-
-    @Inject
-    private Metadata metadata;
 
     public void addListener(Listener listener) {
         listeners.add(listener);
@@ -97,33 +108,34 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void init() {
-        cardRolesDs = getDsContext().get("cardRolesDs");
-        tmpCardRolesDs = getDsContext().get("tmpCardRolesDs");
         tmpCardRolesDs.valid();
 
         Preconditions.checkState(cardRolesDs != null, "Enclosing window must declare declare 'cardRolesDs' datasource");
 
-        procRolesDs = getDsContext().get("procRolesDs");
         createRoleCaption = getMessage("createRoleCaption");
-        createRoleLookup = getComponent("createRoleLookup");
 
         rolesActions.add(createRoleLookup);
         rolesActions.add(getComponent("removeRole"));
 
-        rolesTable = getComponent("rolesTable");
-        TableActionsHelper rolesTH = new TableActionsHelper(this, rolesTable);
-
-        rolesTableDs = rolesTable.getDatasource();
+        RemoveAction removeAction = new RemoveAction(rolesTable, false) {
+            @Override
+            protected void afterRemove(Set selected) {
+                if (selected != null) {
+                    for (Object item : selected) {
+                        actorActionsFieldsMap.remove(item);
+                        CardRole cardRole = (CardRole) item;
+                        if (cardRole.getUser() != null) {
+//                            refreshFieldsWithRole(cardRole);
+                        }
+                    }
+                }
+            }
+        };
+        rolesTable.addAction(removeAction);
 
         initRolesTable();
 
-        rolesTH.createRemoveAction(false);
-
         initMoveButtons();
-        final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
-        final MetaPropertyPath mpp = rolesTable.getDatasource().getMetaClass().getPropertyPath("sortOrder");
-
-        procRolePermissionsService = getProcRolePermissionsService();
 
         tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
             private static final long serialVersionUID = 1205336750221624070L;
@@ -142,28 +154,6 @@ public class CardRolesFrame extends AbstractFrame {
                 if (item == null) return;
 //                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
                 removeAction.setVisible(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
-            }
-        });
-
-        rolesTH.addListener(new ListActionsHelper.Listener() {
-            public void entityCreated(Entity entity) {
-
-            }
-
-            public void entityEdited(Entity entity) {
-
-            }
-
-            public void entityRemoved(Set<Entity> entity) {
-                if (entity != null) {
-                    for (Object item : entity) {
-                        actorActionsFieldsMap.remove(item);
-                        CardRole cardRole = (CardRole) item;
-                        if (cardRole.getUser() != null) {
-//                            refreshFieldsWithRole(cardRole);
-                        }
-                    }
-                }
             }
         });
 
@@ -208,10 +198,9 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void initRolesTable() {
-        final ProcRolePermissionsService procRolePermissionsService = ServiceLocator.lookup(ProcRolePermissionsService.NAME);
         final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
         vRolesTable.setPageLength(5);
-        MetaPropertyPath userProperty = rolesTableDs.getMetaClass().getPropertyEx("user");
+        MetaPropertyPath userProperty = tmpCardRolesDs.getMetaClass().getPropertyPath("user");
         vRolesTable.addGeneratedColumn(userProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             private static final long serialVersionUID = -4911659211968894944L;
 
@@ -275,49 +264,49 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private void initMoveButtons() {
-            moveUp.setAction(new AbstractAction("moveUp") {
+        moveUp.setAction(new AbstractAction("moveUp") {
 
-                @Override
-                public void actionPerform(Component component) {
-                    Set<CardRole> selected = rolesTable.getSelected();
-                    if (selected.isEmpty())
-                        return;
+            @Override
+            public void actionPerform(Component component) {
+                Set<CardRole> selected = rolesTable.getSelected();
+                if (selected.isEmpty())
+                    return;
 
-                    CardRole curCr = selected.iterator().next();
-                    CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
-                    if (prevCr != null) {
-                        Integer tmp = curCr.getSortOrder();
-                        curCr.setSortOrder(prevCr.getSortOrder());
-                        prevCr.setSortOrder(tmp);
+                CardRole curCr = selected.iterator().next();
+                CardRole prevCr = getCardRoleDependsOnSortOrder(curCr, false);
+                if (prevCr != null) {
+                    Integer tmp = curCr.getSortOrder();
+                    curCr.setSortOrder(prevCr.getSortOrder());
+                    prevCr.setSortOrder(tmp);
 
-                        tmpCardRolesDs.doSort();
-                    }
+                    tmpCardRolesDs.doSort();
                 }
-            });
+            }
+        });
 
-            moveDown.setAction(new AbstractAction("moveDown") {
+        moveDown.setAction(new AbstractAction("moveDown") {
 
-                @Override
-                public void actionPerform(Component component) {
-                    Set<CardRole> selected = rolesTable.getSelected();
-                    if (selected.isEmpty())
-                        return;
+            @Override
+            public void actionPerform(Component component) {
+                Set<CardRole> selected = rolesTable.getSelected();
+                if (selected.isEmpty())
+                    return;
 
-                    CardRole curCr = selected.iterator().next();
-                    CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
-                    if (nextCr != null) {
-                        Integer tmp = curCr.getSortOrder();
-                        curCr.setSortOrder(nextCr.getSortOrder());
-                        nextCr.setSortOrder(tmp);
+                CardRole curCr = selected.iterator().next();
+                CardRole nextCr = getCardRoleDependsOnSortOrder(curCr, true);
+                if (nextCr != null) {
+                    Integer tmp = curCr.getSortOrder();
+                    curCr.setSortOrder(nextCr.getSortOrder());
+                    nextCr.setSortOrder(tmp);
 
-                        tmpCardRolesDs.doSort();
-                    }
+                    tmpCardRolesDs.doSort();
                 }
-            });
+            }
+        });
     }
 
     private void initSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
-        MetaPropertyPath sortOrderProperty = rolesTableDs.getMetaClass().getPropertyPath("sortOrder");
+        MetaPropertyPath sortOrderProperty = tmpCardRolesDs.getMetaClass().getPropertyPath("sortOrder");
         vRolesTable.addGeneratedColumn(sortOrderProperty, new com.vaadin.ui.Table.ColumnGenerator() {
 
             public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
@@ -355,8 +344,7 @@ public class CardRolesFrame extends AbstractFrame {
         addUserGroupButton.setIcon("select/img/user-group-button.png");
         addUserGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
         com.vaadin.ui.Button vAddUserGroupButton = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(addUserGroupButton);
-        final Class userGroupAddClass = ScriptingProvider.loadClass("com.haulmont.workflow.web.ui.usergroup.UserGroupAdd");
-        vAddUserGroupButton.addListener(new com.vaadin.ui.Button.ClickListener() {
+        vAddUserGroupButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             private static final long serialVersionUID = -3820323886456571938L;
 
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -368,8 +356,8 @@ public class CardRolesFrame extends AbstractFrame {
 
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            Set<User> validUsers = new HashSet<User>();
-                            Set<User> invalidUsers = new HashSet<User>();
+                            Set<User> validUsers = new HashSet<>();
+                            Set<User> invalidUsers = new HashSet<>();
 
                             Set<User> selectedUsers = getSelectedUsers(window);
 
@@ -419,7 +407,7 @@ public class CardRolesFrame extends AbstractFrame {
                                     tmpCardRolesDs.addItem(cr);
                                     validUsers.remove(oldUser);
                                 } else {
-                                    if (validUsers.contains(oldUser)){
+                                    if (validUsers.contains(oldUser)) {
                                         cardRole.setUser(oldUser);
                                         actorActionsFieldsMap.get(cardRole).setValue(oldUser);
                                         validUsers.remove(oldUser);
@@ -528,11 +516,11 @@ public class CardRolesFrame extends AbstractFrame {
             LoadContext ctx = new LoadContext(User.class).setView(view);
             LoadContext.Query query = ctx.setQueryString("select u from sec$User u join u.userRoles ur where ur.role.id = :role order by u.name");
             query.setParameter("role", secRole);
-            List<User> loadedUsers = ServiceLocator.getDataService().loadList(ctx);
+            List<User> loadedUsers = getDsContext().getDataSupplier().loadList(ctx);
             if (loadedUsers == null) {
-                roleUsers = new ArrayList<User>();
+                roleUsers = new ArrayList<>();
             }
-            roleUsers = new ArrayList<User>(loadedUsers);
+            roleUsers = new ArrayList<>(loadedUsers);
             roleUsersMap.put(secRole, roleUsers);
         }
 
@@ -544,8 +532,8 @@ public class CardRolesFrame extends AbstractFrame {
         if (users == null) {
             LoadContext ctx = new LoadContext(User.class).setView(View.MINIMAL);
             ctx.setQueryString("select u from sec$User u order by u.name");
-            List<User> loadedUsers = ServiceLocator.getDataService().loadList(ctx);
-            users = new ArrayList<User>(loadedUsers);
+            List<User> loadedUsers = getDsContext().getDataSupplier().loadList(ctx);
+            users = new ArrayList<>(loadedUsers);
         }
         return users;
     }
@@ -553,7 +541,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected CollectionDatasource createUserOptionsDs(CardRole cardRole) {
         CollectionDatasource usersDs = procRoleUsers.get(cardRole.getProcRole());
         if (usersDs == null) {
-            MetaClass metaClass = MetadataProvider.getSession().getClass(User.class);
+            MetaClass metaClass = metadata.getSession().getClass(User.class);
             usersDs = new DsBuilder(getDsContext())
                     .setMetaClass(metaClass)
                     .setId("usersDs")
@@ -575,7 +563,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
-        List<CardRole> cardRoles = new ArrayList<CardRole>();
+        List<CardRole> cardRoles = new ArrayList<>();
         for (User user : users) {
             boolean isUserInList = false;
             //check for user in list
@@ -608,7 +596,7 @@ public class CardRolesFrame extends AbstractFrame {
     private void initRolesTableBooleanColumn(final String propertyName,
                                              final ProcRolePermissionsService procRolePermissionsService,
                                              final com.vaadin.ui.Table vRolesTable) {
-        MetaPropertyPath propertyPath = rolesTableDs.getMetaClass().getPropertyEx(propertyName);
+        MetaPropertyPath propertyPath = tmpCardRolesDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
         vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
             private static final long serialVersionUID = 5205263712948328595L;
@@ -621,7 +609,7 @@ public class CardRolesFrame extends AbstractFrame {
                 checkBox.setValue(value);
                 boolean enabled = true; //procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
                 checkBox.setEnabled(enabled);
-                checkBox.addListener(new Property.ValueChangeListener() {
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
                     private static final long serialVersionUID = -116654070578891424L;
 
                     public void valueChange(Property.ValueChangeEvent event) {
@@ -717,8 +705,8 @@ public class CardRolesFrame extends AbstractFrame {
                     @Override
                     public Component generateCell(Entity entity) {
                         final TextField durationTF = new WebTextField();
-                        final CardRole cardRole = (CardRole)entity;
-                        if(cardRole != null && cardRole.getDuration() != null)
+                        final CardRole cardRole = (CardRole) entity;
+                        if (cardRole != null && cardRole.getDuration() != null)
                             durationTF.setValue(cardRole.getDuration().toString());
                         durationTF.addListener(new ValueListener() {
 
@@ -726,7 +714,7 @@ public class CardRolesFrame extends AbstractFrame {
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                                 try {
                                     Integer duration = Integer.parseInt((String) value);
-                                    if(cardRole != null)
+                                    if (cardRole != null)
                                         cardRole.setDuration(duration);
 
                                 } catch (NumberFormatException ex) {
@@ -747,15 +735,15 @@ public class CardRolesFrame extends AbstractFrame {
                         timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
                         timeUnitField.setWidth("60");
                         timeUnitField.setNullOption(TimeUnit.HOUR);
-                        final CardRole cardRole = (CardRole)entity;
-                        if(cardRole != null && cardRole.getTimeUnit() != null) {
+                        final CardRole cardRole = (CardRole) entity;
+                        if (cardRole != null && cardRole.getTimeUnit() != null) {
                             timeUnitField.setValue(cardRole.getTimeUnit());
                         }
                         timeUnitField.addListener(new ValueListener() {
                             @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if(cardRole != null)
-                                    cardRole.setTimeUnit((TimeUnit)value);
+                                if (cardRole != null)
+                                    cardRole.setTimeUnit((TimeUnit) value);
                             }
                         });
 
@@ -783,7 +771,7 @@ public class CardRolesFrame extends AbstractFrame {
         ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null")
                 .setParameter("procId", proc.getId());
         ctx.setView("edit");
-        List<DefaultProcActor> dpaList = ServiceLocator.getDataService().loadList(ctx);
+        List<DefaultProcActor> dpaList = getDsContext().getDataSupplier().loadList(ctx);
         for (DefaultProcActor dpa : dpaList) {
             addProcActor(proc, dpa.getProcRole().getCode(), dpa.getUser(), dpa.getSortOrder(), dpa.getNotifyByEmail(), true);
         }
@@ -873,7 +861,7 @@ public class CardRolesFrame extends AbstractFrame {
             }
             if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
                 int parallelGroupNumb = getParallelGroupNumberCardRoles();
-                if (parallelGroupNumb >= max )
+                if (parallelGroupNumb >= max)
                     cr.setSortOrder(parallelGroupNumb + 1);
                 else
                     cr.setSortOrder(max + 1);
@@ -913,7 +901,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
-        List<CardRole> cardRoles = new ArrayList<CardRole>();
+        List<CardRole> cardRoles = new ArrayList<>();
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole cr = tmpCardRolesDs.getItem(id);
             if (cr.getProcRole().equals(pr)) {
@@ -924,7 +912,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     private List<Integer> getAllowRangeForProcRole(ProcRole pr) {
-        List<Integer> range = new ArrayList<Integer>();
+        List<Integer> range = new ArrayList<>();
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
         if (cardRoles.size() == 1) {
             range.add(cardRoles.get(0).getSortOrder());
@@ -1056,7 +1044,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void deleteAllActors() {
         Collection<UUID> uuidCollection = tmpCardRolesDs.getItemIds();
-        for (UUID itemId : new ArrayList<UUID>(uuidCollection)) {
+        for (UUID itemId : new ArrayList<>(uuidCollection)) {
             CardRole item = tmpCardRolesDs.getItem(itemId);
             tmpCardRolesDs.removeItem(item);
         }
@@ -1089,7 +1077,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
         for (UUID id : ds.getItemIds()) {
             items.add(ds.getItem(id));
         }
@@ -1100,7 +1088,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (procRole == null) {
             return null;
         }
-        Set<User> res = new HashSet<User>();
+        Set<User> res = new HashSet<>();
         Collection<UUID> crIds = tmpCardRolesDs.getItemIds();
         for (UUID crId : crIds) {
             CardRole cr = tmpCardRolesDs.getItem(crId);
@@ -1128,10 +1116,6 @@ public class CardRolesFrame extends AbstractFrame {
         for (Component action : rolesActions) {
             action.setEnabled(enabled);
         }
-    }
-
-    protected ProcRolePermissionsService getProcRolePermissionsService() {
-        return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
     }
 
     public void setCardProc(CardProc cardProc) {
@@ -1174,7 +1158,7 @@ public class CardRolesFrame extends AbstractFrame {
     public void fillMissingRoles() {
         Set<String> requiredRolesCodes = getRequiredRolesCodes(false/*cardRolesDs.getItemIds().size() == 0*/);
         for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID) itemId);
+            CardRole cardRole = cardRolesDs.getItem((UUID) itemId);
             requiredRolesCodes.remove(cardRole.getCode());
         }
 
@@ -1208,73 +1192,11 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public Set<String> getEmptyRolesNames() {
-        Set<String> emptyRolesNames = new HashSet<String>();
-        Map<String, String> procRolesNames = new HashMap<String, String>();
-        List<ProcRole> procRoles = card.getProc().getRoles();
-        if (procRoles == null) {
-            LoadContext ctx = new LoadContext(ProcRole.class);
-            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
-            query.setParameter("proc", card.getProc());
-            procRoles = ServiceLocator.getDataService().loadList(ctx);
+        Set<CardRole> cardRoles = new HashSet<>();
+        for (UUID uuid : cardRolesDs.getItemIds()) {
+            cardRoles.add(cardRolesDs.getItem(uuid));
         }
-        for (ProcRole procRole : procRoles) {
-            procRolesNames.put(procRole.getCode(), procRole.getName());
-        }
-
-        //if we removed required role from datasource
-        Set<String> emptyRequiredRolesCodes = getRequiredRolesCodes(false);
-
-        Set<String> requiredRolesChoiceCodes = new HashSet<String>();
-        for (String requiredRoleCode : emptyRequiredRolesCodes) {
-            if (requiredRoleCode.contains("|"))
-                requiredRolesChoiceCodes.add(requiredRoleCode);
-        }
-
-        for (Object itemId : cardRolesDs.getItemIds()) {
-            CardRole cardRole = (CardRole) cardRolesDs.getItem((UUID) itemId);
-            if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
-                    !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
-                emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
-            }
-
-            if (!requiredRolesChoiceCodes.isEmpty()) {
-                String choiceRole = null;
-                for (String requiredRolesChoiceCode : requiredRolesChoiceCodes) {
-                    String[] roles = requiredRolesChoiceCode.split("\\|");
-                    if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
-                        choiceRole = requiredRolesChoiceCode;
-                        break;
-                    }
-                }
-
-                if (choiceRole != null) {
-                    requiredRolesChoiceCodes.remove(choiceRole);
-                    emptyRequiredRolesCodes.remove(choiceRole);
-                }
-            }
-
-            emptyRequiredRolesCodes.remove(cardRole.getCode());
-        }
-
-        for (String roleCode : emptyRequiredRolesCodes) {
-            if (roleCode.contains("|")) {
-                String formattingCode = "";
-                String orStr = " " + messages.getMessage(TransitionForm.class, "actorNotDefined.or") + " ";
-                String[] roles = roleCode.split("\\|");
-                for (String role : roles) {
-                    formattingCode += procRolesNames.get(role) + orStr;
-                }
-
-                if (formattingCode.endsWith(orStr))
-                    formattingCode = formattingCode.substring(0, formattingCode.lastIndexOf(orStr));
-
-                emptyRolesNames.add(formattingCode);
-            } else {
-                emptyRolesNames.add(procRolesNames.get(roleCode));
-            }
-        }
-
-        return emptyRolesNames;
+        return CardRolesFrameHelper.getEmptyRolesNames(card, cardRoles, requiredRolesCodesStr, deletedEmptyRoleCodes);
     }
 
     public void setDeletedEmptyRoleCodes(List deletedEmptyRoleCodes) {
@@ -1284,7 +1206,7 @@ public class CardRolesFrame extends AbstractFrame {
     private Set<String> getRequiredRolesCodes(boolean isAll) {
         if (StringUtils.isNotEmpty(requiredRolesCodesStr)) {
             String[] s = requiredRolesCodesStr.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
-            return new LinkedHashSet<String>(Arrays.asList(s));
+            return new LinkedHashSet<>(Arrays.asList(s));
         }
         return Collections.emptySet();
     }
@@ -1297,7 +1219,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         protected CollectionDatasource<CardRole, UUID> cardRolesDs;
         private CollectionDatasource<CardRole, UUID> activeDs;
-        private Map<UUID, CollectionDatasource<CardRole, UUID>> dsRegistry = new HashMap<UUID, CollectionDatasource<CardRole, UUID>>();
+        private Map<UUID, CollectionDatasource<CardRole, UUID>> dsRegistry = new HashMap<>();
         public boolean fill;
         protected Set<String> visibleRoles;
 
@@ -1433,7 +1355,7 @@ public class CardRolesFrame extends AbstractFrame {
 //            actionsField.setHeight("25px");
             LookupField usersLookup = actionsField.getLookupField();
             AbstractSelect usersSelect = (AbstractSelect) WebComponentsHelper.unwrap(usersLookup);
-            usersSelect.addListener(new Property.ValueChangeListener() {
+            usersSelect.addValueChangeListener(new Property.ValueChangeListener() {
 
                 public void valueChange(Property.ValueChangeEvent event) {
                     Property eventProperty = event.getProperty();

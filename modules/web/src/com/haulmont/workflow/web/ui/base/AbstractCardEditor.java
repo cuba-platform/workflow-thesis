@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2009 9:57:05
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -14,11 +9,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -29,12 +21,14 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.gui.base.AbstractWfAccessData;
 import com.haulmont.workflow.web.ui.base.action.ActionsFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
@@ -42,37 +36,42 @@ import com.vaadin.ui.TabSheet;
 import javax.inject.Inject;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class AbstractCardEditor extends AbstractEditor {
 
+    @Inject
     protected Datasource<Card> cardDs;
+    @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
+    @Inject
     protected Table attachmentsTable;
 
+    @Inject
     protected CardProcFrame cardProcFrame;
+    @Inject
     protected CardRolesFrame cardRolesFrame;
+    @Inject
     protected ResolutionsFrame resolutionsFrame;
+    @Inject
     protected CardAttachmentsFrame cardAttachmentsFrame;
 
     @Inject
     protected CollectionDatasource<CardAttachment, UUID> attachmentsDs;
 
-    public AbstractCardEditor(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected WfService wfService;
+
+    @Inject
+    protected UserSession userSession;
 
     protected void initFields() {
-        cardDs = getDsContext().get("cardDs");
-        cardRolesDs = getDsContext().get("cardRolesDs");
-        cardProcFrame = getComponent("cardProcFrame");
-        cardRolesFrame = getComponent("cardRolesFrame");
-        resolutionsFrame = getComponent("resolutionsFrame");
-        cardAttachmentsFrame = getComponent("cardAttachmentsFrame");
         if (cardAttachmentsFrame != null)
             attachmentsTable = getComponent("cardAttachmentsFrame.attachmentsTable");
         else
             attachmentsTable = getComponent("attachmentsTable");
-
-
     }
 
     @Override
@@ -86,7 +85,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             attachmentsTable.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
                 @Override
                 public Map<String, Object> getInitialValues() {
-                    HashMap<String, Object> values = new HashMap<String, Object>();
+                    HashMap<String, Object> values = new HashMap<>();
                     values.put("card", cardDs.getItem());
                     values.put("file", new FileDescriptor());
                     return values;
@@ -170,8 +169,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
     }
 
     protected void deleteNotifications(Card card) {
-        WfService service = ServiceLocator.lookup(WfService.NAME);
-        service.deleteNotifications(card, UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        wfService.deleteNotifications(card, userSession.getCurrentOrSubstitutedUser());
     }
 
     protected abstract boolean isCommentVisible();
@@ -189,18 +187,18 @@ public abstract class AbstractCardEditor extends AbstractEditor {
             case TABBED:
                 TabSheet beforeCloseMainTabsheet = App.getInstance().getAppWindow().getTabSheet();
                 Component beforeCloseTab = null;
-                if(beforeCloseMainTabsheet != null)
+                if (beforeCloseMainTabsheet != null)
                     beforeCloseTab = beforeCloseMainTabsheet.getSelectedTab();
 
                 close("cancel", true);
 
                 TabSheet afterCloseMainTabsheet = App.getInstance().getAppWindow().getTabSheet();
                 Component afterCloseTab = null;
-                if(afterCloseMainTabsheet != null)
+                if (afterCloseMainTabsheet != null)
                     afterCloseTab = afterCloseMainTabsheet.getSelectedTab();
 
                 if (afterCloseTab != null && afterCloseTab == beforeCloseTab)
-                        openType = WindowManager.OpenType.THIS_TAB;
+                    openType = WindowManager.OpenType.THIS_TAB;
                 break;
         }
 
@@ -211,7 +209,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
 
     protected void initAttachments(Card item) {
         if (attachmentsDs != null) {
-            List<CardAttachment> cas = new LinkedList<CardAttachment>();
+            List<CardAttachment> cas = new LinkedList<>();
             if (item.getAttachments() != null && !item.getAttachments().isEmpty()) {
                 for (CardAttachment ca : item.getAttachments()) {
                     if (PersistenceHelper.isNew(ca) && !attachmentsDs.containsItem(ca.getId())) {

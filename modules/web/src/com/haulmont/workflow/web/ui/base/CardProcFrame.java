@@ -10,10 +10,14 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -26,11 +30,13 @@ import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.web.ui.base.action.FormManagerChain;
+import com.haulmont.workflow.gui.base.AbstractWfAccessData;
+import com.haulmont.workflow.gui.base.action.FormManagerChain;
 import com.haulmont.workflow.web.ui.base.action.ProcessAction;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -39,29 +45,53 @@ import java.util.*;
  * @version $Id$
  */
 public class CardProcFrame extends AbstractFrame {
+    @Inject
+    protected CollectionDatasource<CardRole, UUID> cardRolesDs;
+
+    @Inject
+    protected CollectionDatasource<Proc, UUID> procDs;
+
+    @Inject
+    protected CollectionDatasource<CardProc, UUID> cardProcDs;
+
+    @Inject
+    protected CollectionDatasource<CardProc, UUID> subProcessCardProcDs;
+
+    @Inject
+    protected LookupField createProcLookup;
+
+    @Inject
+    protected LookupField subProcessLookup;
+
+    @Inject
+    protected Label subProcessLookupLabel;
+
+    @Inject
+    protected Table cardProcTable;
+
+    @Inject
+    protected CardRolesFrame cardRolesFrame;
+
+    @Inject
+    protected Button removeProc;
 
     protected Card card;
-    private boolean enabled = true;
 
-    private CollectionDatasource<CardRole, UUID> cardRolesDs;
-    protected CollectionDatasource<Proc, UUID> procDs;
-    protected CollectionDatasource<CardProc, UUID> cardProcDs;
-    protected CollectionDatasource<CardProc, UUID> subProcessCardProcDs;
-    private List<String> excludedProcessesCodes = new ArrayList<String>();
-    protected LookupField createProcLookup;
-    protected LookupField subProcessLookup;
-    protected Label subProcessLookupLabel;
-    protected Table cardProcTable;
+    protected boolean enabled = true;
+
+    protected List<String> excludedProcessesCodes = new ArrayList<>();
+
     protected AbstractAction startProcessAction;
-    protected CardRolesFrame cardRolesFrame;
-    private Button removeProc;
 
-    private String createProcCaption;
+    protected String createProcCaption;
 
+    @Inject
     protected ProcRolePermissionsService procRolePermissionsService;
 
+    @Inject
+    protected UserSession userSession;
+
     public void init() {
-        cardProcDs = getDsContext().get("cardProcDs");
         Preconditions.checkState(cardProcDs != null, "Enclosing window must declare 'cardProcsDs' datasource");
         removeProc = getComponent("removeProc");
 
@@ -73,51 +103,34 @@ public class CardProcFrame extends AbstractFrame {
 
     private void initProc() {
         createProcCaption = getMessage("createProcCaption");
-        createProcLookup = getComponent("createProcLookup");
-        subProcessLookup = getComponent("subProcessLookup");
-        subProcessLookupLabel = getComponent("subProcessLookupLabel");
         subProcessLookup.setVisible(false);
         subProcessLookupLabel.setVisible(false);
 
-
-        cardRolesDs = getDsContext().get("cardRolesDs");
-        subProcessCardProcDs = getDsContext().get("subProcessCardProcDs");
-        procDs = getDsContext().get("procDs");
-
-        cardProcTable = getComponent("cardProcTable");
-        final com.vaadin.ui.Table vCardProcTable = ( com.vaadin.ui.Table)WebComponentsHelper.unwrap(cardProcTable);
-        vCardProcTable.addListener(new com.vaadin.ui.Table.ValueChangeListener(){
-             public void valueChange(Property.ValueChangeEvent event){
-                 Object uuid = vCardProcTable.getValue();
-                 if(uuid != null){
-                     CardProc proc = (CardProc)cardProcTable.getDatasource().getItem(uuid);
-                     if(proc != null){
-                         if(proc.getStartCount() < 1){
-                             removeProc.setEnabled(true);
-                             return;
-                         }
-                     }
-                 }
-                 removeProc.setEnabled(false);
-             }
+        final com.vaadin.ui.Table vCardProcTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(cardProcTable);
+        vCardProcTable.addValueChangeListener(new com.vaadin.ui.Table.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                Object uuid = vCardProcTable.getValue();
+                if (uuid != null) {
+                    CardProc proc = (CardProc) cardProcTable.getDatasource().getItem(uuid);
+                    if (proc != null) {
+                        if (proc.getStartCount() < 1) {
+                            removeProc.setEnabled(true);
+                            return;
+                        }
+                    }
+                }
+                removeProc.setEnabled(false);
+            }
         });
-        TableActionsHelper procsTH = new TableActionsHelper(this, cardProcTable);
 
-        final Action removeAction = procsTH.createRemoveAction(false);
-        removeAction.setEnabled(false);
-        procsTH.addListener(new TableActionsHelper.Listener() {
-            public void entityCreated(Entity entity) {
-            }
-
-            public void entityEdited(Entity entity) {
-            }
-
-            public void entityRemoved(Set<Entity> entity) {
-                for (Entity e : entity) {
+        final RemoveAction removeAction = new RemoveAction(cardProcTable) {
+            @Override
+            protected void afterRemove(Set selected) {
+                for (Object e : selected) {
                     if (!(e instanceof CardProc))
                         continue;
                     CardProc cp = (CardProc) e;
-                    for (UUID id : new ArrayList<UUID>(cardRolesDs.getItemIds())) {
+                    for (UUID id : new ArrayList<>(cardRolesDs.getItemIds())) {
                         CardRole cardRole = cardRolesDs.getItem(id);
                         if (cardRole.getProcRole().getProc().equals(cp.getProc())) {
                             cardRolesDs.removeItem(cardRole);
@@ -125,7 +138,10 @@ public class CardProcFrame extends AbstractFrame {
                     }
                 }
             }
-        });
+        };
+        removeAction.setEnabled(false);
+
+        cardProcTable.addAction(removeAction);
 
         AbstractWfAccessData accessData = getContext().getParamValue("accessData");
         if (accessData == null || accessData.getStartCardProcessEnabled()) {
@@ -168,7 +184,7 @@ public class CardProcFrame extends AbstractFrame {
 
                     @Override
                     public void collectionChanged(CollectionDatasource ds,
-                                                  CollectionDatasourceListener.Operation operation,
+                                                  Operation operation,
                                                   List<CardProc> items) {
                         initCreateProcLookup();
                     }
@@ -249,7 +265,7 @@ public class CardProcFrame extends AbstractFrame {
                 Messages messages = AppBeans.get(Messages.NAME);
                 App.getInstance().getWindowManager().showNotification(
                         messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
-                        IFrame.NotificationType.WARNING
+                        NotificationType.WARNING
                 );
                 App.getInstance().getWindowManager().close(window);
                 return;
@@ -360,14 +376,11 @@ public class CardProcFrame extends AbstractFrame {
         toCommit.add(loadedCard);
         toCommit.add(loadedCardProc);
         CommitContext cc = new CommitContext(toCommit);
-        ServiceLocator.getDataService().commit(cc);
+        getDsContext().getDataSupplier().commit(cc);
     }
 
     protected void initRoles() {
-
-        cardRolesFrame = getComponent("cardRolesFrame");
         cardRolesFrame.init();
-
     }
 
     public void setCard(final Card card) {
@@ -376,7 +389,7 @@ public class CardProcFrame extends AbstractFrame {
 
         Map<String, Object> params = new HashMap<>();
         params.put("cardType", "%," + card.getMetaClass().getName() + ",%");
-        params.put("userId", UserSessionProvider.currentOrSubstitutedUserId());
+        params.put("userId", userSession.getCurrentOrSubstitutedUser().getId());
         procDs.refresh(params);
 
         initCreateProcLookup();
@@ -398,7 +411,7 @@ public class CardProcFrame extends AbstractFrame {
 
     protected boolean alreadyAdded(Proc p) {
         for (CardProc cp : getDsItems(cardProcDs)) {
-            if (cp.getProc() != null  && cp.getProc().equals(p))
+            if (cp.getProc() != null && cp.getProc().equals(p))
                 return true;
         }
         return false;
@@ -459,7 +472,7 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     protected ProcRolePermissionsService getProcRolePermissionsService() {
-        return ServiceLocator.lookup(ProcRolePermissionsService.NAME);
+        return AppBeans.get(ProcRolePermissionsService.NAME);
     }
 
     public CardRolesFrame getCardRolesFrame() {
@@ -470,7 +483,7 @@ public class CardProcFrame extends AbstractFrame {
         card = (Card) getDsContext().get("cardDs").getItem();
     }
 
-    public void setExcludedProcesses(List<String> excludedProcessesCodes){
+    public void setExcludedProcesses(List<String> excludedProcessesCodes) {
         this.excludedProcessesCodes = excludedProcessesCodes;
     }
 }

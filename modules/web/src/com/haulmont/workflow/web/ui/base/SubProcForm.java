@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -9,7 +9,7 @@ package com.haulmont.workflow.web.ui.base;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.web.ui.base.action.CardContext;
+import com.haulmont.workflow.gui.base.action.CardContext;
 
 import java.util.Map;
 
