@@ -134,16 +134,12 @@ public class ProcessAction extends AbstractAction {
                         }
                 );
             }
-        } else if ((window instanceof WebWindow) ? ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()
-                : ((Window.Editor) window).commit()) {
+        } else if (((Window.Editor) window).commit()) {
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new com.haulmont.workflow.gui.base.action.FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        if (window instanceof Window.Editor)
-                            ((Window.Editor) window).commit();
-                        else
-                            throw new UnsupportedOperationException();
+                        ((Window.Editor) window).commit();
                         managerChain.doManagerAfter(formManagerParams);
                     }
 
@@ -155,11 +151,7 @@ public class ProcessAction extends AbstractAction {
             } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
                 managerChain.setHandler(new com.haulmont.workflow.gui.base.action.FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        if (window instanceof WebWindow) {
-                            ((WebWindow) window).getWrapper().close(Window.COMMIT_ACTION_ID);
-                        } else {
-                            window.close(Window.COMMIT_ACTION_ID);
-                        }
+                        window.close(Window.COMMIT_ACTION_ID);
                         managerChain.doManagerAfter(formManagerParams);
                     }
 

@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.ReassignInfo;
@@ -44,8 +43,7 @@ public class ReassignAction extends AbstractAction {
     @Override
     public void actionPerform(Component component) {
         final Window window = ComponentsHelper.getWindow(frame);
-        if (!(window instanceof Window.Editor)) return;
-        if ((window instanceof WebWindow) ? ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit() : ((Window.Editor) window).commit()) {
+        if ((window instanceof Window.Editor) && ((Window.Editor) window).commit()) {
             AbstractWfAccessData accessData = window.getContext().getParamValue("accessData");
             ReassignInfo reassignInfo = accessData.getReassignInfo();
             Window w = window.openWindow("reassign.form", WindowManager.OpenType.DIALOG, ImmutableMap.<String, Object>builder()
