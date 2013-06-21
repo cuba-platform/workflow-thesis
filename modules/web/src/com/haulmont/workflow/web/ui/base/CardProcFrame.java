@@ -279,7 +279,7 @@ public class CardProcFrame extends AbstractFrame {
             }
         }
 
-        if (window instanceof Window.Editor && ((Window.Editor) ((WebWindow.Editor) window).getWrapper()).commit()) {
+        if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
             refreshCard();
 
             final Proc proc = ds.reload(cp.getProc(), "start-process");
@@ -310,13 +310,8 @@ public class CardProcFrame extends AbstractFrame {
                             public void onFail() {
                                 rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);
 
-                                Object editor = null;
-                                if (window instanceof WrappedWindow) {
-                                    editor = ((WrappedWindow) window).getWrapper();
-                                }
-
-                                if (editor instanceof AbstractCardEditor) {
-                                    ((AbstractCardEditor) editor).reopen(Collections.<String, Object>singletonMap("tabName", "processTab"));
+                                if (window instanceof AbstractCardEditor) {
+                                    ((AbstractCardEditor) window).reopen(Collections.<String, Object>singletonMap("tabName", "processTab"));
                                 } else
                                     window.close("cancel", true);
                             }
