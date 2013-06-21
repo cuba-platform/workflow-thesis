@@ -7,7 +7,7 @@ package com.haulmont.workflow.gui.base.action;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.ResourceService;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.StringUtils;
@@ -51,53 +51,50 @@ public class FormManagerChain {
         String resourceName = card.getProc().getMessagesPack().replace(".", "/") + "/forms.xml";
 
         String cacheKey = resourceName + "/" + actionName;
-        FormManagerChain cached = null;
-        //cache.get(cacheKey);
+        FormManagerChain cached = cache.get(cacheKey);
         if (cached != null) {
             cached.reset();
-            return cached.clone();
+            return cached.copy();
         } else {
-            ResourceService resourceService = ServiceLocator.lookup(ResourceService.NAME);
+            ResourceService resourceService = AppBeans.get(ResourceService.NAME);
             String xml = resourceService.getResourceAsString(resourceName);
             if (xml != null) {
                 Document doc = Dom4j.readDocument(xml);
                 Element root = doc.getRootElement();
 
                 Element element = null;
-                String activity;
-                String transition;
-                if (WfConstants.ACTION_SAVE.equals(actionName) || (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName))) {
-                    activity = actionName;
-                    transition = null;
-                    element = root.element("save");
-                } else if (WfConstants.ACTION_START.equals(actionName)) {
-                    activity = actionName;
-                    transition = null;
-                    element = root.element("start");
-                } else if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-                    activity = actionName;
-                    transition = null;
-                    element = root.element("cancel");
-                } else if (WfConstants.ACTION_REASSIGN.equals(actionName)) {
-                    activity = actionName;
-                    transition = null;
-                    element = root.element("reassign");
-                }
-                else {
-                    int dot = actionName.lastIndexOf('.');
-                    activity = actionName.substring(0, dot);
-                    transition = actionName.substring(actionName.lastIndexOf('.') + 1);
+                String activity = actionName;
+                String transition = null;
+                switch (actionName) {
+                    case WfConstants.ACTION_SAVE:
+                    case WfConstants.ACTION_SAVE_AND_CLOSE:
+                        element = root.element("save");
+                        break;
+                    case WfConstants.ACTION_START:
+                        element = root.element("start");
+                        break;
+                    case WfConstants.ACTION_CANCEL:
+                        element = root.element("cancel");
+                        break;
+                    case WfConstants.ACTION_REASSIGN:
+                        element = root.element("reassign");
+                        break;
+                    default:
+                        int dot = actionName.lastIndexOf('.');
+                        activity = actionName.substring(0, dot);
+                        transition = actionName.substring(actionName.lastIndexOf('.') + 1);
 
-                    for (Element activityElem : Dom4j.elements(root, "activity")) {
-                        if (activity.equals(activityElem.attributeValue("name"))) {
-                            for (Element transitionElem : Dom4j.elements(activityElem, "transition")) {
-                                if (transition.equals(transitionElem.attributeValue("name"))) {
-                                    element = transitionElem;
-                                    break;
+                        for (Element activityElem : Dom4j.elements(root, "activity")) {
+                            if (activity.equals(activityElem.attributeValue("name"))) {
+                                for (Element transitionElem : Dom4j.elements(activityElem, "transition")) {
+                                    if (transition.equals(transitionElem.attributeValue("name"))) {
+                                        element = transitionElem;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
+                        break;
                 }
                 if (element != null) {
                     FormManagerChain managerChain = new FormManagerChain();
@@ -105,13 +102,13 @@ public class FormManagerChain {
                     Map<String, Object> commonParams = new HashMap<>();
                     commonParams.put("activity", activity);
                     commonParams.put("transition", transition);
-                    
+
                     String style = StringUtils.trimToNull(element.attributeValue("style"));
                     if (style == null && ("Ok".equals(transition) || "START_PROCESS_ACTION".equals(actionName))) {
                         style = "wf-success";
                     }
-                    if (style == null && ("NotOk".equals(transition) || "CANCEL_PROCESS_ACTION".equals(actionName))){
-                       style = "wf-failure"; 
+                    if (style == null && ("NotOk".equals(transition) || "CANCEL_PROCESS_ACTION".equals(actionName))) {
+                        style = "wf-failure";
                     }
                     if (style != null) {
                         commonParams.put("style", style);
@@ -139,7 +136,7 @@ public class FormManagerChain {
                     }
 
                     cache.put(cacheKey, managerChain);
-                    return managerChain.clone();
+                    return managerChain.copy();
                 }
             }
 
@@ -148,22 +145,22 @@ public class FormManagerChain {
         }
     }
 
-    public FormManagerChain clone() {
-        FormManagerChain clonedChain = new FormManagerChain();
-        clonedChain.setCommonParams(new HashMap(getCommonParams()));
+    public FormManagerChain copy() {
+        FormManagerChain copiedChain = new FormManagerChain();
+        copiedChain.setCommonParams(new HashMap(getCommonParams()));
 
         for (FormManager manager : getManagersAfter()) {
-            FormManager clonedManager = manager.clone();
-            clonedManager.setFormManagerChain(clonedChain);
-            clonedChain.addManagerAfter(clonedManager);
+            FormManager clonedManager = manager.copy();
+            clonedManager.setFormManagerChain(copiedChain);
+            copiedChain.addManagerAfter(clonedManager);
         }
         for (FormManager manager : getManagersBefore()) {
-            FormManager clonedManager = manager.clone();
-            clonedManager.setFormManagerChain(clonedChain);
-            clonedChain.addManagerBefore(clonedManager);
+            FormManager clonedManager = manager.copy();
+            clonedManager.setFormManagerChain(copiedChain);
+            copiedChain.addManagerBefore(clonedManager);
         }
 
-        return clonedChain;
+        return copiedChain;
     }
 
     public void addManagerBefore(FormManager manager) {
@@ -179,7 +176,7 @@ public class FormManagerChain {
     public boolean hasManagersBefore() {
         return !managersBefore.isEmpty();
     }
-    
+
     public void doManagerBefore(String comment) {
         doManagerBefore(comment, new HashMap<String, Object>());
     }
@@ -194,11 +191,9 @@ public class FormManagerChain {
         }
     }
 
-
     public void addManagerAfter(FormManager manager) {
         managersAfter.add(manager);
     }
-
 
     private FormManager getNextManagerAfter() {
         if (positionAfter < managersAfter.size()) {
