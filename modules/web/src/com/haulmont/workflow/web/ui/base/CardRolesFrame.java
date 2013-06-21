@@ -1392,11 +1392,11 @@ public class CardRolesFrame extends AbstractFrame {
             return this;
         }
 
-        Object getValue() {
+        public Object getValue() {
             return actionsField.getValue();
         }
 
-        void setValue(Object value) {
+        public void setValue(Object value) {
             actionsField.setValue(value);
         }
 
