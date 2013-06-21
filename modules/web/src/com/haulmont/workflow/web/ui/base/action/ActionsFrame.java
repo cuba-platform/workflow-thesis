@@ -15,8 +15,6 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.base.AbstractWfAccessData;
-import com.haulmont.workflow.gui.base.action.FormManagerChain;
-import com.haulmont.workflow.gui.base.action.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
