@@ -18,6 +18,7 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.gui.base.AbstractWfAccessData;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,10 +29,18 @@ import java.util.UUID;
  * @author gorbunkov
  */
 public class StartProcessButtonsFrame extends AbstractFrame {
+    @Inject
     protected CollectionDatasource<Proc, UUID> procDs;
+
+    @Inject
     protected CardProcFrame cardProcFrame;
+
+    @Named("cardProcFrame.procDs")
     protected CollectionDatasource<CardProc, UUID> cardProcDs;
+
+    @Inject
     protected Datasource cardDs;
+
     protected List<Action> actions = new ArrayList<>();
     protected List<String> excludedProcessesCodes = new ArrayList<>();
 
@@ -39,14 +48,6 @@ public class StartProcessButtonsFrame extends AbstractFrame {
     protected Messages messages;
 
     public void init() {
-        cardProcFrame = getComponent("cardProcFrame");
-        cardDs = getDsContext().get("cardDs");
-
-        final CardProcFrame cardProcFrame = (CardProcFrame) getComponent("cardProcFrame");
-        procDs = cardProcFrame.getDsContext().get("procDs");
-
-        cardProcDs = getDsContext().get("cardProcDs");
-
         if (isStartProcessEnabled() && !isActiveProcess()) {
             WebVBoxLayout startButtonsPanel = getComponent("startButtonsPanel");
             for (UUID uuid : procDs.getItemIds()) {
