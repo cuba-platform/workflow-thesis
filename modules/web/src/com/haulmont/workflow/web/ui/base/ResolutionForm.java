@@ -50,20 +50,20 @@ public class ResolutionForm extends AbstractForm {
         commentText = getComponent("commentText");
         attachmentsTable = getComponent("attachmentsTable");
 
-        final Card card = (Card) params.get("param$card");
+        final Card card = (Card) params.get("card");
         String messagesPack = card.getProc().getMessagesPack();
-        String activity = (String) params.get("param$activity");
-        String transition = (String) params.get("param$transition");
+        String activity = (String) params.get("activity");
+        String transition = (String) params.get("transition");
 
         TextField outcomeText = getComponent("outcomeText");
         outcomeText.setValue(messages.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
         outcomeText.setEditable(false);
 
-        String commentRequired = (String) params.get("param$commentRequired");
+        String commentRequired = (String) params.get("commentRequired");
         commentText.setRequired(commentRequired == null || Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
 
         Component attachmentsPane = getComponent("attachmentsPane");
-        String attachmentsVisible = (String) params.get("param$attachmentsVisible");
+        String attachmentsVisible = (String) params.get("attachmentsVisible");
         attachmentsPane.setVisible(attachmentsVisible == null || Boolean.valueOf(attachmentsVisible).equals(Boolean.TRUE));
 
         TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
@@ -80,7 +80,7 @@ public class ResolutionForm extends AbstractForm {
             assignment.setCard(card);
             assignment.setProc(card.getProc());
         } else {
-            Object assignmentId = params.get("param$assignmentId");
+            Object assignmentId = params.get("assignmentId");
             if (assignmentId == null) {
                 throw new RuntimeException(getMessage("resolutionFormFailed"));
             }

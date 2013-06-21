@@ -255,7 +255,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected String getRequiredRoles() {
-        return getContext().getParamValue("param$requiredRoles");
+        return getContext().getParamValue("requiredRoles");
     }
 
     private String getAttachmentsTabCaption() {
@@ -420,7 +420,7 @@ public class TransitionForm extends AbstractForm {
             if (!emptyRolesNames.isEmpty()) {
                 String message = "";
                 for (String emptyRoleName : emptyRolesNames) {
-                    message += MessageProvider.formatMessage(TransitionForm.class, "actorNotDefined.msg", emptyRoleName) + "<br/>";
+                    message += messages.formatMessage(TransitionForm.class, "actorNotDefined.msg", emptyRoleName) + "\n";
                 }
                 showNotification(message, NotificationType.WARNING);
                 return false;

@@ -125,18 +125,18 @@ public abstract class FormManager implements Serializable {
 
     public abstract void doAfter(Map<String, Object> params);
 
-    public FormManager clone() {
-        FormManager clonedFormManager = null;
+    public FormManager copy() {
+        FormManager copiedFormManager = null;
         try {
             Constructor<? extends FormManager> constructor = getClass().getConstructor(Element.class, String.class, String.class, FormManagerChain.class);
-            clonedFormManager = constructor.newInstance(element, activity, transition, chain);
-            clonedFormManager.setActivity(activity);
-            clonedFormManager.setElement(element);
-            clonedFormManager.setTransition(transition);
+            copiedFormManager = constructor.newInstance(element, activity, transition, chain);
+            copiedFormManager.setActivity(activity);
+            copiedFormManager.setElement(element);
+            copiedFormManager.setTransition(transition);
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));
         }
-        return clonedFormManager;
+        return copiedFormManager;
     }
 
     public static class ScreenFormManager extends FormManager {
@@ -210,7 +210,7 @@ public abstract class FormManager implements Serializable {
         }
 
         private Callable<Boolean> getCallable(Map<String, Object> params) {
-            Class cls = ((Scripting) AppBeans.get(Scripting.NAME)).loadClass(className);
+            Class cls = AppBeans.get(Scripting.class).loadClass(className);
             Callable<Boolean> runnable;
             try {
                 runnable = (Callable<Boolean>) ReflectionHelper.newInstance(cls, params);
@@ -284,21 +284,11 @@ public abstract class FormManager implements Serializable {
                                 public void actionPerform(Component component) {
                                     chain.doManagerBefore("");
                                 }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/ok.png";
-                                }
                             },
                             new DialogAction(DialogAction.Type.NO) {
                                 @Override
                                 public void actionPerform(Component component) {
                                     chain.fail();
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/cancel.png";
                                 }
                             }
                     }

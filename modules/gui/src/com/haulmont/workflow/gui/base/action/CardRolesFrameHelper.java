@@ -31,7 +31,7 @@ public class CardRolesFrameHelper {
             LoadContext ctx = new LoadContext(ProcRole.class);
             LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
             query.setParameter("proc", card.getProc());
-            procRoles = ((DataService) AppBeans.get(DataService.NAME)).loadList(ctx);
+            procRoles = AppBeans.get(DataService.class).loadList(ctx);
         }
         for (ProcRole procRole : procRoles) {
             procRolesNames.put(procRole.getCode(), procRole.getName());
@@ -42,7 +42,7 @@ public class CardRolesFrameHelper {
 
         if (StringUtils.isNotEmpty(requiredRolesCodesStr)) {
             String[] s = requiredRolesCodesStr.split("\\s*,\\s*");
-            emptyRequiredRolesCodes = new LinkedHashSet<String>(Arrays.asList(s));
+            emptyRequiredRolesCodes = new LinkedHashSet<>(Arrays.asList(s));
         }
 
         Set<String> requiredRolesChoiceCodes = new HashSet<>();
@@ -79,7 +79,7 @@ public class CardRolesFrameHelper {
         for (String roleCode : emptyRequiredRolesCodes) {
             if (roleCode.contains("|")) {
                 String formattingCode = "";
-                String orStr = " " + ((Messages) AppBeans.get(Messages.NAME)).getMessage(CardRolesFrameHelper.class, "actorNotDefined.or") + " ";
+                String orStr = " " + AppBeans.get(Messages.class).getMessage(CardRolesFrameHelper.class, "actorNotDefined.or") + " ";
                 String[] roles = roleCode.split("\\|");
                 for (String role : roles) {
                     formattingCode += procRolesNames.get(role) + orStr;

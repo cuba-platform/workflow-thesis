@@ -26,6 +26,6 @@ public class ReassignFormAccessData extends AbstractAccessData
     }
 
     public boolean isCommentVisible() {
-        return BooleanUtils.isTrue((Boolean) params.get("param$commentVisible"));
+        return BooleanUtils.isTrue((Boolean) params.get("commentVisible"));
     }
 }

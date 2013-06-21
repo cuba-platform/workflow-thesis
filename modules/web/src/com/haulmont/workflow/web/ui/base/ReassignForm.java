@@ -66,16 +66,16 @@ public class ReassignForm extends AbstractWindow {
         commentText = getComponent("commentText");
         tmpCardRolesDs = cardRolesFrame.getDsContext().get("tmpCardRolesDs");
 
-        card = (Card) params.get("param$card");
-        state = (String) params.get("param$state");
+        card = (Card) params.get("card");
+        state = (String) params.get("state");
         cardDs.setItem((Card) InstanceUtils.copy(card));
 
         getDialogParams().setWidth(DEFAULT_FORM_WIDTH);
         getDialogParams().setHeight(DEFAULT_FORM_HEIGHT);
 
         if (cardRolesFrame != null) {
-            role = (String) params.get("param$role");
-            Iterable<String> visibleRoles = Splitter.on(",").split(StringUtils.defaultIfEmpty((String) params.get("param$visibleRoles"), ""));
+            role = (String) params.get("role");
+            Iterable<String> visibleRoles = Splitter.on(",").split(StringUtils.defaultIfEmpty((String) params.get("visibleRoles"), ""));
             cardRolesFrame.init();
             cardRolesFrame.setCard(card);
             tmpCardRolesDs.setVisibleRoles(ImmutableSet.<String>builder().add(role).addAll(visibleRoles).build());
@@ -93,7 +93,7 @@ public class ReassignForm extends AbstractWindow {
         }
 
         if (commentText != null) {
-            commentText.setRequired(BooleanUtils.isTrue((Boolean) params.get("param$commentRequired")));
+            commentText.setRequired(BooleanUtils.isTrue((Boolean) params.get("commentRequired")));
         }
 
         setCaption(getMessage("reassign.caption"));
