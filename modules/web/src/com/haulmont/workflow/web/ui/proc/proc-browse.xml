@@ -15,7 +15,7 @@
     </dsContext>
 
     <layout expand="procTable" spacing="true">
-        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+        <hbox spacing="true">
             <button action="procTable.refresh" icon="icons/refresh.png"/>
             <button action="procTable.edit" icon="icons/edit.png"/>
             <button action="procTable.remove" icon="icons/remove.png" />

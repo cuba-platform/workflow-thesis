@@ -20,14 +20,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class ProcBrowser extends AbstractWindow {
-    public ProcBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
