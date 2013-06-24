@@ -341,7 +341,7 @@ public class DesignCompiler {
         for (Element e : elements) {
             List<Element> properties = e.elements("property");
             for (Element prop : properties) {
-                if (prop.attribute("name").getValue().equals("role")) {
+                if (prop.attribute("name").getValue().startsWith("role")) {
                     String role = prop.element("string").attribute("value").getValue();
                     if (!rolesList.contains(role)) {
                         rolesList.add(role);

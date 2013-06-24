@@ -189,7 +189,7 @@ public class WfEngine implements WfEngineAPI {
                         String name = element.attributeValue("name");
                         if (name != null && "property".equals(element.getName())) {
                             Element valueElem = element.element("string");
-                            if ("role".equals(name) || "observers".equals(name)) {
+                            if (name.startsWith("role") || "observers".equals(name)) {
                                 String role = valueElem.attributeValue("value");
                                 if (!StringUtils.isBlank(role)) {
                                     String[] strings = role.split(",");
