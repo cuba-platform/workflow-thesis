@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -19,11 +19,9 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.log.LogItem;
 import com.haulmont.cuba.web.log.LogLevel;
-import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardProc;
@@ -45,6 +43,10 @@ import java.util.*;
  * @version $Id$
  */
 public class CardProcFrame extends AbstractFrame {
+
+    @Inject
+    protected Datasource<Card> cardDs;
+
     @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
 
@@ -85,8 +87,8 @@ public class CardProcFrame extends AbstractFrame {
 
     protected String createProcCaption;
 
-    @Inject
-    protected ProcRolePermissionsService procRolePermissionsService;
+//    @Inject
+//    protected ProcRolePermissionsService procRolePermissionsService;
 
     @Inject
     protected UserSession userSession;
@@ -97,8 +99,6 @@ public class CardProcFrame extends AbstractFrame {
 
         initProc();
         initRoles();
-
-        procRolePermissionsService = getProcRolePermissionsService();
     }
 
     private void initProc() {
@@ -109,9 +109,9 @@ public class CardProcFrame extends AbstractFrame {
         final com.vaadin.ui.Table vCardProcTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(cardProcTable);
         vCardProcTable.addValueChangeListener(new com.vaadin.ui.Table.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                Object uuid = vCardProcTable.getValue();
+                UUID uuid = (UUID) vCardProcTable.getValue();
                 if (uuid != null) {
-                    CardProc proc = (CardProc) cardProcTable.getDatasource().getItem(uuid);
+                    CardProc proc = cardProcDs.getItem(uuid);
                     if (proc != null) {
                         if (proc.getStartCount() < 1) {
                             removeProc.setEnabled(true);
@@ -132,7 +132,7 @@ public class CardProcFrame extends AbstractFrame {
                     CardProc cp = (CardProc) e;
                     for (UUID id : new ArrayList<>(cardRolesDs.getItemIds())) {
                         CardRole cardRole = cardRolesDs.getItem(id);
-                        if (cardRole.getProcRole().getProc().equals(cp.getProc())) {
+                        if (cardRole != null && cardRole.getProcRole().getProc().equals(cp.getProc())) {
                             cardRolesDs.removeItem(cardRole);
                         }
                     }
@@ -171,13 +171,14 @@ public class CardProcFrame extends AbstractFrame {
                         if (startProcessAction != null) {
                             if (enabled) {
                                 for (UUID id : cardProcDs.getItemIds()) {
-                                    if (BooleanUtils.isTrue(cardProcDs.getItem(id).getActive())) {
+                                    CardProc cardProc = cardProcDs.getItem(id);
+                                    if (BooleanUtils.isTrue(cardProc != null && cardProc.getActive())) {
                                         enabled = false;
                                         break;
                                     }
                                 }
                             }
-                            Boolean notExcluded = item == null ? true : !excludedProcessesCodes.contains(item.getProc().getCode());
+                            Boolean notExcluded = item == null || !excludedProcessesCodes.contains(item.getProc().getCode());
                             startProcessAction.setEnabled(enabled && notExcluded);
                         }
                     }
@@ -352,6 +353,7 @@ public class CardProcFrame extends AbstractFrame {
                 new View(Card.class).addProperty("proc").addProperty("jbpmProcessId")
         );
         Card loadedCard = ds.load(lc);
+        Preconditions.checkNotNull(loadedCard, "Can't rollback process on deleted card");
 
         //If process start failed because of another concurrently started process, jbpmProcessId will be not empty.
         //In this case we will not restore previous value of card.proc field
@@ -362,12 +364,15 @@ public class CardProcFrame extends AbstractFrame {
         lc = new LoadContext(CardProc.class).setId(cp.getId()).setView(
                 new View(CardProc.class).addProperty("active").addProperty("startCount").addProperty("state")
         );
+
         CardProc loadedCardProc = ds.load(lc);
+        Preconditions.checkNotNull(loadedCardProc, "Can't rollback process on deleted cardProc");
+
         loadedCardProc.setActive(false);
         loadedCardProc.setStartCount(prevStartCount);
         loadedCardProc.setState(prevCardProcState);
 
-        Set toCommit = new HashSet();
+        Set<Entity> toCommit = new HashSet<>();
         toCommit.add(loadedCard);
         toCommit.add(loadedCardProc);
         CommitContext cc = new CommitContext(toCommit);
@@ -379,7 +384,7 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     public void setCard(final Card card) {
-        Preconditions.checkArgument(card != null, "Card is null");
+        Preconditions.checkNotNull(card != null, "Card is null");
         this.card = card;
 
         Map<String, Object> params = new HashMap<>();
@@ -393,7 +398,7 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     protected void initCreateProcLookup() {
-        List options = new ArrayList();
+        List<Object> options = new ArrayList<>();
         for (Proc p : getDsItems(procDs)) {
             if (!alreadyAdded(p)) {
                 options.add(p);
@@ -414,7 +419,7 @@ public class CardProcFrame extends AbstractFrame {
 
 
     protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
         for (UUID id : ds.getItemIds()) {
             items.add(ds.getItem(id));
         }
@@ -466,18 +471,15 @@ public class CardProcFrame extends AbstractFrame {
         }
     }
 
-    protected ProcRolePermissionsService getProcRolePermissionsService() {
-        return AppBeans.get(ProcRolePermissionsService.NAME);
-    }
-
     public CardRolesFrame getCardRolesFrame() {
         return cardRolesFrame;
     }
 
     private void refreshCard() {
-        card = (Card) getDsContext().get("cardDs").getItem();
+        card = cardDs.getItem();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setExcludedProcesses(List<String> excludedProcessesCodes) {
         this.excludedProcessesCodes = excludedProcessesCodes;
     }
