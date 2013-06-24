@@ -1,19 +1,20 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 package com.haulmont.workflow.web.ui.base;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
@@ -27,6 +28,7 @@ import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHe
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentCreator;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -35,20 +37,33 @@ import java.util.*;
  */
 public class ResolutionForm extends AbstractForm {
 
-    private TextArea commentText;
-    private Table attachmentsTable;
-    private Assignment assignment;
-    protected AttachmentType attachmentType;
+    @Inject
+    protected TextArea commentText;
 
-    private CollectionDatasourceImpl<Assignment, UUID> datasource;
+    @Inject
+    protected Table attachmentsTable;
+
+    @Inject
+    protected CollectionDatasourceImpl<Assignment, UUID> assignmentDs;
+
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
+
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected UserSession userSession;
+
+    protected Assignment assignment;
+
+    protected AttachmentType attachmentType;
 
     @Override
     public void init(final Map<String, Object> params) {
         super.init(params);
-
-        commentText = getComponent("commentText");
-        attachmentsTable = getComponent("attachmentsTable");
 
         final Card card = (Card) params.get("card");
         String messagesPack = card.getProc().getMessagesPack();
@@ -66,15 +81,13 @@ public class ResolutionForm extends AbstractForm {
         String attachmentsVisible = (String) params.get("attachmentsVisible");
         attachmentsPane.setVisible(attachmentsVisible == null || Boolean.valueOf(attachmentsVisible).equals(Boolean.TRUE));
 
-        TableActionsHelper attachmentsTH = new TableActionsHelper(this, attachmentsTable);
-        attachmentsTH.createEditAction(WindowManager.OpenType.DIALOG);
-        attachmentsTH.createRemoveAction(false);
+        attachmentsTable.addAction(new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG));
+        attachmentsTable.addAction(new RemoveAction(attachmentsTable, false));
 
         if (activity.equals(WfConstants.ACTION_CANCEL)) {
             assignment = new Assignment();
             assignment.setName(WfConstants.CARD_STATE_CANCELED);
             assignment.setOutcome("Ok");
-            UserSession userSession = UserSessionClient.getUserSession();
             assignment.setUser(userSession.getCurrentOrSubstitutedUser());
             assignment.setFinishedByUser(userSession.getUser());
             assignment.setCard(card);
@@ -87,9 +100,8 @@ public class ResolutionForm extends AbstractForm {
             assignment = reloadAssignment(assignmentId);
         }
 
-        datasource = getDsContext().get("assignmentDs");
-        datasource.valid();
-        datasource.setItem(assignment);
+        assignmentDs.valid();
+        assignmentDs.setItem(assignment);
         applyToCards();
 
         addAction(new AbstractAction("windowCommit") {
@@ -109,7 +121,7 @@ public class ResolutionForm extends AbstractForm {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
@@ -125,7 +137,6 @@ public class ResolutionForm extends AbstractForm {
             }
         });
 
-        final CollectionDatasource assignmentDs = getDsContext().get("assignmentDs");
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
@@ -134,9 +145,9 @@ public class ResolutionForm extends AbstractForm {
         Button pasteAttachBtn = getComponent("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
             public Attachment createObject() {
-                CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
-                attachment.setAssignment((Assignment) assignmentDs.getItem());
-                attachment.setCard(((Assignment) assignmentDs.getItem()).getCard());
+                CardAttachment attachment = metadata.create(CardAttachment.class);
+                attachment.setAssignment(assignmentDs.getItem());
+                attachment.setCard(assignmentDs.getItem().getCard());
                 return attachment;
             }
         };
@@ -145,31 +156,24 @@ public class ResolutionForm extends AbstractForm {
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
         PopupButton createPopup = getComponent("createAttachBtn");
-        TableActionsHelper helper = new TableActionsHelper(this, attachmentsTable);
-        WfConfig wfConfig = ConfigProvider.getConfig(WfConfig.class);
+        WfConfig wfConfig = AppBeans.get(Configuration.class).getConfig(WfConfig.class);
         if (wfConfig.getOneAttachmentUploaderEnabled()) {
-            createPopup.addAction(helper.createCreateAction(
-                    new ValueProvider() {
-                        public Map<String, Object> getValues() {
-                            Map<String, Object> values = new HashMap<String, Object>();
-                            values.put("assignment", getDsContext().get("assignmentDs").getItem());
-                            values.put("file", new FileDescriptor());
-                            values.put("card", card);
-                            if (attachmentType != null) {
-                                values.put("attachType", attachmentType);
-                            }
-                            return values;
-                        }
-
-                        public Map<String, Object> getParameters() {
-                            return Collections.emptyMap();
-                        }
-                    },
-                    WindowManager.OpenType.DIALOG, "actions.New"
-            ));
+            createPopup.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG, "actions.New") {
+                @Override
+                public Map<String, Object> getInitialValues() {
+                    Map<String, Object> values = new HashMap<>();
+                    values.put("assignment", assignmentDs.getItem());
+                    values.put("file", new FileDescriptor());
+                    values.put("card", card);
+                    if (attachmentType != null) {
+                        values.put("attachType", attachmentType);
+                    }
+                    return values;
+                }
+            });
         }
 
-        Map map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (attachmentType != null) {
             map.put("attachType", attachmentType);
         }
@@ -190,16 +194,16 @@ public class ResolutionForm extends AbstractForm {
         if (cardAssignmentInfoMap != null) {
             for (AssignmentInfo assignmentInfo : cardAssignmentInfoMap.values()) {
                 Assignment assign = assignment.getId().equals(assignmentInfo.getAssignmentId()) ?
-                        datasource.getItem() : reloadAssignment(assignmentInfo.getAssignmentId());
-                datasource.addItem(assign);
+                        assignmentDs.getItem() : reloadAssignment(assignmentInfo.getAssignmentId());
+                assignmentDs.addItem(assign);
             }
 
-            datasource.addListener(new DsListenerAdapter<Assignment>() {
+            assignmentDs.addListener(new DsListenerAdapter<Assignment>() {
                 @Override
                 public void valueChanged(Assignment source, String property, Object prevValue, Object value) {
                     if (source.equals(assignment)) {
-                        for (Object key : datasource.getItemIds()) {
-                            InstanceUtils.setValueEx(datasource.getItem((UUID) key), property, value);
+                        for (Object key : assignmentDs.getItemIds()) {
+                            InstanceUtils.setValueEx(assignmentDs.getItem((UUID) key), property, value);
                         }
                     }
                 }
@@ -208,18 +212,19 @@ public class ResolutionForm extends AbstractForm {
     }
 
     protected List<CardAttachment> copyAttachments() {
-        List<CardAttachment> attachmentList = datasource.getItem().getAttachments();
+        List<CardAttachment> attachmentList = assignmentDs.getItem().getAttachments();
         List<CardAttachment> commitList = new ArrayList<>();
-        if (datasource.getItemIds().size() > 1 && attachmentList != null) {
-            for (Object key : datasource.getItemIds()) {
+        if (assignmentDs.getItemIds().size() > 1 && attachmentList != null) {
+            for (Object key : assignmentDs.getItemIds()) {
                 if (key.equals(assignment.getId())) {
                     continue;
                 }
 
-                Assignment item = datasource.getItem((UUID) key);
+                Assignment item = assignmentDs.getItem((UUID) key);
+                Preconditions.checkNotNull(item, "Assignment is null");
                 List<CardAttachment> copyAttachmentList = new ArrayList<>();
                 for (CardAttachment attachment : attachmentList) {
-                    CardAttachment cardAttachment = MetadataProvider.create(CardAttachment.class);
+                    CardAttachment cardAttachment = metadata.create(CardAttachment.class);
                     cardAttachment.setAssignment(item);
                     cardAttachment.setCard(item.getCard().getFamilyTop());
                     cardAttachment.setFile(attachment.getFile());
@@ -237,7 +242,7 @@ public class ResolutionForm extends AbstractForm {
         LoadContext ctx = new LoadContext(Assignment.class);
         ctx.setId(id);
         ctx.setView("resolution-edit");
-        return ServiceLocator.getDataService().load(ctx);
+        return getDsContext().getDataSupplier().load(ctx);
     }
 
     @Override

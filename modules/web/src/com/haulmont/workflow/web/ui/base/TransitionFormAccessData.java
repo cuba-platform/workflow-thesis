@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 20.04.2010 13:04:43
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -16,6 +11,10 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class TransitionFormAccessData extends AbstractAccessData {
     private Map<String, Object> params;
 

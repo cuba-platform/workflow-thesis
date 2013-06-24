@@ -15,9 +15,7 @@ import java.util.Map;
  * @author subbotin
  * @version $Id$
  */
-public class ReassignFormAccessData extends AbstractAccessData
-
-{
+public class ReassignFormAccessData extends AbstractAccessData {
     private Map<String, Object> params;
 
     public ReassignFormAccessData(Map<String, Object> params) {
