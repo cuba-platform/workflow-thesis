@@ -42,9 +42,11 @@ class DefaultProcActorEditor extends AbstractEditor{
     DefaultProcActor dpa = (DefaultProcActor)getItem()
     Role secRole = dpa.procRole.role
     if (secRole) {
-      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole and u.id not in (:custom$userIds) order by u.name')
+      usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole ' +
+              'and u.id not in (:custom$userIds) order by u.name ' +
+              'and u.active = true ')
     } else {
-      usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) order by u.name')
+      usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) and u.active = true order by u.name')
     }
     usersDs.refresh(['secRole': secRole, 'userIds':userIds])
     if (isMulti)
