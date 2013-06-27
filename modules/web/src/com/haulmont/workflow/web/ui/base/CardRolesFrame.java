@@ -768,7 +768,8 @@ public class CardRolesFrame extends AbstractFrame {
         //    return;
 
         LoadContext ctx = new LoadContext(DefaultProcActor.class);
-        ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null")
+        ctx.setQueryString("select a from wf$DefaultProcActor a where a.procRole.proc.id = :procId and a.user.deleteTs is null " +
+                "and u.active = true")
                 .setParameter("procId", proc.getId());
         ctx.setView("edit");
         List<DefaultProcActor> dpaList = getDsContext().getDataSupplier().loadList(ctx);
