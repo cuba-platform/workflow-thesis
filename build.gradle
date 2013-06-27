@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -123,7 +123,7 @@ configure(coreModule) {
         compile(hibernate)
         runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.5.2')
         runtime(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.5.2')
-        runtime(group: 'javassist', name: 'javassist', version: '3.4.GA')
+        runtime(group: 'org.javassist', name: 'javassist', version: '3.18.0-GA')
         provided(servletApi)
         jdbc(hsqldb)
         dbscripts(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'db', ext: 'zip')
