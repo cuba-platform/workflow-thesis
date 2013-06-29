@@ -17,7 +17,7 @@
     </dsContext>
 
     <layout expand="aTable" spacing="true">
-        <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+        <hbox align="MIDDLE_LEFT" spacing="true">
             <button action="aTable.refresh" icon="icons/refresh.png"/>
             <button action="aTable.open" icon="icons/edit.png"/>
         </hbox>
