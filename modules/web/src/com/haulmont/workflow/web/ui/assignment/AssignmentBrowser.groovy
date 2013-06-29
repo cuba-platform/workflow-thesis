@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.11.2009 10:53:31
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.assignment
 
@@ -14,11 +9,11 @@ import com.haulmont.cuba.gui.components.*
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.cuba.gui.WindowManager
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AssignmentBrowser extends AbstractWindow {
-
-  def AssignmentBrowser(IFrame iFrame) {
-    super(iFrame);
-  }
 
     public void init(Map<String, Object> params) {
     super.init(params);
