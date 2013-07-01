@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-        targetNamespace="http://schemas.haulmont.com/workflow/4.0/forms.xsd"
+        targetNamespace="http://schemas.haulmont.com/workflow/4.1/forms.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/workflow/4.0/forms.xsd"
+        xmlns="http://schemas.haulmont.com/workflow/4.1/forms.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
