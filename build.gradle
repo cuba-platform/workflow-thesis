@@ -73,9 +73,9 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
     }
 
     dependencies {
-        groovy(group: 'org.slf4j', name: 'slf4j-simple', version: '1.5.2')
-        groovy(group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10')
-        groovy(group: 'asm', name: 'asm', version: '3.2')
+        compile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.5.2')
+        compile(group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10')
+        compile(group: 'asm', name: 'asm', version: '3.2')
 
         compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: baseVersion)
         testCompile(group: 'junit', name: 'junit', version: '4.5')
