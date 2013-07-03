@@ -112,7 +112,7 @@ public class AttachmentEditor extends AbstractEditor {
                 attachItem.setCreateTs(TimeProvider.currentTimestamp());
                 attachItem.setCreatedBy(UserSessionClient.getUserSession()
                         .getCurrentOrSubstitutedUser().getLoginLowerCase());
-
+                attachItem.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
                 fileDs.refresh()
                 okBtn.setEnabled(false)
                 uploadField.addListener([
