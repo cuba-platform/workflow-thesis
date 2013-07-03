@@ -7,10 +7,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -67,6 +64,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 attachment.setCard(card.getFamilyTop());
                 attachment.setCreateTs(TimeProvider.currentTimestamp());
                 attachment.setCreatedBy(UserSessionProvider.getUserSession().getUser().getLogin());
+                attachment.setUser(AppBeans.get(UserSessionSource.class).getUserSession().getCurrentOrSubstitutedUser());
                 return attachment;
             }
 
