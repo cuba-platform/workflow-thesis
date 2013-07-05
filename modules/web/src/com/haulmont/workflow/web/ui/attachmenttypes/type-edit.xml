@@ -21,8 +21,8 @@
         <vbox margin="true" stylename="edit-area">
             <fieldGroup id="fieldsTable" datasource="typeDs">
                 <column flex="1">
-                    <field id="code" required="true" maxLength="500" width="${width}"  requiredMessage="msg://codeMsg"/>
-                    <field id="name" required="true" maxLength="500" width="${width}"  requiredMessage="msg://nameMsg"/>
+                    <field id="code" required="true" maxLength="500" width="${width}" requiredMessage="msg://codeMsg"/>
+                    <field id="name" required="true" maxLength="500" width="${width}" requiredMessage="msg://nameMsg"/>
                     <field id="comment" required="false" maxLength="1000" rows="4" width="${width}"/>
                 </column>
             </fieldGroup>

@@ -9,20 +9,21 @@
     <dsContext>
         <collectionDatasource id="typesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
             <query>
-                select att from wf$AttachmentType att where (att.deleteTs is null) and not (att.isSystem = true) order by att.isDefault desc
+                select att from wf$AttachmentType att where (att.deleteTs is null) and not (att.isSystem = true) order
+                by att.isDefault desc
             </query>
         </collectionDatasource>
     </dsContext>
 
     <layout>
-        <vbox expand="table-panel">
-            <vbox id="table-panel" expand="table" spacing="true">
+        <vbox expand="table-panel" height="100%">
+            <vbox id="table-panel" expand="table" spacing="true" height="100%">
                 <hbox align="MIDDLE_LEFT" spacing="true">
                     <button action="table.create" icon="icons/create.png"/>
                     <button action="table.edit" icon="icons/edit.png"/>
                     <button action="table.remove" icon="icons/remove.png"/>
                 </hbox>
-                <table id="table" editable="false">
+                <table id="table" editable="false" height="100%" width="100%">
                     <columns>
                         <column id="name" caption="msg://attachType.name"/>
                         <column id="comment" caption="msg://attachType.comment"/>

@@ -12,14 +12,15 @@
                 <![CDATA[ select u from sec$User u ]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="tmpUserDs" class="com.haulmont.cuba.security.entity.User" view="_local" fetchMode="ALL"/>
+        <collectionDatasource id="tmpUserDs" class="com.haulmont.cuba.security.entity.User" view="_local"
+                              fetchMode="ALL"/>
     </dsContext>
-    <layout expandLayout="true">
+    <layout>
         <vbox expand="usersTable" height="100%" spacing="true">
             <grid width="100%" spacing="true">
                 <columns>
-                    <column />
-                    <column />
+                    <column/>
+                    <column/>
                     <column flex="1"/>
                 </columns>
                 <rows>
@@ -29,7 +30,7 @@
                     </row>
                 </rows>
             </grid>
-            <table id="usersTable" sortable="false">
+            <table id="usersTable" sortable="false" height="100%" width="100%">
                 <columns>
                     <column id="login" caption="msg://cardSend.login"/>
                     <column id="name" caption="msg://cardSend.user"/>
@@ -41,11 +42,11 @@
                 <label value="msg://cardSend.comment" width="100"/>
                 <textArea id="commentText" width="400" rows="4" required="true" requiredMessage="msg://commentMsg"/>
             </hbox>
-            <checkBox id="notifyByCardInfo" caption="msg://cardSend.notifyByCardInfo" />
+            <checkBox id="notifyByCardInfo" caption="msg://cardSend.notifyByCardInfo"/>
             <vbox margin="true">
                 <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
             </vbox>
         </vbox>
     </layout>
-    
+
 </window>

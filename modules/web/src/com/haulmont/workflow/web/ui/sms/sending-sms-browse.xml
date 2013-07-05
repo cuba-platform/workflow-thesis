@@ -26,8 +26,8 @@
                 <properties include=".*" exclude=""/>
             </filter>
         </vbox>
-        <vbox id="boxTable" expand="table" margin="true">
-            <groupTable id="table" spacing="true" margin="true" multiselect="true">
+        <vbox id="boxTable" expand="table" margin="true" height="100%">
+            <groupTable id="table" spacing="true" margin="true" multiselect="true" height="100%" width="100%">
                 <buttonsPanel>
                     <button action="table.refresh" icon="icons/refresh.png"/>
                     <button action="table.remove" icon="icons/remove.png"/>
