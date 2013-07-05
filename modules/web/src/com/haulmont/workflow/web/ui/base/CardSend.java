@@ -181,7 +181,7 @@ public class CardSend extends AbstractWindow {
         addAction(new AbstractAction("windowCommit") {
             @Override
             public void actionPerform(Component component) {
-                TextField comment = getComponent("commentText");
+                ResizableTextField comment = getComponent("commentText");
                 String commentStr = comment.getValue();
                 if (commentStr != null && commentStr.length() > 0) {
                     List<User> users = new LinkedList<User>();
