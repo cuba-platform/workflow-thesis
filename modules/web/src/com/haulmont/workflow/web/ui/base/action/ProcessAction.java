@@ -19,6 +19,7 @@ import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.base.action.CardContext;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -265,7 +266,13 @@ public class ProcessAction extends AbstractAction {
             return true;
         }
 
-        CardProc cardCP = !card.getProcs().isEmpty() ? card.getProcs().get(0) : null;
+        CardProc cardCP = null;
+        for (CardProc cp : card.getProcs()) {
+            if (BooleanUtils.isTrue(cp.getActive())) {
+                cardCP = cp;
+            }
+        }
+
         CardProc reloadedCardCP = null;
         if (cardCP != null && reloadedCard != null && !reloadedCard.getProcs().isEmpty()) {
             for (CardProc cp : reloadedCard.getProcs()) {
