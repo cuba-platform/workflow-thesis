@@ -18,13 +18,14 @@ import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.upload.FileUploadingAPI
-import com.haulmont.cuba.web.app.FileDownloadHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Attachment
 import com.haulmont.workflow.core.entity.AttachmentType
 import com.haulmont.workflow.core.entity.CardAttachment
 import com.haulmont.workflow.core.global.WfConfig
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
+import org.apache.commons.io.FilenameUtils
+
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import org.apache.commons.lang.StringUtils
@@ -132,20 +133,21 @@ public class AttachmentEditor extends AbstractEditor {
                                 nameText.setValue(uploadField.getFileName())
 
                             DecimalFormat formatter = new DecimalFormat("###,###,###,###");
+                            FileDescriptor fileDescriptor = getDsContext().get("fileDs").getItem()
 
                             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                             File tmpFile = fileUploading.getFile(fileId);
 
-                            extLabel.setValue(FileDownloadHelper.getFileExt(fileName))
+                            fileDescriptor.setExtension(FilenameUtils.getExtension(fileName))
                             sizeLab.setValue(formatSize(tmpFile.length(), 0)
                                     + " ("
                                     + formatter.format(tmpFile.length())
                                     + " "
                                     + MessageProvider.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")")
-                            FileDescriptor fileDescriptor = getDsContext().get("fileDs").getItem()
+
                             if (fileDescriptor)
                                 fileDescriptor.size = tmpFile.length()
-                            createDateLab.setValue(TimeProvider.currentTimestamp())
+                            fileDescriptor.setCreateDate(TimeProvider.currentTimestamp())
 
                             okBtn.setEnabled(true)
 
