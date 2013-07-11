@@ -28,6 +28,9 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
     @Inject
     protected Table table;
 
+    @Inject
+    protected Button add;
+
     public UserNotifiedBySmsBrowser(IFrame frame) {
         super(frame);
     }
@@ -36,6 +39,7 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
         if (table != null) {
+            add.setCaption(messages.getMainMessage("actions.Add"));
             ComponentsHelper.createActions(table, EnumSet.of(ListActionType.REMOVE, ListActionType.REFRESH));
         }
     }
