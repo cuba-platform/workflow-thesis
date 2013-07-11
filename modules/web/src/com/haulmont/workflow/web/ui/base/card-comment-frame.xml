@@ -19,7 +19,7 @@
             <button id="add" icon="icons/create.png"/>
             <groupBox id="commentGroupBox" stylename="edit-area" expand="commentHBox">
                 <hbox id="commentHBox" expand="treeComment" spacing="false" height="100%" width="100%">
-                    <widgetsTree id="treeComment">
+                    <widgetsTree id="treeComment" height="100%">
                         <items datasource="commentDs"/>
                     </widgetsTree>
                 </hbox>
