@@ -20,10 +20,10 @@
                 <properties include=".*" exclude=""/>
             </filter>
         </vbox>
-        <vbox id="boxTable" expand="table" margin="true">
-            <table id="table" spacing="true">
+        <vbox id="boxTable" expand="table" margin="true" width="100%">
+            <table id="table" spacing="true" width="100%">
                 <buttonsPanel>
-                    <button id="add" caption="msg://actions.Add" icon="icons/add.png" invoke="addUser"/>
+                    <button id="add" icon="icons/add.png" invoke="addUser"/>
                     <button action="table.remove" icon="icons/remove.png"/>
                     <button action="table.refresh" icon="icons/refresh.png"/>
                 </buttonsPanel>
