@@ -463,7 +463,16 @@ public class WfEngine implements WfEngineAPI {
                 cancelProcessInternal(subProcCard, Execution.STATE_ENDED);
             cancelProcessInternal(c, WfConstants.CARD_STATE_CANCELED);
         }
+        deleteNotifications(card, CardInfo.TYPE_NOTIFICATION);
+    }
 
+    @Override
+    public void deleteNotifications(Card card, int type) {
+        EntityManager em = persistence.getEntityManager();
+        em.createQuery("delete from wf$CardInfo ci where ci.card.id = :cardId and ci.type = :type")
+                .setParameter("cardId", card)
+                .setParameter("type", type)
+                .executeUpdate();
     }
 
     public void cancelProcessInternal(Card card, String state) {

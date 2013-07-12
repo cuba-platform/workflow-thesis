@@ -49,5 +49,7 @@ public interface WfEngineAPI {
 
     void cancelProcess(Card card);
 
+    void deleteNotifications(Card card, int type);
+
     void addListener(Listener listener);
 }
