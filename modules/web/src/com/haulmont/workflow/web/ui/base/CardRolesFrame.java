@@ -444,7 +444,7 @@ public class CardRolesFrame extends AbstractFrame {
                 });
             }
         };
-        addUserGroupAction.setIcon("icons/user-group-button.png");
+        addUserGroupAction.setIcon("icons/wf-user-group-button.png");
         addUserGroupAction.setVisible(cardRole.getProcRole().getMultiUser()
                 /*&& procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD)*/);
         return addUserGroupAction;
