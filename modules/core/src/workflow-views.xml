@@ -235,6 +235,7 @@
 
     <view class="com.haulmont.cuba.security.entity.UserRole" name="usergroup-add" extends="_local">
         <property name="role" view="_minimal"/>
+        <property name="createTs"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="card-roles-frame" extends="_local">
