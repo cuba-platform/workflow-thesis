@@ -1,7 +1,12 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.workflow.web.ui.usergroup;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -10,6 +15,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.entity.UserGroup;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,24 +26,26 @@ import java.util.Set;
  * @version $Id$
  */
 public class UserGroupAdd extends AbstractWindow {
+
+    @Inject
     protected TwinColumn twinColumn;
+
+    @Inject
     protected CollectionDatasourceImpl userGroupsDs;
+
+    @Inject
+    protected Button searchButton;
+
+    @Inject
+    protected TextField searchText;
+
     protected Set selectedUsers = new HashSet<Entity>();
     protected Role secRole;
     protected Boolean hasInActiveUser = false;
-    protected Button searchButton;
-    protected TextField searchText;
 
-    public UserGroupAdd(IFrame frame) {
-        super(frame);
-    }
-
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        twinColumn = getComponent("twinColumn");
-        userGroupsDs = getDsContext().get("userGroupsDs");
-        searchButton = getComponent("searchButton");
-        searchText = getComponent("searchText");
 
         initUserGroupDs(params);
 
@@ -50,7 +58,7 @@ public class UserGroupAdd extends AbstractWindow {
             @Override
             public String getItemIcon(Entity item, boolean selected) {
                 if (item instanceof UserGroup)
-                    return "theme:icons/user-group-small.png";
+                    return "theme:icons/wf-user-group-small.png";
                 return null;
             }
         });
@@ -60,6 +68,7 @@ public class UserGroupAdd extends AbstractWindow {
             twinColumn.setValue(users);
 
         addAction(new AbstractAction("windowCommit") {
+            @Override
             public void actionPerform(Component component) {
                 Set values = twinColumn.getValue();
                 processSelectedItems(values);
@@ -68,22 +77,24 @@ public class UserGroupAdd extends AbstractWindow {
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
             }
         });
 
         addAction(new AbstractAction("windowClose") {
+            @Override
             public void actionPerform(Component component) {
                 close("cancel");
             }
 
             @Override
             public String getCaption() {
-                return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
 
         final Action action = new AbstractAction("search") {
+            @Override
             public void actionPerform(Component component) {
                 HashSet selectedItems = twinColumn.getValue();
                 String requiredText = searchText.getValue();
@@ -102,7 +113,7 @@ public class UserGroupAdd extends AbstractWindow {
         };
         com.vaadin.ui.Button btn = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(searchButton);
         btn.setCaption(action.getCaption());
-        btn.addListener(new com.vaadin.ui.Button.ClickListener() {
+        btn.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 action.actionPerform(null);
@@ -113,7 +124,7 @@ public class UserGroupAdd extends AbstractWindow {
     protected void initUserGroupDs(Map<String, Object> params) {
         secRole = (Role) params.get("secRole");
         if (secRole != null) {
-            Map<String, Object> parameters = new HashMap<String, Object>();
+            Map<String, Object> parameters = new HashMap<>();
             parameters.put("secRole", secRole);
             userGroupsDs.refresh(parameters);
         }
@@ -121,7 +132,7 @@ public class UserGroupAdd extends AbstractWindow {
 
     protected void processSelectedItems(Set<Entity> selectedItems) {
         hasInActiveUser = false;
-        Set<UserGroup> userGroups = new HashSet<UserGroup>();
+        Set<UserGroup> userGroups = new HashSet<>();
         for (Entity item : selectedItems) {
             if (item instanceof UserGroup)
                 userGroups.add((UserGroup) item);
