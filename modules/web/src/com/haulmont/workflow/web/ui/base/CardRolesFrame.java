@@ -338,16 +338,12 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
-    private com.haulmont.cuba.gui.components.Button createAddGroupButton(final CardRole cardRole) {
+    protected Action createAddGroupAction(final CardRole cardRole) {
         final CardRolesFrame crf = this;
-        com.haulmont.cuba.gui.components.Button addUserGroupButton = new WebButton();
-        addUserGroupButton.setIcon("select/img/user-group-button.png");
-        addUserGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
-        com.vaadin.ui.Button vAddUserGroupButton = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(addUserGroupButton);
-        vAddUserGroupButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-            private static final long serialVersionUID = -3820323886456571938L;
+        Action addUserGroupAction = new AbstractAction("addUserGroup") {
 
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            @Override
+            public void actionPerform(Component component) {
                 Map<String, Object> params = getUsergroupAddParams(cardRole);
                 App.getInstance().getWindowManager().getDialogParams().setWidth(680);
                 final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
@@ -447,11 +443,11 @@ public class CardRolesFrame extends AbstractFrame {
                     }
                 });
             }
-        });
-
-        vAddUserGroupButton.setVisible(cardRole.getProcRole().getMultiUser()
+        };
+        addUserGroupAction.setIcon("icons/user-group-button.png");
+        addUserGroupAction.setVisible(cardRole.getProcRole().getMultiUser()
                 /*&& procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD)*/);
-        return addUserGroupButton;
+        return addUserGroupAction;
 
     }
 
@@ -565,26 +561,26 @@ public class CardRolesFrame extends AbstractFrame {
     private List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
         List<CardRole> cardRoles = new ArrayList<>();
         for (User user : users) {
-            boolean isUserInList = false;
-            //check for user in list
-            for (UUID itemId : tmpCardRolesDs.getItemIds()) {
-                if (user.equals(tmpCardRolesDs.getItem(itemId).getUser())) {
-                    isUserInList = true;
-                    break;
-                }
-            }
-            if (!isUserInList) {
-                CardRole cr = metadata.create(CardRole.class);
-                cr.setUser(user);
-                cr.setProcRole(procRole);
-                cr.setCode(code);
-                cr.setNotifyByEmail(true);
-                cr.setNotifyByCardInfo(true);
-                cr.setCard(card);
-                cardRoles.add(cr);
-                assignNextSortOrder(cr);
-                tmpCardRolesDs.addItem(cr);
-            }
+//            boolean isUserInList = false;
+//            //check for user in list
+//            for (UUID itemId : tmpCardRolesDs.getItemIds()) {
+//                if (user.equals(tmpCardRolesDs.getItem(itemId).getUser())) {
+//                    isUserInList = true;
+//                    break;
+//                }
+//            }
+//            if (!isUserInList) {
+            CardRole cr = metadata.create(CardRole.class);
+            cr.setUser(user);
+            cr.setProcRole(procRole);
+            cr.setCode(code);
+            cr.setNotifyByEmail(true);
+            cr.setNotifyByCardInfo(true);
+            cr.setCard(card);
+            cardRoles.add(cr);
+            assignNextSortOrder(cr);
+            tmpCardRolesDs.addItem(cr);
+//            }
         }
         return cardRoles;
     }
@@ -1336,9 +1332,9 @@ public class CardRolesFrame extends AbstractFrame {
 
     protected class CardRoleField extends CustomComponent {
 
-        private static final long serialVersionUID = 20978973521879151L;
-        private WebActionsField actionsField;
-        private com.haulmont.cuba.gui.components.Button addGroupButton;
+        protected static final long serialVersionUID = 20978973521879151L;
+        protected LookupPickerField pickerField;
+        protected Action addGroupAction;
 
         public CardRoleField() {
 
@@ -1347,20 +1343,17 @@ public class CardRolesFrame extends AbstractFrame {
         public CardRoleField initField(final CardRole cardRole, Object value) {
             final CollectionDatasource usersDs = createUserOptionsDs(cardRole);
 
-            actionsField = new WebActionsField();
-            actionsField.enableButton(ActionsField.DROPDOWN, true);
-            actionsField.setOptionsDatasource(usersDs);
-            actionsField.setValue(value);
-            actionsField.setWidth("100%");
-            addGroupButton = null;
+            pickerField = new WebLookupPickerField();
+            pickerField.setOptionsDatasource(usersDs);
+            pickerField.setValue(value);
+            pickerField.setWidth("100%");
+            addGroupAction = null;
 //            actionsField.setHeight("25px");
-            LookupField usersLookup = actionsField.getLookupField();
-            AbstractSelect usersSelect = (AbstractSelect) WebComponentsHelper.unwrap(usersLookup);
-            usersSelect.addValueChangeListener(new Property.ValueChangeListener() {
-
-                public void valueChange(Property.ValueChangeEvent event) {
-                    Property eventProperty = event.getProperty();
-                    User selectedUser = (User) eventProperty.getValue();
+//            AbstractSelect usersSelect = (AbstractSelect) WebComponentsHelper.unwrap(pickerField);
+            pickerField.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    User selectedUser = (User) value;
                     CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
                     if (cr != null)
                         cr.setUser(selectedUser);
@@ -1370,47 +1363,47 @@ public class CardRolesFrame extends AbstractFrame {
                 }
             });
 
-            usersSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
-            for (Object itemId : usersDs.getItemIds()) {
-                User user = (User) usersDs.getItem(itemId);
-                String userCaption = generateUserCaption(user);
-                usersSelect.setItemCaption(user, userCaption);
-            }
+//            usersSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
+//            for (Object itemId : usersDs.getItemIds()) {
+//                User user = (User) usersDs.getItem(itemId);
+//                String userCaption = generateUserCaption(user);
+//                usersSelect.setItemCaption(user, userCaption);
+//            }
 
-            final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
+//            final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
             boolean enabled = true;// procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
-            usersSelect.setReadOnly(vRolesTable.isReadOnly() || !enabled);
+            pickerField.setEditable(rolesTable.isEditable() || !enabled);
 
-            if (cardRole.getProcRole().getMultiUser() && !vRolesTable.isReadOnly()) {
-                addGroupButton = createAddGroupButton(cardRole);
-                actionsField.addButton(addGroupButton);
+            if (cardRole.getProcRole().getMultiUser() && rolesTable.isEditable()) {
+                addGroupAction = createAddGroupAction(cardRole);
+                pickerField.addAction(addGroupAction);
             }
 
-            WebComponentsHelper.unwrap(actionsField).setReadOnly(vRolesTable.isReadOnly());
+//            WebComponentsHelper.unwrap(pickerField).setReadOnly(vRolesTable.isReadOnly());
 
-            setCompositionRoot(WebComponentsHelper.unwrap(actionsField));
+            setCompositionRoot(WebComponentsHelper.unwrap(pickerField));
 
             return this;
         }
 
         public Object getValue() {
-            return actionsField.getValue();
+            return pickerField.getValue();
         }
 
         public void setValue(Object value) {
-            actionsField.setValue(value);
+            pickerField.setValue(value);
         }
 
         public void setEditable(boolean editable) {
-            actionsField.setEditable(editable);
-            if (addGroupButton != null) {
-                addGroupButton.setVisible(editable);
+            pickerField.setEditable(editable);
+            if (addGroupAction != null) {
+                addGroupAction.setVisible(editable);
             }
         }
 
         public void setVisibleAddGroup(boolean visible) {
-            if (addGroupButton != null) {
-                addGroupButton.setVisible(visible);
+            if (addGroupAction != null) {
+                addGroupAction.setVisible(visible);
             }
         }
     }
