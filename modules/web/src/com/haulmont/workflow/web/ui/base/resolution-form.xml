@@ -35,7 +35,7 @@
                     </row>
                 </rows>
             </grid>
-            <vbox id="attachmentsPane" expand="attachmentsTable">
+            <vbox id="attachmentsPane" expand="attachmentsTable" width="100%">
                 <label value="msg://attachments"/>
                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                     <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
@@ -44,7 +44,7 @@
                     <button id="copyAttach" icon="icons/copy.png"/>
                     <button id="pasteAttach" icon="icons/paste.png"/>    
                 </hbox>
-                <table id="attachmentsTable" editable="false" sortable="true" multiselect="true">
+                <table id="attachmentsTable" editable="false" sortable="true" multiselect="true" width="100%">
                     <columns>
                         <column id="name" caption="msg://attachName"/>
                         <column id="file.name" caption="msg://fileName"/>
