@@ -209,7 +209,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected void initAttachments(Map<String, Object> params) {
-        String requiredAttachmentTypesParam = (String) params.get("requiredAttachmentTypes");
+        String requiredAttachmentTypesParam = getRequiredAttachmentTypes();
         if (!StringUtils.isEmpty(requiredAttachmentTypesParam))
             requiredAttachmentTypes = Arrays.asList(requiredAttachmentTypesParam.split("\\s*,\\s*"));
 
@@ -282,6 +282,10 @@ public class TransitionForm extends AbstractForm {
 
     protected String getRequiredRoles() {
         return getContext().getParamValue("requiredRoles");
+    }
+
+    protected String getRequiredAttachmentTypes() {
+        return getContext().getParamValue("requiredAttachmentTypes");
     }
 
     protected String getAttachmentsTabCaption() {
