@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -19,6 +18,7 @@ import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.base.action.CardContext;
+import com.haulmont.workflow.gui.base.action.FormManagerChain;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashMap;
@@ -58,26 +58,33 @@ public class ProcessAction extends AbstractAction {
             return messages.getMessage(AppConfig.getMessagesPack(), getId());
     }
 
-    public void actionPerform(Component component) {
+    protected FormManagerChain createManagerChain() {
         final Window window = ComponentsHelper.getWindow(frame);
-        if (!(window instanceof Window.Editor)) return;
-
         card = (Card) ((Window.Editor) window).getItem();
+
         final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
         Card currentCard;
         if (frame.getInfo() == null || frame.getInfo().getCard() == null || card.equals(frame.getInfo().getCard()))
             currentCard = card;
         else
             currentCard = frame.getInfo().getCard();
-        final com.haulmont.workflow.gui.base.action.FormManagerChain managerChain = com.haulmont.workflow.gui.base.action.FormManagerChain.getManagerChain(currentCard, actionName);
+        final FormManagerChain managerChain = com.haulmont.workflow.gui.base.action.FormManagerChain.getManagerChain(currentCard, actionName);
         managerChain.setCard(currentCard);
         managerChain.setAssignmentId(assignmentId);
+        return  managerChain;
+    }
+
+    public void actionPerform(Component component) {
+        final Window window = ComponentsHelper.getWindow(frame);
+        if (!(window instanceof Window.Editor)) return;
+
 
         final Map<String, Object> formManagerParams = new HashMap<>();
 
         formManagerParams.put("subProcCard", new CardContext());
 
         WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
+        final UUID assignmentId = frame.getInfo() == null ? null : frame.getInfo().getAssignmentId();
 
         if (isCardDeleted(card)) {
             wmp.get().showNotification(
@@ -100,6 +107,7 @@ public class ProcessAction extends AbstractAction {
                                     @Override
                                     public void actionPerform(Component component) {
                                         if (((Window.Editor) window).commit()) {
+                                            final FormManagerChain managerChain = createManagerChain();
                                             managerChain.setHandler(new com.haulmont.workflow.gui.base.action.FormManagerChain.Handler() {
                                                 public void onSuccess(String comment) {
                                                     cancelProcess(window, managerChain);
@@ -136,6 +144,8 @@ public class ProcessAction extends AbstractAction {
                 );
             }
         } else if (((Window.Editor) window).commit()) {
+
+            final FormManagerChain managerChain = createManagerChain();
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new com.haulmont.workflow.gui.base.action.FormManagerChain.Handler() {
