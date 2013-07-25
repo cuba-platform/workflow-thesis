@@ -19,7 +19,7 @@
     <layout>
         <vbox id="main" stylename="edit-area" expandable="false" margin="true" spacing="true">
             <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">
-                <label value="msg://searchText"/>
+                <label id="searchTextLabel" value="msg://searchText"/>
                 <textField id="searchText" width="${width}"/>
                 <button id="searchButton"/>
             </hbox>
