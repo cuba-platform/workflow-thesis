@@ -93,32 +93,30 @@ public class UserGroupAdd extends AbstractWindow {
             }
         });
 
-        final Action action = new AbstractAction("search") {
-            @Override
-            public void actionPerform(Component component) {
-                HashSet selectedItems = twinColumn.getValue();
-                String requiredText = searchText.getValue();
-                Map<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put("selectedItems", selectedItems);
-                parameters.put("requiredText", requiredText);
-                parameters.put("secRole", secRole);
-                userGroupsDs.refresh(parameters);
-                twinColumn.setValue(selectedItems);
-            }
+        initSearchButton();
+    }
 
-            @Override
-            public String getCaption() {
-                return getMessage("actions.Apply");
-            }
-        };
-        com.vaadin.ui.Button btn = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(searchButton);
-        btn.setCaption(action.getCaption());
-        btn.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                action.actionPerform(null);
-            }
-        });
+    protected void initSearchButton() {
+        if (searchButton != null) {
+            searchButton.setAction(new AbstractAction("search") {
+                @Override
+                public void actionPerform(Component component) {
+                    HashSet selectedItems = twinColumn.getValue();
+                    String requiredText = searchText.getValue();
+                    Map<String, Object> parameters = new HashMap<String, Object>();
+                    parameters.put("selectedItems", selectedItems);
+                    parameters.put("requiredText", requiredText);
+                    parameters.put("secRole", secRole);
+                    userGroupsDs.refresh(parameters);
+                    twinColumn.setValue(selectedItems);
+                }
+
+                @Override
+                public String getCaption() {
+                    return getMessage("actions.Apply");
+                }
+            });
+        }
     }
 
     protected void initUserGroupDs(Map<String, Object> params) {
