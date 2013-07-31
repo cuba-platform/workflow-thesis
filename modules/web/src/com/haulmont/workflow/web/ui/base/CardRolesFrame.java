@@ -21,7 +21,10 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebLookupPickerField;
+import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
@@ -32,7 +35,6 @@ import com.haulmont.workflow.web.ui.usergroup.UserGroupAdd;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -550,7 +552,7 @@ public class CardRolesFrame extends AbstractFrame {
         return usersDs;
     }
 
-    private boolean userInRole(User user, Role role) {
+    protected boolean userInRole(User user, Role role) {
         if (user.getUserRoles() == null) return false;
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole().equals(role)) return true;
