@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -21,7 +20,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.core.app.MailService;
 import com.haulmont.workflow.core.entity.*;
 
@@ -181,12 +179,12 @@ public class CardSend extends AbstractWindow {
         addAction(new AbstractAction("windowCommit") {
             @Override
             public void actionPerform(Component component) {
-                ResizableTextField comment = getComponent("commentText");
+                ResizableTextArea comment = getComponent("commentText");
                 String commentStr = comment.getValue();
                 if (commentStr != null && commentStr.length() > 0) {
-                    List<User> users = new LinkedList<User>();
+                    List<User> users = new LinkedList<>();
                     if (tmpUserDs.size() > 0) {
-                        MailService mailService = ServiceLocator.lookup(MailService.NAME);
+                        MailService mailService = AppBeans.get(MailService.NAME);
                         for (UUID uuid : tmpUserDs.getItemIds()) {
                             users.add(tmpUserDs.getItem(uuid));
                         }
@@ -196,7 +194,7 @@ public class CardSend extends AbstractWindow {
                         return;
                     }
                     if ((Boolean) notifyByCardInfo.getValue()) {
-                        Set<Entity> toCommit = new HashSet<Entity>();
+                        Set<Entity> toCommit = new HashSet<>();
                         for (UUID uuid : tmpUserDs.getItemIds()) {
                             toCommit.add(createCardInfo(card, tmpUserDs.getItem(uuid), commentStr));
                         }
@@ -220,7 +218,7 @@ public class CardSend extends AbstractWindow {
                     }
                     toCommit.add(cardComment);
                     CommitContext commitContext = new CommitContext(toCommit);
-                    ServiceLocator.getDataService().commit(commitContext);
+                    AppBeans.get(DataService.class).commit(commitContext);
                     close(Window.COMMIT_ACTION_ID, true);
                 } else {
                     showNotification(getMessage("cardSend.noComment"), IFrame.NotificationType.WARNING);
@@ -251,7 +249,7 @@ public class CardSend extends AbstractWindow {
     }
 
     protected <T extends Entity<UUID>> List<T> getDsItems(CollectionDatasource<T, UUID> ds) {
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
         for (UUID id : ds.getItemIds()) {
             items.add(ds.getItem(id));
         }
