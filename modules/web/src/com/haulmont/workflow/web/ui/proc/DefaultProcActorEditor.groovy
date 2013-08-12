@@ -43,8 +43,8 @@ class DefaultProcActorEditor extends AbstractEditor{
     Role secRole = dpa.procRole.role
     if (secRole) {
       usersDs.setQuery('select u from sec$User u join u.userRoles ur where ur.role.id = :custom$secRole ' +
-              'and u.id not in (:custom$userIds) order by u.name ' +
-              'and u.active = true ')
+              'and u.id not in (:custom$userIds) ' +
+              'and u.active = true order by u.name')
     } else {
       usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) and u.active = true order by u.name')
     }
@@ -58,11 +58,13 @@ class DefaultProcActorEditor extends AbstractEditor{
       for (int i = 1; i <= userIds.size() + 1; i++)
           orderValues += i
       LookupField sortOrderField = getComponent("sortOrderField")
-      sortOrderField.optionsList = orderValues
-      sortOrderField.value = item.sortOrder
-      sortOrderField.addListener(
-              {Object source, String property, Object prevValue, Object value ->
-                  item.sortOrder = value
-              } as ValueListener)
+      if (sortOrderField != null) {
+          sortOrderField.optionsList = orderValues
+          sortOrderField.value = item.sortOrder
+          sortOrderField.addListener(
+                  {Object source, String property, Object prevValue, Object value ->
+                      item.sortOrder = value
+                  } as ValueListener)
+      }
   }
 }
