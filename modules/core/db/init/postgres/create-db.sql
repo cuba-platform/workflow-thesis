@@ -133,6 +133,7 @@ create table WF_CARD_COMMENT (
     DELETED_BY varchar(50),
     CARD_COMMENT text,
     USER_ID uuid,
+    SUBSTITUTE_USER_ID uuid,
     CARD_ID uuid,
     PARENT_ID uuid,
     primary key (ID)

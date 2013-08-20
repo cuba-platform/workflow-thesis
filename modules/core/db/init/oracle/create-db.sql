@@ -123,6 +123,7 @@ create table WF_CARD_COMMENT (
     DELETED_BY varchar2(50),
     CARD_COMMENT clob,
     USER_ID varchar2(32),
+    SUBSTITUTE_USER_ID varchar2(32),
     CARD_ID varchar2(32),
     PARENT_ID varchar2(32),
     primary key(ID)
