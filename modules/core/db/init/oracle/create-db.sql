@@ -123,7 +123,7 @@ create table WF_CARD_COMMENT (
     DELETED_BY varchar2(50),
     CARD_COMMENT clob,
     USER_ID varchar2(32),
-    SUBSTITUTE_USER_ID varchar2(32),
+    SUBSTITUTED_USER_ID varchar2(32),
     CARD_ID varchar2(32),
     PARENT_ID varchar2(32),
     primary key(ID)
@@ -508,6 +508,7 @@ alter table WF_CARD add constraint FK_WF_CARD_PROC foreign key (PROC_ID) referen
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_USER foreign key (USER_ID) references SEC_USER(ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_CARD foreign key (CARD_ID) references WF_CARD(ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_PARENT foreign key (PARENT_ID) references WF_CARD_COMMENT(ID)^
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)^
 
 alter table WF_CARD_COMMENT_USER add constraint FK_WF_CCU_USER foreign key (USER_ID) references SEC_USER(ID)^
 alter table WF_CARD_COMMENT_USER add constraint FK_WF_CCU_CARD_COMMENT foreign key (CARD_COMMENT_ID) references WF_CARD_COMMENT(ID)^

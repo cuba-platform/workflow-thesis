@@ -135,7 +135,7 @@ create table WF_CARD_COMMENT (
     DELETED_BY varchar(50),
     CARD_COMMENT varchar(max),
     USER_ID uniqueidentifier,
-    SUBSTITUTE_USER_ID uniqueidentifier,
+    SUBSTITUTED_USER_ID uniqueidentifier,
     CARD_ID uniqueidentifier,
     PARENT_ID uniqueidentifier,
     primary key nonclustered (ID)
@@ -144,6 +144,7 @@ create table WF_CARD_COMMENT (
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_PARENT foreign key (PARENT_ID) references WF_CARD_COMMENT (ID)^
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)^
 
 create clustered index IDX_WF_CARD_COMMENT_CARD on WF_CARD_COMMENT (CARD_ID)^
 
