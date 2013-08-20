@@ -256,11 +256,11 @@
 
     <view class="com.haulmont.workflow.core.entity.CardComment" name="browse" extends="_local">
         <property name="sender" view="_local"/>
-        <property name="substituteUser" view="_local"/>
+        <property name="substitutedSender" view="_local"/>
         <property name="card" view="_local"/>
         <property name="parent" view="_minimal"/>
         <property name="addressees" view="_local"/>
-    </view>                                                                                                                   N
+    </view>
 
     <view class="com.haulmont.workflow.core.entity.ProcStage" name="edit" extends="_local">
         <property name="proc" view="_local"/>

@@ -206,15 +206,15 @@ public class CardSend extends AbstractWindow {
                     UserSessionSource uss = AppBeans.get(UserSessionSource.class);
                     if (parent != null) {
                         cardComment.setAddressees(users);
-                        cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
-                        cardComment.setSubstituteUser(uss.getUserSession().getUser());
+                        cardComment.setSubstitutedSender(uss.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSender(uss.getUserSession().getUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                         cardComment.setParent(parent);
                     } else {
                         cardComment.setAddressees(users);
-                        cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
-                        cardComment.setSubstituteUser(uss.getUserSession().getUser());
+                        cardComment.setSubstitutedSender(uss.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSender(uss.getUserSession().getUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                     }

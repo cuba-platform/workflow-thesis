@@ -37,8 +37,8 @@ public class CardComment extends StandardEntity {
     protected User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SUBSTITUTE_USER_ID")
-    protected User substituteUser;
+    @JoinColumn(name = "SUBSTITUTED_USER_ID")
+    protected User substitutedSender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
@@ -71,12 +71,12 @@ public class CardComment extends StandardEntity {
         this.sender = sender;
     }
 
-    public User getSubstituteUser() {
-        return substituteUser;
+    public User getSubstitutedSender() {
+        return substitutedSender;
     }
 
-    public void setSubstituteUser(User substituteUser) {
-        this.substituteUser = substituteUser;
+    public void setSubstitutedSender(User substitutedSender) {
+        this.substitutedSender = substitutedSender;
     }
 
     public Card getCard() {
@@ -109,11 +109,11 @@ public class CardComment extends StandardEntity {
             return "";
         }
 
-        if (substituteUser == null || ObjectUtils.equals(sender, substituteUser)) {
+        if (substitutedSender == null || ObjectUtils.equals(sender, substitutedSender)) {
             return userNameOrLogin(sender);
         }
         return AppBeans.get(Messages.class).formatMessage(getClass(), "assignmentDisplayUserFormat",
-                userNameOrLogin(substituteUser), userNameOrLogin(sender));
+                userNameOrLogin(sender), userNameOrLogin(substitutedSender));
     }
 
     private String userNameOrLogin(User user) {
