@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 28.05.2010 16:08:00
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.proc;
 
@@ -14,9 +9,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRolePermission;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
@@ -27,14 +21,14 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class ProcRolePermissionEditor extends AbstractEditor {
     private Proc proc;
     private ProcRolePermission permission;
     private LookupField stateLookup;
-
-    public ProcRolePermissionEditor(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Devyatkin
- * Created: 31.03.11 9:53
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.design;
 
@@ -25,12 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class ImportDialog extends AbstractWindow {
     byte[] bytes;
-
-    public ImportDialog(IFrame frame) {
-        super(frame);
-    }
 
     public byte[] getBytes() {
         return bytes;

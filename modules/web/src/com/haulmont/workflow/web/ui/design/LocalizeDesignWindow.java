@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 18.01.11 10:43
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.design;
 
@@ -37,6 +32,10 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LocalizeDesignWindow extends AbstractEditor {
 
     private Properties properties;
@@ -69,8 +68,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
         }
     }
 
-    public LocalizeDesignWindow(IFrame frame) {
-        super(frame);
+    public LocalizeDesignWindow() {
         keysMap = HashBiMap.create();
         valuesMap = HashBiMap.create();
     }

@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.12.10 10:53
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.design;
 
@@ -22,16 +17,16 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DeployDesignWindow extends AbstractWindow {
 
     private Design design;
     private LookupField procField;
     private LookupField roleField;
     private String errorMsg;
-
-    public DeployDesignWindow(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

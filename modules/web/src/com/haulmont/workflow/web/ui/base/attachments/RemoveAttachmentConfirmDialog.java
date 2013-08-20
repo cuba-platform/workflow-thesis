@@ -12,17 +12,12 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author pavlov
+ * @version $Id$
  */
 public class RemoveAttachmentConfirmDialog extends AbstractWindow {
     public static final String OPTION_LAST_VERSION = "option.lastVersion";
     public static final String OPTION_ALL_VERSIONS = "option.allVersions";
-
-    public RemoveAttachmentConfirmDialog(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

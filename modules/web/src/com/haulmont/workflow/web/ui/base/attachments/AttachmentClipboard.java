@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 26.10.2010 17:42:05
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.attachments;
 
@@ -19,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class AttachmentClipboard extends AbstractEditor {
-    public AttachmentClipboard(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

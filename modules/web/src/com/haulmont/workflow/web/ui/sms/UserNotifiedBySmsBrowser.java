@@ -19,9 +19,8 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 public class UserNotifiedBySmsBrowser extends AbstractLookup {
 
@@ -30,10 +29,6 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
 
     @Inject
     protected Button add;
-
-    public UserNotifiedBySmsBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -46,7 +41,7 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
 
     public void addUser(Component component) {
         final CollectionDatasource<UserNotifiedBySms, UUID> ds = table.getDatasource();
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("multiselect", true);
         params.put("isLookup", true);
         params.put("hasEmployees", true);

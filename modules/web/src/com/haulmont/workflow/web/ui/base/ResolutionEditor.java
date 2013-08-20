@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.01.2010 12:43:01
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base;
 
@@ -18,16 +13,11 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ResolutionEditor extends AbstractEditor {
-
-    public ResolutionEditor(IFrame frame) {
-        super(frame);
-    }
-
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-    }
 
     @Override
     public void setItem(Entity item) {
