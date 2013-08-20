@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 19.01.2010 15:43:09
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.card
 
@@ -22,16 +17,16 @@ import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.gui.ServiceLocator
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 class CardRoleEditor extends AbstractEditor{
   protected ProcRole procRole
   protected CollectionDatasource usersDs
   private Set<UUID> users;
 
-  CardRoleEditor(IFrame frame) {
-    super(frame);
-  }
-
-    public void init(Map<String, Object> params) {
+  public void init(Map<String, Object> params) {
     super.init(params);
     
     procRole = params['param$procRole']

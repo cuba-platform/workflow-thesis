@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.01.11 16:39
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.design;
 
@@ -14,7 +9,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
@@ -24,14 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class NotificationMatrixWindow extends AbstractEditor {
 
     private FileUploadField uploadField;
     private byte[] bytes;
-
-    public NotificationMatrixWindow(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 24.02.2010 13:22:00
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.base.workcalendar;
 
@@ -22,10 +17,11 @@ import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class WorkCalendarBrowser extends AbstractWindow {
-    public WorkCalendarBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

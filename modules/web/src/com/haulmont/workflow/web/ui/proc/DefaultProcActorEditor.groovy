@@ -2,34 +2,28 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maxim Gorbunkov
- * Created: 26.02.2010 11:25:23
- *
- * $Id$
  */
 package com.haulmont.workflow.web.ui.proc
 
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.gui.components.AbstractEditor
+import com.haulmont.cuba.gui.components.LookupField
 import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.workflow.core.entity.DefaultProcActor
-import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.gui.components.LookupField
-import com.haulmont.cuba.gui.data.ValueListener
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 class DefaultProcActorEditor extends AbstractEditor{
 
   CollectionDatasource usersDs = getDsContext().get("usersDs")
   List<UUID> userIds;
   boolean isMulti
 
-  public DefaultProcActorEditor(IFrame frame) {
-    super(frame)
-  }
-
-    public void init(Map<String, Object> params) {
+  public void init(Map<String, Object> params) {
     super.init(params);
     userIds = params.get("userIds");
     if (userIds == null)

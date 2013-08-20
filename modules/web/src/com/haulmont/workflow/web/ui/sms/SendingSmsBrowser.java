@@ -19,18 +19,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 public class SendingSmsBrowser extends AbstractLookup {
 
     @Inject
     protected Table table;
-
-    public SendingSmsBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
