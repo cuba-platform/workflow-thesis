@@ -7,6 +7,7 @@
 package com.haulmont.workflow.web.folders;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.QueryParserRegex;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -15,15 +16,11 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.ProcAppFolder;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -231,9 +228,9 @@ public class FolderBuilder {
         InputStream stream = scripting.getResourceAsStream(templatePath);
         if (stream == null) {
             stream = getClass().getResourceAsStream(templatePath);
-            if (stream == null) {
-                throw new RuntimeException("Bad template path: " + templatePath);
-            }
+            if (stream == null)
+                throw new DevelopmentException("Bad template path",
+                        Collections.<String,Object>singletonMap("Template Path", templatePath));
         }
 
         Document document = null;
