@@ -12,9 +12,14 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
@@ -30,6 +35,10 @@ public class CardComment extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     protected User sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTE_USER_ID")
+    protected User substituteUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CARD_ID")
@@ -62,6 +71,14 @@ public class CardComment extends StandardEntity {
         this.sender = sender;
     }
 
+    public User getSubstituteUser() {
+        return substituteUser;
+    }
+
+    public void setSubstituteUser(User substituteUser) {
+        this.substituteUser = substituteUser;
+    }
+
     public Card getCard() {
         return card;
     }
@@ -84,5 +101,22 @@ public class CardComment extends StandardEntity {
 
     public void setAddressees(List<User> addressees) {
         this.addressees = addressees;
+    }
+
+    @MetaProperty
+    public String getDisplayUser() {
+        if (sender == null) {
+            return "";
+        }
+
+        if (substituteUser == null || ObjectUtils.equals(sender, substituteUser)) {
+            return userNameOrLogin(sender);
+        }
+        return AppBeans.get(Messages.class).formatMessage(getClass(), "assignmentDisplayUserFormat",
+                userNameOrLogin(substituteUser), userNameOrLogin(sender));
+    }
+
+    private String userNameOrLogin(User user) {
+        return StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName();
     }
 }

@@ -207,12 +207,14 @@ public class CardSend extends AbstractWindow {
                     if (parent != null) {
                         cardComment.setAddressees(users);
                         cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSubstituteUser(uss.getUserSession().getUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                         cardComment.setParent(parent);
                     } else {
                         cardComment.setAddressees(users);
                         cardComment.setSender(uss.getUserSession().getCurrentOrSubstitutedUser());
+                        cardComment.setSubstituteUser(uss.getUserSession().getUser());
                         cardComment.setCard(card);
                         cardComment.setComment(commentStr);
                     }
