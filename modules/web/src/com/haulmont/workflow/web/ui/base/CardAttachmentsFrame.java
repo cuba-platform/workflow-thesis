@@ -8,7 +8,6 @@ package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -25,7 +24,6 @@ import com.haulmont.workflow.web.ui.base.attachments.*;
 import com.vaadin.ui.Layout;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +50,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         init(new HashMap<String, Object>());
     }
 
-    public void init(@Nullable Map<String,Object> params){
+    public void init(@Nullable Map<String, Object> params) {
         cardDs = getDsContext().get("cardDs");
         attachmentsTable = getComponent("attachmentsTable");
 
@@ -101,8 +99,8 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 super.setEnabled(CardAttachmentsFrame.this.isEnabled() && enabled);
             }
         };
-        Map<String,Object> map = params == null ? new HashMap<String, Object>() : params;
-        map.put("edit",true);
+        Map<String, Object> map = params == null ? new HashMap<String, Object>() : params;
+        map.put("edit", true);
         editAction.setWindowParams(map);
         attachmentsTable.addAction(editAction);
         attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, new AttachmentCreator.CardGetter() {
@@ -142,10 +140,6 @@ public class CardAttachmentsFrame extends AbstractFrame {
             public String getStyleName(Attachment entity, String property) {
                 return entity.getVersionOf() != null ? "grey" : null;
             }
-
-            public String getItemIcon(Attachment entity) {
-                return null;
-            }
         });
 
         CollectionDatasource.Sortable.SortInfo sortInfo = new CollectionDatasource.Sortable.SortInfo();
@@ -159,19 +153,19 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     }
 
-    private void initFastUpload(Map<String,Object> excludedAttachTypes) {
+    private void initFastUpload(Map<String, Object> excludedAttachTypes) {
         Label fastUpload = getComponent("fastUpload");
         com.vaadin.ui.Component parent = WebComponentsHelper.unwrap(fastUpload).getParent();
 
         fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
                 attachmentCreator, "wf$CardAttachment.edit", excludedAttachTypes, WindowManager.OpenType.DIALOG);
-        if(parent != null){
+        if (parent != null) {
             ((Layout) parent).replaceComponent(WebComponentsHelper.unwrap(fastUpload), WebComponentsHelper.unwrap(fastUploadButton));
         }
 
     }
 
-    public FileUploadField getFastUploadButton(){
+    public FileUploadField getFastUploadButton() {
         return fastUploadButton;
     }
 
