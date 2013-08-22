@@ -137,7 +137,7 @@ create table WF_CARD_COMMENT (
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
 alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_PARENT foreign key (PARENT_ID) references WF_CARD_COMMENT (ID)^
-alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)^
+alter table WF_CARD_COMMENT add constraint FK_WF_CARD_COMMENT_SUB_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC_ID) references WF_PROC (ID)^
 
-alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_FAMILY_ASSIGNMENT foreign key (FAMILY_ASSIGNMENT_ID) references WF_ASSIGNMENT(ID)^
+alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_FAMILY_ASS foreign key (FAMILY_ASSIGNMENT_ID) references WF_ASSIGNMENT(ID)^
 
 alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_SUBPROC_CARD foreign key (SUBPROC_CARD_ID) references WF_CARD(ID)^
 
@@ -379,7 +379,7 @@ create table WF_DEFAULT_PROC_ACTOR (
     primary key (ID)
 )^
 
-alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_PROC_ROLE foreign key (PROC_ROLE_ID) references WF_PROC_ROLE (ID)^
+alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACT_PRO_ROL foreign key (PROC_ROLE_ID) references WF_PROC_ROLE (ID)^
 
 alter table WF_DEFAULT_PROC_ACTOR add constraint FK_WF_DEFAULT_PROC_ACTOR_USER foreign key (USER_ID) references SEC_USER (ID)^
 
@@ -435,8 +435,8 @@ create table WF_PROC_ROLE_PERMISSION (
     primary key (ID)
 )^
 
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_TO_PROC_ROLE foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID)^
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PERMISSION_FROM_PROC_ROLE foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID)^
+alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PER_TO_PRO_ROL foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID)^
+alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROL_PER_FRO_PRO_ROL foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -583,7 +583,7 @@ create table WF_PROC_APP_FOLDER (
   PROC_CONDITIONS_XML longvarchar
 )^
 
-alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOLDER foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
+alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOL foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -615,7 +615,7 @@ create table WF_USER_NOTIFIED_BY_SMS
     USER_ID varchar(36),
     primary key (ID)
 )^
-alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_USER foreign key (USER_ID) references SEC_USER (ID)^
+alter table WF_USER_NOTIFIED_BY_SMS add constraint FK_WF_USER_NOTIFIED_BY_SMS_USE foreign key (USER_ID) references SEC_USER (ID)^
 
 ----- WF_DESIGN_PROCESS_VARIABLE creation -----
 create table WF_DESIGN_PROCESS_VARIABLE (
@@ -641,7 +641,7 @@ create table WF_DESIGN_PROCESS_VARIABLE (
     primary key (ID)
 )^
 
-alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DESIGN_PROCESS_VARIABLE_TO_WF_DESIGN
+alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DES_PROC_VAR_TO_WF_DES
 foreign key (DESIGN_ID) references WF_DESIGN(ID)^
 
 ----- WF_PROC_VARIABLE creation -----
