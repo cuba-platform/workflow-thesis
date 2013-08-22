@@ -10,11 +10,11 @@
  */
 package com.haulmont.workflow.core.listeners;
 
-import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
-import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.workflow.core.app.WfWorkerAPI;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
 
@@ -35,7 +35,7 @@ public class CardAttachmentEntityListener implements BeforeInsertEntityListener<
     }
 
     private void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
-        WfService wfService = Locator.lookup(WfService.NAME);
-        wfService.setHasAttachmentsInCard(card, hasAttachments);
+        WfWorkerAPI wfWorkerAPI = AppBeans.get(WfWorkerAPI.NAME);
+        wfWorkerAPI.setHasAttachmentsInCard(card, hasAttachments);
     }
 }

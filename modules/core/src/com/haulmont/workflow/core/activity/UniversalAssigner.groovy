@@ -10,15 +10,12 @@ package com.haulmont.workflow.core.activity
 
 import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.Persistence
-import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
-import com.haulmont.workflow.core.app.WfService
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
@@ -38,7 +35,7 @@ import org.jbpm.api.activity.ActivityExecution
 public class UniversalAssigner extends MultiAssigner {
 
     private Log log = LogFactory.getLog(Assigner.class)
-    private WfService wfService = Locator.lookup(WfService.NAME);
+    protected Persistence persistence = AppBeans.get(Persistence.NAME);
 
     Boolean finishBySingleUser
 
@@ -46,7 +43,7 @@ public class UniversalAssigner extends MultiAssigner {
     @Override
     protected boolean createAssignment(ActivityExecution execution) {
 
-        EntityManager em = PersistenceProvider.getEntityManager()
+        EntityManager em = persistence.getEntityManager()
 
         Card card = findCard(execution)
 
@@ -54,7 +51,7 @@ public class UniversalAssigner extends MultiAssigner {
         def cardRoles = []
         if (srcCardRoles) {
             int minSortOrder = srcCardRoles[0].sortOrder;
-            cardRoles = srcCardRoles.findAll {CardRole cr -> cr.sortOrder == minSortOrder}
+            cardRoles = srcCardRoles.findAll { CardRole cr -> cr.sortOrder == minSortOrder }
         }
 
         if (cardRoles.isEmpty()) {
@@ -76,7 +73,7 @@ public class UniversalAssigner extends MultiAssigner {
         master.setCard(card)
         em.persist(master)
 
-        cardRoles.each {CardRole cr -> createUserAssignment(execution, card, cr, master)}
+        cardRoles.each { CardRole cr -> createUserAssignment(execution, card, cr, master) }
 
         return true
     }
@@ -85,7 +82,7 @@ public class UniversalAssigner extends MultiAssigner {
     void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
         if (parameters == null)
             throw new RuntimeException('Assignment object expected')
-        Preconditions.checkState(Locator.isInTransaction(), 'An active transaction required')
+        Preconditions.checkState(persistence.isInTransaction(), 'An active transaction required')
 
         Assignment assignment = (Assignment) parameters.get("assignment")
 
@@ -153,17 +150,17 @@ public class UniversalAssigner extends MultiAssigner {
 
         def cardRoles = getCardRoles(execution, assignment.card)
         List<UUID> ids = getRoleIds(assignment.card);
-        def currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user && (ids.contains(cr.id) || ids.isEmpty())}
+        def currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user && (ids.contains(cr.id) || ids.isEmpty()) }
         //Use for processes where variable "cardRoleUuids" is not correctly cleared after not-success transition
         if (currentCardRole == null)
-            currentCardRole = cardRoles.find {CardRole cr -> cr.user == assignment.user}
+            currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user }
 
         def nextCardRoles = []
         int nextSortOrder = Integer.MAX_VALUE
 
         //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
 //                we don't know exactly)
-        cardRoles.each {CardRole cr ->
+        cardRoles.each { CardRole cr ->
             if (cr.sortOrder == nextSortOrder) {
                 nextCardRoles.add(cr)
             } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
@@ -181,7 +178,7 @@ public class UniversalAssigner extends MultiAssigner {
         } else {
             log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
             setRoleIds(assignment.card, nextCardRoles);
-            nextCardRoles.each {CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment)}
+            nextCardRoles.each { CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment) }
             execution.waitForSignal()
         }
     }
@@ -195,7 +192,7 @@ public class UniversalAssigner extends MultiAssigner {
         List<UUID> ids = null;
         if (cardRoles) {
             ids = new ArrayList<UUID>(cardRoles.size())
-            cardRoles.each {CardRole cr -> ids.add(cr.id)}
+            cardRoles.each { CardRole cr -> ids.add(cr.id) }
         } else
             ids = new ArrayList<UUID>();
         Transaction tx = AppBeans.get(Persistence.class).createTransaction();
@@ -209,7 +206,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected List<Assignment> getSiblings(Assignment assignment) {
-        EntityManager em = PersistenceProvider.getEntityManager()
+        EntityManager em = persistence.getEntityManager()
         Query q = em.createQuery('''
                 select a from wf$Assignment a
                 where a.masterAssignment.id = ?1 and a.id <> ?2
@@ -231,7 +228,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected void deleteNotifications(Assignment assignment) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
                 "where ci.card.id = ?3 and ci.user.id = ?4");
         query.setParameter(1, assignment.finished);
@@ -243,7 +240,7 @@ public class UniversalAssigner extends MultiAssigner {
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {
         def cardRoles = getCardRoles(execution, card)
-        def cardRolesBySortOrder = cardRoles.findAll {CardRole cr -> cr.sortOrder == sortOrder}
+        def cardRolesBySortOrder = cardRoles.findAll { CardRole cr -> cr.sortOrder == sortOrder }
         return cardRolesBySortOrder
     }
 

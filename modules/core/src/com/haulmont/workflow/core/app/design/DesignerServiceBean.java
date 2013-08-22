@@ -10,10 +10,12 @@
  */
 package com.haulmont.workflow.core.app.design;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.DesignImportExportHelper;
@@ -40,14 +42,12 @@ import java.util.*;
 public class DesignerServiceBean implements DesignerService {
 
     @Inject
-    private DesignCompiler compiler;
+    protected DesignCompiler compiler;
 
     @Inject
-    private DesignDeployer deployer;
+    protected DesignerWorkerAPI designerWorkerAPI;
 
-    @Inject
-    private ProcessMigrator migrator;
-
+    @Override
     public UUID copyDesign(UUID srcId) {
         Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         try {
@@ -102,25 +102,17 @@ public class DesignerServiceBean implements DesignerService {
         }
     }
 
+    @Override
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
-        return compiler.compileDesign(designId);
+        return designerWorkerAPI.compileDesign(designId);
     }
 
+    @Override
     public void deployDesign(UUID designId, UUID procId, Role role) throws DesignDeploymentException {
-        ProcessMigrator.Result result = null;
-        if (procId != null) {
-            result = migrator.checkMigrationPossibility(designId, procId);
-            if (!result.isSuccess())
-                throw new DesignDeploymentException(result.getMessage());
-        }
-
-        deployer.deployDesign(designId, procId, role);
-
-        if (result != null && result.getOldJbpmProcessKey() != null) {
-            migrator.migrate(designId, procId, result.getOldJbpmProcessKey());
-        }
+        designerWorkerAPI.deployDesign(designId, procId, role);
     }
 
+    @Override
     public Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages)
             throws DesignCompilationException {
         return compiler.compileMessagesForLocalization(design, languages);
@@ -128,26 +120,30 @@ public class DesignerServiceBean implements DesignerService {
 
     @Override
     public byte[] exportDesign(Design design) throws IOException, FileStorageException {
-        return DesignImportExportHelper.exportDesigns(Arrays.asList(design));
+        return designerWorkerAPI.exportDesign(design);
     }
 
     @Override
     public Design importDesign(byte[] bytes) throws IOException, FileStorageException {
-        return DesignImportExportHelper.importDesigns(bytes).iterator().next();
+        return designerWorkerAPI.importDesign(bytes);
     }
 
+    @Override
     public byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException {
         return DesignImportExportHelper.exportDesigns(designs);
     }
 
+    @Override
     public Collection<Design> importDesigns(byte[] bytes) throws IOException, FileStorageException {
         return DesignImportExportHelper.importDesigns(bytes);
     }
 
+    @Override
     public byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException {
         return this.compiler.compileXlsTemplate(designId);
     }
 
+    @Override
     public void saveNotificationMatrixFile(Design design) {
         if (BooleanUtils.isTrue(design.getNotificationMatrixUploaded()) &&
                 (design.getNotificationMatrix().length > 0)) {

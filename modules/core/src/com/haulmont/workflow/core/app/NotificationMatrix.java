@@ -5,7 +5,10 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -57,13 +60,16 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     @Inject
     protected Resources resources;
 
+    @Inject
+    protected SmsSenderAPI smsSenderAPI;
+
     protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<>();
     protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
         Map<String, String> rolesMap = new HashMap<>();
-        for (Iterator it = sheet.rowIterator(); it.hasNext();) {
+        for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
             HSSFRow row = (HSSFRow) it.next();
 
             HSSFCell cell = row.getCell(0);
@@ -97,12 +103,12 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     private Map<String, String> readStates(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(STATES_SHEET);
         Map<String, String> statesMap = new HashMap<>();
-        for (Iterator it = sheet.rowIterator(); it.hasNext();) {
+        for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
             HSSFRow row = (HSSFRow) it.next();
 
             HSSFCell cell = row.getCell(0);
             HSSFCell cellCode = row.getCell(1);
-            if((cell==null)||(cellCode==null)){
+            if ((cell == null) || (cellCode == null)) {
                 break;
             }
             String state = null;
@@ -136,7 +142,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
      */
     private void loadMessages(HSSFWorkbook hssfWorkbook, String processPath) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ACTIONS_SHEET);
-        for (Iterator it = sheet.rowIterator(); it.hasNext();) {
+        for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
             HSSFRow row = (HSSFRow) it.next();
 
             HSSFCell cellNotifType = row.getCell(0);
@@ -171,7 +177,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                 Map<String, NotificationMessageBuilder> map = messageCache.get(processPath);
 //                NotificationType type = NotificationType.fromId(notificationType);
 //                if (type != null) {
-                    map.put(notificationType, message);
+                map.put(notificationType, message);
 //                }
 
             } else {
@@ -344,9 +350,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            MailService mailService = AppBeans.get(MailService.NAME);
+            WfMailWorker wfMailWorker = AppBeans.get(WfMailWorker.NAME);
             try {
-                mailService.sendEmail(user, message.getSubject(), message.getBody());
+                wfMailWorker.sendEmail(user, message.getSubject(), message.getBody());
             } catch (EmailException e) {
                 log.warn(e);
             }
@@ -378,8 +384,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
 
-            SmsService smsService = Locator.lookup(SmsService.NAME);
-            smsService.sendSms(message.getSubject(), user.getName(), message.getBody());
+            smsSenderAPI.sendSmsAsync(message.getSubject(), user.getName(), message.getBody());
 
             smsList.add(user);
         }
