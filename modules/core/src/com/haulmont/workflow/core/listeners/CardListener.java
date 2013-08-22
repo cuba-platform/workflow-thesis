@@ -6,10 +6,15 @@
 
 package com.haulmont.workflow.core.listeners;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.listener.*;
-import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
+import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
+import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 
@@ -21,8 +26,12 @@ import java.util.List;
  * @author devyatkin
  */
 public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpdateEntityListener<Card>, BeforeInsertEntityListener<Card> {
+
+    protected Persistence persistence;
+
+    @Override
     public void onBeforeDelete(Card card) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = getPersistence().getEntityManager();
         Query query = em.createQuery();
         query.setQueryString("select t from wf$Timer t where t.card.id=:id");
         query.setParameter("id", card.getId());
@@ -32,10 +41,12 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
         }
     }
 
+    @Override
     public void onBeforeInsert(Card card) {
         setHasAttributesForCard(card);
     }
 
+    @Override
     public void onBeforeUpdate(Card card) {
         setHasAttributesForCard(card);
     }
@@ -49,9 +60,9 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
     }
 
     private Category getCategory(Card card) {
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = getPersistence().getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = getPersistence().getEntityManager();
             em.setSoftDeletion(false);
             Card c = em.find(Card.class, card.getId());
             Category category = null;
@@ -64,5 +75,12 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
         } finally {
             tx.end();
         }
+    }
+
+    protected Persistence getPersistence() {
+        if (persistence == null) {
+            persistence = AppBeans.get(Persistence.NAME);
+        }
+        return persistence;
     }
 }

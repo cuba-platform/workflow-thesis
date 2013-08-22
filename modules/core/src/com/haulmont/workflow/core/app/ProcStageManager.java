@@ -39,7 +39,7 @@ public class ProcStageManager implements ProcStageManagerAPI {
     private ClusterManagerAPI clusterManager;
 
     @Inject
-    private MailService mailService;
+    protected WfMailWorker wfMailWorker;
 
     @Inject
     protected Persistence persistence;
@@ -135,7 +135,7 @@ public class ProcStageManager implements ProcStageManagerAPI {
             @Override
             public void run() {
                 try {
-                    mailService.sendEmail(user, emailSubject, emailBody);
+                    wfMailWorker.sendEmail(user, emailSubject, emailBody);
                 } catch (Exception e) {
                     log.error("Unable to send email to " + user.getEmail(), e);
                 }

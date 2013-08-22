@@ -37,6 +37,7 @@ public interface WfService {
 
     void setProcessVariables(Card card, Map<String, Object> variables);
 
+    @Deprecated
     boolean isCurrentUserInProcRole(Card card, String procRoleCode);
 
     boolean isUserInProcRole(Card card, User user, String procRoleCode);
@@ -44,7 +45,8 @@ public interface WfService {
     void deleteNotifications(Card card, User user);
 
     void deleteNotification(CardInfo cardInfo, User user);
-    
+
+    @Deprecated
     boolean isCurrentUserContainsRole(Role role);
 
     void deleteNotifications(Card card, User user, int type);
