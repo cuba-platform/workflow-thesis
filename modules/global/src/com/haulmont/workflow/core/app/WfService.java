@@ -23,39 +23,157 @@ public interface WfService {
 
     String NAME = "workflow_WfService";
 
+    /**
+     * Performs card assignment information for a current user,
+     * including list of actions, enabled to be executed.
+     *
+     * @param card card
+     * @return assignment information
+     */
     AssignmentInfo getAssignmentInfo(Card card);
 
+    /**
+     * Starts a workflow process for a given card.
+     *
+     * @param card card
+     * @return card
+     */
     Card startProcess(Card card);
 
+    /**
+     * Aborts a workflow process for a given card.
+     *
+     * @param card card
+     */
     void cancelProcess(Card card);
 
+    /**
+     * Finishes an assignment with a specified id with a given result and comment.
+     *
+     * @param assignmentId assignment id
+     * @param outcome      assignment outcome result
+     * @param comment      finish assignment comment
+     */
     void finishAssignment(UUID assignmentId, String outcome, String comment);
 
+    /**
+     * Do the same as <code>WfService.finishAssignment(UUID assignmentId, String outcome, String comment)</code>,
+     * but specifies a sub process card that will be linked to the assignment
+     *
+     * @param assignmentId
+     * @param outcome
+     * @param comment
+     * @param subProcCard
+     */
     void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard);
 
+    /**
+     * Gets jbpm process variables, associated with a given card.
+     *
+     * @param card card
+     * @return process variables
+     */
     Map<String, Object> getProcessVariables(Card card);
 
+    /**
+     * Sets specified variables to a jbpm process, associated with a card.
+     *
+     * @param card      card
+     * @param variables process variables
+     */
     void setProcessVariables(Card card, Map<String, Object> variables);
 
-    @Deprecated
-    boolean isCurrentUserInProcRole(Card card, String procRoleCode);
-
+    /**
+     * Checks if specified user is a process actor, defined by
+     * process role code in a card process.
+     *
+     * @param card         card in a workflow process
+     * @param user         user
+     * @param procRoleCode process role code
+     * @return true is user is a process actor
+     */
     boolean isUserInProcRole(Card card, User user, String procRoleCode);
 
+    /**
+     * Do the same as <code>WfService.isUserInProcRole(Card card, User user, String procRoleCode)</code>
+     * but takes a user from a current user session.
+     *
+     * @param card         card in a workflow process
+     * @param procRoleCode process role code
+     * @return true is user is a process actor
+     */
+    boolean isCurrentUserInProcRole(Card card, String procRoleCode);
+
+    /**
+     * Deletes all process notifications about the card for a user
+     *
+     * @param card card in a workflow process
+     * @param user user
+     */
     void deleteNotifications(Card card, User user);
 
+    /**
+     * Deletes process notification defined by a given cardInfo
+     * for a specified user.
+     *
+     * @param cardInfo card info
+     * @param user     user
+     */
     void deleteNotification(CardInfo cardInfo, User user);
 
+    /**
+     * DEPRECATED
+     * Do not use Service to calculate this information.
+     * It can be calculated in the same app with information, stored in user session.
+     * <p/>
+     * Checks if current user has a specified security role
+     *
+     * @param role security role
+     * @return true if user has a role
+     */
     @Deprecated
     boolean isCurrentUserContainsRole(Role role);
 
+    /**
+     * Removes process notifications with a specified type
+     * for a given user and card.
+     *
+     * @param card card in a workflow process
+     * @param user user
+     * @param type notification type
+     */
     void deleteNotifications(Card card, User user, int type);
 
+    /**
+     * Sets a HasAttachment attribute in a card.
+     *
+     * @param card           card
+     * @param hasAttachments attribute value
+     */
     void setHasAttachmentsInCard(Card card, Boolean hasAttachments);
 
+    /**
+     * Creates a process family with a specified card as a parent and
+     * a child card in a family with a specified process.
+     *
+     * @param parentCard  parent card
+     * @param subProcCode process code for child card
+     * @return child card
+     */
     Card createSubProcCard(Card parentCard, String subProcCode);
 
+    /**
+     * Removes a card and its {@link com.haulmont.workflow.core.entity.CardProc} links in a cascade.
+     *
+     * @param card card to be removed.
+     */
     void removeSubProcCard(Card card);
 
+    /**
+     * Checks if card is in a workflow process.
+     *
+     * @param card card
+     * @return is card in a process
+     */
     boolean processStarted(Card card);
 }

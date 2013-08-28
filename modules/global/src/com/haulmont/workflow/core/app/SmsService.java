@@ -15,5 +15,12 @@ public interface SmsService {
 
     public static String NAME = "workflow_SmsService";
 
+    /**
+     * Sends an sms message.
+     *
+     * @param phone     phone number
+     * @param addressee addressee
+     * @param message   message text
+     */
     void sendSms(String phone, String addressee, String message);
 }
