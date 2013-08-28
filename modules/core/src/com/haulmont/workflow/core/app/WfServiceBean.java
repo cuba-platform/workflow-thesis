@@ -100,18 +100,13 @@ public class WfServiceBean implements WfService {
         wfWorkerAPI.setProcessVariables(card, variables);
     }
 
-
-    /**
-     * Do not use Service to calculate this information.
-     * It can be calculated in the same app with information, stored in user session.
-     */
-    @Deprecated
     @Override
     public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
         User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         return isUserInProcRole(card, currentUser, procRoleCode);
     }
 
+    @Override
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
         CardRole appropCardRole = null;
         if (card.getRoles() == null) {
@@ -135,6 +130,7 @@ public class WfServiceBean implements WfService {
         return false;
     }
 
+    @Override
     public void deleteNotifications(Card card, User user) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -151,6 +147,7 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public void deleteNotifications(Card card, User user, int type) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -169,6 +166,7 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public void deleteNotification(CardInfo cardInfo, User user) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -185,12 +183,6 @@ public class WfServiceBean implements WfService {
         }
     }
 
-
-    /**
-     * Do not use Service to calculate this information.
-     * It can be calculated in the same app with information, stored in user session.
-     */
-    @Deprecated
     @Override
     public boolean isCurrentUserContainsRole(Role role) {
         if (role == null)
@@ -220,10 +212,12 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public void setHasAttachmentsInCard(Card card, Boolean hasAttachments) {
         wfWorkerAPI.setHasAttachmentsInCard(card, hasAttachments);
     }
 
+    @Override
     public Card createSubProcCard(Card parentCard, String procCode) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -250,6 +244,7 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public void removeSubProcCard(Card card) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -263,6 +258,7 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public boolean processStarted(Card card) {
         boolean result = false;
         Transaction tx = persistence.getTransaction();

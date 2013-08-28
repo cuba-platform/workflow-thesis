@@ -10,8 +10,14 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.ProcRolePermissionType;
@@ -41,13 +47,19 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
+
     private void initPermissions() {
         log.debug("initializing ProcRolePermissionService");
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select prp from wf$ProcRolePermission prp");
-            query.setView(MetadataProvider.getViewRepository().getView(ProcRolePermission.class, "edit"));
+            query.setView(metadata.getViewRepository().getView(ProcRolePermission.class, "edit"));
             permissions = new ArrayList<ProcRolePermission>(query.getResultList());
             tx.commit();
         } finally {
@@ -56,9 +68,9 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
     }
 
     private void initProcesses() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select p from wf$Proc p");
             query.setView(getProcView());
             processes = query.getResultList();
@@ -83,9 +95,9 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
 
 //        for not-active processes we'll allow everything by now
         if (card.getProcs() == null && !PersistenceHelper.isNew(card)) {
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 em.setView(new View(Card.class, "edit").addProperty("procs"));
                 card = em.find(Card.class, card.getId());
                 tx.commit();
@@ -110,9 +122,9 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
                         //figure out  whether currentUser is card creator
                         User substitutedCreator = card.getSubstitutedCreator();
                         if (substitutedCreator == null) {
-                            Transaction tx = Locator.createTransaction();
+                            Transaction tx = persistence.createTransaction();
                             try {
-                                EntityManager em = PersistenceProvider.getEntityManager();
+                                EntityManager em = persistence.getEntityManager();
                                 Query query = em.createQuery("select c.substitutedCreator from wf$Card c where c.id = :card");
                                 query.setParameter("card", card);
                                 substitutedCreator = (User) query.getSingleResult();
@@ -141,7 +153,7 @@ public class ProcRolePermissionsServiceBean implements ProcRolePermissionsServic
                                 }
                             }
                         }
-                    };
+                    }
                     break;
                 }
             }

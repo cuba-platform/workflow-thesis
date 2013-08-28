@@ -21,8 +21,25 @@ public interface MailService {
 
     public static String NAME = "workflow_MailService";
 
+    /**
+     * Sends email, performed by a specified script to given users.
+     *
+     * @param card    card in a workflow process
+     * @param comment comment to a card
+     * @param users   email recipients
+     * @param script  script to perform a email
+     */
     void sendCardMail(Card card, String comment, List<User> users, String script);
-    
+
+    /**
+     * Sends an email to a given user.
+     *
+     * @param user       email recipient
+     * @param caption    email caption
+     * @param body       email body
+     * @param attachment email attachments
+     * @throws EmailException
+     */
     void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException;
 
 }
