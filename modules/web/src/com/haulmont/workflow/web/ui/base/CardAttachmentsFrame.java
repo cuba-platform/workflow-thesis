@@ -42,10 +42,6 @@ public class CardAttachmentsFrame extends AbstractFrame {
     private boolean generatedColumnInited = false;
     private boolean cardCommitCheckRequired = true;
 
-    public CardAttachmentsFrame(IFrame frame) {
-        super(frame);
-    }
-
     public void init() {
         init(new HashMap<String, Object>());
     }
