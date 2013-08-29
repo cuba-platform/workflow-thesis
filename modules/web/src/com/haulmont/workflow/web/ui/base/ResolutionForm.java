@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -104,39 +103,6 @@ public class ResolutionForm extends AbstractForm {
         assignmentDs.setItem(assignment);
         applyToCards();
 
-        addAction(new AbstractAction("windowCommit") {
-
-            public void actionPerform(Component component) {
-                if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
-                    showNotification(getMessage("putComments"), NotificationType.WARNING);
-                } else {
-                    CommitContext commitContext = new CommitContext();
-                    commitContext.getCommitInstances().addAll(copyAttachments());
-                    getDsContext().getDataSupplier().commit(commitContext);
-                    getDsContext().commit();
-                    onCommit();
-                    close(COMMIT_ACTION_ID);
-                }
-            }
-
-            @Override
-            public String getCaption() {
-                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
-            }
-        });
-
-        addAction(new AbstractAction("windowClose") {
-
-            public void actionPerform(Component component) {
-                close("cancel", true);
-            }
-
-            @Override
-            public String getCaption() {
-                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
-            }
-        });
-
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
@@ -184,6 +150,25 @@ public class ResolutionForm extends AbstractForm {
         AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+    }
+
+    @Override
+    protected void onWindowCommit() {
+        if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
+            showNotification(getMessage("putComments"), NotificationType.WARNING);
+        } else {
+            CommitContext commitContext = new CommitContext();
+            commitContext.getCommitInstances().addAll(copyAttachments());
+            getDsContext().getDataSupplier().commit(commitContext);
+            getDsContext().commit();
+            onCommit();
+            close(COMMIT_ACTION_ID);
+        }
+    }
+
+    @Override
+    protected void onWindowClose() {
+        close("cancel", true);
     }
 
     protected void onCommit() {

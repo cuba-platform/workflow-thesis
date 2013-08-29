@@ -6,13 +6,14 @@
 
 package com.haulmont.workflow.web.ui.base.action;
 
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.gui.base.action.WfForm;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
 
@@ -22,15 +23,12 @@ import java.util.Map;
  */
 public abstract class AbstractForm extends AbstractWindow implements WfForm {
 
-    @Named("windowActions.windowCommit")
-    private Button windowCommit;
+    @Inject
+    protected Configuration configuration;
 
     public void init(Map<String, Object> params) {
         super.init(params);
-        if (windowCommit != null) {
-            com.vaadin.ui.Button vWindowCommit = (com.vaadin.ui.Button) WebComponentsHelper.unwrap(windowCommit);
-            vWindowCommit.setClickShortcut(ShortcutAction.Key.ENTER.getCode(), ShortcutAction.Modifier.CTRL.getCode());
-        }
+        initActions();
     }
 
     @Override
@@ -42,6 +40,39 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
 //            window.setClosable(false);
 //            window.setResizable(false);
 //        }
+    }
+
+    protected void initActions(){
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        addAction(new AbstractAction("windowCommit", clientConfig.getCommitShortcut()) {
+            public void actionPerform(Component component) {
+                onWindowCommit();
+            }
+
+            @Override
+            public String getCaption() {
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
+            }
+        });
+
+        addAction(new AbstractAction("windowClose", clientConfig.getCloseShortcut()) {
+            public void actionPerform(Component component) {
+                onWindowClose();
+            }
+
+            @Override
+            public String getCaption() {
+                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
+            }
+        });
+    }
+
+    protected void onWindowCommit(){
+
+    }
+
+    protected void onWindowClose(){
+
     }
 
     public abstract String getComment();
