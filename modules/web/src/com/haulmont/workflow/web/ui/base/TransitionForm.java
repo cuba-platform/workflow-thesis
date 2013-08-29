@@ -100,6 +100,7 @@ public class TransitionForm extends AbstractForm {
 
     @Inject
     protected UserSession userSession;
+
     protected Card card;
 
     protected Card cardCopy;
@@ -177,8 +178,6 @@ public class TransitionForm extends AbstractForm {
 
         initAttachments(params);
 
-        initActions();
-
         cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
     }
 
@@ -235,29 +234,15 @@ public class TransitionForm extends AbstractForm {
         }
     }
 
-    protected void initActions() {
-        addAction(new AbstractAction("windowCommit") {
-            public void actionPerform(Component component) {
-                if (doCommit())
-                    close(COMMIT_ACTION_ID, true);
-            }
+    @Override
+    protected void onWindowCommit() {
+        if (doCommit())
+            close(COMMIT_ACTION_ID, true);
+    }
 
-            @Override
-            public String getCaption() {
-                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok");
-            }
-        });
-
-        addAction(new AbstractAction("windowClose") {
-            public void actionPerform(Component component) {
-                close("cancel");
-            }
-
-            @Override
-            public String getCaption() {
-                return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
-            }
-        });
+    @Override
+    protected void onWindowClose() {
+        close("cancel");
     }
 
     protected void initCardRolesFrame(Map<String, Object> params) {

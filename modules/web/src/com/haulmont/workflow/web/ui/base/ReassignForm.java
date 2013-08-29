@@ -10,6 +10,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -52,6 +54,9 @@ public class ReassignForm extends AbstractWindow {
 
     @Inject
     protected WfAssignmentService assignmentEngine;
+
+    @Inject
+    protected Configuration configuration;
 
     protected Card card;
     protected String state;
@@ -98,7 +103,9 @@ public class ReassignForm extends AbstractWindow {
 
         setCaption(getMessage("reassign.caption"));
 
-        addAction(new AbstractAction(Editor.WINDOW_COMMIT) {
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        addAction(new AbstractAction(Editor.WINDOW_COMMIT, clientConfig.getCommitShortcut()) {
             @Override
             public void actionPerform(Component component) {
                 if (commit())
@@ -111,7 +118,7 @@ public class ReassignForm extends AbstractWindow {
             }
         });
 
-        addAction(new AbstractAction(Editor.WINDOW_CLOSE) {
+        addAction(new AbstractAction(Editor.WINDOW_CLOSE, clientConfig.getCloseShortcut()) {
             @Override
             public void actionPerform(Component component) {
                 close("cancel");
