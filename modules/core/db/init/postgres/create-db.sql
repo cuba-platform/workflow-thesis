@@ -96,6 +96,7 @@ create table WF_CARD (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+    VERSION integer,
     CARD_TYPE integer,
     PROC_ID uuid,
     JBPM_PROCESS_ID varchar(255),

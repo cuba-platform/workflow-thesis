@@ -17,6 +17,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.Versioned;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
@@ -39,11 +40,15 @@ import java.util.regex.Pattern;
 @Listeners({"com.haulmont.workflow.core.listeners.CardListener"})
 @NamePattern("%s|description")
 @SystemLevel
-public class Card extends CategorizedEntity implements Updatable, SoftDelete {
+public class Card extends CategorizedEntity implements Updatable, SoftDelete, Versioned {
 
     private static final long serialVersionUID = -6180254942462308853L;
 
     public static final String STATE_SEPARATOR = ", ";
+
+    @Version
+    @Column(name = "VERSION")
+    protected Integer version;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -128,6 +133,11 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete {
 
     @Transient
     protected Map<String, Object> initialProcessVariables;
+
+    @Override
+    public Integer getVersion() {
+        return version;
+    }
 
     public Date getUpdateTs() {
         return updateTs;
