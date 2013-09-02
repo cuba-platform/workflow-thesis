@@ -7,9 +7,7 @@
 package com.haulmont.workflow.web.folders;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.QueryParserRegex;
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -33,12 +31,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
- *
  * @author pavlov
+ * @version $Id$
  */
-
 public class FolderBuilder {
+
     private ProcAppFolder procAppFolder;
     public String entity;
 
@@ -220,17 +217,14 @@ public class FolderBuilder {
     }
 
     private Element getWindowXml() {
-        WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
-        WindowInfo windowInfo = windowConfig.getWindowInfo(entity + ".browse");
-        Scripting scripting = AppContext.getBean(Scripting.NAME);
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(entity + ".browse");
         String templatePath = windowInfo.getTemplate();
 
-        InputStream stream = scripting.getResourceAsStream(templatePath);
+        InputStream stream = AppBeans.get(Resources.class).getResourceAsStream(templatePath);
         if (stream == null) {
             stream = getClass().getResourceAsStream(templatePath);
             if (stream == null)
-                throw new DevelopmentException("Bad template path",
-                        Collections.<String,Object>singletonMap("Template Path", templatePath));
+                throw new DevelopmentException("Template is not found", "Path", templatePath);
         }
 
         Document document = null;
