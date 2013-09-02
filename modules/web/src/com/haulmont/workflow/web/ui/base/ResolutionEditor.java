@@ -15,15 +15,6 @@ import java.util.Map;
 
 public class ResolutionEditor extends AbstractEditor {
 
-    public ResolutionEditor(IFrame frame) {
-        super(frame);
-    }
-
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-    }
-
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
