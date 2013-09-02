@@ -22,46 +22,46 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://process"/>
+                        <label id="procLabel" value="msg://process"/>
                         <textField id="proc" datasource="assignmentDs" property="proc"
                                    width="${width}" editable="false"/>
 
                     </row>
                     <row>
-                        <label value="msg://createdDate"/>
+                        <label id="createdDateLabel" value="msg://createdDate"/>
                         <dateField id="createdDate" datasource="assignmentDs" property="createTs"
                                    width="${width}" editable="false"/>
 
                     </row>
                     <row>
-                        <label value="msg://finishedDate"/>
+                        <label id="finishedDateLabel" value="msg://finishedDate"/>
                         <dateField id="finishedDate" datasource="assignmentDs" property="finished"
                                    width="${width}" editable="false"/>
                     </row>
                     <row>
-                        <label value="msg://user"/>
+                        <label id="userLabel" value="msg://user"/>
                         <textField id="user" datasource="assignmentDs" property="displayUser"
                                    width="${width}" editable="false"/>
                     </row>
                     <row>
-                        <label value="msg://cardState"/>
+                        <label id="cardStateLabel" value="msg://cardState"/>
                         <hbox spacing="true">
                             <textField id="cardState" datasource="assignmentDs" property="locName"
                                        width="${width}" editable="false"/>
 
-                            <label value="msg://iteration"/>
+                            <label id="iterationLabel" value="msg://iteration"/>
                             <textField id="iteration" datasource="assignmentDs" property="iteration"
                                        width="30" editable="false"/>
                         </hbox>
                     </row>
                     <row>
-                        <label value="msg://outcome"/>
+                        <label id="outcomeLabel" value="msg://outcome"/>
                         <textField id="outcome" datasource="assignmentDs" property="locOutcomeResult"
                                    width="${width}" editable="false"/>
                     </row>
                     <row>
-                        <label value="msg://comment"/>
-                        <textArea id="comment" datasource="assignmentDs" property="comment"
+                        <label id="commentLabel" value="msg://comment"/>
+                        <textField id="comment" datasource="assignmentDs" property="comment"
                                    width="400" rows="6"/>
                     </row>
                 </rows>

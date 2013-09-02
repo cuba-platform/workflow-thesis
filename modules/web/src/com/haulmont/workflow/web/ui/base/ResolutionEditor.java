@@ -13,11 +13,16 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import java.util.Map;
 
-/**
- * @author krivopustov
- * @version $Id$
- */
 public class ResolutionEditor extends AbstractEditor {
+
+    public ResolutionEditor(IFrame frame) {
+        super(frame);
+    }
+
+    @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+    }
 
     @Override
     public void setItem(Entity item) {
@@ -25,6 +30,10 @@ public class ResolutionEditor extends AbstractEditor {
         Datasource assignmentDs = getDsContext().get("assignmentDs");
         Assignment assignment = (Assignment) assignmentDs.getItem();
         User currentUser = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
-        ((TextField) getComponent("comment")).setEditable(currentUser.equals(assignment.getUser()));
+        ((TextField) getComponent(getCommentField())).setEditable(currentUser.equals(assignment.getUser()));
+    }
+
+    protected String getCommentField() {
+        return "comment";
     }
 }
