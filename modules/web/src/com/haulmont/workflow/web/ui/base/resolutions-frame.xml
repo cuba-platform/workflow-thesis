@@ -26,7 +26,7 @@
                 <column id="iteration" caption="msg://iteration"/>
                 <column id="locOutcomeResult" caption="msg://outcome"/>
                 <!--<column id="hasAttachments" caption="msg://attachments"/>-->
-                <column id="comment" caption="msg://comment"/>
+                <column id="comment" caption="msg://comment" maxTextLength="50"/>
                 <!--<column id="attachments" caption="msg://attachments"/>-->
             </columns>
             <rows datasource="resolutionsDs"/>
