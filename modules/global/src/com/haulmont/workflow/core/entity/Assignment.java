@@ -17,7 +17,9 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -260,6 +262,15 @@ public class Assignment extends StandardEntity {
         if (outcome == null)
             return null;
         else {
+            if (WfConstants.ACTION_REASSIGN.equals(outcome)) {
+                String key = WfConstants.ACTION_REASSIGN + ".Result";
+                String locValue = getLocalizedAttribute(key);
+                if (key.equals(locValue)) {
+                    return AppBeans.get(Messages.class).getMessage(Assignment.class, key);
+                } else {
+                    return locValue;
+                }
+            }
             String key = name + "." + outcome + ".Result";
             String value = getLocalizedAttribute(key);
             if (key.equals(value)) {
