@@ -35,6 +35,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -100,6 +101,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     public void setItem(Entity item) {
         super.setItem(item);
 
+        fileDs.setItem(getItem().getFile());
         boolean isNew = PersistenceHelper.isNew(fileDs.getItem());
         if (assignment != null && item instanceof CardAttachment)
             ((CardAttachment) item).setAssignment(assignment);
@@ -212,8 +214,11 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
         if (attachment != null && attachment.getVersionNum() == null)
             attachment.setVersionNum(1);
         if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null) {
-            if (needSave)
-                getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
+            if (needSave) {
+                Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
+                getItem().setFile((FileDescriptor)committedEntities.iterator().next());
+
+            }
             super.close(COMMIT_ACTION_ID, true);
         }
         else
