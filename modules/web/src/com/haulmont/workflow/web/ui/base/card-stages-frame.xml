@@ -1,4 +1,4 @@
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.base.CardStagesFrame"
         messagesPack="com.haulmont.workflow.web.ui.base"
         caption="msg://cardStagesFrame"
@@ -23,8 +23,8 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true" expand="stagesTable" height="100%" spacing="true">
-        <hbox id="typeFilter" stylename="edit-area" spacing="true" margin="true" expand="filterSpring" width="100%">
+    <layout expand="stagesTable" height="100%" spacing="true">
+        <hbox id="typeFilter" spacing="true" margin="true" expand="filterSpring" width="100%">
             <label value="msg://ProcStage.type"/>
             <lookupField id="type" optionsDatasource="procStageTypesDs" width="100px"/>
             <button id="applyType" width="120px" icon="icons/search.png"/>

@@ -1,18 +1,19 @@
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.cardvariables.edit.CardVariableEditor"
         messagesPack="com.haulmont.workflow.web.ui.cardvariables"
         datasource="processVariableDs"
         caption="msg://cardvariables.editor.caption">
+
     <dsContext>
         <datasource
                 id="processVariableDs"
                 class="com.haulmont.workflow.core.entity.CardVariable"
                 view="cardVariable.edit">
         </datasource>
-
     </dsContext>
-    <layout expand="space">
-        <fieldGroup id="designProcessFields" datasource="processVariableDs" stylename="edit-area" width="100%">
+
+    <layout expand="buttons">
+        <fieldGroup id="designProcessFields" datasource="processVariableDs" width="100%">
             <column width="100%">
                 <field id="moduleName" editable="false"/>
                 <field id="propertyName" editable="false"/>
@@ -29,6 +30,5 @@
             </column>
         </fieldGroup>
         <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        <hbox id="space"></hbox>
     </layout>
 </window>

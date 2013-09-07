@@ -1,13 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.proc.ProcRolePermissionEditor"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="permissionDs"
         caption="msg://permissionEditor.caption"
         focusComponent="state"
         >
-
-    <assign name="width" value="250"/>
 
     <dsContext>
         <datasource
@@ -22,48 +20,45 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="spring">
-        <hbox stylename="edit-area">
-            <vbox margin="true">
-                <grid spacing="true" width="100%">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://state"/>
-                            <lookupField id="state" width="${width}" required="true" requiredMessage="msg://stateMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://procRoleTo"/>
-                            <lookupField id="procRoleTo" datasource="permissionDs" property="procRoleTo" optionsDatasource="procRolesDs"
-                                      width="${width}" required="true" requiredMessage="msg://procRoleToMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://type"/>
-                            <lookupField id="type" datasource="permissionDs" property="type" width="${width}" required="true"
-                                    requiredMessage="msg://Mtypesg"/>
-                        </row>
-                        <row>
-                            <label value="msg://value"/>
-                            <lookupField id="value" datasource="permissionDs" property="value" width="${width}" required="true"
-                                    requiredMessage="msg://valueMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://procRoleFrom"/>
-                            <lookupField id="procRoleFrom" datasource="permissionDs" property="procRoleFrom" optionsDatasource="procRolesDs"
-                                      width="${width}" editable="false" required="true"
-                                      requiredMessage="msg://procRoleFromMsg"/>
-                        </row>
-                    </rows>
-                </grid>
-            </vbox>
-        </hbox>
-        <vbox margin="true">
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        </vbox>
-        <vbox id="spring"/>
+    <assign name="width" value="250"/>
+
+    <layout expand="windowActions">
+        <grid spacing="true" width="100%">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://state"/>
+                    <lookupField id="state" width="${width}" required="true" requiredMessage="msg://stateMsg"/>
+                </row>
+                <row>
+                    <label value="msg://procRoleTo"/>
+                    <lookupField id="procRoleTo" datasource="permissionDs" property="procRoleTo"
+                                 optionsDatasource="procRolesDs"
+                                 width="${width}" required="true" requiredMessage="msg://procRoleToMsg"/>
+                </row>
+                <row>
+                    <label value="msg://type"/>
+                    <lookupField id="type" datasource="permissionDs" property="type" width="${width}" required="true"
+                                 requiredMessage="msg://Mtypesg"/>
+                </row>
+                <row>
+                    <label value="msg://value"/>
+                    <lookupField id="value" datasource="permissionDs" property="value" width="${width}" required="true"
+                                 requiredMessage="msg://valueMsg"/>
+                </row>
+                <row>
+                    <label value="msg://procRoleFrom"/>
+                    <lookupField id="procRoleFrom" datasource="permissionDs" property="procRoleFrom"
+                                 optionsDatasource="procRolesDs"
+                                 width="${width}" editable="false" required="true"
+                                 requiredMessage="msg://procRoleFromMsg"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

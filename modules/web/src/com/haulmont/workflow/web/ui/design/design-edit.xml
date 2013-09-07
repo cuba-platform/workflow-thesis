@@ -1,5 +1,5 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.design.DesignEditor"
         messagesPack="com.haulmont.workflow.web.ui.design"
         caption="msg://editor.caption"
@@ -10,15 +10,13 @@
         <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
     </dsContext>
 
-    <layout>
-        <vbox id="content" stylename="edit-area" margin="true" spacing="true">
-            <fieldGroup datasource="designDs" >
-                <column width="100%">
-                    <field id="name" required="true"/>
-                    <field id="type" required="true"/>
-                </column>
-            </fieldGroup>
-        </vbox>
+    <layout expand="windowActions">
+        <fieldGroup datasource="designDs">
+            <column width="100%">
+                <field id="name" required="true"/>
+                <field id="type" required="true"/>
+            </column>
+        </fieldGroup>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

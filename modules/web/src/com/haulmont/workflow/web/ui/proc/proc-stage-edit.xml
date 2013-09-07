@@ -1,14 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.proc.ProcStageEditor"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="stageDs"
         caption="msg://stageEditor.caption"
         focusComponent="name"
         >
-    <!--Should use platform tag assign-->
-    <#assign width=250/>
-    <#assign timeUnitWidth=90/>
 
     <dsContext>
         <datasource
@@ -24,84 +21,82 @@
         </collectionDatasource>
     </dsContext>
 
+    <assign name="width" value="250px"/>
+    <assign name="timeUnitWidth" value="90px"/>
+
     <layout>
         <scrollBox>
-            <vbox margin="true" stylename="edit-area" spacing="true" expand="spring">
-                <grid spacing="true" width="100%">
-                    <columns>
-                        <column/>
-                        <column flex="1"/>
-                        <column/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://name"/>
-                            <textField id="name" datasource="stageDs" property="name"
-                                       width="${width}" required="true" requiredMessage="msg://nameMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://startActivity"/>
-                            <lookupField id="startActivity" width="${width}" required="true"
-                                         requiredMessage="msg://startActivityMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://endActivity"/>
-                            <lookupField id="endActivity" width="${width}" required="true"
-                                         requiredMessage="msg://endActivity"/>
-                        </row>
-                        <row>
-                            <label value="msg://endTransition"/>
-                            <textField id="endTransition" datasource="stageDs" property="endTransition"
-                                       width="${width}" requiredMessage="msg://endTransitionMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://stageType"/>
-                            <lookupField id="type" datasource="stageDs" property="type" optionsDatasource="procStageTypesDs" width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://duration"/>
-                            <hbox>
-                                <textField id="duration" datasource="stageDs" property="duration"
-                                           width="${width - timeUnitWidth - 10}" required="true"
-                                           requiredMessage="msg://durationMsg"/>
-                                <lookupField id="timeUnit" datasource="stageDs" property="timeUnit"
-                                             width="${timeUnitWidth}"/>
-                            </hbox>
-                        </row>
-                        <row>
-                            <label value="msg://durationScriptEnabled"/>
-                            <checkBox id="durationScriptEnabled" datasource="stageDs" property="durationScriptEnabled"/>
-                        </row>
-                        <row>
-                            <label value="msg://durationScript"/>
-                            <textArea id="durationScript" datasource="stageDs" property="durationScript" width="400px" rows="10"/>
-                        </row>
-                    </rows>
-                </grid>
+            <grid spacing="true" width="100%">
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://name"/>
+                        <textField id="name" datasource="stageDs" property="name"
+                                   width="${width}" required="true" requiredMessage="msg://nameMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://startActivity"/>
+                        <lookupField id="startActivity" width="${width}" required="true"
+                                     requiredMessage="msg://startActivityMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://endActivity"/>
+                        <lookupField id="endActivity" width="${width}" required="true"
+                                     requiredMessage="msg://endActivity"/>
+                    </row>
+                    <row>
+                        <label value="msg://endTransition"/>
+                        <textField id="endTransition" datasource="stageDs" property="endTransition"
+                                   width="${width}" requiredMessage="msg://endTransitionMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://stageType"/>
+                        <lookupField id="type" datasource="stageDs" property="type" optionsDatasource="procStageTypesDs" width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://duration"/>
+                        <hbox>
+                            <textField id="duration" datasource="stageDs" property="duration"
+                                       width="${width - timeUnitWidth - 10}" required="true"
+                                       requiredMessage="msg://durationMsg"/>
+                            <lookupField id="timeUnit" datasource="stageDs" property="timeUnit"
+                                         width="${timeUnitWidth}"/>
+                        </hbox>
+                    </row>
+                    <row>
+                        <label value="msg://durationScriptEnabled"/>
+                        <checkBox id="durationScriptEnabled" datasource="stageDs" property="durationScriptEnabled"/>
+                    </row>
+                    <row>
+                        <label value="msg://durationScript"/>
+                        <textArea id="durationScript" datasource="stageDs" property="durationScript" width="400px" rows="10"/>
+                    </row>
+                </rows>
+            </grid>
 
-                <label value="msg://overdueNotifications"/>
+            <label value="msg://overdueNotifications"/>
 
-                <table id="procRolesTable" width="300px">
-                    <buttonsPanel>
-                        <button action="procRolesTable.add" icon="icons/add.png"/>
-                        <button action="procRolesTable.remove" icon="icons/remove.png"/>
-                    </buttonsPanel>
-                    <columns>
-                        <column id="name"/>
-                    </columns>
-                    <rows datasource="procRolesDs"/>
-                </table>
+            <table id="procRolesTable" width="300px">
+                <buttonsPanel>
+                    <button action="procRolesTable.add" icon="icons/add.png"/>
+                    <button action="procRolesTable.remove" icon="icons/remove.png"/>
+                </buttonsPanel>
+                <columns>
+                    <column id="name"/>
+                </columns>
+                <rows datasource="procRolesDs"/>
+            </table>
 
-                <hbox>
-                    <label value="msg://notifyCurrentActor"/>
-                    <checkBox id="notifyCurrentActor" datasource="stageDs" property="notifyCurrentActor"/>
-                </hbox>
+            <hbox>
+                <label value="msg://notifyCurrentActor"/>
+                <checkBox id="notifyCurrentActor" datasource="stageDs" property="notifyCurrentActor"/>
+            </hbox>
 
-
-                <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-
-                <vbox id="spring"/>
-            </vbox>
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </scrollBox>
     </layout>
 </window>
