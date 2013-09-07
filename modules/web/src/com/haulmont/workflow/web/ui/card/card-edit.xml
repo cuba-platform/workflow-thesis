@@ -1,13 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.card.CardEditor"
         messagesPack="com.haulmont.workflow.web.ui.card"
         datasource="cardDs"
         caption="msg://cardEditor.caption"
         focusComponent="description"
         >
-
-    <assign name="width" value="400"/>
 
     <dsContext>
         <datasource
@@ -17,12 +15,15 @@
             <collectionDatasource id="cardRolesDs" property="roles"/>
         </datasource>
 
-        <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment" view="card-edit" hierarchyProperty="versionOf">
+        <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment"
+                                view="card-edit" hierarchyProperty="versionOf">
             <query>select a from wf$CardAttachment a where a.card.id = :ds$cardDs order by a.createTs desc</query>
         </hierarchicalDatasource>
 
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="_local"/>
     </dsContext>
+
+    <assign name="width" value="400"/>
 
     <layout expand="mainPane">
 
@@ -33,39 +34,33 @@
                         <editable property="notStarted"/>
 
                         <vbox margin="true" spacing="true" expand="cardAttachmentsFrame">
-                            <hbox spacing="true">
-                                <hbox stylename="edit-area">
-                                    <vbox margin="true">
-                                        <grid spacing="true" width="100%">
-                                            <columns>
-                                                <column flex="1"/>
-                                                <column flex="1"/>
-                                                <column flex="1"/>
-                                            </columns>
-                                            <rows>
-                                                <row>
-                                                    <label value="msg://description"/>
-                                                    <textField id="description" datasource="cardDs" property="description"
-                                                               width="${width}"/>
-                                                </row>
-                                                <row>
-                                                    <label value="msg://procName"/>
-                                                    <lookupField id="proc" datasource="cardDs" property="proc"
-                                                                 optionsDatasource="procDs" width="${width}"/>
-                                                </row>
-                                                <row>
-                                                    <label value="msg://state"/>
-                                                    <textField id="state" datasource="cardDs" property="locState"
-                                                               width="${width}" editable="false"/>
-                                                </row>
-                                            </rows>
-                                        </grid>
-                                    </vbox>
-                                </hbox>
-                            </hbox>
+                            <grid spacing="true" width="100%">
+                                <columns>
+                                    <column flex="1"/>
+                                    <column flex="1"/>
+                                    <column flex="1"/>
+                                </columns>
+                                <rows>
+                                    <row>
+                                        <label value="msg://description"/>
+                                        <textField id="description" datasource="cardDs" property="description"
+                                                   width="${width}"/>
+                                    </row>
+                                    <row>
+                                        <label value="msg://procName"/>
+                                        <lookupField id="proc" datasource="cardDs" property="proc"
+                                                     optionsDatasource="procDs" width="${width}"/>
+                                    </row>
+                                    <row>
+                                        <label value="msg://state"/>
+                                        <textField id="state" datasource="cardDs" property="locState"
+                                                   width="${width}" editable="false"/>
+                                    </row>
+                                </rows>
+                            </grid>
 
                             <iframe id="cardAttachmentsFrame" src="/com/haulmont/workflow/web/ui/base/card-attachments-frame.xml"/>
-                            </vbox>
+                        </vbox>
                     </accessControl>
                 </tab>
 

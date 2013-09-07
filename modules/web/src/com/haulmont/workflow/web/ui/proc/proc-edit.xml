@@ -1,13 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.proc.ProcEditor"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         datasource="procDs"
         caption="msg://procEditor.caption"
         focusComponent="name"
         >
-
-    <assign name="width" value="400"/>
 
     <dsContext>
         <datasource
@@ -27,73 +25,71 @@
         </collectionDatasource>
     </dsContext>
 
+    <assign name="width" value="400"/>
+
     <layout expand="tabsheet">
         <tabSheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab" expand="rolesSplit" margin="true">
-                <hbox stylename="edit-area">
-                    <vbox margin="true">
-                        <grid spacing="true" width="100%">
-                            <columns>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                            </columns>
-                            <rows>
-                                <row>
-                                    <label value="msg://name"/>
-                                    <textField id="name" datasource="procDs" property="name"
-                                               width="${width}"/>
-                                </row>
-                                <row>
-                                    <label value="msg://jbpmProcessKey"/>
-                                    <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
-                                               width="${width}" editable="false"/>
-                                </row>
-                                <row>
-                                    <label value="msg://code"/>
-                                    <textField id="code" datasource="procDs" property="code"
-                                               width="${width}"/>
-                                </row>
-                                <row>
-                                    <label value="msg://design"/>
-                                    <textField id="design" datasource="procDs" property="design"
-                                               width="${width}" editable="false"/>
-                                </row>
-                                <row>
-                                    <label value="msg://cardTypes"/>
-                                    <textField id="cardTypes" datasource="procDs" property="cardTypes"
-                                               width="${width}"/>
-                                </row>
-                                <row>
-                                    <label value="msg://states"/>
-                                    <textField id="states" datasource="procDs" property="states"
-                                               width="${width}"/>
-                                </row>
-                                <!--<row>-->
-                                    <!--<label value="msg://permissionsEnabled"/>-->
-                                    <!--<checkBox id="permissionsEnabled" datasource="procDs"-->
-                                              <!--property="permissionsEnabled"/>-->
-                                <!--</row>-->
-                                <row>
-                                    <label value="msg://availableOnlyForRole"/>
-                                    <lookupField id="availableRole"
-                                                 datasource="procDs"
-                                                 property="availableRole"
-                                                 optionsDatasource="secRoles"
-                                                 width="${width}"/>
-                                </row>
-                                <row>
-                                    <label value="msg://combinedStagesEnabled"/>
-                                    <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
-                                </row>
-                                <row>
-                                    <label value="msg://com.haulmont.workflow.core.entity/Proc.durationEnabled"/>
-                                    <checkBox id="durationEnabled" datasource="procDs" property="durationEnabled"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </vbox>
-                </hbox>
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://name"/>
+                            <textField id="name" datasource="procDs" property="name"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://jbpmProcessKey"/>
+                            <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
+                                       width="${width}" editable="false"/>
+                        </row>
+                        <row>
+                            <label value="msg://code"/>
+                            <textField id="code" datasource="procDs" property="code"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://design"/>
+                            <textField id="design" datasource="procDs" property="design"
+                                       width="${width}" editable="false"/>
+                        </row>
+                        <row>
+                            <label value="msg://cardTypes"/>
+                            <textField id="cardTypes" datasource="procDs" property="cardTypes"
+                                       width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://states"/>
+                            <textField id="states" datasource="procDs" property="states"
+                                       width="${width}"/>
+                        </row>
+                        <!--<row>-->
+                            <!--<label value="msg://permissionsEnabled"/>-->
+                            <!--<checkBox id="permissionsEnabled" datasource="procDs"-->
+                                      <!--property="permissionsEnabled"/>-->
+                        <!--</row>-->
+                        <row>
+                            <label value="msg://availableOnlyForRole"/>
+                            <lookupField id="availableRole"
+                                         datasource="procDs"
+                                         property="availableRole"
+                                         optionsDatasource="secRoles"
+                                         width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://combinedStagesEnabled"/>
+                            <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
+                        </row>
+                        <row>
+                            <label value="msg://com.haulmont.workflow.core.entity/Proc.durationEnabled"/>
+                            <checkBox id="durationEnabled" datasource="procDs" property="durationEnabled"/>
+                        </row>
+                    </rows>
+                </grid>
 
                 <split id="rolesSplit" orientation="horizontal" width="100%">
                     <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true" width="100%" height="100%">
@@ -178,8 +174,6 @@
             </tab>
         </tabSheet>
 
-        <vbox margin="true">
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

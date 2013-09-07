@@ -1,13 +1,10 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.base.attachments.AttachmentsMultiUploader"
         datasource="attachDs"
         messagesPack="com.haulmont.workflow.web.ui.base.attachments"
         caption="msg://editorCaption"
         focusComponent="multiUpload">
-
-    <assign name="width" value="560"/>
-    <assign name="height" value="300"/>
 
     <dsContext>
         <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment"
@@ -25,32 +22,30 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="windowActions">
-        <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
-            <hbox height="30" spacing="true">
-                <multiUpload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
-                <button id="removeAttachBtn" icon="icons/remove.png"/>
-                <label value="msg://setAttachmentsType"/>
-                <lookupField id="attachTypeCombo" editable="true"/>
-            </hbox>
+    <assign name="width" value="560"/>
+    <assign name="height" value="300"/>
 
-            <table id="uploadsTable" editable="true" multiselect="true"
-                    width="${width}" height="${height}">
-                <columns>
-                    <column id="name" caption="msg://name" editable="true" width="150"
-                            required="true" requiredMessage="msg://notNullNames"/>
-                    <column id="file.extension" caption="msg://extension" editable="false" width="70"/>
-                    <column id="file.size" caption="msg://size" editable="false" width="50"/>
-                    <column id="comment" caption="msg://comment" editable="true" width="100"/>
-                    <column id="attachType" caption="msg://attachType" editable="true" width="150"
-                            optionsDatasource="attachTypesDs" required="true" requiredMessage="msg://notSetTypes"/>
-                </columns>
-                <rows datasource="attachDs"/>
-            </table>
-            <hbox width="${width}">
-                <label align="MIDDLE_RIGHT" id="fileProgress" value=""/>
-            </hbox>
-        </vbox>
+    <layout expand="windowActions">
+        <hbox height="30" spacing="true">
+            <multiUpload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
+            <button id="removeAttachBtn" icon="icons/remove.png"/>
+            <label value="msg://setAttachmentsType"/>
+            <lookupField id="attachTypeCombo" editable="true"/>
+        </hbox>
+
+        <table id="uploadsTable" editable="true" multiselect="true"
+               width="${width}" height="${height}">
+            <columns>
+                <column id="name" caption="msg://name" editable="true" width="150"
+                        required="true" requiredMessage="msg://notNullNames"/>
+                <column id="file.extension" caption="msg://extension" editable="false" width="70"/>
+                <column id="file.size" caption="msg://size" editable="false" width="50"/>
+                <column id="comment" caption="msg://comment" editable="true" width="100"/>
+                <column id="attachType" caption="msg://attachType" editable="true" width="150"
+                        optionsDatasource="attachTypesDs" required="true" requiredMessage="msg://notSetTypes"/>
+            </columns>
+            <rows datasource="attachDs"/>
+        </table>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

@@ -1,13 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.components.AbstractEditor"
         datasource="procStageTypeDs"
         messagesPack="com.haulmont.workflow.web.ui.proc"
         caption="msg://procStageTypeEditor.caption"
         focusComponent="fieldGroup"
         >
-
-    <assign name="width" value="250"/>
 
     <dsContext>
         <datasource
@@ -17,15 +15,15 @@
         </datasource>
     </dsContext>
 
+    <assign name="width" value="250"/>
+
     <layout expand="windowActions">
-        <vbox margin="true" stylename="edit-area">
-            <fieldGroup id="fieldGroup" datasource="procStageTypeDs">
-                <column>
-                    <field id="name" width="${width}"/>
-                    <field id="code" width="${width}"/>
-                </column>
-            </fieldGroup>
-        </vbox>
+        <fieldGroup id="fieldGroup" datasource="procStageTypeDs">
+            <column>
+                <field id="name" width="${width}"/>
+                <field id="code" width="${width}"/>
+            </column>
+        </fieldGroup>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

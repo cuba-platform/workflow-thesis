@@ -1,13 +1,11 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.card.CardRoleEditor"
         messagesPack="com.haulmont.workflow.web.ui.card"
         datasource="roleDs"
         caption="msg://roleEditor.caption"
         focusComponent="roleLookup"
         >
-
-    <assign name="width" value="300"/>
 
     <dsContext>
         <datasource
@@ -26,47 +24,42 @@
             <query>
                 <![CDATA[select u from sec$User u order by u.name]]>
             </query>
-    </collectionDatasource>
-</dsContext>
+        </collectionDatasource>
+    </dsContext>
 
-    <layout expand="spring">
-        <hbox stylename="edit-area">
-            <vbox margin="true">
-                <grid spacing="true" width="100%">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://role"/>
-                            <lookupField id="roleLookup" datasource="roleDs" property="procRole"
-                                       optionsDatasource="procRolesDs" width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://user"/>
-                            <lookupField id="userLookup" datasource="roleDs" property="user"
-                                       optionsDatasource="usersDs" width="${width}" required="true"
-                                       requiredMessage="msg://userMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://notifyByEmail"/>
-                            <checkBox id="notifyByEmailCb" datasource="roleDs" property="notifyByEmail"
-                                       width="${width}"/>
-                        </row>
-                        <!--<row>-->
-                            <!--<label value="msg://notifyByCardInfo"/>-->
-                            <!--<checkBox id="notifyByCardInfoCb" datasource="roleDs" property="notifyByCardInfo"-->
-                                       <!--width="${width}"/>-->
-                        <!--</row>-->
-                    </rows>
-                </grid>
-            </vbox>
-        </hbox>
-        <vbox margin="true">
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        </vbox>
-        <vbox id="spring"/>
+    <assign name="width" value="300"/>
+
+    <layout expand="windowActions">
+        <grid spacing="true" width="100%">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://role"/>
+                    <lookupField id="roleLookup" datasource="roleDs" property="procRole"
+                                 optionsDatasource="procRolesDs" width="${width}"/>
+                </row>
+                <row>
+                    <label value="msg://user"/>
+                    <lookupField id="userLookup" datasource="roleDs" property="user"
+                                 optionsDatasource="usersDs" width="${width}" required="true"
+                                 requiredMessage="msg://userMsg"/>
+                </row>
+                <row>
+                    <label value="msg://notifyByEmail"/>
+                    <checkBox id="notifyByEmailCb" datasource="roleDs" property="notifyByEmail"
+                              width="${width}"/>
+                </row>
+                <!--<row>-->
+                    <!--<label value="msg://notifyByCardInfo"/>-->
+                    <!--<checkBox id="notifyByCardInfoCb" datasource="roleDs" property="notifyByCardInfo"-->
+                    <!--width="${width}"/>-->
+                <!--</row>-->
+            </rows>
+        </grid>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

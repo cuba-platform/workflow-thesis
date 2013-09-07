@@ -1,5 +1,5 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         messagesPack="com.haulmont.workflow.web.ui.attachment">
     <dsContext>
         <collectionDatasource id="attachTypesDs" class="com.haulmont.workflow.core.entity.AttachmentType" view="_local">
@@ -13,51 +13,49 @@
     </dsContext>
     
     <layout>
-        <vbox margin="true" spacing="true" stylename="edit-area">
-            <upload id="uploadField"/>
-            <grid id="attachGrid" spacing="true" expandable="false">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://fileName"/>
-                        <textField id="fileName" datasource="fileDs" property="name"
-                                   width="200px"/>
-                    </row>
-                    <row id="rowName">
-                        <label value="msg://name"/>
-                        <hbox id="nameBox" spacing="false">
-                            <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
-                        </hbox>
-                    </row>
-                    <row>
-                        <label value="msg://extension"/>
-                        <label id="extension" datasource="fileDs" property="extension"/>
-                    </row>
-                    <row>
-                        <label value="msg://size"/>
-                        <label id="size"/>
-                    </row>
-                    <row>
-                        <label value="msg://createDate"/>
-                        <label id="createDate" datasource="fileDs" property="createDate">
-                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
-                                       format="msg://dateTimeFormat"/>
-                        </label>
-                    </row>
-                    <row>
-                        <label value="msg://comment"/>
-                        <textArea id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
-                    </row>
-                    <row>
-                        <label value="msg://type"/>
-                        <lookupField datasource="attachmentDs" property="attachType"
-                                     optionsDatasource="attachTypesDs" required="true" id="attachType" width="200px"/>
-                    </row>
-                </rows>
-            </grid>
-        </vbox>
+        <upload id="uploadField"/>
+        <grid id="attachGrid" spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://fileName"/>
+                    <textField id="fileName" datasource="fileDs" property="name"
+                               width="200px"/>
+                </row>
+                <row id="rowName">
+                    <label value="msg://name"/>
+                    <hbox id="nameBox" spacing="false">
+                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                    </hbox>
+                </row>
+                <row>
+                    <label value="msg://extension"/>
+                    <label id="extension" datasource="fileDs" property="extension"/>
+                </row>
+                <row>
+                    <label value="msg://size"/>
+                    <label id="size"/>
+                </row>
+                <row>
+                    <label value="msg://createDate"/>
+                    <label id="createDate" datasource="fileDs" property="createDate">
+                        <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                   format="msg://dateTimeFormat"/>
+                    </label>
+                </row>
+                <row>
+                    <label value="msg://comment"/>
+                    <textArea id="comment" datasource="attachmentDs" property="comment" width="200px" rows="4"/>
+                </row>
+                <row>
+                    <label value="msg://type"/>
+                    <lookupField datasource="attachmentDs" property="attachType"
+                                 optionsDatasource="attachTypesDs" required="true" id="attachType" width="200px"/>
+                </row>
+            </rows>
+        </grid>
     </layout>
 </window>

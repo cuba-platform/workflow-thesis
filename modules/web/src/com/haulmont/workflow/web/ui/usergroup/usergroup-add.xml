@@ -1,12 +1,10 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.usergroup.UserGroupAdd"
         messagesPack="com.haulmont.workflow.web.ui.usergroup"
         datasource="userGroupDs"
         caption="msg://userGroupAdd.caption"
         >
-
-    <assign name="width" value="300"/>
 
     <dsContext>
         <collectionDatasource id="userGroupsDs"
@@ -16,15 +14,15 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox id="main" stylename="edit-area" expandable="false" margin="true" spacing="true">
-            <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">
-                <label id="searchTextLabel" value="msg://searchText"/>
-                <textField id="searchText" width="${width}"/>
-                <button id="searchButton"/>
-            </hbox>
-            <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="18" columns="25" expandable="false"/>
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        </vbox>
+    <assign name="width" value="300"/>
+
+    <layout expand="windowActions">
+        <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">
+            <label id="searchTextLabel" value="msg://searchText"/>
+            <textField id="searchText" width="${width}"/>
+            <button id="searchButton"/>
+        </hbox>
+        <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="18" columns="25"/>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

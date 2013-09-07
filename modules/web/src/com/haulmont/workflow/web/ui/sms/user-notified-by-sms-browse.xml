@@ -1,8 +1,9 @@
-<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.workflow.web.ui.sms.UserNotifiedBySmsBrowser"
         messagesPack="com.haulmont.workflow.web.ui.sms"
         lookupComponent="table"
         caption="msg://UserNotifiedBySms.browser.caption">
+
     <dsContext>
         <collectionDatasource
                 id="userNotifiedBySmsDs"
@@ -14,25 +15,21 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="boxTable">
-        <vbox expand="genericFilter" stylename="edit-area" margin="true">
-            <filter id="genericFilter" datasource="userNotifiedBySmsDs">
-                <properties include=".*" exclude=""/>
-            </filter>
-        </vbox>
-        <vbox id="boxTable" expand="table" margin="true" width="100%">
-            <table id="table" spacing="true" width="100%">
-                <buttonsPanel>
-                    <button id="add" icon="icons/add.png" invoke="addUser"/>
-                    <button action="table.remove" icon="icons/remove.png"/>
-                    <button action="table.refresh" icon="icons/refresh.png"/>
-                </buttonsPanel>
-                <rowsCount/>
-                <columns>
-                    <column id="user" caption="msg://UserNotifiedBySms.user"/>
-                </columns>
-                <rows datasource="userNotifiedBySmsDs"/>
-            </table>
-        </vbox>
+    <layout expand="table">
+        <filter id="genericFilter" datasource="userNotifiedBySmsDs">
+            <properties include=".*" exclude=""/>
+        </filter>
+        <table id="table" width="100%">
+            <buttonsPanel>
+                <button id="add" icon="icons/add.png" invoke="addUser"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+                <button action="table.refresh" icon="icons/refresh.png"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="user" caption="msg://UserNotifiedBySms.user"/>
+            </columns>
+            <rows datasource="userNotifiedBySmsDs"/>
+        </table>
     </layout>
 </window>
