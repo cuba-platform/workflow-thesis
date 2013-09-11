@@ -5,6 +5,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -125,5 +126,25 @@ public class WfWorkerBean implements WfWorkerAPI {
         } finally {
             tx.end();
         }
+    }
+
+    @Override
+    public List<User> getProcessActors(Card card, String procCode, String cardRoleCode) {
+        List<User> result = new ArrayList<>();
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            result = em.createQuery("select cr.user from wf$CardRole cr where cr.card.id = :card " +
+                    "and cr.procRole.proc.code = :procCode " +
+                    "and cr.code = :cardRoleCode")
+                    .setParameter("card", card)
+                    .setParameter("procCode", procCode)
+                    .setParameter("cardRoleCode", cardRoleCode)
+                    .getResultList();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return result;
     }
 }

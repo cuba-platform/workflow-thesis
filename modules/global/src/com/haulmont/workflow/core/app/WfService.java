@@ -16,6 +16,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -176,4 +177,14 @@ public interface WfService {
      * @return is card in a process
      */
     boolean processStarted(Card card);
+
+    /**
+     * Finds users who participate in process on card with given procRole
+     *
+     * @param card card
+     * @param procCode process code
+     * @param cardRoleCode card role code
+     * @return List of users
+     */
+    List<User> getProcessActors(Card card, String procCode, String cardRoleCode);
 }

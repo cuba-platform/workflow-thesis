@@ -27,10 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service(WfService.NAME)
 public class WfServiceBean implements WfService {
@@ -284,5 +281,10 @@ public class WfServiceBean implements WfService {
         if (result.isEmpty())
             throw new RuntimeException("Proc not found");
         return result.get(0);
+    }
+
+    @Override
+    public List<User> getProcessActors(Card card, String procCode, String cardRoleCode) {
+        return wfWorkerAPI.getProcessActors(card, procCode, cardRoleCode);
     }
 }
