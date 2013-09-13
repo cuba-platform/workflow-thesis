@@ -79,8 +79,7 @@ public abstract class AbstractProcVariableBrowser extends AbstractLookup {
     public boolean close(final String actionId, final boolean force) {
         StringBuilder notInitiatedVariables = new StringBuilder();
         CollectionDatasource<AbstractProcessVariable, UUID> collectionDatasource = table.getDatasource();
-        for (UUID id : collectionDatasource.getItemIds()) {
-            AbstractProcessVariable processVariable = collectionDatasource.getItem(id);
+        for (AbstractProcessVariable processVariable : collectionDatasource.getItems()) {
             if (processVariable.getAttributeType() == null) {
                 if (notInitiatedVariables.length() > 0) notInitiatedVariables.append(", ");
                 notInitiatedVariables.append(processVariable.getName());
