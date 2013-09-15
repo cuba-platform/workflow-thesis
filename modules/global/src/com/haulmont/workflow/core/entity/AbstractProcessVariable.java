@@ -13,7 +13,6 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- *
  * <p>$Id$</p>
  *
  * @author Zaharchenko
@@ -44,7 +43,7 @@ public abstract class AbstractProcessVariable extends StandardEntity {
     protected String metaClassName;
 
     @Column(name = "OVERRIDDEN")
-    protected Boolean overridden;
+    protected Boolean overridden = Boolean.FALSE;
 
     @Column(name = "VARIABLE_COMMENT")
     protected String comment;
