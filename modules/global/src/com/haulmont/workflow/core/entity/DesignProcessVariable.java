@@ -11,7 +11,6 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import javax.persistence.*;
 
 /**
- *
  * <p>$Id$</p>
  *
  * @author Zaharchenko
@@ -27,7 +26,7 @@ public class DesignProcessVariable extends AbstractProcessVariable {
     private Design design;
 
     @Column(name = "SHOULD_BE_OVERRIDDEN")
-    private Boolean shouldBeOverridden;
+    private Boolean shouldBeOverridden = Boolean.FALSE;
 
     public Design getDesign() {
         return design;
