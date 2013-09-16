@@ -307,4 +307,16 @@
     <view entity="wf$CardVariable" name="cardVariable.edit" extends="_local">
         <property name="card" view="_minimal"/>
     </view>
+
+    <view class="com.haulmont.workflow.core.entity.UserGroup" name="card-role-add" extends="_local">
+        <property name="users" view="card-role-add"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.User" name="card-role-add" extends="_local">
+        <property name="userRoles" view="card-role-add"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.UserRole" name="card-role-add" extends="_local">
+        <property name="role" view="_minimal"/>
+    </view>
 </views>
