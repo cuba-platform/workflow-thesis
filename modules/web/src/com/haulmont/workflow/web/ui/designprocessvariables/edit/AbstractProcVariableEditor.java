@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
 /**
  *
  * <p>$Id: AbstractProcVariableEditor.java 11029 2013-04-03 08:15:19Z zaharchenko $</p>
