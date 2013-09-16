@@ -25,7 +25,7 @@ create table WF_DESIGN_PROCESS_VARIABLE (
     primary key (ID)
 )^
 
-alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DES_PROC_VAR_TO_WF_DES
+alter table WF_DESIGN_PROCESS_VARIABLE add constraint FK_WF_DESIGN_PROCESS_VARIABLE_TO_WF_DESIGN
 foreign key (DESIGN_ID) references WF_DESIGN(ID)^
 
 ----- WF_PROC_VARIABLE creation -----
