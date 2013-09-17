@@ -15,7 +15,7 @@
         <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <fieldGroup datasource="designDs">
             <column width="100%">
                 <field id="name" required="true"/>

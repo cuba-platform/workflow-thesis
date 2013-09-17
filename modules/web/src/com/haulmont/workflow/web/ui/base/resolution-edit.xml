@@ -17,7 +17,7 @@
 
     <assign name="width" value="300"/>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <grid spacing="true" width="100%">
             <columns>
                 <column flex="1"/>

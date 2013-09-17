@@ -22,7 +22,7 @@
 
     <assign name="width" value="250"/>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <fieldGroup id="fieldGroup" datasource="procStageTypeDs">
             <column>
                 <field id="name" width="${width}"/>

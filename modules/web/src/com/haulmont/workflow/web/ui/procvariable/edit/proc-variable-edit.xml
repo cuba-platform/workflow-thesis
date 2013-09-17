@@ -17,7 +17,7 @@
         </datasource>
     </dsContext>
 
-    <layout expand="buttons">
+    <layout expand="buttons" spacing="true">
         <fieldGroup id="designProcessFields" datasource="processVariableDs" width="100%">
             <column width="100%">
                 <field id="name" required="true"/>
