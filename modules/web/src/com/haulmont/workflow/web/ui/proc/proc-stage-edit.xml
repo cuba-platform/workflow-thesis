@@ -30,7 +30,7 @@
     <assign name="timeUnitWidth" value="90px"/>
 
     <layout>
-        <scrollBox>
+        <scrollBox spacing="true">
             <grid spacing="true" width="100%">
                 <columns>
                     <column/>

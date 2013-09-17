@@ -32,7 +32,7 @@
 
     <assign name="width" value="400"/>
 
-    <layout expand="tabsheet">
+    <layout expand="tabsheet" spacing="true">
         <tabSheet id="tabsheet">
             <tab id="mainTab" caption="msg://mainTab" expand="rolesSplit" margin="true">
                 <grid spacing="true" width="100%">

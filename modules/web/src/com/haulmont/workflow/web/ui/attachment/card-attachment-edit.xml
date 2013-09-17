@@ -16,7 +16,7 @@
         </datasource>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <iframe id="frame" screen="attachmentFrame"/>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
