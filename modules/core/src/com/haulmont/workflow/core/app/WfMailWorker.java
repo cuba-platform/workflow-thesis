@@ -83,6 +83,6 @@ public class WfMailWorker {
 
     public void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException {
         EmailInfo info = new EmailInfo(user.getEmail(), caption, null, body, attachment);
-        emailer.sendEmail(info, false);
+        emailer.sendEmailAsync(info);
     }
 }
