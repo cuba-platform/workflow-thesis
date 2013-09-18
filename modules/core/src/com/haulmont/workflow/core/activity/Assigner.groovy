@@ -148,11 +148,12 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
   protected Integer calcIteration(Card card, User user, String activityName) {
     EntityManager em = PersistenceProvider.getEntityManager()
-    Query q = em.createQuery(
-            'select max(a.iteration) from wf$Assignment a where a.card.id = ?1 and a.user.id = ?2 and a.name = ?3')
+    Query q = em.createQuery('''select max(a.iteration) from wf$Assignment a where a.card.id = ?1 and
+                                a.user.id = ?2 and a.name = ?3 and a.proc.id = ?4''')
     q.setParameter(1, card.id)
     q.setParameter(2, user.id)
     q.setParameter(3, activityName)
+    q.setParameter(4, card.proc)
     Object result = q.getSingleResult()
     if (result)
       return result + 1
