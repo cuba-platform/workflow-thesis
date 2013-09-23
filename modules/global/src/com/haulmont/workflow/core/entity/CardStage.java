@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Entity(name = "wf$CardStage")
 @Table(name = "WF_CARD_STAGE")
-@NamePattern("%s|procStage.name")
+@NamePattern("%s|procStage")
 @SystemLevel
 public class CardStage extends StandardEntity {
     private static final long serialVersionUID = 7689780973392226763L;
