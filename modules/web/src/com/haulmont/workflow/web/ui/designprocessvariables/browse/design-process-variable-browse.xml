@@ -20,8 +20,7 @@
     </dsContext>
 
     <layout expand="table">
-        <label stylename="h2" value="msg://pleaseSetupAttributeTypesForVariables"/>
-        <groupTable id="table" multiselect="true" height="100%">
+        <groupTable id="table" multiselect="true" width="100%">
             <buttonsPanel>
                 <button action="table.create" icon="icons/create.png"/>
                 <button action="table.edit" icon="icons/edit.png"/>
