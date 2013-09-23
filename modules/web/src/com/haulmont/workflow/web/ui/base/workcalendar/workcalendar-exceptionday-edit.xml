@@ -29,16 +29,16 @@
                     <label value="msg://WorkCalendar.day"/>
                     <dateField id="day" datasource="calendarDs" property="day"
                                resolution="DAY" dateFormat="msg://dateFormat" required="true"
-                               requiredMessage="msg://dayMsg"/>
+                               requiredMessage="msg://dayMsg" width="${width}"/>
                 </row>
                 <row>
                     <label value="msg://WorkCalendar.start"/>
-                    <textField id="start" datasource="calendarDs" property="start"
+                    <timeField id="start" datasource="calendarDs" property="start"
                                width="${width}"/>
                 </row>
                 <row>
                     <label value="msg://WorkCalendar.end"/>
-                    <textField id="end" datasource="calendarDs" property="end"
+                    <timeField id="end" datasource="calendarDs" property="end"
                                width="${width}"/>
                 </row>
                 <row>
