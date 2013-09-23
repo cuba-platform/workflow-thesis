@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.ProcRole;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -50,21 +52,19 @@ public class CardRolesFrameHelper {
                 requiredRolesChoiceCodes.add(requiredRoleCode);
         }
 
-        for (CardRole cardRole : cardRoles) {
+        for (final CardRole cardRole : cardRoles) {
             if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
                     !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
             if (!requiredRolesChoiceCodes.isEmpty()) {
-                String choiceRole = null;
-                for (String requiredRolesChoiceCode : requiredRolesChoiceCodes) {
-                    String[] roles = requiredRolesChoiceCode.split("\\|");
-                    if (Arrays.binarySearch(roles, cardRole.getCode()) >= 0) {
-                        choiceRole = requiredRolesChoiceCode;
-                        break;
+                String choiceRole = (String) CollectionUtils.find(requiredRolesChoiceCodes, new Predicate() {
+                    @Override
+                    public boolean evaluate(Object object) {
+                        return Arrays.asList(((String) object).split("\\|")).contains(cardRole.getCode());
                     }
-                }
+                });
 
                 if (choiceRole != null) {
                     requiredRolesChoiceCodes.remove(choiceRole);
