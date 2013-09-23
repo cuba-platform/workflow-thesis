@@ -179,7 +179,13 @@ public class DesignImportExportHelper {
                 cleanExistDesign(existsDesign);
                 copyFields(design, existsDesign);
                 existsDesign.setScripts(design.getScripts());
+                for (DesignScript script : existsDesign.getScripts()) {
+                    script.setDesign(existsDesign);
+                }
                 existsDesign.setDesignProcessVariables(design.getDesignProcessVariables());
+                for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
+                    variable.setDesign(existsDesign);
+                }
                 design = existsDesign;
             }
             changeAttributes(design);
