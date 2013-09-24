@@ -5,7 +5,6 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.google.common.base.Preconditions;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -91,6 +90,9 @@ public class CardProcFrame extends AbstractFrame {
 
     @Inject
     protected UserSession userSession;
+
+    @Inject
+    protected DataSupplier dataSupplier;
 
     public void init() {
         Preconditions.checkState(cardProcDs != null, "Enclosing window must declare 'cardProcsDs' datasource");
@@ -250,7 +252,6 @@ public class CardProcFrame extends AbstractFrame {
     public void startProcess(final CardProc cp) {
         refreshCard();
         final Proc prevProc = card.getProc();
-        DataSupplier ds = getDsContext().getDataSupplier();
         final String prevCardProcState = cp.getState();
         final Window window = ComponentsHelper.getWindow(frame);
 
@@ -260,7 +261,7 @@ public class CardProcFrame extends AbstractFrame {
             LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
                     new View(Card.class).addProperty("jbpmProcessId")
             );
-            Card loadedCard = ds.load(lc);
+            Card loadedCard = dataSupplier.load(lc);
             if (loadedCard == null) {
                 Messages messages = AppBeans.get(Messages.NAME);
                 App.getInstance().getWindowManager().showNotification(
@@ -282,7 +283,8 @@ public class CardProcFrame extends AbstractFrame {
         if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
             refreshCard();
 
-            final Proc proc = ds.reload(cp.getProc(), "start-process");
+            final Proc proc = dataSupplier.reload(cp.getProc(), "start-process");
+
             card.setProc(proc);
             cp.setProc(proc);
             cp.setState(null);
@@ -296,9 +298,16 @@ public class CardProcFrame extends AbstractFrame {
                         new FormManagerChain.Handler() {
                             @Override
                             public void onSuccess(String comment) {
+                                /**
+                                 * Need to reload card here, cause it was committed before and version was increased.
+                                 * In this case, need to set proc again
+                                 */
+                                card = dataSupplier.reload(card, "edit");
+                                card.setProc(proc);
+
                                 List<Entity> commitInstances = new ArrayList<>();
                                 commitInstances.add(card);
-                                AppBeans.get(DataService.class).commit(new CommitContext(commitInstances));
+                                dataSupplier.commit(new CommitContext(commitInstances));
 
                                 WfService wfs = AppBeans.get(WfService.NAME);
                                 wfs.startProcess(card);
@@ -346,12 +355,11 @@ public class CardProcFrame extends AbstractFrame {
     }
 
     private void rollbackStartProcess(Proc prevProc, int prevStartCount, CardProc cp, String prevCardProcState) {
-        DataSupplier ds = getDsContext().getDataSupplier();
 
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(
                 new View(Card.class).addProperty("proc").addProperty("jbpmProcessId")
         );
-        Card loadedCard = ds.load(lc);
+        Card loadedCard = dataSupplier.load(lc);
         Preconditions.checkNotNull(loadedCard, "Can't rollback process on deleted card");
 
         //If process start failed because of another concurrently started process, jbpmProcessId will be not empty.
@@ -364,7 +372,7 @@ public class CardProcFrame extends AbstractFrame {
                 new View(CardProc.class).addProperty("active").addProperty("startCount").addProperty("state")
         );
 
-        CardProc loadedCardProc = ds.load(lc);
+        CardProc loadedCardProc = dataSupplier.load(lc);
         Preconditions.checkNotNull(loadedCardProc, "Can't rollback process on deleted cardProc");
 
         loadedCardProc.setActive(false);
