@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
+import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
@@ -72,7 +73,7 @@ public class UniversalAssigner extends MultiAssigner {
         master.setCard(card)
         em.persist(master)
 
-        cardRoles.each { CardRole cr -> createUserAssignment(execution, card, cr, master) }
+        createUserAssignments(execution, card, master, cardRoles)
 
         return true
     }
@@ -103,7 +104,7 @@ public class UniversalAssigner extends MultiAssigner {
                 finishSiblings(assignment, siblings)
 
             String resultTransition = signalName
-            for (Assignment sibling : siblings) {
+            for (Assignment sibling: siblings) {
                 if (!sibling.finished) {
                     log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
                     execution.waitForSignal()
@@ -158,7 +159,7 @@ public class UniversalAssigner extends MultiAssigner {
         int nextSortOrder = Integer.MAX_VALUE
 
         //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
-//                we don't know exactly)
+        //                we don't know exactly)
         cardRoles.each { CardRole cr ->
             if (cr.sortOrder == nextSortOrder) {
                 nextCardRoles.add(cr)
@@ -177,7 +178,7 @@ public class UniversalAssigner extends MultiAssigner {
         } else {
             log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
             setRoleIds(assignment.card, nextCardRoles);
-            nextCardRoles.each { CardRole cr -> createUserAssignment(execution, assignment.card, cr, assignment.masterAssignment) }
+            createUserAssignments(execution, assignment.card, assignment.masterAssignment, nextCardRoles)
             execution.waitForSignal()
         }
     }
@@ -217,7 +218,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
-        for (Assignment sibling : siblings) {
+        for (Assignment sibling: siblings) {
             sibling.setFinished(assignment.getFinished())
             sibling.setFinishedByUser(assignment.getFinishedByUser())
             sibling.setOutcome(assignment.getOutcome())
@@ -235,6 +236,38 @@ public class UniversalAssigner extends MultiAssigner {
         query.setParameter(3, assignment.card.id);
         query.setParameter(4, assignment.user.id);
         query.executeUpdate()
+    }
+
+    protected void createUserAssignments(ActivityExecution execution, Card card, Assignment master, Collection<CardRole> cardRoles) {
+        Map<Assignment, CardRole> assignmentCardRoleMap = new HashMap<Assignment, CardRole>();
+        Persistence persistence = AppBeans.get(Persistence.NAME);
+        for (CardRole cr: cardRoles) {
+            EntityManager em = persistence.entityManager;
+            Assignment familyAssignment = findFamilyAssignment(card)
+            Assignment assignment = new Assignment()
+            assignment.setName(execution.getActivityName())
+
+            if (StringUtils.isBlank(description))
+                assignment.setDescription('msg://' + execution.getActivityName())
+            else
+                assignment.setDescription(description)
+
+            assignment.setJbpmProcessId(execution.getProcessInstance().getId())
+            assignment.setCard(card)
+            assignment.setProc(card.getProc())
+            assignment.setUser(cr.user)
+            assignment.setMasterAssignment(master)
+            assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
+            assignment.setFamilyAssignment(familyAssignment)
+
+            createTimers(execution, assignment, cr)
+            em.persist(assignment)
+
+            assignmentCardRoleMap.put(assignment, cr);
+        }
+
+        NotificationMatrixAPI notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
+        notificationMatrix.notifyByCardAndAssignments(card, assignmentCardRoleMap, notificationState)
     }
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {
