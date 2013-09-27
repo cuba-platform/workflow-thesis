@@ -25,7 +25,7 @@
     </dsContext>
 
     <layout expand="split" spacing="true">
-        <filter id="genericFilter" datasource="userGroupsDs">
+        <filter id="genericFilter" datasource="userGroupsDs" margin="false,false,true,false">
             <properties include=".*"/>
         </filter>
 
