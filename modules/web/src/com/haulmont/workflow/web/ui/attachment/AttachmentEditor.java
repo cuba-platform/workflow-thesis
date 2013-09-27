@@ -95,7 +95,6 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     public void setItem(Entity item) {
         super.setItem(item);
 
-        fileDs.setItem(getItem().getFile());
         boolean isNew = PersistenceHelper.isNew(fileDs.getItem());
         if (assignment != null && item instanceof CardAttachment)
             ((CardAttachment) item).setAssignment(assignment);
@@ -211,7 +210,6 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             if (needSave) {
                 Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
                 getItem().setFile((FileDescriptor)committedEntities.iterator().next());
-
             }
             super.close(COMMIT_ACTION_ID, true);
         }
