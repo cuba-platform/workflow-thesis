@@ -44,6 +44,11 @@ public class SendingSmsBrowser extends AbstractLookup {
                 }
                 table.getDatasource().commit();
             }
+
+            @Override
+            public String getCaption() {
+                return getMessage("SendingSms.repeatSendMsg");
+            }
         });
     }
 }
