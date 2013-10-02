@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -16,9 +17,10 @@ import javax.persistence.*;
 
 @Entity(name = "wf$Attachment")
 @Table(name = "WF_ATTACHMENT")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ATTACHMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("-")
+@Listeners("com.haulmont.workflow.core.listeners.AttachmentEntityListener")
 @SystemLevel
 public class Attachment extends StandardEntity {
 
