@@ -123,12 +123,9 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             } else {
                 Attachment attachItem = attachmentDs.getItem();
                 attachItem.setFile(new FileDescriptor());
-                attachItem.setCreateTs(timeSource.currentTimestamp());
-                attachItem.setCreatedBy(userSession.getCurrentOrSubstitutedUser().getLoginLowerCase());
-                attachItem.setUser(userSession.getCurrentOrSubstitutedUser());
                 fileDs.refresh();
                 okBtn.setEnabled(false);
-                uploadField.addListener(new FileUploadField.ListenerAdapter(){
+                uploadField.addListener(new FileUploadField.ListenerAdapter() {
 
                     @Override
                     public void uploadSucceeded(Event event) {
@@ -157,7 +154,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                         }
 
                         if (tmpFile != null) {
-                            fileDescriptor.setSize((int) tmpFile.length()) ;
+                            fileDescriptor.setSize((int) tmpFile.length());
                         }
                         fileDescriptor.setCreateDate(timeSource.currentTimestamp());
 
@@ -183,7 +180,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     }
 
     protected AttachmentType getDefaultAttachmentType() {
-        String defaultAttachmentCode =  configuration.getConfig(WfConfig.class).getDefaultAttachmentType();
+        String defaultAttachmentCode = configuration.getConfig(WfConfig.class).getDefaultAttachmentType();
         AttachmentType defaultAttachmentType = null;
         if (defaultAttachmentCode != null) {
             for (UUID itemId : attachTypesDs.getItemIds()) {
@@ -209,11 +206,10 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
         if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null) {
             if (needSave) {
                 Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
-                getItem().setFile((FileDescriptor)committedEntities.iterator().next());
+                getItem().setFile((FileDescriptor) committedEntities.iterator().next());
             }
             super.close(COMMIT_ACTION_ID, true);
-        }
-        else
+        } else
             super.commitAndClose();
     }
 
