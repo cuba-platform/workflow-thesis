@@ -127,12 +127,7 @@ configure(coreModule) {
         exclude '10-cuba/**'
     }
 
-    assembleDbScripts << {
-        copy {
-            from new File(projectDir, 'db')
-            into "$buildDir/db/20-workflow"
-        }
-    }
+    assembleDbScripts { moduleAlias = '20-workflow' }
 
     def hsqlDbName = 'cubadb'
 
