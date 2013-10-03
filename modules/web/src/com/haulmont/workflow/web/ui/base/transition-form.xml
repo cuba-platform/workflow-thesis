@@ -72,7 +72,9 @@
                         </hbox>
                     </accessControl>
 
-                    <accessControl data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData" param="accessData">
+                    <accessControl id="commentTextAccessControl"
+                                   data="com.haulmont.workflow.web.ui.base.TransitionFormAccessData"
+                                   param="accessData">
                         <visible property="commentVisible"/>
                         <hbox id="commentTextPane">
                             <label value="msg://comment" width="${labelWidth}"/>
