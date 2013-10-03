@@ -261,7 +261,7 @@ create table WF_ATTACHMENT (
     VERSION_OF_ID varchar(36),
     VERSION_NUM integer,
     RECOGNIZED_FILE_ID varchar(36),
-    USER_ID varchar(36),
+    SUBSTITUTED_CREATOR_ID varchar(36),
     primary key (ID)
 )^
 
@@ -277,7 +277,7 @@ alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ATTACHMENT foreign key
 
 alter table WF_ATTACHMENT add constraint FK_WF_RECOGNIZED_FILE foreign key (RECOGNIZED_FILE_ID) references SYS_FILE (ID)^
 
-alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_USER foreign key (SUBSTITUTED_CREATOR_ID) references SEC_USER (ID)^
 
 insert into WF_ATTACHMENTTYPE (ID,CODE,ISDEFAULT)
 values ('6c9c8ccc-e761-11df-94cb-6f884bc56e70','AttachmentType.attachment',true)^

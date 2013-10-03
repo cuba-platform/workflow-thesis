@@ -15,6 +15,6 @@ public class AttachmentEntityListener implements BeforeInsertEntityListener<Atta
 
     @Override
     public void onBeforeInsert(Attachment entity) {
-        entity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+        entity.setSubstitutedCreator(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
     }
 }

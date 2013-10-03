@@ -56,15 +56,15 @@ public class Attachment extends StandardEntity {
     protected Integer versionNum;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    protected User user;
+    @JoinColumn(name = "SUBSTITUTED_CREATOR_ID")
+    protected User substitutedCreator;
 
-    public User getUser() {
-        return user;
+    public User getSubstitutedCreator() {
+        return substitutedCreator;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setSubstitutedCreator(User substitutedCreator) {
+        this.substitutedCreator = substitutedCreator;
     }
 
     public FileDescriptor getFile() {
