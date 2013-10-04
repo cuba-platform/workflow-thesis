@@ -5,26 +5,31 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 
+import javax.inject.Inject;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
 public class ResolutionEditor extends AbstractEditor {
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
         Datasource assignmentDs = getDsContext().get("assignmentDs");
         Assignment assignment = (Assignment) assignmentDs.getItem();
-        User currentUser = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
-        ((TextArea) getComponent(getCommentField())).setEditable(currentUser.equals(assignment.getUser()));
+        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
+        ((TextArea) getComponent(getCommentField())).setEditable(currentUser.equals(assignment.getUser())
+                && assignment.getFinished() == null);
     }
 
     protected String getCommentField() {
