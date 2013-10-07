@@ -6,6 +6,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.workflow.core.entity.SendingSms;
@@ -29,23 +30,23 @@ public class SmsSendTask implements Runnable {
     private SendingSms sendingSms;
     private Log log = LogFactory.getLog(SmsSendTask.class);
 
-    @Inject
     private Persistence persistence;
 
-    @Inject
     protected Metadata metadata;
 
-    @Inject
     protected TimeSource timeSource;
 
-    @Inject
     protected WorkCalendarAPI workCalendar;
 
-    @Inject
     protected SmsSenderAPI smsSender;
 
     public SmsSendTask(SendingSms message) {
         sendingSms = message;
+        persistence= AppBeans.get(Persistence.class);
+        metadata= AppBeans.get(Metadata.class);
+        timeSource= AppBeans.get(TimeSource.class);
+        workCalendar= AppBeans.get(WorkCalendarAPI.class);
+        smsSender= AppBeans.get(SmsSenderAPI.class);
     }
 
     @Override
