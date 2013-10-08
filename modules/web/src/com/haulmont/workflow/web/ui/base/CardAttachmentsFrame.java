@@ -6,8 +6,7 @@
 package com.haulmont.workflow.web.ui.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -24,6 +23,7 @@ import com.haulmont.workflow.web.ui.base.attachments.*;
 import com.vaadin.ui.Layout;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +33,15 @@ import java.util.Map;
  * @author gorbunkov
  */
 public class CardAttachmentsFrame extends AbstractFrame {
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected TimeSource timeSource;
 
     protected Datasource<Card> cardDs;
     protected Table attachmentsTable;
@@ -53,9 +62,12 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         attachmentCreator = new AttachmentCreator.CardAttachmentCreator() {
             public Attachment createObject() {
-                CardAttachment attachment = MetadataProvider.create(CardAttachment.class);
+                CardAttachment attachment = metadata.create(CardAttachment.class);
                 Card card = cardDs.getItem();
                 attachment.setCard(card.getFamilyTop());
+                attachment.setCreatedBy(userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getLogin());
+                attachment.setCreateTs(timeSource.currentTimestamp());
+                attachment.setSubstitutedCreator(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                 return attachment;
             }
 
