@@ -123,6 +123,9 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             } else {
                 Attachment attachItem = attachmentDs.getItem();
                 attachItem.setFile(new FileDescriptor());
+                attachItem.setCreateTs(timeSource.currentTimestamp());
+                attachItem.setCreatedBy(userSession.getCurrentOrSubstitutedUser().getLogin());
+                attachItem.setSubstitutedCreator(userSession.getCurrentOrSubstitutedUser());
                 fileDs.refresh();
                 okBtn.setEnabled(false);
                 uploadField.addListener(new FileUploadField.ListenerAdapter() {
