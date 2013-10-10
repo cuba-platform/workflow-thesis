@@ -9,7 +9,7 @@ c integer = 0;
 BEGIN
 c = (select count(*) from pg_class where relname = 'seq_jbpm_id_gen');
 if(c = 0)
-  then create sequence seq_jbpm_id_gen start with 1 increment by 1;
+  then create sequence seq_jbpm_id_gen start with 1 increment by 1000;
 end if;
 END;
 $$
