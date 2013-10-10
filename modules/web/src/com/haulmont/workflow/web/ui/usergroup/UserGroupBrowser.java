@@ -85,7 +85,7 @@ public class UserGroupBrowser extends AbstractWindow {
                     return;
                 }
 
-                Map<String, Object> userBrowserParams = Collections.<String, Object>singletonMap("param$multiSelect", "true");
+                Map<String, Object> userBrowserParams = Collections.<String, Object>singletonMap("multiSelect", "true");
 
                 openLookup("sec$User.lookup", new Lookup.Handler() {
                     @Override
