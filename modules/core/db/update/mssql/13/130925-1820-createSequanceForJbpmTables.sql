@@ -6,7 +6,7 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo'
                  AND TABLE_NAME = 'seq_jbpm_id_gen'))
 BEGIN
-    CREATE TABLE seq_jbpm_id_gen(ID bigint identity, CREATE_TS datetime);
+    CREATE TABLE seq_jbpm_id_gen(ID bigint identity(1,1000), CREATE_TS datetime);
     SET IDENTITY_INSERT seq_jbpm_id_gen ON;
     INSERT INTO seq_jbpm_id_gen(ID, CREATE_TS) VALUES ((select max(dbid_) from (select dbid_ from JBPM4_DEPLOYMENT
                                                                     UNION select dbid_ from JBPM4_DEPLOYPROP
