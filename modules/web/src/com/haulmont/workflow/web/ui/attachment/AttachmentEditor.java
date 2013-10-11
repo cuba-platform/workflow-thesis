@@ -206,7 +206,8 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
         Attachment attachment = attachmentDs.getItem();
         if (attachment != null && attachment.getVersionNum() == null)
             attachment.setVersionNum(1);
-        if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null) {
+        if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null
+                && attachmentDs.getCommitMode().equals(Datasource.CommitMode.DATASTORE)) {
             if (needSave) {
                 Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
                 getItem().setFile((FileDescriptor) committedEntities.iterator().next());
