@@ -21,7 +21,7 @@
 
     <assign name="width" value="400"/>
 
-    <layout expand="attachmentsPane">
+    <layout expand="attachmentsPane" spacing="true">
         <grid spacing="true" width="100%">
             <columns>
                 <column flex="1"/>
