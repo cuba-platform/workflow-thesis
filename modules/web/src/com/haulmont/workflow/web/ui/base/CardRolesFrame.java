@@ -48,6 +48,7 @@ import java.util.*;
  * @version $Id$
  */
 public class CardRolesFrame extends AbstractFrame {
+
     protected Map<ProcRole, CollectionDatasource> procRoleUsers = new HashMap<>();
 
     public interface Listener {
@@ -181,7 +182,7 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
-    private CardRole getCardRoleDependsOnSortOrder(CardRole curCr, boolean forward) {
+    protected CardRole getCardRoleDependsOnSortOrder(CardRole curCr, boolean forward) {
         UUID id;
         if (forward)
             id = tmpCardRolesDs.nextItemId(curCr.getId());
@@ -235,7 +236,7 @@ public class CardRolesFrame extends AbstractFrame {
         return cardRoleField;
     }
 
-    private void initDurationColumns() {
+    protected void initDurationColumns() {
         tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
             @Override
             public void valueChanged(CardRole source, String property, Object prevValue, Object value) {
@@ -264,7 +265,7 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
-    private void initMoveButtons() {
+    protected void initMoveButtons() {
         moveUp.setAction(new AbstractAction("moveUp") {
 
             @Override
@@ -306,7 +307,7 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
-    private void initSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
+    protected void initSortOrderColumn(com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath sortOrderProperty = tmpCardRolesDs.getMetaClass().getPropertyPath("sortOrder");
         vRolesTable.addGeneratedColumn(sortOrderProperty, new com.vaadin.ui.Table.ColumnGenerator() {
 
@@ -559,7 +560,7 @@ public class CardRolesFrame extends AbstractFrame {
         return false;
     }
 
-    private List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
+    protected List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
         List<CardRole> cardRoles = new ArrayList<>();
         for (User user : users) {
 //            boolean isUserInList = false;
@@ -590,7 +591,7 @@ public class CardRolesFrame extends AbstractFrame {
         return user.getInstanceName();
     }
 
-    private void initRolesTableBooleanColumn(final String propertyName,
+    protected void initRolesTableBooleanColumn(final String propertyName,
                                              final ProcRolePermissionsService procRolePermissionsService,
                                              final com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = tmpCardRolesDs.getMetaClass().getPropertyEx(propertyName);
@@ -842,7 +843,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }*/
 
-    private void assignNextSortOrder(CardRole cr) {
+    protected void assignNextSortOrder(CardRole cr) {
         if (cr.getSortOrder() != null)
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
@@ -867,7 +868,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private void assignDurationAndTimeUnit(CardRole cardRole) {
+    protected void assignDurationAndTimeUnit(CardRole cardRole) {
         for (UUID uuid : tmpCardRolesDs.getItemIds()) {
             CardRole cr = tmpCardRolesDs.getItem(uuid);
             if (!cr.equals(cardRole) && cr.getSortOrder() != null && cr.getSortOrder().equals(cardRole.getSortOrder())
@@ -881,7 +882,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private int getParallelGroupNumberCardRoles() {
+    protected int getParallelGroupNumberCardRoles() {
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole role = tmpCardRolesDs.getItem(id);
             if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
@@ -890,7 +891,7 @@ public class CardRolesFrame extends AbstractFrame {
         return 0;
     }
 
-    private void changeSortOrderByAllParallelCardRoles(int sortOrder) {
+    protected void changeSortOrderByAllParallelCardRoles(int sortOrder) {
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole role = tmpCardRolesDs.getItem(id);
             if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
@@ -898,7 +899,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
+    protected List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
         List<CardRole> cardRoles = new ArrayList<>();
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole cr = tmpCardRolesDs.getItem(id);
@@ -909,7 +910,7 @@ public class CardRolesFrame extends AbstractFrame {
         return cardRoles;
     }
 
-    private List<Integer> getAllowRangeForProcRole(ProcRole pr) {
+    protected List<Integer> getAllowRangeForProcRole(ProcRole pr) {
         List<Integer> range = new ArrayList<>();
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
         if (cardRoles.size() == 1) {
@@ -924,7 +925,7 @@ public class CardRolesFrame extends AbstractFrame {
         return range;
     }
 
-    private int getMaxSortOrderInCardRoles(List<CardRole> roles) {
+    protected int getMaxSortOrderInCardRoles(List<CardRole> roles) {
         int max = 0;
         for (CardRole role : roles) {
             if (role.getSortOrder() != null && role.getSortOrder() > max)
@@ -933,7 +934,7 @@ public class CardRolesFrame extends AbstractFrame {
         return max > roles.size() ? roles.size() : max;
     }
 
-    private int getMinSortOrderInCardRoles(List<CardRole> roles) {
+    protected int getMinSortOrderInCardRoles(List<CardRole> roles) {
         if (roles == null || roles.size() == 1) return 0;
         return 1;
     }
@@ -1028,7 +1029,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private boolean procActorExists(ProcRole procRole, User user) {
+    protected boolean procActorExists(ProcRole procRole, User user) {
         List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
         if (cardRoles != null) {
             for (CardRole cr : cardRoles) {
@@ -1082,7 +1083,7 @@ public class CardRolesFrame extends AbstractFrame {
         return items;
     }
 
-    private Set<User> getUsersByProcRole(ProcRole procRole) {
+    protected Set<User> getUsersByProcRole(ProcRole procRole) {
         if (procRole == null) {
             return null;
         }
@@ -1120,11 +1121,11 @@ public class CardRolesFrame extends AbstractFrame {
         this.cardProc = cardProc;
     }
 
-    private Proc getProc() {
+    protected Proc getProc() {
         return ((cardProc == null) || (cardProc.getProc() == null)) ? card.getProc() : cardProc.getProc();
     }
 
-    private String getState() {
+    protected String getState() {
         return (cardProc == null) ? card.getState() : cardProc.getState();
     }
 
@@ -1143,7 +1144,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private void refreshFieldsWithRole(CardRole cardRole) {
+    protected void refreshFieldsWithRole(CardRole cardRole) {
         for (CardRole cr : actorActionsFieldsMap.keySet()) {
             if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
                 CardRoleField cardRoleField = actorActionsFieldsMap.get(cr);
@@ -1177,7 +1178,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    private boolean containsAnyRoleCode(String[] roleCodes) {
+    protected boolean containsAnyRoleCode(String[] roleCodes) {
         if (roleCodes != null && tmpCardRolesDs.getItemIds() != null)
             for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                 CardRole cardRole = tmpCardRolesDs.getItem(uuid);
@@ -1201,7 +1202,7 @@ public class CardRolesFrame extends AbstractFrame {
         this.deletedEmptyRoleCodes = deletedEmptyRoleCodes;
     }
 
-    private Set<String> getRequiredRolesCodes(boolean isAll) {
+    protected Set<String> getRequiredRolesCodes(boolean isAll) {
         if (StringUtils.isNotEmpty(requiredRolesCodesStr)) {
             String[] s = requiredRolesCodesStr.split(isAll ? "\\s*[,|]\\s*" : "\\s*,\\s*");
             return new LinkedHashSet<>(Arrays.asList(s));
@@ -1309,13 +1310,13 @@ public class CardRolesFrame extends AbstractFrame {
             super.setSuspended(false);
         }
 
-        private void removeAll() {
+        protected void removeAll() {
             List<UUID> items = new ArrayList<>(getItemIds());
             for (UUID id : items)
                 removeItem(getItem(id));
         }
 
-        private CollectionDatasource<CardRole, UUID> getDsInternal(Card card) {
+        protected CollectionDatasource<CardRole, UUID> getDsInternal(Card card) {
             CollectionDatasource<CardRole, UUID> ds = dsRegistry.get(card.getId());
             if (ds == null) {
                 DsBuilder dsBuilder = new DsBuilder(cardRolesDs.getDsContext())
