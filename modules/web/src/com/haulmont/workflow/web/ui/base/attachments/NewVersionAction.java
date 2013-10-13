@@ -6,7 +6,9 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
@@ -19,6 +21,7 @@ import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,7 +49,8 @@ public class NewVersionAction extends CreateAction {
         prevVersion = owner.getSingleSelected();
         Collection<Attachment> attachments = owner.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
-            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(getClass(), "selectAttachmentForVersion"), IFrame.NotificationType.WARNING);
+            App.getInstance().getWindowManager().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "selectAttachmentForVersion"),
+                    IFrame.NotificationType.WARNING);
             return;
         }
 
@@ -57,7 +61,8 @@ public class NewVersionAction extends CreateAction {
                 owner.getDatasource().refresh();
                 prevVersion = (Attachment) owner.getDatasource().getItem(prevVersion.getId());
                 if (prevVersion == null) {
-                    App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(getClass(), "warning.itemWasDeleted"), IFrame.NotificationType.HUMANIZED);
+                    App.getInstance().getWindowManager().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "warning.itemWasDeleted"),
+                            IFrame.NotificationType.HUMANIZED);
                     owner.setSelected((Entity) null);
                     return;
                 }
@@ -101,7 +106,15 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(getClass(), "actions.newVersion");
+        return AppBeans.get(Messages.class).getMessage(getClass(), "actions.newVersion");
     }
 
+    @Override
+    public Map<String, Object> getWindowParams() {
+        if (windowParams == null) {
+            windowParams = new HashMap<>();
+        }
+        windowParams.put("prevVersion", prevVersion);
+        return windowParams;
+    }
 }

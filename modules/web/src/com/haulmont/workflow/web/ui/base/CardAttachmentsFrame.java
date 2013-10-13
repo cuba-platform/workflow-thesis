@@ -43,6 +43,9 @@ public class CardAttachmentsFrame extends AbstractFrame {
     @Inject
     protected TimeSource timeSource;
 
+    @Inject
+    protected Messages messages;
+
     protected Datasource<Card> cardDs;
     protected Table attachmentsTable;
     protected AttachmentCreator attachmentCreator;
@@ -87,7 +90,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         NewVersionAction newVersionAction = new NewVersionAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
             @Override
             public Map<String, Object> getInitialValues() {
-                Map<String, Object> initialValues = new HashMap();
+                Map<String, Object> initialValues = new HashMap<>();
                 initialValues.put("card", cardDs.getItem());
                 initialValues.put("file", new FileDescriptor());
                 return initialValues;
@@ -117,13 +120,13 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         Button copyAttachBtn = getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
-        copyAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
+        copyAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
         Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator, params);
         pasteAttachBtn.setAction(pasteAction);
 //        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
-        pasteAttachBtn.setCaption(MessageProvider.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
+        pasteAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
