@@ -5,10 +5,7 @@
 package com.haulmont.workflow.web.ui.base.attachments;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -60,9 +57,9 @@ public class AttachmentActionsHelper {
                     AttachmentCopyHelper.put(selected);
                     String info;
                     if (descriptors.size() == 1)
-                        info = MessageProvider.getMessage(getClass(), "messages.copyInfo");
+                        info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.copyInfo");
                     else
-                        info = MessageProvider.getMessage(getClass(), "messages.manyCopyInfo");
+                        info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.manyCopyInfo");
                     attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
             }
@@ -84,7 +81,7 @@ public class AttachmentActionsHelper {
         final Table attachments = attachmentsTable;
         final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
-        final UserSession userSession = UserSessionProvider.getUserSession();
+        final UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         final List<String> exclTypes = params == null ? null: (List<String>)params.get("exclTypes");
         return new AbstractAction(PASTE_ACTION_ID) {
             @Override
@@ -100,7 +97,7 @@ public class AttachmentActionsHelper {
                             }
                         }
                         if (!bufferIncludedTypes.isEmpty()) {
-                            StringBuilder info = new StringBuilder(MessageProvider.getMessage(getClass(), "messages.bufferContainsExclTypes"));
+                            StringBuilder info = new StringBuilder(AppBeans.get(Messages.class).getMessage(getClass(), "messages.bufferContainsExclTypes"));
                             info.append("<ul>");
                             for (String type : bufferIncludedTypes) {
                                 info.append("<li>" + type + "</li>");
@@ -148,7 +145,7 @@ public class AttachmentActionsHelper {
                         }
                     }
                 } else {
-                    String info = MessageProvider.getMessage(getClass(), "messages.bufferEmptyInfo");
+                    String info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.bufferEmptyInfo");
                     attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
                 }
             }
@@ -211,7 +208,7 @@ public class AttachmentActionsHelper {
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
         final AttachmentCreator fCreator = creator;
-        final UserSession userSession = UserSessionProvider.getUserSession();
+        final UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         return new AbstractAction("actions.MultiUpload") {
             @Override
@@ -301,6 +298,9 @@ public class AttachmentActionsHelper {
                 openParams.put("fileId", fileId);
                 if (windowParams != null)
                     openParams.putAll(windowParams);
+                if (openParams.containsKey("prevVersion")) {
+                    openParams.remove("prevVersion");
+                }
 
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 FileDescriptor fileDescriptor = fileUploading.getFileDescriptor(fileId, filename);
@@ -333,7 +333,7 @@ public class AttachmentActionsHelper {
             public void uploadFailed(Event event) {
             }
         });
-        fileUploadField.setCaption(MessageProvider.getMessage(AttachmentActionsHelper.class, "wf.upload.submit"));
+        fileUploadField.setCaption(AppBeans.get(Messages.class).getMessage(AttachmentActionsHelper.class, "wf.upload.submit"));
         buttonsPanel.add(fileUploadField);
 
         return fileUploadField;

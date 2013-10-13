@@ -75,12 +75,13 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     protected LookupField attachType;
 
     protected CollectionDatasource<AttachmentType, UUID> attachTypesDs;
-    protected AttachmentType defaultAType;
+
     protected Assignment assignment;
     protected UUID fileId;
     protected boolean isEdit = false;
     protected boolean needSave;
 
+    protected Attachment prevVersion;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -89,6 +90,8 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
         attachTypesDs = attachType.getOptionsDatasource();
         assignment = (Assignment) params.get("assignmnet");
         fileId = (UUID) params.get("fileId");
+
+        prevVersion = (Attachment) params.get("prevVersion");
     }
 
     @Override
@@ -104,8 +107,11 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                 attachTypesDs.refresh();
             }
             if (((Attachment) item).getAttachType() == null) {
-                defaultAType = getDefaultAttachmentType();
-                attachType.setValue(defaultAType);
+                if (prevVersion != null) {
+                    attachType.setValue(prevVersion.getAttachType());
+                } else {
+                    attachType.setValue(getDefaultAttachmentType());
+                }
             } else
                 isEdit = true;
 
