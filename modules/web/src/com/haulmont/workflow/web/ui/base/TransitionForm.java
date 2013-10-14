@@ -7,13 +7,13 @@ package com.haulmont.workflow.web.ui.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -102,7 +102,8 @@ public class TransitionForm extends AbstractForm {
 
     protected Card card;
 
-    protected Card cardCopy;
+    @Inject
+    protected DataSupplier dataSupplier;
 
     protected Boolean hideAttachments = false;
 
@@ -125,8 +126,7 @@ public class TransitionForm extends AbstractForm {
         String transition = (String) params.get("transition");
         Object assignmentId = params.get("assignmentId");
 
-        cardCopy = (Card) InstanceUtils.copy(card);
-        cardDs.setItem(cardCopy);
+        cardDs.setItem(dataSupplier.reload(card, cardDs.getView()));
 
         String formHeightStr = (String) params.get("formHeight");
         Integer formHeight = DEFAULT_FORM_HEIGHT;
