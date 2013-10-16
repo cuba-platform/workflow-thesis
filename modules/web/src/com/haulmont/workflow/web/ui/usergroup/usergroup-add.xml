@@ -7,7 +7,6 @@
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.workflow.web.ui.usergroup.UserGroupAdd"
         messagesPack="com.haulmont.workflow.web.ui.usergroup"
-        datasource="userGroupDs"
         caption="msg://userGroupAdd.caption"
         >
 
