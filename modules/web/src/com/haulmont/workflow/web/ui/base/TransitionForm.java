@@ -273,12 +273,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected String getAttachmentsTabCaption() {
-        Set<String> presentAttachmentTypes = new HashSet<>();
-        for (UUID itemId : attachmentsDs.getItemIds()) {
-            Attachment attachment = attachmentsDs.getItem(itemId);
-            if (attachment != null && attachment.getAttachType() != null && requiredAttachmentTypes.contains(attachment.getAttachType().getCode()))
-                presentAttachmentTypes.add(attachment.getAttachType().getCode());
-        }
+        Set<String> presentAttachmentTypes = getPresentAttachmentTypes();
 
         if (!requiredAttachmentTypes.isEmpty()) {
             return messages.formatMessage(getClass(), "attachmentsTabWithRequired",
@@ -290,6 +285,17 @@ public class TransitionForm extends AbstractForm {
             else
                 return getMessage("attachments");
         }
+    }
+
+    protected Set<String> getPresentAttachmentTypes() {
+        Set<String> presentAttachmentTypes = new HashSet<String>();
+        for (UUID itemId : attachmentsDs.getItemIds()) {
+            Attachment attachment = attachmentsDs.getItem(itemId);
+            if (attachment != null && attachment.getAttachType() != null
+                    && requiredAttachmentTypes.contains(attachment.getAttachType().getCode()))
+                presentAttachmentTypes.add(attachment.getAttachType().getCode());
+        }
+        return presentAttachmentTypes;
     }
 
     protected void updateRequiredAttachmentsPane() {
@@ -306,23 +312,16 @@ public class TransitionForm extends AbstractForm {
         grid.setRows(columnHeight);
         int row = 0;
         int column = 0;
-        List<String> presentAttachmentTypes = new ArrayList<>();
-        for (UUID itemId : attachmentsDs.getItemIds()) {
-            final Attachment attachment = attachmentsDs.getItem(itemId);
-            if (attachment != null && attachment.getAttachType() != null) {
-                presentAttachmentTypes.add(attachment.getAttachType().getCode());
-            }
-        }
+        Set<String> presentAttachmentTypes = getPresentAttachmentTypes();
         for (String attachmentTypeCode : requiredAttachmentTypes) {
-            if (row++ == columnHeight) {
+            if (row == columnHeight) {
                 row = 0;
                 grid.setColumns(column + 2);
                 column++;
             }
-            final AttachmentType type = getAttachmentType(attachmentTypeCode);
             Label label = AppConfig.getFactory().createComponent(Label.NAME);
-            label.setValue(type != null ? type.getName() : attachmentTypeCode);
-            grid.add(label, column, row);
+            label.setValue(getAttachmentTypeLabelValue(attachmentTypeCode));
+            grid.add(label, column, row++);
 
             if (presentAttachmentTypes.contains(attachmentTypeCode)) {
                 label.setStyleName("attachment-type-present");
@@ -335,6 +334,10 @@ public class TransitionForm extends AbstractForm {
         return grid;
     }
 
+    protected String getAttachmentTypeLabelValue(String attachmentTypeCode) {
+        AttachmentType type = getAttachmentType(attachmentTypeCode);
+        return type != null ? type.getName() : attachmentTypeCode;
+    }
 
     protected AttachmentType getAttachmentType(String code) {
         if (attachmentTypes == null) attachmentTypes = new HashMap<>();
@@ -450,30 +453,35 @@ public class TransitionForm extends AbstractForm {
 
         if (!hideAttachments) {
             if (requiredAttachmentTypes != null) {
-                List<String> missingAttachments = new ArrayList<>(requiredAttachmentTypes);
-                for (UUID itemId : attachmentsDs.getItemIds()) {
-                    Attachment attachment = attachmentsDs.getItem(itemId);
-                    if (attachment != null && attachment.getAttachType() != null) {
-                        missingAttachments.remove(attachment.getAttachType().getCode());
-                    }
-                }
-
-                if (!missingAttachments.isEmpty()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<ul>");
-                    for (String attachmentTypeCode : missingAttachments) {
-                        final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
-                        String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
-                        sb.append("<li>").append(attachmentTypeName).append("</li>");
-                    }
-                    sb.append("</ul>");
-                    showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING);
-                    tabsheet.setTab(attachmentsTab);
-                    return false;
-                }
+                return attachmentsValidated();
             }
         }
 
+        return true;
+    }
+
+    protected boolean attachmentsValidated() {
+        List<String> missingAttachments = new ArrayList<>(requiredAttachmentTypes);
+        for (UUID itemId : attachmentsDs.getItemIds()) {
+            Attachment attachment = attachmentsDs.getItem(itemId);
+            if (attachment != null && attachment.getAttachType() != null) {
+                missingAttachments.remove(attachment.getAttachType().getCode());
+            }
+        }
+
+        if (!missingAttachments.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<ul>");
+            for (String attachmentTypeCode : missingAttachments) {
+                final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
+                String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
+                sb.append("<li>").append(attachmentTypeName).append("</li>");
+            }
+            sb.append("</ul>");
+            showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING);
+            tabsheet.setTab(attachmentsTab);
+            return false;
+        }
         return true;
     }
 
