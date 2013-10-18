@@ -26,8 +26,9 @@
         </collectionDatasource>
     </dsContext>
 
-    <assign name="width" value="250px"/>
-    <assign name="timeUnitWidth" value="90px"/>
+    <assign name="width" value="250"/>
+    <assign name="timeUnitWidth" value="90"/>
+    <assign name="durationWidth" value="150"/>
 
     <layout>
         <scrollBox spacing="true">
@@ -66,7 +67,7 @@
                         <label value="msg://duration"/>
                         <hbox>
                             <textField id="duration" datasource="stageDs" property="duration"
-                                       width="${width - timeUnitWidth - 10}" required="true"
+                                       width="${durationWidth}" required="true"
                                        requiredMessage="msg://durationMsg"/>
                             <lookupField id="timeUnit" datasource="stageDs" property="timeUnit"
                                          width="${timeUnitWidth}"/>
