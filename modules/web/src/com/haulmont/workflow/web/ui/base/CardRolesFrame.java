@@ -154,8 +154,8 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
                 if (item == null) return;
-//                editAction.setEnabled(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.MODIFY));
-                removeAction.setVisible(procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
+                removeAction.setVisible(removeAction.isVisible()
+                        && procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
             }
         });
 
@@ -592,8 +592,8 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void initRolesTableBooleanColumn(final String propertyName,
-                                             final ProcRolePermissionsService procRolePermissionsService,
-                                             final com.vaadin.ui.Table vRolesTable) {
+                                               final ProcRolePermissionsService procRolePermissionsService,
+                                               final com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = tmpCardRolesDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
         vRolesTable.addGeneratedColumn(propertyPath, new com.vaadin.ui.Table.ColumnGenerator() {
@@ -1135,9 +1135,11 @@ public class CardRolesFrame extends AbstractFrame {
         for (Action action : rolesTable.getActions()) {
             action.setVisible(editable);
         }
-        com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
-        vRolesTable.setReadOnly(!editable);
-        vRolesTable.setEditable(editable);
+        rolesTable.setEditable(editable);
+        Table.Column userColumn = rolesTable.getColumn("user");
+        if (userColumn != null) {
+            userColumn.setEditable(editable);
+        }
         createRoleLookup.setEditable(editable);
         for (CardRoleField cardRoleField : actorActionsFieldsMap.values()) {
             cardRoleField.setEditable(editable);
@@ -1350,8 +1352,7 @@ public class CardRolesFrame extends AbstractFrame {
             pickerField.setValue(value);
             pickerField.setWidth("100%");
             addGroupAction = null;
-//            actionsField.setHeight("25px");
-//            AbstractSelect usersSelect = (AbstractSelect) WebComponentsHelper.unwrap(pickerField);
+
             pickerField.addListener(new ValueListener() {
                 @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -1372,9 +1373,7 @@ public class CardRolesFrame extends AbstractFrame {
 //                usersSelect.setItemCaption(user, userCaption);
 //            }
 
-//            final com.vaadin.ui.Table vRolesTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(rolesTable);
-            boolean enabled = true;// procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
-            pickerField.setEditable(rolesTable.isEditable() || !enabled);
+            pickerField.setEditable(rolesTable.isEditable());
 
             if (cardRole.getProcRole().getMultiUser() && rolesTable.isEditable()) {
                 addGroupAction = createAddGroupAction(cardRole);
