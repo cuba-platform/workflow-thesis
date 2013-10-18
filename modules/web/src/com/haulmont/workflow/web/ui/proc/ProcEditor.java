@@ -71,8 +71,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
     @Inject
     protected TabSheet tabsheet;
 
-    @Inject
-    protected Table stagesTable;
+    protected Table stagesTable; // can't be injected because lays on lazy tab
 
     @Inject
     protected Messages messages;
@@ -310,6 +309,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
     }
 
     protected void initStagesTab() {
+        stagesTable = getComponent("stagesTable");
         stagesTable.addAction(new CreateAction(stagesTable, WindowManager.OpenType.THIS_TAB){
             @Override
             public Map<String, Object> getWindowParams() {
