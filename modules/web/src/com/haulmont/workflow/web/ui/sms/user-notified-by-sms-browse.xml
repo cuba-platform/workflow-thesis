@@ -20,7 +20,7 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="table">
+    <layout expand="table" spacing="true">
         <filter id="genericFilter" datasource="userNotifiedBySmsDs">
             <properties include=".*" exclude=""/>
         </filter>
