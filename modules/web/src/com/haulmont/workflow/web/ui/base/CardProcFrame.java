@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -32,6 +29,7 @@ import com.haulmont.workflow.web.ui.base.action.ProcessAction;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -210,10 +208,12 @@ public class CardProcFrame extends AbstractFrame {
         boolean enabled = accessData == null || accessData.getAddCardProcessEnabled();
         createProcLookup.setEditable(enabled);
 
-        createProcLookup.addListener(new ValueListener() {
-            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+        createProcLookup.setValueChangingListener(new ValueChangingListener() {
+            @Nullable
+            @Override
+            public Object valueChanging(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 if ((value == null) || createProcCaption.equals(value))
-                    return;
+                    return value;
 
                 CardProc cp = new CardProc();
                 cp.setCard(card);
@@ -221,10 +221,10 @@ public class CardProcFrame extends AbstractFrame {
                 cp.setActive(false);
                 cp.setSortOrder(calculateSortOrder());
                 cardProcDs.addItem(cp);
-                createProcLookup.setValue(null);
 
                 cardProcTable.setSelected(cp);
                 cardRolesFrame.initDefaultActors((Proc) value);
+                return null;
             }
         });
     }

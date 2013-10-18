@@ -159,12 +159,12 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        createRoleLookup.addListener(new ValueListener() {
-            private static final long serialVersionUID = -5741123364065365382L;
-
-            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+        createRoleLookup.setValueChangingListener(new ValueChangingListener() {
+            @Nullable
+            @Override
+            public Object valueChanging(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 if ((value == null) || createRoleCaption.equals(value))
-                    return;
+                    return value;
 
                 final ProcRole procRole = (ProcRole) value;
                 CardRole cardRole = metadata.create(CardRole.class);
@@ -177,7 +177,7 @@ public class CardRolesFrame extends AbstractFrame {
                 assignDurationAndTimeUnit(cardRole);
                 tmpCardRolesDs.addItem(cardRole);
 
-                createRoleLookup.setValue(null);
+                return null;
             }
         });
     }
