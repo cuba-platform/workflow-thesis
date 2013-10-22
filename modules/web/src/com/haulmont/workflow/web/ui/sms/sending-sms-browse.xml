@@ -20,7 +20,7 @@
         </groupDatasource>
     </dsContext>
 
-    <layout expand="table">
+    <layout expand="table" spacing="true">
         <filter id="genericFilter" datasource="sendingSmsDs">
             <properties include=".*" exclude=""/>
         </filter>
