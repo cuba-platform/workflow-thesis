@@ -13,18 +13,484 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
 import org.apache.commons.lang.time.DateUtils;
-import org.springframework.context.annotation.Scope;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.*;
 
 @ManagedBean(WorkCalendarAPI.NAME)
-@Scope("prototype")
 public class WorkCalendar implements WorkCalendarAPI {
 
-    private static class CalendarItem {
+    private static Log log = LogFactory.getLog(WorkCalendar.class);
 
+    private volatile Map<Date, List<CalendarItem>> exceptionDays;
+    private volatile Map<Integer, List<CalendarItem>> defaultDays;
+
+    @Inject
+    private Resources resources;
+
+    @Inject
+    private Persistence persistence;
+
+    private synchronized void loadCaches() {
+        if (exceptionDays == null) {
+            synchronized (this) {
+                if (exceptionDays == null) {
+                    exceptionDays = new HashMap<Date, List<CalendarItem>>();
+                    Transaction tx = persistence.createTransaction();
+                    try {
+                        EntityManager em = persistence.getEntityManager();
+                        Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
+                                "order by c.day, c.start");
+                        List<WorkCalendarEntity> list = q.getResultList();
+                        for (WorkCalendarEntity c : list) {
+                            CalendarItem ci = new CalendarItem(c);
+                            List<CalendarItem> mapValue = exceptionDays.get(c.getDay());
+                            if (mapValue == null)
+                                mapValue = new LinkedList<CalendarItem>();
+                            mapValue.add(ci);
+                            exceptionDays.put(c.getDay(), mapValue);
+                        }
+
+                        tx.commit();
+                    } finally {
+                        tx.end();
+                    }
+                }
+            }
+        }
+
+        if (defaultDays == null) {
+            defaultDays = new HashMap<Integer, List<CalendarItem>>();
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                Query q = em.createQuery("select c from wf$Calendar c where c.dayOfWeek is not null " +
+                        "order by c.dayOfWeek, c.start");
+                List<WorkCalendarEntity> list = q.getResultList();
+                for (WorkCalendarEntity c : list) {
+
+                    CalendarItem ci = new CalendarItem(c);
+                    List<CalendarItem> mapValue = defaultDays.get(c.getDayOfWeek().getId());
+                    if (mapValue == null)
+                        mapValue = new LinkedList<CalendarItem>();
+                    mapValue.add(ci);
+                    defaultDays.put(c.getDayOfWeek().getId(), mapValue);
+                }
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
+    }
+
+    @Override
+    public int getCacheSize() {
+        return exceptionDays == null ? 0 : exceptionDays.size();
+    }
+
+    @Override
+    public void invalidateCache() {
+        exceptionDays = null;
+        defaultDays = null;
+    }
+
+    public Long getAbsoluteMillis(Date date, int qty, TimeUnit unit) {
+        loadCaches();
+        Date endDate = addInterval(date, qty, unit);
+        return endDate.getTime() - date.getTime();
+    }
+
+    public Long getWorkDayLengthInMillis() {
+        loadCaches();
+        Long workDayLength = new Long(0);
+        String defaultWorkDayProp = AppContext.getProperty("workflow.workCalendar.defaultWorkDay");
+        Integer defaultWorkDay = defaultWorkDayProp == null ? Calendar.MONDAY : Integer.parseInt(defaultWorkDayProp);
+
+        List<CalendarItem> defaultItems = defaultDays.get(defaultWorkDay);
+        if (defaultItems != null) {
+            for (CalendarItem calendarItem : defaultItems) {
+                if (calendarItem.getDay() == null) {
+                    workDayLength += calendarItem.getDuration();
+                }
+            }
+        }
+        return workDayLength;
+    }
+
+    private FirstIntervalDurationResult getFirstIntervalDuration(Date startTime, boolean moveForward, Map<Date, List<CalendarItem>> _exceptionDays,
+                                          Map<Integer, List<CalendarItem>> _defaultDays) {
+        FirstIntervalDurationResult fidResult = new FirstIntervalDurationResult();
+        int i = 0;
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+        fidResult.setCurrentDay(currentDay);
+
+        Calendar startDay = Calendar.getInstance();
+        startDay.setTime(startTime);
+        while (i++ < 365) {
+            List<CalendarItem> currentDayCalendarItems = _exceptionDays.get(currentDay.getTime());
+            if (currentDayCalendarItems == null)
+                currentDayCalendarItems = _defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+            ListIterator<CalendarItem> ciIterator = currentDayCalendarItems.listIterator();
+            fidResult.setCiIterator(ciIterator);
+            while (ciIterator.hasNext()) {
+                CalendarItem ci = ciIterator.next();
+
+                if ((moveForward && (ci.isDateBeforeInterval(startTime) || (currentDay.after(startDay))))
+                        || (!moveForward && (ci.isDateAfterInterval(startTime)))) {
+                    fidResult.setDuration(ci.getDuration());
+                    return fidResult;
+                }
+
+                if (ci.isDateInInterval(startTime)) {
+                    if (moveForward) {
+                        fidResult.setDuration(ci.getDurationToEnd(startTime));
+                        return fidResult;
+                    } else {
+                        fidResult.setDuration(ci.getDurationFromStart(startTime));
+                        return fidResult;
+                    }
+                }
+            }
+
+            if (moveForward) {
+                currentDay.add(Calendar.DAY_OF_YEAR, 1);
+            } else {
+                currentDay.add(Calendar.DAY_OF_YEAR, -1);
+            }
+        }
+
+        fidResult.setDuration(0);
+        return fidResult;
+    }
+
+    private ListIterator<CalendarItem> nextIntervalIterator(ListIterator<CalendarItem> ciIterator, Calendar currentDay,
+                                            boolean moveForward, Map<Date, List<CalendarItem>> _exceptionDays,
+                                            Map<Integer, List<CalendarItem>> _defaultDays) {
+        if (ciIterator.hasNext()) {
+            return ciIterator;
+        }
+
+        if (moveForward)
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+        else
+            currentDay.add(Calendar.DAY_OF_YEAR, -1);
+
+        List<CalendarItem> currentDayCalendarItems = _exceptionDays.get(currentDay.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = _defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+        ciIterator = currentDayCalendarItems.listIterator();
+        return ciIterator;
+    }
+
+    public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
+        if (startTime.after(endTime))
+            throw new IllegalStateException("Start time cannot be after end time!");
+
+        loadCaches();
+        double duration = 0;
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+
+        Calendar endDay = Calendar.getInstance();
+        endDay.setTime(endTime);
+
+        long timeUnitDuaration = (timeUnit == TimeUnit.DAY) ? getWorkDayLengthInMillis() : timeUnit.getMillis();
+
+        boolean searchingFirstInterval = true;
+
+        for (int i = 0; i < 365; i++) {
+            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(DateUtils.truncate(currentDay.getTime(), Calendar.DATE));
+            if (currentDayCalendarItems == null)
+                currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
+
+            int ciPos = 0;
+            for (CalendarItem ci : currentDayCalendarItems) {
+                ciPos++;
+
+                if (DateUtils.isSameDay(currentDay, endDay)) {
+                    if (ci.isDateInInterval(endTime)) {
+                        if (searchingFirstInterval && DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                            //if necessary interval is in first CI interval
+                            if (ci.isDateInInterval(currentDay.getTime()))
+                                duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
+                            else
+                                duration = endDay.getTimeInMillis() - ci.getRealStartDay(currentDay.getTime()).getTimeInMillis();
+                        } else {
+                            duration += ci.getDurationFromStart(endTime);
+                        }
+                        return duration / timeUnitDuaration;
+                    }
+                    if (ci.isDateBeforeInterval(endTime)) {
+                        return duration / timeUnitDuaration;
+                    }
+                    if (ciPos == currentDayCalendarItems.size()) {
+                        if (ci.isDateInInterval(startTime)) {
+                            duration = ci.getDurationToEnd(startTime);
+                        } else if (!(searchingFirstInterval && ci.isDateAfterInterval(startTime))) {
+                            duration += ci.getDuration();
+                        }
+                        return duration / timeUnitDuaration;
+                    }
+                }
+
+                if (searchingFirstInterval) {
+                    //truncate currentDay if we move to next day
+                    if (!DateUtils.isSameDay(currentDay.getTime(), startTime)) {
+                        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+                    }
+
+                    if (ci.isDateInInterval(currentDay.getTime())) {
+                        duration += ci.getDurationToEnd(currentDay.getTime());
+                        searchingFirstInterval = false;
+                    } else if (ci.isDateBeforeInterval(currentDay.getTime())) {
+                        duration += ci.getDuration();
+                        searchingFirstInterval = false;
+                    }
+                } else {
+                    duration += ci.getDuration();
+                }
+
+            } //end loop for CalendarItems
+
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+
+        } //end main loop
+
+        return duration / timeUnitDuaration;
+    }
+
+    public Date addInterval(Date date, int qty, TimeUnit unit) {
+        Date startTime = date;
+        Calendar startTimeCalendar = Calendar.getInstance();
+        startTimeCalendar.setTime(startTime);
+
+        loadCaches();
+        Map<Integer, List<CalendarItem>> _defaultDays = dayMapDeepCopy(defaultDays);
+        Map<Date, List<CalendarItem>> _exceptionDays = dayMapDeepCopy(exceptionDays);
+
+        boolean moveForward = (qty >= 0);
+        if (!moveForward) {
+            for (int i = 1; i <= 7; i++) {
+                List<CalendarItem> ciList = _defaultDays.get(i);
+                Collections.reverse(ciList);
+            }
+            for (Date _date : _exceptionDays.keySet()) {
+                List<CalendarItem> ciList = _exceptionDays.get(_date);
+                Collections.reverse(ciList);
+            }
+        }
+
+        long remainingTime;
+        //Work day is not astronomic day
+        if (unit.equals(TimeUnit.DAY))
+            remainingTime = Math.abs(qty) * getWorkDayLengthInMillis();
+        else
+            remainingTime = Math.abs(qty) * unit.getMillis();
+
+        FirstIntervalDurationResult fidResult = getFirstIntervalDuration(startTime, moveForward, _exceptionDays, _defaultDays);
+        long currentIntervalDuration = fidResult.getDuration();
+
+        ListIterator<CalendarItem> ciIterator = fidResult.getCiIterator();
+        Calendar currentDay = fidResult.getCurrentDay();
+
+        while (remainingTime > 0) {
+            if (remainingTime <= currentIntervalDuration) {
+                CalendarItem currentItem = ciIterator.previous();
+
+                int finishDateBasicH;
+                int finishDateBasicM;
+
+                if (DateUtils.isSameDay(startTimeCalendar, currentDay) && currentItem.isDateInInterval(startTime)) {
+                    finishDateBasicH = startTimeCalendar.get(Calendar.HOUR_OF_DAY);
+                    finishDateBasicM = startTimeCalendar.get(Calendar.MINUTE);
+                } else {
+                    if (moveForward) {
+                        finishDateBasicH = currentItem.getStartH();
+                        finishDateBasicM = currentItem.getStartM();
+                    } else {
+                        finishDateBasicH = currentItem.getEndH();
+                        finishDateBasicM = currentItem.getEndM();
+                    }
+                }
+
+                currentDay.set(Calendar.HOUR_OF_DAY, finishDateBasicH);
+                currentDay.set(Calendar.MINUTE, finishDateBasicM);
+
+                if (moveForward) {
+                    currentDay.add(Calendar.MILLISECOND, (int) remainingTime);
+                } else {
+                    currentDay.add(Calendar.MILLISECOND, -(int) remainingTime);
+                }
+                return currentDay.getTime();
+            } else {
+                remainingTime -= currentIntervalDuration;
+                ciIterator = nextIntervalIterator(ciIterator, currentDay, moveForward, _exceptionDays, _defaultDays);
+                currentIntervalDuration = ciIterator.next().getDuration();
+            }
+        }
+        return null;
+    }
+
+//    public Long getWorkPeriodDuration(Date startTime, Date endTime) {
+//        long workIntervalDuration = 0;
+//        loadCaches();
+//        boolean prevMoveForward = moveForward;
+//        moveForward = true;
+//        if (moveForward != prevMoveForward)
+//            reverseCaches();
+//        this.startTime = startTime;
+//
+//        workIntervalDuration += getFirstIntervalDuration();
+//        CalendarItem currentItem = nextInterval();
+//        while (currentItem.isDateAfterInterval(endTime)) {
+//           workIntervalDuration += currentItem.getDuration();
+//            currentItem = nextInterval();
+//        }
+//
+//        if (currentItem.isDateInInterval(endTime)) {
+//            workIntervalDuration = currentItem.getDurationFromStart(endTime);
+//        }
+//
+//        return workIntervalDuration;
+//    }
+
+    public boolean isDateWorkDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return isDateWorkDay(calendar);
+    }
+
+    public boolean isDateWorkDay(Calendar day) {
+        day = DateUtils.truncate(day, Calendar.DATE);
+        loadCaches();
+        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
+        if (currentDayCalendarItems == null)
+            return false;
+
+        for (CalendarItem ci : currentDayCalendarItems) {
+            if (ci.getDuration() > 0) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isTimeWorkTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return isTimeWorkTime(calendar);
+    }
+
+    @Override
+    public boolean isTimeWorkTime(Calendar day) {
+        Calendar dayTime = day;
+        day = DateUtils.truncate(day, Calendar.DATE);
+        loadCaches();
+        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
+        if (currentDayCalendarItems == null)
+            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
+        if (currentDayCalendarItems == null)
+            return false;
+
+        for (CalendarItem ci : currentDayCalendarItems) {
+            if (ci.getDuration() > 0) {
+                long currentTime = dayTime.getTimeInMillis() - day.getTimeInMillis();
+                if (currentTime < (ci.getEndH() * 60 * 60 * 1000 + ci.getEndM() * 60 * 1000) && currentTime > (ci.getStartH() * 60 * 60 * 1000 + ci.getStartM() * 60 * 1000))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public Long getWorkPeriodDurationInDays(Date startTime, Date endTime) {
+        if ((startTime == null) || (endTime == null)) return 0L;
+        if (startTime.compareTo(endTime) >= 0) return 0L;
+        long workPeriodDuration = 0;
+        loadCaches();
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.setTime(startTime);
+        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
+
+        Calendar endDay = Calendar.getInstance();
+        endDay.setTime(endTime);
+        endDay = DateUtils.truncate(endDay, Calendar.DATE);
+
+        while (currentDay.compareTo(endDay) <= 0) {
+            if (isDateWorkDay(currentDay))
+                workPeriodDuration++;
+            currentDay.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        return workPeriodDuration;
+    }
+
+
+    /**
+     * Creates deep copy of defaultDays map and exceptionDays map
+     * @param mapToClone
+     * @param <T>
+     * @return
+     */
+    private <T extends Map> T dayMapDeepCopy(T mapToClone) {
+        T result = null;
+        try {
+            result = (T) mapToClone.getClass().newInstance();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        for (Object key : mapToClone.keySet()) {
+            Object value = mapToClone.get(key);
+            LinkedList<CalendarItem> valueCopy = new LinkedList<CalendarItem>((Collection) value);
+            result.put(key, valueCopy);
+        }
+        return result;
+    }
+
+    /**
+     * Class is used to hold multiple return values from method {@link #getFirstIntervalDuration}
+     */
+    private class FirstIntervalDurationResult {
+        private long duration;
+        private ListIterator<CalendarItem> ciIterator;
+        private Calendar currentDay;
+
+        private FirstIntervalDurationResult() {
+        }
+
+        private long getDuration() {
+            return duration;
+        }
+
+        private void setDuration(long duration) {
+            this.duration = duration;
+        }
+
+        private ListIterator<CalendarItem> getCiIterator() {
+            return ciIterator;
+        }
+
+        private void setCiIterator(ListIterator<CalendarItem> ciIterator) {
+            this.ciIterator = ciIterator;
+        }
+
+        private Calendar getCurrentDay() {
+            return currentDay;
+        }
+
+        private void setCurrentDay(Calendar currentDay) {
+            this.currentDay = currentDay;
+        }
+    }
+
+    public class CalendarItem {
         private final Date day;
         private final int startH;
         private final int startM;
@@ -32,7 +498,7 @@ public class WorkCalendar implements WorkCalendarAPI {
         private final int endM;
         private final Integer dayOfWeek;
 
-        private CalendarItem(WorkCalendarEntity entity) {
+        public CalendarItem(WorkCalendarEntity entity) {
             this.day = entity.getDay();
             this.dayOfWeek = entity.getDayOfWeek() == null ? null : entity.getDayOfWeek().getId();
 
@@ -164,504 +630,7 @@ public class WorkCalendar implements WorkCalendarAPI {
 
             return cal;
         }
-    }
-
-    private volatile Map<Date, List<CalendarItem>> exceptionDays;
-    private volatile Map<Integer, List<CalendarItem>> defaultDays;
-
-    private Calendar currentDay;
-    private boolean moveForward = true;
-    private Date startTime;
-    private ListIterator<CalendarItem> ciIterator;
-
-    @Inject
-    private Resources resources;
-
-    @Inject
-    private Persistence persistence;
-
-    private synchronized void loadCaches() {
-        if (exceptionDays == null) {
-            synchronized (this) {
-                if (exceptionDays == null) {
-                    exceptionDays = new HashMap<Date, List<CalendarItem>>();
-                    Transaction tx = persistence.createTransaction();
-                    try {
-                        EntityManager em = persistence.getEntityManager();
-                        Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
-                                "order by c.day, c.start");
-                        List<WorkCalendarEntity> list = q.getResultList();
-                        for (WorkCalendarEntity c : list) {
-                            CalendarItem ci = new CalendarItem(c);
-                            List<CalendarItem> mapValue = exceptionDays.get(c.getDay());
-                            if (mapValue == null)
-                                mapValue = new LinkedList<CalendarItem>();
-                            mapValue.add(ci);
-                            exceptionDays.put(c.getDay(), mapValue);
-                        }
-
-                        tx.commit();
-                    } finally {
-                        tx.end();
-                    }
-                }
-            }
-        }
-
-        if (defaultDays == null) {
-            defaultDays = new HashMap<Integer, List<CalendarItem>>();
-            Transaction tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                Query q = em.createQuery("select c from wf$Calendar c where c.dayOfWeek is not null " +
-                        "order by c.dayOfWeek, c.start");
-                List<WorkCalendarEntity> list = q.getResultList();
-                for (WorkCalendarEntity c : list) {
-
-                    CalendarItem ci = new CalendarItem(c);
-                    List<CalendarItem> mapValue = defaultDays.get(c.getDayOfWeek().getId());
-                    if (mapValue == null)
-                        mapValue = new LinkedList<CalendarItem>();
-                    mapValue.add(ci);
-                    defaultDays.put(c.getDayOfWeek().getId(), mapValue);
-                }
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        }
-    }
-
-    @Override
-    public int getCacheSize() {
-        return exceptionDays == null ? 0 : exceptionDays.size();
-    }
-
-    @Override
-    public void invalidateCache() {
-        exceptionDays = null;
-        defaultDays = null;
-    }
-
-    public Long getAbsoluteMillis(Date date, int qty, TimeUnit unit) {
-        loadCaches();
-        Date endDate = addInterval(date, qty, unit);
-        return endDate.getTime() - date.getTime();
-    }
-
-    public Long getWorkDayLengthInMillis() {
-        loadCaches();
-        Long workDayLength = new Long(0);
-        String defaultWorkDayProp = AppContext.getProperty("workflow.workCalendar.defaultWorkDay");
-        Integer defaultWorkDay = defaultWorkDayProp == null ? Calendar.MONDAY : Integer.parseInt(defaultWorkDayProp);
-
-        List<CalendarItem> defaultItems = defaultDays.get(defaultWorkDay);
-        if (defaultItems != null) {
-            for (CalendarItem calendarItem : defaultItems) {
-                if (calendarItem.getDay() == null) {
-                    workDayLength += calendarItem.getDuration();
-                }
-            }
-        }
-        return workDayLength;
-    }
-
-    private long getFirstIntervalDuration() {
-        int i = 0;
-        currentDay = Calendar.getInstance();
-        currentDay.setTime(startTime);
-        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
-        Calendar startDay = Calendar.getInstance();
-        startDay.setTime(startTime);
-        while (i++ < 365) {
-            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
-            if (currentDayCalendarItems == null)
-                currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
-
-            ciIterator = currentDayCalendarItems.listIterator();
-            while (ciIterator.hasNext()) {
-                CalendarItem ci = ciIterator.next();
-
-                if ((moveForward && (ci.isDateBeforeInterval(startTime) || (currentDay.after(startDay))))
-                        || (!moveForward && (ci.isDateAfterInterval(startTime))))
-                    return ci.getDuration();
-
-                if (ci.isDateInInterval(startTime)) {
-                    if (moveForward)
-                        return ci.getDurationToEnd(startTime);
-                    else
-                        return ci.getDurationFromStart(startTime);
-                }
-            }
-
-            if (moveForward) {
-                currentDay.add(Calendar.DAY_OF_YEAR, 1);
-            } else {
-                currentDay.add(Calendar.DAY_OF_YEAR, -1);
-            }
-        }
-        return 0;
-    }
-
-    private CalendarItem nextInterval() {
-        if (ciIterator.hasNext())
-            return ciIterator.next();
-
-        if (moveForward)
-            currentDay.add(Calendar.DAY_OF_YEAR, 1);
-        else
-            currentDay.add(Calendar.DAY_OF_YEAR, -1);
-
-        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(currentDay.getTime());
-        if (currentDayCalendarItems == null)
-            currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
-
-        ciIterator = currentDayCalendarItems.listIterator();
-        return ciIterator.next();
-    }
-
-    private void reverseCaches() {
-        for (int i = 1; i <= 7; i++) {
-            List<CalendarItem> ciList = defaultDays.get(i);
-            Collections.reverse(ciList);
-        }
-        for (Date date : exceptionDays.keySet()) {
-            List<CalendarItem> ciList = exceptionDays.get(date);
-            Collections.reverse(ciList);
-        }
-    }
-
-    public Double getIntervalDurationNew(Date startTime, Date endTime, TimeUnit timeUnit) {
-        if (startTime.after(endTime))
-            throw new IllegalStateException("Start time cannot be after end time!");
-        if ((startTime == null) || (endTime == null))
-            throw new IllegalStateException("Start time and end time cannot be null!");
-
-        loadCaches();
-        double duration = 0;
-        DateUtils.truncate(endTime, Calendar.MINUTE);
-        Calendar cursor = Calendar.getInstance();
-        cursor.setTime(startTime);
-        DateUtils.truncate(cursor, Calendar.MINUTE);
-        IntervalLine il = new IntervalLine(startTime);
-        il.nextInterval();
-        boolean insideInterval = il.isInitialInsideInterval();
-        long timeUnitDuaration = (timeUnit == TimeUnit.DAY) ? getWorkDayLengthInMillis() : timeUnit.getMillis();
-
-
-        //todo set limit
-        for (long i = 0; i < 525600L; i++) {
-            if (cursor.getTime().equals(il.getCIStartDate()))
-                insideInterval = true;
-
-            if (cursor.getTime().equals(il.getCIEndDate())) {
-                insideInterval = false;
-                il.nextInterval();
-            }
-
-            if (cursor.getTime().equals(endTime)) {
-                return duration / timeUnitDuaration;
-            } else {
-                if (insideInterval) duration += 60000;
-            }
-
-            cursor.add(Calendar.MINUTE, 1);
-        }
-        return duration / timeUnitDuaration;
-    }
-
-    private class IntervalLine {
-        private Calendar ciStartDay;
-        private Calendar ciEndDay;
-        private boolean initialInsideInterval = false;
-        private boolean firstSearch = true;
-
-
-        private IntervalLine(Date startDate) {
-            this.ciStartDay = Calendar.getInstance();
-            ciStartDay.setTime(startDate);
-            this.ciEndDay = Calendar.getInstance();
-            ciEndDay.setTime(startDate);
-        }
-
-        public Date getCIStartDate() {
-            return ciStartDay.getTime();
-        }
-
-        public Date getCIEndDate() {
-            return ciEndDay.getTime();
-        }
-
-        public void nextInterval() {
-
-            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(DateUtils.truncate(ciStartDay.getTime(), Calendar.DATE));
-            if (currentDayCalendarItems == null) {
-                currentDayCalendarItems = defaultDays.get(ciStartDay.get(Calendar.DAY_OF_WEEK));
-            }
-
-            boolean intervalFound = false;
-            for (CalendarItem ci : currentDayCalendarItems) {
-                //durations == 0 is holiday
-                if (ci.getDuration() == 0) continue;
-
-                if (firstSearch && ci.isDateInInterval(ciStartDay.getTime())) {
-                    ciStartDay = ci.getRealStartDay(ciStartDay.getTime());
-                    ciEndDay = ci.getRealEndDay(ciStartDay.getTime());
-                    intervalFound = true;
-                    initialInsideInterval = true;
-                    break;
-                } else if (ci.isDateBeforeInterval(ciStartDay.getTime())) {
-                    ciStartDay = ci.getRealStartDay(ciStartDay.getTime());
-                    ciEndDay = ci.getRealEndDay(ciStartDay.getTime());
-                    intervalFound = true;
-                    break;
-                }
-            }
-
-            if (!intervalFound) {
-                ciStartDay.add(Calendar.DATE, 1);
-                ciStartDay = DateUtils.truncate(ciStartDay, Calendar.DATE);
-                nextInterval();
-            }
-
-            firstSearch = false;
-        }
-
-        public boolean isInitialInsideInterval() {
-            return initialInsideInterval;
-        }
 
     }
 
-
-    public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
-        if (startTime.after(endTime))
-            throw new IllegalStateException("Start time cannot be after end time!");
-
-        loadCaches();
-        double duration = 0;
-        Calendar currentDay = Calendar.getInstance();
-        currentDay.setTime(startTime);
-
-        Calendar endDay = Calendar.getInstance();
-        endDay.setTime(endTime);
-
-        long timeUnitDuaration = (timeUnit == TimeUnit.DAY) ? getWorkDayLengthInMillis() : timeUnit.getMillis();
-
-        boolean searchingFirstInterval = true;
-
-        for (int i = 0; i < 365; i++) {
-            List<CalendarItem> currentDayCalendarItems = exceptionDays.get(DateUtils.truncate(currentDay.getTime(), Calendar.DATE));
-            if (currentDayCalendarItems == null)
-                currentDayCalendarItems = defaultDays.get(currentDay.get(Calendar.DAY_OF_WEEK));
-
-            int ciPos = 0;
-            for (CalendarItem ci : currentDayCalendarItems) {
-                ciPos++;
-
-                if (DateUtils.isSameDay(currentDay, endDay)) {
-                    if (ci.isDateInInterval(endTime)) {
-                        if (searchingFirstInterval && DateUtils.isSameDay(currentDay.getTime(), startTime)) {
-                            //if necessary interval is in first CI interval
-                            if (ci.isDateInInterval(currentDay.getTime()))
-                                duration = endDay.getTimeInMillis() - currentDay.getTimeInMillis();
-                            else
-                                duration = endDay.getTimeInMillis() - ci.getRealStartDay(currentDay.getTime()).getTimeInMillis();
-                        } else {
-                            duration += ci.getDurationFromStart(endTime);
-                        }
-                        return duration / timeUnitDuaration;
-                    }
-                    if (ci.isDateBeforeInterval(endTime)) {
-                        return duration / timeUnitDuaration;
-                    }
-                    if (ciPos == currentDayCalendarItems.size()) {
-                        if (ci.isDateInInterval(startTime)) {
-                            duration = ci.getDurationToEnd(startTime);
-                        } else if (!(searchingFirstInterval && ci.isDateAfterInterval(startTime))) {
-                            duration += ci.getDuration();
-                        }
-                        return duration / timeUnitDuaration;
-                    }
-                }
-
-                if (searchingFirstInterval) {
-                    //truncate currentDay if we move to next day
-                    if (!DateUtils.isSameDay(currentDay.getTime(), startTime)) {
-                        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
-                    }
-
-                    if (ci.isDateInInterval(currentDay.getTime())) {
-                        duration += ci.getDurationToEnd(currentDay.getTime());
-                        searchingFirstInterval = false;
-                    } else if (ci.isDateBeforeInterval(currentDay.getTime())) {
-                        duration += ci.getDuration();
-                        searchingFirstInterval = false;
-                    }
-                } else {
-                    duration += ci.getDuration();
-                }
-
-            } //end loop for CalendarItems
-
-            currentDay.add(Calendar.DAY_OF_YEAR, 1);
-
-        } //end main loop
-
-        return duration / timeUnitDuaration;
-    }
-
-    public Date addInterval(Date date, int qty, TimeUnit unit) {
-        this.startTime = date;
-        Calendar startTimeCalendar = Calendar.getInstance();
-        startTimeCalendar.setTime(startTime);
-
-        loadCaches();
-        boolean prevMoveForward = moveForward;
-        moveForward = (qty >= 0);
-        if (moveForward != prevMoveForward)
-            reverseCaches();
-        long remainingTime;
-        //Work day is not astronomic day
-        if (unit.equals(TimeUnit.DAY))
-            remainingTime = Math.abs(qty) * getWorkDayLengthInMillis();
-        else
-            remainingTime = Math.abs(qty) * unit.getMillis();
-
-        long currentIntervalDuration = getFirstIntervalDuration();
-        while (remainingTime > 0) {
-            if (remainingTime <= currentIntervalDuration) {
-                CalendarItem currentItem = ciIterator.previous();
-
-                int finishDateBasicH;
-                int finishDateBasicM;
-
-                if (DateUtils.isSameDay(startTimeCalendar, currentDay) && currentItem.isDateInInterval(startTime)) {
-                    finishDateBasicH = startTimeCalendar.get(Calendar.HOUR_OF_DAY);
-                    finishDateBasicM = startTimeCalendar.get(Calendar.MINUTE);
-                } else {
-                    if (moveForward) {
-                        finishDateBasicH = currentItem.getStartH();
-                        finishDateBasicM = currentItem.getStartM();
-                    } else {
-                        finishDateBasicH = currentItem.getEndH();
-                        finishDateBasicM = currentItem.getEndM();
-                    }
-                }
-
-                currentDay.set(Calendar.HOUR_OF_DAY, finishDateBasicH);
-                currentDay.set(Calendar.MINUTE, finishDateBasicM);
-
-                if (moveForward) {
-                    currentDay.add(Calendar.MILLISECOND, (int) remainingTime);
-                } else {
-                    currentDay.add(Calendar.MILLISECOND, -(int) remainingTime);
-                }
-                return currentDay.getTime();
-            } else {
-                remainingTime -= currentIntervalDuration;
-                currentIntervalDuration = nextInterval().getDuration();
-            }
-        }
-        return null;
-    }
-
-//    public Long getWorkPeriodDuration(Date startTime, Date endTime) {
-//        long workIntervalDuration = 0;
-//        loadCaches();
-//        boolean prevMoveForward = moveForward;
-//        moveForward = true;
-//        if (moveForward != prevMoveForward)
-//            reverseCaches();
-//        this.startTime = startTime;
-//
-//        workIntervalDuration += getFirstIntervalDuration();
-//        CalendarItem currentItem = nextInterval();
-//        while (currentItem.isDateAfterInterval(endTime)) {
-//           workIntervalDuration += currentItem.getDuration();
-//            currentItem = nextInterval();
-//        }
-//
-//        if (currentItem.isDateInInterval(endTime)) {
-//            workIntervalDuration = currentItem.getDurationFromStart(endTime);
-//        }
-//
-//        return workIntervalDuration;
-//    }
-
-    public boolean isDateWorkDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return isDateWorkDay(calendar);
-    }
-
-    public boolean isDateWorkDay(Calendar day) {
-        day = DateUtils.truncate(day, Calendar.DATE);
-        loadCaches();
-        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
-        if (currentDayCalendarItems == null)
-            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
-        if (currentDayCalendarItems == null)
-            return false;
-
-        for (CalendarItem ci : currentDayCalendarItems) {
-            if (ci.getDuration() > 0) return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isTimeWorkTime(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return isTimeWorkTime(calendar);
-    }
-
-    @Override
-    public boolean isTimeWorkTime(Calendar day) {
-        Calendar dayTime = day;
-        day = DateUtils.truncate(day, Calendar.DATE);
-        loadCaches();
-        List<CalendarItem> currentDayCalendarItems = exceptionDays.get(day.getTime());
-        if (currentDayCalendarItems == null)
-            currentDayCalendarItems = defaultDays.get(day.get(Calendar.DAY_OF_WEEK));
-        if (currentDayCalendarItems == null)
-            return false;
-
-        for (CalendarItem ci : currentDayCalendarItems) {
-            if (ci.getDuration() > 0) {
-                long currentTime = dayTime.getTimeInMillis() - day.getTimeInMillis();
-                if (currentTime < (ci.getEndH() * 60 * 60 * 1000 + ci.getEndM() * 60 * 1000) && currentTime > (ci.getStartH() * 60 * 60 * 1000 + ci.getStartM() * 60 * 1000))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public Long getWorkPeriodDurationInDays(Date startTime, Date endTime) {
-        if ((startTime == null) || (endTime == null)) return 0L;
-        if (startTime.compareTo(endTime) >= 0) return 0L;
-        long workPeriodDuration = 0;
-        loadCaches();
-        boolean prevMoveForward = moveForward;
-        moveForward = true;
-        if (moveForward != prevMoveForward)
-            reverseCaches();
-
-        currentDay = Calendar.getInstance();
-        currentDay.setTime(startTime);
-        currentDay = DateUtils.truncate(currentDay, Calendar.DATE);
-
-        Calendar endDay = Calendar.getInstance();
-        endDay.setTime(endTime);
-        endDay = DateUtils.truncate(endDay, Calendar.DATE);
-
-        while (currentDay.compareTo(endDay) <= 0) {
-            if (isDateWorkDay(currentDay))
-                workPeriodDuration++;
-            currentDay.add(Calendar.DAY_OF_YEAR, 1);
-        }
-
-        return workPeriodDuration;
-    }
 }
