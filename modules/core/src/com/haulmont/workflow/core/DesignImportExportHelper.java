@@ -15,6 +15,7 @@ import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -221,6 +222,7 @@ public class DesignImportExportHelper {
         for (DesignScript script : design.getScripts()) {
             em.persist(script);
         }
+        if(CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
         for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
             em.persist(variable);
         }
@@ -262,6 +264,7 @@ public class DesignImportExportHelper {
             script.setUpdateTs(null);
         }
 
+        if(CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
         for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
             variable.setUuid(UUID.randomUUID());
             variable.setCreateTs(new Date());
