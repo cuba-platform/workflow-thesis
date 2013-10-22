@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.workflow.core.entity.SendingSms;
 import com.haulmont.workflow.core.enums.SmsStatus;
@@ -86,6 +87,10 @@ public class SmsManager implements SmsManagerAPI {
 
     @Override
     public void queueSmsToSend() {
+        if (!AppContext.isStarted()) {
+            return;
+        }
+
         try {
             if (!config.getUseSmsSending())
                 return;
