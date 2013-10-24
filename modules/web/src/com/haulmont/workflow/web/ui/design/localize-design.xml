@@ -17,20 +17,18 @@
 
         <hierarchicalDatasource id="keysDs"
                                 class="com.haulmont.workflow.core.entity.DesignLocKey"
-                                view="_local"
                                 hierarchyProperty="parentKey"
                                 datasourceClass="com.haulmont.workflow.web.ui.design.DesignLocKeyDatasource">
         </hierarchicalDatasource>
 
         <collectionDatasource id="valuesDs"
                               class="com.haulmont.workflow.core.entity.DesignLocValue"
-                              view="_local"
                               datasourceClass="com.haulmont.workflow.web.ui.design.DesignLocValueDatasource">
         </collectionDatasource>
 
     </dsContext>
 
-    <layout expand="split">
+    <layout expand="split" spacing="true">
         <split id="split" orientation="horizontal" pos="30" width="100%" height="100%">
             <vbox id="treePane" expand="keysTree" height="100%">
                 <tree id="keysTree" width="100%">

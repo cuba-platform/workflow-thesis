@@ -394,8 +394,8 @@ create table WF_TIMER (
     CARD_ID varchar(36),
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
-    TASK_CLASS varchar(200),
-    TASK_PARAMS varchar(2000),
+    ACTION_CLASS varchar(200),
+    ACTION_PARAMS varchar(2000),
     primary key (ID)
 )^
 

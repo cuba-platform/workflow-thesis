@@ -143,6 +143,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
                 return values;
             }
         };
+        createDpaAction.setOpenType(WindowManager.OpenType.DIALOG);
 
         dpaTable.addAction(createDpaAction);
         dpaActions.add(createDpaAction);
