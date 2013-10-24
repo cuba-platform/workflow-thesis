@@ -21,6 +21,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @Controller
 @RequestMapping("/wfdesigner/**")
 public class ContentController extends StaticContentController {
@@ -38,6 +42,7 @@ public class ContentController extends StaticContentController {
             this.req = req;
         }
 
+        @Override
         public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             setHeaders(resp);
 

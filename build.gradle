@@ -42,16 +42,16 @@ def globalModule = project(':workflow-global')
 def coreModule = project(':workflow-core')
 def guiModule = project(':workflow-gui')
 def webModule = project(':workflow-web')
+def webLegacyModule = project(':workflow-web6')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
-
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
-configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
+configure([sharedLibModule, globalModule, coreModule, guiModule, webModule, webLegacyModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -187,6 +187,41 @@ configure(webModule) {
         webcontent(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
     }
 
+    task webArchive(type: Zip) {
+        from file('web')
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task setupYui(description: 'Sets up YUI library') << {
+        configurations.webcontent.files.each { dep ->
+            copy {
+                from zipTree(dep.absolutePath)
+                into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
+            }
+        }
+    }
+    assemble.dependsOn setupYui
+}
+
+configure(webLegacyModule) {
+    configurations {
+        webcontent
+    }
+
+    dependencies {
+        compile(sharedLibModule)
+        compile(globalModule)
+        compile(guiModule)
+        compile(group: 'com.haulmont.cuba', name: 'cuba-web6', version: baseVersion)
+        compile(json)
+        provided(servletApi)
+        webcontent(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
+    }
+
     jar {
         manifest {
             attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
@@ -206,7 +241,7 @@ configure(webModule) {
         configurations.webcontent.files.each { dep ->
             copy {
                 from zipTree(dep.absolutePath)
-                into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
+                into new File(webLegacyModule.projectDir, 'web/wfdesigner/lib/yui')
             }
         }
     }
