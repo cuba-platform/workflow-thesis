@@ -5,7 +5,6 @@
 package com.haulmont.workflow.web.wfdesigner;
 
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
@@ -35,10 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @Controller
 @RequestMapping("/wfdesigner/*/action/*.json")
 public class ActionController {
@@ -166,7 +168,7 @@ public class ActionController {
     }
 
 
-    private List<Design> loadSubDesigns() {
+    protected List<Design> loadSubDesigns() {
         LoadContext ctx = new LoadContext(Design.class).setView("load-subdesign");
         ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").setParameter("type", DesignType.SUBDESIGN.getId());
         return dataService.loadList(ctx);
@@ -206,19 +208,19 @@ public class ActionController {
         return true;
     }
 
-    private List<Proc> findProcs() {
+    protected List<Proc> findProcs() {
         View view = new View(Proc.class).addProperty("code").addProperty("name");
         LoadContext ctx = new LoadContext(Proc.class).setView(view);
         ctx.setQueryString("select p from wf$Proc p order by p.name");
         return dataService.loadList(ctx);
     }
 
-    private Design loadDesign(UUID designId) {
+    protected Design loadDesign(UUID designId) {
         LoadContext ctx = new LoadContext(Design.class).setId(designId).setView("_local");
         return dataService.load(ctx);
     }
 
-    private List<DesignScript> loadDesignScripts(UUID designId) {
+    protected List<DesignScript> loadDesignScripts(UUID designId) {
         LoadContext ctx = new LoadContext(DesignScript.class).setView("_minimal");
         ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").setParameter("designId", designId);
         return dataService.loadList(ctx);

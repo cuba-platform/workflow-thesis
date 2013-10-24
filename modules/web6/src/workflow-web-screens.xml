@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<screen-config xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd">
+
+    <screen id="wf$WorkCalendar.browse"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-browse.xml"/>
+    <screen id="wf$WorkCalendarWorkDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-workday-edit.xml"/>
+    <screen id="wf$WorkCalendarExceptionDay.edit"
+            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-exceptionday-edit.xml"/>
+
+    <screen id="wf$AttachClipboard"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-clipboard.xml"/>
+
+    <screen id="wf$AttachUploader"
+                template="/com/haulmont/workflow/web/ui/base/attachments/attach-uploader.xml"/>
+
+    <screen id="wf$AttachTypes.browse"
+            template="/com/haulmont/workflow/web/ui/attachmenttypes/type-browse.xml"/>
+
+    <screen id="wf$AttachmentType.edit"
+            template="/com/haulmont/workflow/web/ui/attachmenttypes/type-edit.xml"/>
+
+    <screen id="wf$RemoveAttachmentConfirmDialog"
+            template="/com/haulmont/workflow/web/ui/base/attachments/remove-attachment-confirm-dialog.xml"/>
+
+    <screen id="wf$Proc.browse"
+            template="/com/haulmont/workflow/web/ui/proc/proc-browse.xml"/>
+
+    <screen id="wf$Proc.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-edit.xml"/>
+
+    <screen id="wf$ProcRole.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-role-edit.xml"/>
+
+    <screen id="wf$ProcRole.lookup"
+            template="/com/haulmont/workflow/web/ui/proc/proc-role-lookup.xml"/>
+
+    <screen id="wf$ProcStage.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-stage-edit.xml"/>
+
+    <screen id="wf$ProcStageType.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-stage-type-edit.xml"/>
+
+    <screen id="wf$ProcStageType.browse"
+            template="/com/haulmont/workflow/web/ui/proc/proc-stage-type-browse.xml"/>
+
+    <screen id="wf$DefaultProcActor.edit"
+            template="/com/haulmont/workflow/web/ui/proc/defaultprocactor-edit.xml"/>
+
+    <screen id="wf$ProcRolePermission.edit"
+            template="/com/haulmont/workflow/web/ui/proc/proc-role-permission-edit.xml"/>
+
+    <screen id="wf$Card.browse"
+            template="/com/haulmont/workflow/web/ui/card/card-browse.xml"/>
+
+    <screen id="wf$Card.edit"
+            template="/com/haulmont/workflow/web/ui/card/card-edit.xml"/>
+
+    <screen id="wf$CardRole.edit"
+            template="/com/haulmont/workflow/web/ui/card/card-role-edit.xml"/>
+
+    <screen id="wf$CardAttachment.edit"
+            template="/com/haulmont/workflow/web/ui/attachment/card-attachment-edit.xml"/>
+
+    <screen id="attachmentFrame"
+            template="/com/haulmont/workflow/web/ui/attachment/attachment-frame.xml"/>
+
+    <screen id="wf$AssignmentAttachment.edit"
+            template="/com/haulmont/workflow/web/ui/attachment/assignment-attachment-edit.xml"/>
+
+    <screen id="wf$Assignment.browse"
+            template="/com/haulmont/workflow/web/ui/assignment/assignment-browse.xml"/>
+
+    <screen id="wf$Assignment.edit"
+            template="/com/haulmont/workflow/web/ui/base/resolution-edit.xml"/>
+
+    <screen id="resolution.form"
+            template="/com/haulmont/workflow/web/ui/base/resolution-form.xml"/>
+
+    <screen id="transition.form"
+            template="/com/haulmont/workflow/web/ui/base/transition-form.xml"/>
+
+    <screen id="subproc.form"
+            template="/com/haulmont/workflow/web/ui/base/subproc-form.xml"/>
+
+    <screen id="reassign.form"
+            template="/com/haulmont/workflow/web/ui/base/reassign-form.xml"/>
+
+    <screen id="cardRolesFrame"
+            template="/com/haulmont/workflow/web/ui/base/card-roles-frame.xml"/>
+
+    <screen id="wf$Card.send"
+            template="/com/haulmont/workflow/web/ui/base/card-send.xml"/>
+
+    <screen id="wf$UserGroup.browse"
+            template="/com/haulmont/workflow/web/ui/usergroup/usergroup-browse.xml"/>
+
+    <screen id="wf$UserGroup.edit"
+            template="/com/haulmont/workflow/web/ui/usergroup/usergroup-edit.xml"/>
+
+    <screen id="wf$UserGroup.add"
+            template="/com/haulmont/workflow/web/ui/usergroup/usergroup-add.xml"/>
+
+    <screen id="wf$Design.browse"
+            template="/com/haulmont/workflow/web/ui/design/design-browse.xml"/>
+
+    <screen id="wf$Design.edit"
+            template="/com/haulmont/workflow/web/ui/design/design-edit.xml"/>
+
+    <screen id="wf$Design.notificationMatrix"
+            template="/com/haulmont/workflow/web/ui/design/notification-matrix.xml"/>
+
+    <screen id="wf$Design.import"
+            template="/com/haulmont/workflow/web/ui/design/design-import.xml"/>
+
+    <screen id="wf$Design.localize"
+            template="/com/haulmont/workflow/web/ui/design/localize-design.xml"/>
+
+    <screen id="wf$Design.deploy"
+            template="/com/haulmont/workflow/web/ui/design/deploy-design.xml"/>
+
+    <screen id="wf$DesignScript.browse"
+            template="/com/haulmont/workflow/web/ui/designscript/design-scripts.xml"/>
+
+    <screen id="wf$UserNotifiedBySms.browse"
+            template="/com/haulmont/workflow/web/ui/sms/user-notified-by-sms-browse.xml"/>
+
+    <screen id="wf$SendingSms.browse"
+            template="/com/haulmont/workflow/web/ui/sms/sending-sms-browse.xml"/>
+
+    <screen id="wf$DesignProcessVariable.browse"
+            template="/com/haulmont/workflow/web/ui/designprocessvariables/browse/design-process-variable-browse.xml"/>
+
+    <screen id="wf$DesignProcessVariable.edit"
+            template="/com/haulmont/workflow/web/ui/designprocessvariables/edit/design-process-variable-edit.xml"/>
+
+    <screen id="wf$ProcVariable.browse"
+            template="/com/haulmont/workflow/web/ui/procvariable/browse/proc-variable-browse.xml"/>
+
+    <screen id="wf$ProcVariable.edit" template="/com/haulmont/workflow/web/ui/procvariable/edit/proc-variable-edit.xml"/>
+
+    <screen id="wf$CardVariable.browse"
+            template="/com/haulmont/workflow/web/ui/cardvariables/browse/card-variable-browse.xml"/>
+
+    <screen id="wf$CardVariable.edit" template="/com/haulmont/workflow/web/ui/cardvariables/edit/card-variable-edit.xml"/>
+
+
+</screen-config>

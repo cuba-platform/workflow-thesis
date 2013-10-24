@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
+
+    <menu id="workflow" insertBefore="administration">
+        <item id="wf$Assignment.browse"/>
+        <item id="wf$Design.browse"/>
+        <item id="wf$Proc.browse"/>
+        <item id="wf$ProcStageType.browse"/>
+        <item id="wf$WorkCalendar.browse"/>
+        <item id="wf$UserGroup.browse"/>
+    </menu>
+
+</menu-config>
