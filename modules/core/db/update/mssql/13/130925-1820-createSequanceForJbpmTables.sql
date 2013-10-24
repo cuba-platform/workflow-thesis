@@ -1,6 +1,7 @@
 -- $Id$
 -- Description:
 
+DECLARE @max_dbid integer;
 IF (NOT EXISTS (SELECT *
                  FROM INFORMATION_SCHEMA.TABLES
                  WHERE TABLE_SCHEMA = 'dbo'
@@ -8,7 +9,7 @@ IF (NOT EXISTS (SELECT *
 BEGIN
     CREATE TABLE seq_jbpm_id_gen(ID bigint identity(1,1000), CREATE_TS datetime);
     SET IDENTITY_INSERT seq_jbpm_id_gen ON;
-    INSERT INTO seq_jbpm_id_gen(ID, CREATE_TS) VALUES ((select max(dbid_) from (select dbid_ from JBPM4_DEPLOYMENT
+	select @max_dbid = (select max(dbid_) from (select dbid_ from JBPM4_DEPLOYMENT
                                                                     UNION select dbid_ from JBPM4_DEPLOYPROP
                                                                     UNION select dbid_ from JBPM4_EXECUTION
                                                                     UNION select dbid_ from JBPM4_HIST_ACTINST
@@ -24,7 +25,8 @@ BEGIN
                                                                     UNION select dbid_ from JBPM4_PARTICIPATION
                                                                     UNION select dbid_ from JBPM4_SWIMLANE
                                                                     UNION select dbid_ from JBPM4_TASK
-                                                                    UNION select dbid_ from JBPM4_VARIABLE) unionTables), CURRENT_TIMESTAMP);
+                                                                    UNION select dbid_ from JBPM4_VARIABLE) unionTables);
+    INSERT INTO seq_jbpm_id_gen(ID, CREATE_TS) VALUES (@max_dbid, CURRENT_TIMESTAMP);
 END
 
 
