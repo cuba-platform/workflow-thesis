@@ -9,6 +9,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,15 @@ public interface WfWorkerAPI {
 
     String NAME = "workflow_WfWorker";
 
+    /**
+     * Returns the assignment information for the provided card and current user,
+     * including list of actions to be executed.
+     *
+     * @param card card
+     * @return assignment information or null if no process is associated with the card or there are no assignments
+     * for the current user
+     */
+    @Nullable
     AssignmentInfo getAssignmentInfo(Card card);
 
     Map<String, Object> getProcessVariables(Card card);

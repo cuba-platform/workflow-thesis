@@ -10,6 +10,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,12 +20,14 @@ public interface WfService {
     String NAME = "workflow_WfService";
 
     /**
-     * Performs card assignment information for a current user,
-     * including list of actions, enabled to be executed.
+     * Returns the assignment information for the provided card and current user,
+     * including list of actions to be executed.
      *
      * @param card card
-     * @return assignment information
+     * @return assignment information or null if no process is associated with the card or there are no assignments
+     * for the current user
      */
+    @Nullable
     AssignmentInfo getAssignmentInfo(Card card);
 
     /**

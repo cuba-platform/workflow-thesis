@@ -18,12 +18,13 @@ import com.haulmont.workflow.core.entity.DefaultProcActor
  */
 class DefaultProcActorEditor extends AbstractEditor{
 
-  CollectionDatasource usersDs = getDsContext().get("usersDs")
+  CollectionDatasource usersDs
   List<UUID> userIds;
   boolean isMulti
 
   public void init(Map<String, Object> params) {
     super.init(params);
+    usersDs = getDsContext().get("usersDs")
     userIds = params.get("userIds");
     if (userIds == null)
       userIds = new ArrayList<UUID>();
