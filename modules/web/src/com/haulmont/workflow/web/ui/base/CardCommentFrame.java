@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -21,7 +22,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardComment;
@@ -208,7 +208,8 @@ public class CardCommentFrame extends AbstractWindow {
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
-                                                if (getFrame() instanceof WebWindow.Editor && ((WebWindow.Editor) getFrame()).commit(true)) {
+                                                final Window window = ComponentsHelper.getWindow(frame);
+                                                if (window instanceof Window.Editor && ((Window.Editor) window).commit()) {
                                                     refreshCard();
                                                     openCardSend(card);
                                                 }
