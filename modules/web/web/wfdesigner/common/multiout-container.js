@@ -91,7 +91,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         this.addTerminal({
             "name": name, "direction": [0,1],
             "offsetPosition": {"left": 150, "bottom": bottomPos, "top" : topPos},
-            "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+            "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
         });
 
         this.closeNewOutEditor();

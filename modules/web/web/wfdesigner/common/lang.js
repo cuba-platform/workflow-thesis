@@ -60,7 +60,7 @@ var wfLanguage = {
                 "terminals": [
                     {
                         "direction": [0,1], "offsetPosition": {"left": 8, "top": 30 }, "name": "out",
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -130,7 +130,7 @@ var wfLanguage = {
                     },
                     {
                         "name": "out", "direction": [0,1], "offsetPosition": {"left": 112, "bottom": -15},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -357,12 +357,12 @@ var wfLanguage = {
                     {
                         "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "yes",
                         "label": "msg://Decision.yes", "labelPosition": {"right": -18, "top": 25},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     },
                     {
                         "direction": [-1,0], "offsetPosition": {"left": -14, "top": 8 }, "name": "no",
                         "label": "msg://Decision.no", "labelPosition": {"left": -18, "top": 25},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -440,7 +440,7 @@ var wfLanguage = {
                     },
                     {
                         "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15}, "name": "out",
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -471,7 +471,7 @@ var wfLanguage = {
                 "terminals": [
                     {
                         "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "out",
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     },
                     {
                         "direction": [0,-1], "offsetPosition": {"left": 8, "top": -15 }, "name": "in1",
@@ -513,12 +513,12 @@ var wfLanguage = {
                     {
                         "direction": [-1,0], "offsetPosition": {"left": -14, "bottom": 8 }, "name": "no",
                         "label": "msg://Decision.no", "labelPosition": {"left": -18, "top": 25},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     },
                     {
                         "direction": [1,0], "offsetPosition": {"right": -14, "top": 8 }, "name": "yes",
                         "label": "msg://Decision.yes", "labelPosition": {"right": -20, "top": 25},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -576,7 +576,7 @@ var wfLanguage = {
                     {
                         "direction": [0,1], "offsetPosition": {"left": 152, "bottom": -15 }, "name": "subProcCompleted",
                         "label": "msg://SubProc.subProcCompleted", "labelPosition": {"left": 172, "bottom": -15},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
@@ -662,7 +662,7 @@ var wfLanguage = {
                     },
                     {
                         "direction": [0,1], "offsetPosition": {"left": 8, "bottom": -15 }, "name": "out",
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true, "nMaxWires": 1
                     }
                 ]
             }
