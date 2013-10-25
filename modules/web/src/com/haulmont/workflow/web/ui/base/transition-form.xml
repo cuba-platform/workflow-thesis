@@ -39,10 +39,10 @@
         </hierarchicalDatasource>
     </dsContext>
 
-    <layout expand="tabsheet">
-        <tabSheet id="tabsheet">
+    <layout expand="tabsheet" margin="true" spacing="true">
+        <tabSheet id="tabsheet" width="100%">
             <tab id="mainTab" caption="msg://mainTab">
-                <vbox id="mainPane" spacing="true" margin="true">
+                <vbox id="mainPane" spacing="true" margin="true" height="100%">
                     <hbox id="outcomeTextBox">
                         <label value="msg://transition" width="${labelWidth}"/>
                         <textField id="outcomeText" width="${width}"/>
@@ -91,7 +91,7 @@
                 <hbox id="requiredAttachmentsPane"/>
             </tab>
         </tabSheet>
-        <vbox margin="true">
+        <vbox>
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
     </layout>

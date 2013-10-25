@@ -142,7 +142,8 @@ public class TransitionForm extends AbstractForm {
         } else {
             if (commentTextPane != null) {
                 mainPane.expand(commentTextPane);
-                commentTextPane.expand(commentText);
+                commentText.setRows(0);
+                commentText.setHeight("100%");
             }
         }
 
