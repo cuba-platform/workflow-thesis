@@ -22,11 +22,15 @@
     </dsContext>
 
     <layout expand="aTable" spacing="true">
-        <hbox align="MIDDLE_LEFT" spacing="true">
-            <button action="aTable.refresh" icon="icons/refresh.png"/>
-            <button action="aTable.open" icon="icons/edit.png"/>
-        </hbox>
         <table id="aTable" editable="false" width="100%">
+            <actions>
+                <action id="open" invoke="openAssignment" caption="msg://open" icon="icons/edit.png"/>
+                <action id="refresh"/>
+            </actions>
+            <buttonsPanel>
+                <button action="aTable.open"/>
+                <button action="aTable.refresh"/>
+            </buttonsPanel>
             <columns>
                 <column id="locDescription" caption="msg://description"/>
                 <column id="card.description" caption="msg://card"/>

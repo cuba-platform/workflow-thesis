@@ -17,10 +17,6 @@ import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHe
 
 public class CardEditor extends AbstractCardEditor {
 
-  def CardEditor(IFrame frame) {
-    super(frame);
-  }
-
     public void init(Map<String, Object> params) {
     super.init(params);
 

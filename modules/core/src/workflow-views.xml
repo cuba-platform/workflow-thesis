@@ -149,6 +149,7 @@
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="browse" extends="_local">
         <property name="card" view="browse"/>
+        <property name="proc" view="_local"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Assignment" name="resolutions" extends="_local">
