@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -61,8 +62,7 @@ public class CardCommentFrame extends AbstractWindow {
 
     public void init(Map<String, Object> params) {
         super.init(params);
-
-        card = (Card) params.get("item");
+        card = WindowParams.ITEM.getEntity(params);
         justCreated = (Boolean) params.get("justCreated");
         if (!PersistenceHelper.isNew(card)) {
             LoadContext ctx = new LoadContext(card.getClass()).setId(card.getId())
