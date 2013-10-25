@@ -17,6 +17,7 @@ import com.haulmont.workflow.core.entity.CardRole;
 import groovy.lang.Binding;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -348,6 +349,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                 variables.put("script", getScriptByNotificationType(processPath, type));
             }
             final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
+            if (message.getSubject().length() > 500) {
+                message.setSubject(message.getSubject().substring(0, 500));
+            }
 
             WfMailWorker wfMailWorker = AppBeans.get(WfMailWorker.NAME);
             try {
@@ -490,6 +494,8 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             }
 
             tx.commit();
+        } catch (Exception ex) {
+            log.error(ExceptionUtils.getStackTrace(ex));
         } finally {
             tx.end();
         }
