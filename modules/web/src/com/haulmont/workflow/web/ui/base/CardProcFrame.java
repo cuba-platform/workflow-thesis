@@ -302,8 +302,12 @@ public class CardProcFrame extends AbstractFrame {
                                  * Need to reload card here, cause it was committed before and version was increased.
                                  * In this case, need to set proc again
                                  */
+
+                                Map<String, Object> initialProcessVariables = card.getInitialProcessVariables();
+
                                 card = dataSupplier.reload(card, "edit");
                                 card.setProc(proc);
+                                card.setInitialProcessVariables(initialProcessVariables);
 
                                 List<Entity> commitInstances = new ArrayList<>();
                                 commitInstances.add(card);
