@@ -97,7 +97,9 @@ public class CardSend extends AbstractWindow {
 
         registerItemHandler(createAnyUserCaption, new UserItemHandler() {
             public void handleItem(Object value) {
-                Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("multiSelect", "true");
+                Map<String, Object> lookupParams = new HashMap<String, Object>();
+                lookupParams.put("multiSelect", "true");
+                lookupParams.put("activeOnly", "true");
                 App.getInstance().getWindowManager().getDialogParams().setWidth(750);
                 openLookup("sec$User.lookup", new Lookup.Handler() {
                     public void handleLookup(Collection items) {
