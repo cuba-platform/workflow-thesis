@@ -168,9 +168,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 delBtn.setEnabled(true);
 
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                Map<UUID, String> uploads = uploadField.getUploadsMap();
 
-                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
+                for (Map.Entry<UUID, String> upload : uploadField.getUploadsMap().entrySet()) {
                     FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
                     filesDs.addItem(fDesc);
                     Attachment attach = creator.createObject();
@@ -189,7 +188,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                     descriptors.put(fDesc, upload.getKey());
                     attachDs.includeItem(attach);
                 }
-                uploads.clear();
+                uploadField.clearUploads();
                 uploadsTable.refresh();
             }
 
