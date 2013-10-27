@@ -42,7 +42,7 @@
     <layout expand="tabsheet" margin="true" spacing="true">
         <tabSheet id="tabsheet" width="100%">
             <tab id="mainTab" caption="msg://mainTab">
-                <vbox id="mainPane" spacing="true" margin="true" height="100%">
+                <vbox id="mainPane" spacing="true" margin="true">
                     <hbox id="outcomeTextBox">
                         <label value="msg://transition" width="${labelWidth}"/>
                         <textField id="outcomeText" width="${width}"/>
