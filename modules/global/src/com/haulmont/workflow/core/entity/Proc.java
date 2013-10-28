@@ -49,10 +49,6 @@ public class Proc extends StandardEntity {
     @Column(name = "STATES", length = 500)
     protected String states;
 
-    @OneToMany(mappedBy = "proc")
-    @Composition
-    protected List<ProcStage> stages;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
     @OnDeleteInverse(DeletePolicy.UNLINK)
@@ -126,14 +122,6 @@ public class Proc extends StandardEntity {
 
     public void setStates(String states) {
         this.states = states;
-    }
-
-    public List<ProcStage> getStages() {
-        return stages;
-    }
-
-    public void setStages(List<ProcStage> stages) {
-        this.stages = stages;
     }
 
     public Design getDesign() {

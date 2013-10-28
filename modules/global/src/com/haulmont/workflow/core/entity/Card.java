@@ -85,11 +85,6 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     protected List<CardVariable> cardVariables;
 
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
-    @OrderBy("startDate")
-    @Composition
-    protected List<CardStage> stages;
-
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     @OrderBy("createTs")
     @Composition
     protected List<CardAttachment> attachments;
@@ -306,14 +301,6 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
 
     public void setAssignments(Set<Assignment> assignments) {
         this.assignments = assignments;
-    }
-
-    public List<CardStage> getStages() {
-        return stages;
-    }
-
-    public void setStages(List<CardStage> stages) {
-        this.stages = stages;
     }
 
     public Boolean getHasAttachments() {

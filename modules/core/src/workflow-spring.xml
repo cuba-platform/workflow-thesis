@@ -88,8 +88,6 @@
                        value-ref="workflow_PermissionsManager"/>
                 <entry key="${cuba.webContextName}.workflow:type=NotificationMatrix"
                        value-ref="workflow_NotificationMatrixMBean"/>
-                <entry key="${cuba.webContextName}.workflow:type=ProcStageManager"
-                       value-ref="workflow_ProcStageManagerMBean"/>
                 <entry key="${cuba.webContextName}.workflow:type=SmsSender"
                        value-ref="workflow_SmsSenderMBean"/>
                 <entry key="${cuba.webContextName}.workflow:type=SmsManager"

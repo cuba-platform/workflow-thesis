@@ -39,7 +39,6 @@ public class UniversalAssigner extends MultiAssigner {
 
     Boolean finishBySingleUser
 
-    //todo add stage duration control!
     @Override
     protected boolean createAssignment(ActivityExecution execution) {
 
