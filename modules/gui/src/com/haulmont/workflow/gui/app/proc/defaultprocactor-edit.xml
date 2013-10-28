@@ -5,7 +5,7 @@
 
 <window
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.workflow.web.ui.proc.DefaultProcActorEditor"
+        class="com.haulmont.workflow.gui.app.proc.DefaultProcActorEditor"
         datasource="dpaDs"
         caption="msg://defaultProcActorEditor"
         focusComponent="userLookup"
@@ -38,12 +38,10 @@
                                optionsDatasource="usersDs" width="${width}"
                                required="true" requiredMessage="msg://userMsg"/>
                 </row>
-                <#if param$isMulti?has_content && param$isMulti == true>
                 <row>
                     <label value="msg://dpa.sortOrder"/>
                     <lookupField id="sortOrderField" width="${width}"/>
                 </row>
-                </#if>
                 <row>
                     <label value="msg://notifyByEmail"/>
                     <checkBox id="notifyByEmail" datasource="dpaDs" property="notifyByEmail"/>

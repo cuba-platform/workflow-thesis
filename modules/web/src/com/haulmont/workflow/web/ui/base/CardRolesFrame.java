@@ -854,11 +854,11 @@ public class CardRolesFrame extends AbstractFrame {
                 cr.setSortOrder(1);
         } else if (cr.getProcRole().getMultiUser()) {
             int max = getMaxSortOrderInCardRoles(cardRoles);
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
+            if (cr.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL) {
                 cr.setSortOrder(max);
                 changeSortOrderByAllParallelCardRoles(max);
             }
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
+            if (cr.getProcRole().getOrderFillingType() == OrderFillingType.SEQUENTIAL) {
                 int parallelGroupNumb = getParallelGroupNumberCardRoles();
                 if (parallelGroupNumb >= max)
                     cr.setSortOrder(parallelGroupNumb + 1);
@@ -885,7 +885,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected int getParallelGroupNumberCardRoles() {
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole role = tmpCardRolesDs.getItem(id);
-            if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
+            if (role.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL)
                 return role.getSortOrder();
         }
         return 0;
@@ -894,7 +894,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected void changeSortOrderByAllParallelCardRoles(int sortOrder) {
         for (UUID id : tmpCardRolesDs.getItemIds()) {
             CardRole role = tmpCardRolesDs.getItem(id);
-            if (OrderFillingType.fromId(role.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL))
+            if (role.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL)
                 role.setSortOrder(sortOrder);
         }
     }

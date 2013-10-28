@@ -2,7 +2,7 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.workflow.web.ui.proc
+package com.haulmont.workflow.gui.app.proc
 
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.gui.components.AbstractEditor
@@ -21,6 +21,7 @@ class DefaultProcActorEditor extends AbstractEditor{
   CollectionDatasource usersDs
   List<UUID> userIds;
   boolean isMulti
+  LookupField sortOrderField;
 
   public void init(Map<String, Object> params) {
     super.init(params);
@@ -29,6 +30,7 @@ class DefaultProcActorEditor extends AbstractEditor{
     if (userIds == null)
       userIds = new ArrayList<UUID>();
     isMulti = params["isMulti"]
+    sortOrderField = getComponent("sortOrderField")
   }
 
   public void setItem(Entity item) {
@@ -43,8 +45,11 @@ class DefaultProcActorEditor extends AbstractEditor{
       usersDs.setQuery('select u from sec$User u where u.id not in (:custom$userIds) and u.active = true order by u.name')
     }
     usersDs.refresh(['secRole': secRole, 'userIds':userIds])
-    if (isMulti)
-      initDpaSortOrder()
+    if (dpa.procRole.multiUser) {
+        initDpaSortOrder()
+    } else {
+        sortOrderField.editable = false
+    }
   }
 
   private void initDpaSortOrder() {
