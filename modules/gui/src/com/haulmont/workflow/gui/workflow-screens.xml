@@ -18,5 +18,41 @@
     <screen id="wf$ProcRole.edit"
             template="/com/haulmont/workflow/gui/app/proc/proc-role-edit.xml"/>
 
+    <screen id="wf$Design.browse"
+            template="/com/haulmont/workflow/gui/app/design/design-browse.xml"/>
+
+    <screen id="wf$Design.edit"
+            template="/com/haulmont/workflow/gui/app/design/design-edit.xml"/>
+
+    <screen id="wf$Design.deploy"
+            template="/com/haulmont/workflow/gui/app/design/deploy-design.xml"/>
+
+    <screen id="wf$Design.import"
+            template="/com/haulmont/workflow/gui/app/design/design-import.xml"/>
+
+    <screen id="wf$Design.notificationMatrix"
+            template="/com/haulmont/workflow/gui/app/design/notification-matrix.xml"/>
+
+    <screen id="wf$Design.localize"
+            template="/com/haulmont/workflow/gui/app/design/localize-design.xml"/>
+
+    <screen id="wf$DesignProcessVariable.browse"
+            template="/com/haulmont/workflow/gui/app/designprocessvariables/browse/design-process-variable-browse.xml"/>
+
+    <screen id="wf$DesignProcessVariable.edit"
+            template="/com/haulmont/workflow/gui/app/designprocessvariables/edit/design-process-variable-edit.xml"/>
+
+    <screen id="wf$DesignScript.browse"
+            template="/com/haulmont/workflow/gui/app/designscript/design-scripts.xml"/>
+
+    <screen id="wf$ProcVariable.browse"
+            template="/com/haulmont/workflow/gui/app/procvariable/browse/proc-variable-browse.xml"/>
+
+    <screen id="wf$ProcVariable.edit" template="/com/haulmont/workflow/gui/app/procvariable/edit/proc-variable-edit.xml"/>
+
+    <screen id="wf$CardVariable.browse"
+            template="/com/haulmont/workflow/gui/app/cardvariables/browse/card-variable-browse.xml"/>
+
+    <screen id="wf$CardVariable.edit" template="/com/haulmont/workflow/gui/app/cardvariables/edit/card-variable-edit.xml"/>
 
 </screen-config>

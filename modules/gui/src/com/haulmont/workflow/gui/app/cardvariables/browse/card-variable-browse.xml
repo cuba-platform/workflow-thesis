@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.cardvariables.browse.CardVariableBrowser"
+        messagesPack="com.haulmont.workflow.gui.app.cardvariables"
+        lookupComponent="table"
+        caption="msg://cardvariables.browser.caption">
+    <dsContext>
+        <groupDatasource
+                id="designProcessVariableDs"
+                class="com.haulmont.workflow.core.entity.CardVariable"
+                view="_local">
+            <query>
+                select dpv from wf$CardVariable dpv where dpv.card.id = :param$card order by dpv.name
+            </query>
+        </groupDatasource>
+    </dsContext>
+
+    <layout expand="table">
+        <groupTable id="table">
+            <buttonsPanel>
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+                <button action="table.refresh" icon="icons/refresh.png"/>
+            </buttonsPanel>
+
+            <columns>
+                <column id="moduleName"/>
+                <column id="name"/>
+                <column id="propertyName"/>
+                <column id="alias"/>
+                <column id="value"/>
+                <column id="overridden"/>
+            </columns>
+            <rows datasource="designProcessVariableDs"/>
+        </groupTable>
+    </layout>
+</window>

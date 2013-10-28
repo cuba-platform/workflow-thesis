@@ -1,0 +1,56 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.design.DeployDesignWindow"
+        messagesPack="com.haulmont.workflow.gui.app.design"
+        caption="msg://deploy.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="proc-deploy">
+            <query>
+                select p from wf$Proc p where p.design is not null order by p.name
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="secRoles" class="com.haulmont.cuba.security.entity.Role" view="_local">
+                <query>
+                     select r from sec$Role r
+                </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <grid id="grid" spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://designName"/>
+                    <label id="designNameLab"/>
+                </row>
+                <row>
+                    <label value="msg://newProc"/>
+                    <checkBox id="newProcField"/>
+                </row>
+                <row>
+                    <label value="msg://availableOnlyForRole"/>
+                    <lookupField id="roleField" optionsDatasource="secRoles" width="300" />
+                </row>
+                <row>
+                    <label value="msg://existingProc"/>
+                    <lookupField id="procField" optionsDatasource="procDs" enable="false" width="300"/>
+                </row>
+            </rows>
+        </grid>
+        <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false" expandable="false" height="100%">
+            <button id="deployBtn" icon="icons/ok.png"/>
+            <button id="cancelBtn" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>
