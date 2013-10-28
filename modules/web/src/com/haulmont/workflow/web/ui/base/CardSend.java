@@ -101,7 +101,7 @@ public class CardSend extends AbstractWindow {
                 lookupParams.put("multiSelect", "true");
                 lookupParams.put("activeOnly", "true");
                 App.getInstance().getWindowManager().getDialogParams().setWidth(750);
-                openLookup("sec$User.lookup", new Lookup.Handler() {
+                Window usersLookupWindow = openLookup("sec$User.lookup", new Lookup.Handler() {
                     public void handleLookup(Collection items) {
                         for (Object item : items) {
                             User user = (User) item;
@@ -110,6 +110,12 @@ public class CardSend extends AbstractWindow {
                         }
                     }
                 }, WindowManager.OpenType.DIALOG, lookupParams);
+                usersLookupWindow.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        createUserLookup.setValue(null);
+                    }
+                });
             }
         });
         registerItemHandler(createAllUsersCaption, new UserItemHandler() {
@@ -125,6 +131,7 @@ public class CardSend extends AbstractWindow {
                 User user = card.getCreator();
                 if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null)
                     tmpUserDs.addItem(user);
+                createUserLookup.setValue(null);
             }
         });
         registerItemHandler(createCreatorUserCaption, new UserItemHandler() {
@@ -133,6 +140,7 @@ public class CardSend extends AbstractWindow {
                 if (user != null && !alreadyAdded(user) && user.getCreatedBy() != null) {
                     tmpUserDs.addItem(user);
                 }
+                createUserLookup.setValue(null);
             }
         });
         registerItemHandler("default", new UserItemHandler() {
@@ -150,6 +158,7 @@ public class CardSend extends AbstractWindow {
                         }
                     }
                 }
+                createUserLookup.setValue(null);
             }
         });
 
@@ -161,7 +170,6 @@ public class CardSend extends AbstractWindow {
                     return;
                 UserItemHandler handler = resolveItemHandler((String) value);
                 handler.handleItem(value);
-                createUserLookup.setValue(null);
             }
         });
 
