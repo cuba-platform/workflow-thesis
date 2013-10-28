@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.procvariable.edit.ProcVariableEditor"
+        messagesPack="com.haulmont.workflow.gui.app.procvariable"
+        datasource="processVariableDs"
+        caption="msg://procVariable.editor.caption">
+
+    <dsContext>
+        <datasource
+                id="processVariableDs"
+                class="com.haulmont.workflow.core.entity.ProcVariable"
+                view="procVariable.edit">
+        </datasource>
+    </dsContext>
+
+    <layout expand="buttons" spacing="true">
+        <fieldGroup id="designProcessFields" datasource="processVariableDs" width="100%">
+            <column width="100%">
+                <field id="name" required="true"/>
+                <field id="moduleName" />
+                <field id="propertyName" />
+                <field id="alias" required="true"/>
+                <field id="attributeType" required="true"/>
+                <field id="metaClassName" custom="true" caption="msg://metaClass"/>
+                <field id="stringValue" custom="true" caption="msg://value"/>
+                <field id="dateValue" custom="true" caption="msg://value"/>
+                <field id="booleanValue" custom="true" caption="msg://value"/>
+                <field id="useLookup" custom="true" caption="msg://useLookup"/>
+                <field id="lookupValue" custom="true" caption="msg://value"/>
+                <field id="actionsFieldValue" custom="true" caption="msg://value"/>
+                <field id="comment" rows="3"/>
+            </column>
+        </fieldGroup>
+        <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

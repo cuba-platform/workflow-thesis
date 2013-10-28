@@ -1,0 +1,95 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.design.DesignBrowser"
+        messagesPack="com.haulmont.workflow.gui.app.design"
+        caption="msg://browser.caption"
+        focusComponent="designTable"
+        >
+
+    <dsContext>
+        <groupDatasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="browse">
+            <query>
+                select d from wf$Design d order by d.name
+                <filter>
+                    <and>
+                        <c>d.id = :param$id</c>
+                        <c>d.src like :param$subprocId</c>
+                    </and>
+                </filter>
+            </query>
+        </groupDatasource>
+
+        <groupDatasource
+                id="designProcessVariableDs"
+                class="com.haulmont.workflow.core.entity.DesignProcessVariable"
+                view="_local">
+            <query>
+                select dpv from wf$DesignProcessVariable dpv where dpv.design.id = :ds$designDs order by dpv.name
+            </query>
+        </groupDatasource>
+    </dsContext>
+
+    <layout expand="tablePanel" height="100%" margin="true">
+        <vbox id="tablePanel" expand="table" spacing="true">
+            <filter id="genericFilter" datasource="designDs">
+                <properties include=".*"/>
+            </filter>
+            <hbox id="table" spacing="true" width="100%" height="100%" expand="mainBox">
+                <split id="mainBox" orientation="vertical" pos="70" width="100%" height="100%">
+                    <vbox id="designBox" expand="designTable" width="100%" height="100%">
+                        <groupTable id="designTable" multiselect="true" width="100%" height="100%">
+                            <buttonsPanel>
+                                <button action="designTable.create" icon="icons/create.png"/>
+                                <button action="designTable.edit" icon="icons/edit.png"/>
+                                <button action="designTable.design" icon="icons/edit.png"/>
+                                <button action="designTable.editProcessVariables"/>
+                                <button action="designTable.remove" icon="icons/remove.png"/>
+                                <button action="designTable.copy" icon="icons/copy.png"/>
+                            </buttonsPanel>
+                            <columns>
+                                <column id="name"/>
+                                <column id="type"/>
+                                <column id="createTs"/>
+                                <column id="compileTs"/>
+                                <column id="notificationMatrix"/>
+                            </columns>
+                            <rows datasource="designDs"/>
+                        </groupTable>
+                    </vbox>
+                    <vbox id="variablesBox" width="100%" height="100%" expand="variablesTable">
+                        <label stylename="h2" value="msg://variables"/>
+                        <groupTable id="variablesTable" width="100%" height="100%">
+                            <columns>
+                                <column id="moduleName"/>
+                                <column id="name"/>
+                                <column id="propertyName"/>
+                                <column id="alias"/>
+                                <column id="attributeType"/>
+                                <column id="value"/>
+                                <column id="shouldBeOverridden"/>
+                                <column id="overridden"/>
+                                <column id="comment"/>
+                            </columns>
+                            <rows datasource="designProcessVariableDs"/>
+                        </groupTable>
+                    </vbox>
+                </split>
+                <vbox id="rightPanel" width="190px" margin="true" spacing="true">
+                    <button width="100%" action="designTable.import" icon="icons/wf-design-import.png"/>
+                    <button width="100%" action="designTable.export" icon="icons/wf-design-export.png"/>
+                    <button id="showAffectedDesigns" width="100%" action="designTable.showAffectedDesigns"/>
+                    <button width="100%" action="designTable.scripts" icon="icons/wf-design-scripts.png"/>
+                    <popupButton width="100%" id="notificationMatrix" caption="msg://notificationMatrix"/>
+                    <button width="100%" action="designTable.localize"/>
+                    <button width="100%" action="designTable.compile" icon="icons/wf-design-compile.png"/>
+                    <button width="100%" action="designTable.deploy" icon="icons/wf-design-deploy.png"/>
+                </vbox>
+            </hbox>
+        </vbox>
+    </layout>
+</window>

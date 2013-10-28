@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.designprocessvariables.browse.DesignProcessVariableBrowser"
+        messagesPack="com.haulmont.workflow.gui.app.designprocessvariables"
+        lookupComponent="table"
+        caption="msg://designProcessVariable.browser.caption">
+    <dsContext>
+        <groupDatasource
+                id="designProcessVariableDs"
+                class="com.haulmont.workflow.core.entity.DesignProcessVariable"
+                view="_local">
+            <query>
+                select dpv from wf$DesignProcessVariable dpv where dpv.design.id = :param$design order by dpv.name
+            </query>
+        </groupDatasource>
+    </dsContext>
+
+    <layout expand="table">
+        <groupTable id="table" multiselect="true" width="100%">
+            <buttonsPanel>
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+                <button action="table.refresh" icon="icons/refresh.png"/>
+            </buttonsPanel>
+
+            <columns>
+                <column id="moduleName"/>
+                <column id="name"/>
+                <column id="propertyName"/>
+                <column id="alias"/>
+                <column id="attributeType"/>
+                <column id="value"/>
+                <column id="shouldBeOverridden"/>
+                <column id="overridden"/>
+                <column id="comment"/>
+            </columns>
+            <rows datasource="designProcessVariableDs"/>
+        </groupTable>
+    </layout>
+</window>

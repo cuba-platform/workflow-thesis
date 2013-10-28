@@ -1,0 +1,39 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.cardvariables.edit.CardVariableEditor"
+        messagesPack="com.haulmont.workflow.gui.app.cardvariables"
+        datasource="processVariableDs"
+        caption="msg://cardvariables.editor.caption">
+
+    <dsContext>
+        <datasource
+                id="processVariableDs"
+                class="com.haulmont.workflow.core.entity.CardVariable"
+                view="cardVariable.edit">
+        </datasource>
+    </dsContext>
+
+    <layout expand="buttons">
+        <fieldGroup id="designProcessFields" datasource="processVariableDs" width="100%">
+            <column width="100%">
+                <field id="moduleName" editable="false"/>
+                <field id="propertyName" editable="false"/>
+                <field id="name" required="true"/>
+                <field id="alias" required="true"/>
+                <field id="attributeType" required="true"/>
+                <field id="metaClassName" custom="true" caption="msg://metaClass"/>
+                <field id="stringValue" custom="true" caption="msg://value"/>
+                <field id="dateValue" custom="true" caption="msg://value"/>
+                <field id="booleanValue" custom="true" caption="msg://value"/>
+                <field id="useLookup" custom="true" caption="msg://useLookup"/>
+                <field id="lookupValue" custom="true" caption="msg://value"/>
+                <field id="actionsFieldValue" custom="true" caption="msg://value"/>
+            </column>
+        </fieldGroup>
+        <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>
