@@ -271,7 +271,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     public String getLocState() {
         if (getState() == null)
             return "";
-        if (getProc() != null) {
+        if (getProc() != null && getProc().getMessagesPack() != null) {
             String messagesPack = getProc().getMessagesPack();
             Matcher matcher = Pattern.compile("[^ ,]+").matcher(getState());
             Set<String> states = new HashSet<>();
