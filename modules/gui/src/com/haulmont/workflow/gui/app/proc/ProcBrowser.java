@@ -3,14 +3,13 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.workflow.web.ui.proc;
+package com.haulmont.workflow.gui.app.proc;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.web.App;
 import com.haulmont.workflow.core.entity.Proc;
 
 import java.util.Collections;
@@ -45,9 +44,9 @@ public class ProcBrowser extends AbstractWindow {
 
             @Override
             public void doActionPerform(Component component) {
-                App.getInstance().getWindowManager().getDialogParams().setWidth(900);
-                App.getInstance().getWindowManager().getDialogParams().setHeight(600);
-                final Window window = openWindow("wf$ProcVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
+                getDialogParams().setWidth(900);
+                getDialogParams().setHeight(600);
+                openWindow("wf$ProcVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
             }
         });
     }

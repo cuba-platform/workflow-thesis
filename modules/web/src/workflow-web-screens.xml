@@ -4,7 +4,9 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<screen-config xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/5.0/screens.xsd">
+
+    <include file="/com/haulmont/workflow/gui/workflow-screens.xml"/>
 
     <screen id="wf$WorkCalendar.browse"
             template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-browse.xml"/>
@@ -28,15 +30,6 @@
     <screen id="wf$RemoveAttachmentConfirmDialog"
             template="/com/haulmont/workflow/web/ui/base/attachments/remove-attachment-confirm-dialog.xml"/>
 
-    <screen id="wf$Proc.browse"
-            template="/com/haulmont/workflow/web/ui/proc/proc-browse.xml"/>
-
-    <screen id="wf$Proc.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-edit.xml"/>
-
-    <screen id="wf$ProcRole.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-role-edit.xml"/>
-
     <screen id="wf$ProcRole.lookup"
             template="/com/haulmont/workflow/web/ui/proc/proc-role-lookup.xml"/>
 
@@ -48,9 +41,6 @@
 
     <screen id="wf$ProcStageType.browse"
             template="/com/haulmont/workflow/web/ui/proc/proc-stage-type-browse.xml"/>
-
-    <screen id="wf$DefaultProcActor.edit"
-            template="/com/haulmont/workflow/web/ui/proc/defaultprocactor-edit.xml"/>
 
     <screen id="wf$ProcRolePermission.edit"
             template="/com/haulmont/workflow/web/ui/proc/proc-role-permission-edit.xml"/>

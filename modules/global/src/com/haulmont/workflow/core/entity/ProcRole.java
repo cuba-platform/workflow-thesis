@@ -54,7 +54,7 @@ public class ProcRole extends StandardEntity {
     protected Integer sortOrder;
 
     @Column(name = "ORDER_FILLING_TYPE")
-    protected String orderFillingType = "EndorsementSeq".equals(code) ? "S" : "P";
+    protected String orderFillingType;
 
     public List<DefaultProcActor> getDefaultProcActors() {
         return defaultProcActors;
@@ -136,11 +136,11 @@ public class ProcRole extends StandardEntity {
         this.sortOrder = sortOrder;
     }
 
-    public String getOrderFillingType() {
-        return orderFillingType;
+    public OrderFillingType getOrderFillingType() {
+        return OrderFillingType.fromId(orderFillingType);
     }
 
-    public void setOrderFillingType(String orderFillingType) {
-        this.orderFillingType = orderFillingType;
+    public void setOrderFillingType(OrderFillingType orderFillingType) {
+        this.orderFillingType = orderFillingType == null ? null : orderFillingType.getId();
     }
 }
