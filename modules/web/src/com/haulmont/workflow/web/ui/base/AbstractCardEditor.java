@@ -39,10 +39,10 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class AbstractCardEditor extends AbstractEditor {
+public abstract class AbstractCardEditor<T extends Card> extends AbstractEditor<T> {
 
     @Inject
-    protected Datasource<Card> cardDs;
+    protected Datasource<T> cardDs;
     @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
     @Inject
@@ -131,7 +131,7 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         }
 
         if (cardRolesFrame != null) {
-            cardRolesFrame.setCard((Card) getItem());
+            cardRolesFrame.setCard(getItem());
             accessData = getContext().getParamValue("accessData");
             if (accessData != null) {
                 boolean disabled = (accessData.getDisabledComponents() != null)
@@ -141,22 +141,22 @@ public abstract class AbstractCardEditor extends AbstractEditor {
         }
 
         if (resolutionsFrame != null) {
-            resolutionsFrame.setCard((Card) getItem());
+            resolutionsFrame.setCard(getItem());
         }
 
         final ActionsFrame actionsFrame = getComponent("actionsFrame");
 
         if (actionsFrame != null) {
-            initActionsFrame((Card) getItem(), actionsFrame);
+            initActionsFrame(getItem(), actionsFrame);
         }
     }
 
     protected void initActionsFrame(Card card, final ActionsFrame actionsFrame) {
         if (PersistenceHelper.isNew(card)) {
             actionsFrame.initActions(card, isCommentVisible());
-            cardDs.addListener(new DsListenerAdapter<Card>() {
+            cardDs.addListener(new DsListenerAdapter<T>() {
                 @Override
-                public void valueChanged(Card source, String property, Object prevValue, Object value) {
+                public void valueChanged(T source, String property, Object prevValue, Object value) {
                     if ("proc".equals(property)) {
                         actionsFrame.initActions(source, isCommentVisible());
                     }

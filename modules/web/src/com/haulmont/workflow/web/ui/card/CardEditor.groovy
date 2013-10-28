@@ -12,10 +12,11 @@ import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener.Operation
 import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
+import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.web.ui.base.AbstractCardEditor
 import com.haulmont.workflow.web.ui.base.attachments.AttachmentColumnGeneratorHelper
 
-public class CardEditor extends AbstractCardEditor {
+public class CardEditor extends AbstractCardEditor<Card> {
 
     public void init(Map<String, Object> params) {
     super.init(params);
