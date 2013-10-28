@@ -213,25 +213,6 @@ create table WF_CARD_ROLE (
 create index IDX_WF_CARD_ROLE_CARD on WF_CARD_ROLE(CARD_ID)^
 create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE(USER_ID, CODE)^
 
-create table WF_CARD_STAGE (
-    ID varchar2(32) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar2(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar2(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar2(50),
-    START_DATE timestamp,
-    END_DATE_PLAN timestamp,
-    END_DATE_FACT timestamp,
-    NOTIFIED char(1),
-    CARD_ID varchar2(32),
-    PROC_STAGE_ID varchar2(32),
-    primary key(ID)
-)^
-create index IDX_WF_CARD_STAGE_CARD on WF_CARD_STAGE(CARD_ID)^
-
 create table WF_DEFAULT_PROC_ACTOR (
     ID varchar2(32) not null,
     CREATE_TS timestamp,
@@ -361,51 +342,6 @@ create table WF_PROC_ROLE_PERMISSION (
     STATE varchar2(255),
     VALUE numeric,
     PERMISSION_TYPE numeric,
-    primary key(ID)
-)^
-
-create table WF_PROC_STAGE (
-    ID varchar2(32) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar2(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar2(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar2(50),
-    NAME varchar2(255),
-    DURATION numeric,
-    TIME_UNIT varchar2(1),
-    PROC_ID varchar2(32),
-    START_ACTIVITY varchar2(200),
-    END_ACTIVITY varchar2(200),
-    END_TRANSITION varchar2(200),
-    NOTIFICATION_SCRIPT varchar2(200),
-    NOTIFY_CURRENT_ACTOR char(1),
-    PROC_STAGE_TYPE_ID varchar2(32),
-    DURATION_SCRIPT_ENABLED char(1),
-    DURATION_SCRIPT clob,
-    primary key(ID)
-)^
-create index IDX_WF_PROC_STAGE_PROC on WF_PROC_STAGE(PROC_ID)^
-
-create table WF_PROC_STAGE_PROC_ROLE (
-    PROC_STAGE_ID varchar2(32) not null,
-    PROC_ROLE_ID varchar2(32) not null,
-    primary key(PROC_STAGE_ID)
-)^
-
-create table WF_PROC_STAGE_TYPE (
-    ID varchar2(32) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar2(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar2(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar2(50),
-    NAME varchar2(200),
-    CODE varchar2(200),
     primary key(ID)
 )^
 

@@ -33,15 +33,6 @@
     <screen id="wf$ProcRole.lookup"
             template="/com/haulmont/workflow/web/ui/proc/proc-role-lookup.xml"/>
 
-    <screen id="wf$ProcStage.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-stage-edit.xml"/>
-
-    <screen id="wf$ProcStageType.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-stage-type-edit.xml"/>
-
-    <screen id="wf$ProcStageType.browse"
-            template="/com/haulmont/workflow/web/ui/proc/proc-stage-type-browse.xml"/>
-
     <screen id="wf$ProcRolePermission.edit"
             template="/com/haulmont/workflow/web/ui/proc/proc-role-permission-edit.xml"/>
 

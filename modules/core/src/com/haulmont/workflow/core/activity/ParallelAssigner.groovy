@@ -6,23 +6,20 @@ package com.haulmont.workflow.core.activity
 
 import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
-import com.haulmont.cuba.core.Locator
-
+import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.CardRole
+import com.haulmont.workflow.core.exception.WorkflowException
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.ExecutionService
 import org.jbpm.api.activity.ActivityExecution
-
-import com.haulmont.workflow.core.entity.CardRole
-import com.haulmont.workflow.core.exception.WorkflowException
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.cuba.core.global.UserSessionProvider
 
 public class ParallelAssigner extends MultiAssigner {
 
@@ -87,8 +84,6 @@ public class ParallelAssigner extends MultiAssigner {
       assignmentsCardRoleMap.put(assignment, cr)
     }
 
-    createStages(master);
-
     notificationMatrix.notifyByCardAndAssignments(card, assignmentsCardRoleMap, notificationState);
     return true
   }
@@ -151,7 +146,6 @@ public class ParallelAssigner extends MultiAssigner {
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
       Card card = findCard(execution)
-      finishStages(card, execution, signalName)
       afterSignal(execution, signalName, parameters)
     }
   }
