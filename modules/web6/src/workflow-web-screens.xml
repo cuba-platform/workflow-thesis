@@ -14,12 +14,6 @@
     <screen id="wf$AttachUploader"
                 template="/com/haulmont/workflow/web/ui/base/attachments/attach-uploader.xml"/>
 
-    <screen id="wf$AttachTypes.browse"
-            template="/com/haulmont/workflow/web/ui/attachmenttypes/type-browse.xml"/>
-
-    <screen id="wf$AttachmentType.edit"
-            template="/com/haulmont/workflow/web/ui/attachmenttypes/type-edit.xml"/>
-
     <screen id="wf$RemoveAttachmentConfirmDialog"
             template="/com/haulmont/workflow/web/ui/base/attachments/remove-attachment-confirm-dialog.xml"/>
 
