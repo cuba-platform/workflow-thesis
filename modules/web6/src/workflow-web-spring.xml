@@ -19,7 +19,6 @@
                 <entry key="workflow_DesignerService" value="com.haulmont.workflow.core.app.DesignerService"/>
                 <entry key="workflow_MailService" value="com.haulmont.workflow.core.app.MailService"/>
                 <entry key="workflow_NotificationMatrixService" value="com.haulmont.workflow.core.app.NotificationMatrixService"/>
-                <entry key="workflow_procRolePermissionsService" value="com.haulmont.workflow.core.app.ProcRolePermissionsService"/>
                 <entry key="workflow_WorkCalendarService" value="com.haulmont.workflow.core.app.WorkCalendarService"/>
                 <entry key="workflow_SmsService" value="com.haulmont.workflow.core.app.SmsService"/>
                 <entry key="workflow_ProcessVariableService" value="com.haulmont.workflow.core.app.ProcessVariableService"/>                

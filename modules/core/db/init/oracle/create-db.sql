@@ -328,23 +328,6 @@ create table WF_PROC_ROLE (
 )^
 create index IDX_WF_PROC_ROLE_PROC on WF_PROC_ROLE(PROC_ID)^
 
-create table WF_PROC_ROLE_PERMISSION (
-    ID varchar2(32) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar2(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar2(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar2(50),
-    PROC_ROLE_FROM_ID varchar2(32),
-    PROC_ROLE_TO_ID varchar2(32),
-    STATE varchar2(255),
-    VALUE numeric,
-    PERMISSION_TYPE numeric,
-    primary key(ID)
-)^
-
 create table WF_PROC_STATE (
     ID varchar2(32) not null,
     CREATE_TS timestamp,

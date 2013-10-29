@@ -83,9 +83,6 @@ public class CardProcFrame extends AbstractFrame {
 
     protected String createProcCaption;
 
-//    @Inject
-//    protected ProcRolePermissionsService procRolePermissionsService;
-
     @Inject
     protected UserSession userSession;
 

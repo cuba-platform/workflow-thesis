@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/5.0/view.xsd">
 
     <include file="cuba-views.xml"/>
 
@@ -64,7 +64,6 @@
 
     <view class="com.haulmont.workflow.core.entity.ProcRole" name="edit-w-permissions" extends="_local">
         <property name="defaultProcActors" view="browse"/>
-        <property name="permissions" view="browse"/>
         <property name="role" view="_local"/>
     </view>
 
@@ -212,15 +211,6 @@
 
     <view class="com.haulmont.workflow.core.entity.CardInfo" name="card-browse" extends="_local">
         <property name="card" view="_minimal"/>
-    </view>
-
-    <view class="com.haulmont.workflow.core.entity.ProcRolePermission" name="browse" extends="_local">
-        <property name="procRoleTo" view="_minimal"/>
-    </view>
-
-    <view class="com.haulmont.workflow.core.entity.ProcRolePermission" name="edit" extends="_local">
-        <property name="procRoleFrom" view="card-edit"/>
-        <property name="procRoleTo" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.UserGroup" name="browse" extends="_local">

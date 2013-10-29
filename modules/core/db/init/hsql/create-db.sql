@@ -419,28 +419,6 @@ create table WF_CALENDAR (
 
 ------------------------------------------------------------------------------------------------------------
 
-create table WF_PROC_ROLE_PERMISSION (
-    ID varchar(36) not null,
-    CREATE_TS timestamp,
-    CREATED_BY varchar(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar(50),
-    PROC_ROLE_FROM_ID varchar(36),
-    PROC_ROLE_TO_ID varchar(36),
-    STATE varchar(255),
-    VALUE numeric(2),
-    PERMISSION_TYPE numeric(2),
-    primary key (ID)
-)^
-
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PER_TO_PRO_ROL foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID)^
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROL_PER_FRO_PRO_ROL foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID)^
-
-------------------------------------------------------------------------------------------------------------
-
 create table WF_USER_GROUP (
     ID varchar(36) not null,
     CREATE_TS timestamp,
