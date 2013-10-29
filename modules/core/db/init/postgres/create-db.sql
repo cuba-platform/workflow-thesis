@@ -472,28 +472,6 @@ create index IDX_WF_CALENDAR_WORK_DAY on WF_CALENDAR (WORK_DAY)^
 
 ------------------------------------------------------------------------------------------------------------
 
-create table WF_PROC_ROLE_PERMISSION (
-    ID uuid,
-    CREATE_TS timestamp,
-    CREATED_BY varchar(50),
-    VERSION integer,
-    UPDATE_TS timestamp,
-    UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar(50),
-    PROC_ROLE_FROM_ID uuid,
-    PROC_ROLE_TO_ID uuid,
-    STATE varchar(255),
-    VALUE numeric(2),
-    PERMISSION_TYPE numeric(2),
-    primary key (ID)
-)^
-
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PER_TO_PRO_ROL foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE (ID)^
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROL_PER_FRO_PRO_ROL foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE (ID)^
-
-------------------------------------------------------------------------------------------------------------
-
 create table WF_USER_GROUP (
     ID uuid,
     CREATE_TS timestamp,

@@ -36,9 +36,6 @@
     <screen id="wf$DefaultProcActor.edit"
             template="/com/haulmont/workflow/web/ui/proc/defaultprocactor-edit.xml"/>
 
-    <screen id="wf$ProcRolePermission.edit"
-            template="/com/haulmont/workflow/web/ui/proc/proc-role-permission-edit.xml"/>
-
     <screen id="wf$Card.browse"
             template="/com/haulmont/workflow/web/ui/card/card-browse.xml"/>
 

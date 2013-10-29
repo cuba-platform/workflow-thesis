@@ -24,10 +24,8 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebLookupPickerField;
 import com.haulmont.cuba.web.gui.components.WebTextField;
-import com.haulmont.workflow.core.app.ProcRolePermissionsService;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
-import com.haulmont.workflow.core.global.ProcRolePermissionType;
 import com.haulmont.workflow.core.global.TimeUnit;
 import com.haulmont.workflow.gui.base.action.CardRolesFrameHelper;
 import com.haulmont.workflow.web.ui.usergroup.UserGroupAdd;
@@ -88,9 +86,6 @@ public class CardRolesFrame extends AbstractFrame {
     @Inject
     protected Scripting scripting;
 
-    @Inject
-    protected ProcRolePermissionsService procRolePermissionsService;
-
     protected List<Component> rolesActions = new ArrayList<>();
     protected String createRoleCaption;
     protected Map<CardRole, CardRoleField> actorActionsFieldsMap = new HashMap<>();
@@ -150,13 +145,6 @@ public class CardRolesFrame extends AbstractFrame {
 
             Action editAction = rolesTable.getAction("edit");
             Action removeAction = rolesTable.getAction("remove");
-
-            @Override
-            public void itemChanged(Datasource<CardRole> ds, CardRole prevItem, CardRole item) {
-                if (item == null) return;
-                removeAction.setVisible(removeAction.isVisible()
-                        && procRolePermissionsService.isPermitted(item, getState(), ProcRolePermissionType.REMOVE));
-            }
         });
 
         createRoleLookup.setValueChangingListener(new ValueChangingListener() {
@@ -224,8 +212,8 @@ public class CardRolesFrame extends AbstractFrame {
 
         initSortOrderColumn(vRolesTable);
         initDurationColumns();
-        initRolesTableBooleanColumn("notifyByEmail", procRolePermissionsService, vRolesTable);
-        initRolesTableBooleanColumn("notifyByCardInfo", procRolePermissionsService, vRolesTable);
+        initRolesTableBooleanColumn("notifyByEmail", vRolesTable);
+        initRolesTableBooleanColumn("notifyByCardInfo", vRolesTable);
 
 //        vRolesTable.setColumnCollapsingAllowed(false);
     }
@@ -447,8 +435,7 @@ public class CardRolesFrame extends AbstractFrame {
             }
         };
         addUserGroupAction.setIcon("icons/wf-user-group-button.png");
-        addUserGroupAction.setVisible(cardRole.getProcRole().getMultiUser()
-                /*&& procRolePermissionsService.isPermitted(card, cardRole.getProcRole(), getState(), ProcRolePermissionType.ADD)*/);
+        addUserGroupAction.setVisible(cardRole.getProcRole().getMultiUser());
         return addUserGroupAction;
 
     }
@@ -592,7 +579,6 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void initRolesTableBooleanColumn(final String propertyName,
-                                               final ProcRolePermissionsService procRolePermissionsService,
                                                final com.vaadin.ui.Table vRolesTable) {
         MetaPropertyPath propertyPath = tmpCardRolesDs.getMetaClass().getPropertyEx(propertyName);
         vRolesTable.removeGeneratedColumn(propertyPath);
@@ -605,7 +591,7 @@ public class CardRolesFrame extends AbstractFrame {
                 boolean value = (Boolean) property.getValue();
                 com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
                 checkBox.setValue(value);
-                boolean enabled = true; //procRolePermissionsService.isPermitted(cardRole, getState(), ProcRolePermissionType.MODIFY);
+                boolean enabled = true;
                 checkBox.setEnabled(enabled);
                 checkBox.addValueChangeListener(new Property.ValueChangeListener() {
                     private static final long serialVersionUID = -116654070578891424L;

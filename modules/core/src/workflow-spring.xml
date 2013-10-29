@@ -84,8 +84,6 @@
                        value-ref="workflow_TimerManagerMBean"/>
                 <entry key="${cuba.webContextName}.workflow:type=WorkCalendar"
                        value-ref="workflow_WorkCalendarMBean"/>
-                <entry key="${cuba.webContextName}.workflow:type=PermissionsManager"
-                       value-ref="workflow_PermissionsManager"/>
                 <entry key="${cuba.webContextName}.workflow:type=NotificationMatrix"
                        value-ref="workflow_NotificationMatrixMBean"/>
                 <entry key="${cuba.webContextName}.workflow:type=SmsSender"
