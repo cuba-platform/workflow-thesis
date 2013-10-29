@@ -5,8 +5,8 @@
 
 <window
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.workflow.web.ui.attachmenttypes.AttachmentTypeEditor"
-        messagesPack="com.haulmont.workflow.web.ui.attachmenttypes"
+        class="com.haulmont.workflow.gui.app.attachmenttypes.AttachmentTypeEditor"
+        messagesPack="com.haulmont.workflow.gui.app.attachmenttypes"
         datasource="typeDs"
         caption="msg://attachType.edit"
         focusComponent="fieldsTable"

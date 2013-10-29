@@ -5,8 +5,8 @@
 
 <window
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.workflow.web.ui.attachmenttypes.AttachmentTypesBrowser"
-        messagesPack="com.haulmont.workflow.web.ui.attachmenttypes"
+        class="com.haulmont.workflow.gui.app.attachmenttypes.AttachmentTypesBrowser"
+        messagesPack="com.haulmont.workflow.gui.app.attachmenttypes"
         caption="msg://attachType.browse"
         focusComponent="table"
         >

@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.workflow.web.ui.attachmenttypes;
+package com.haulmont.workflow.gui.app.attachmenttypes;
 
 import com.haulmont.cuba.gui.components.AbstractEditor;
 

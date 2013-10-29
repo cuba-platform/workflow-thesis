@@ -63,4 +63,11 @@
 
     <screen id="wf$WorkCalendarExceptionDay.edit"
             template="/com/haulmont/workflow/gui/app/workcalendar/workcalendar-exceptionday-edit.xml"/>
+
+    <screen id="wf$AttachTypes.browse"
+            template="/com/haulmont/workflow/gui/app/attachmenttypes/type-browse.xml"/>
+
+    <screen id="wf$AttachmentType.edit"
+            template="/com/haulmont/workflow/gui/app/attachmenttypes/type-edit.xml"/>
+
 </screen-config>
