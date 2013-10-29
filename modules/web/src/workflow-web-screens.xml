@@ -8,13 +8,6 @@
 
     <include file="/com/haulmont/workflow/gui/workflow-screens.xml"/>
 
-    <screen id="wf$WorkCalendar.browse"
-            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-browse.xml"/>
-    <screen id="wf$WorkCalendarWorkDay.edit"
-            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-workday-edit.xml"/>
-    <screen id="wf$WorkCalendarExceptionDay.edit"
-            template="/com/haulmont/workflow/web/ui/base/workcalendar/workcalendar-exceptionday-edit.xml"/>
-
     <screen id="wf$AttachClipboard"
                 template="/com/haulmont/workflow/web/ui/base/attachments/attach-clipboard.xml"/>
 

@@ -55,4 +55,12 @@
 
     <screen id="wf$CardVariable.edit" template="/com/haulmont/workflow/gui/app/cardvariables/edit/card-variable-edit.xml"/>
 
+    <screen id="wf$WorkCalendar.browse"
+            template="/com/haulmont/workflow/gui/app/workcalendar/workcalendar-browse.xml"/>
+
+    <screen id="wf$WorkCalendarWorkDay.edit"
+            template="/com/haulmont/workflow/gui/app/workcalendar/workcalendar-workday-edit.xml"/>
+
+    <screen id="wf$WorkCalendarExceptionDay.edit"
+            template="/com/haulmont/workflow/gui/app/workcalendar/workcalendar-exceptionday-edit.xml"/>
 </screen-config>
