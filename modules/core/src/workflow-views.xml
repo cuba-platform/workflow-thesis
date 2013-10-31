@@ -36,6 +36,7 @@
     </view>
     <view class="com.haulmont.workflow.core.entity.Proc" name="proc-deploy" extends="_local">
         <property name="availableRole" view="_local"/>
+        <property name="design" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.Proc" name="edit" extends="_local">
