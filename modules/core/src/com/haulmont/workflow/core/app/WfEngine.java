@@ -475,9 +475,13 @@ public class WfEngine implements WfEngineAPI {
         query.setParameter(1, card);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
-            if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName()))
+            if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName())) {
                 assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
+            }
             assignment.setFinished(timeSource.currentTimestamp());
+            if (assignment.getFinishedByUser() == null) {
+                assignment.setFinishedByUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+            }
         }
 
         if (card.getJbpmProcessId() != null) {
