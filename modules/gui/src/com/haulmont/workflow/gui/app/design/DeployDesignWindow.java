@@ -6,7 +6,10 @@ package com.haulmont.workflow.gui.app.design;
 
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
@@ -14,7 +17,9 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.inject.Inject;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -25,11 +30,16 @@ public class DeployDesignWindow extends AbstractWindow {
     private Design design;
     private LookupField procField;
     private LookupField roleField;
+    private CheckBox newProcField;
     private String errorMsg;
+
+    @Inject
+    protected CollectionDatasource<Proc, UUID> procDs;
 
     @Override
     public void init(Map<String, Object> params) {
         design = (Design) params.get("design");
+        procDs.refresh();
 
         Label designNameLab = getComponent("designNameLab");
         designNameLab.setValue(design.getName());
@@ -38,7 +48,7 @@ public class DeployDesignWindow extends AbstractWindow {
 
         roleField = getComponent("roleField");
 
-        CheckBox newProcField = getComponent("newProcField");
+        newProcField = getComponent("newProcField");
         newProcField.setValue(true);
         newProcField.addListener(
                 new ValueListener() {
@@ -49,11 +59,18 @@ public class DeployDesignWindow extends AbstractWindow {
                             roleField.setEnabled(true);
                         } else {
                             procField.setEnabled(true);
+                            procField.setValue(findDesignProc());
                             roleField.setEnabled(false);
                         }
                     }
                 }
         );
+
+        Proc designProc = findDesignProc();
+        if (designProc != null) {
+            newProcField.setValue(false);
+            procField.setValue(designProc);
+        }
 
         Button deployBtn = getComponent("deployBtn");
         deployBtn.setAction(
@@ -106,5 +123,13 @@ public class DeployDesignWindow extends AbstractWindow {
 
     public String getErrorMsg() {
         return errorMsg;
+    }
+
+    private Proc findDesignProc() {
+        for (Proc proc : procDs.getItems()) {
+            if (design.equals(proc.getDesign()))
+                return proc;
+        }
+        return null;
     }
 }
