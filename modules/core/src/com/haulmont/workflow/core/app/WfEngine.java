@@ -479,9 +479,6 @@ public class WfEngine implements WfEngineAPI {
                 assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
             }
             assignment.setFinished(timeSource.currentTimestamp());
-            if (assignment.getFinishedByUser() == null) {
-                assignment.setFinishedByUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-            }
         }
 
         if (card.getJbpmProcessId() != null) {
