@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.base.CardAttachmentsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext/>
+
+    <layout height="100%" spacing="true">
+        <treeTable id="attachmentsTable" editable="false" sortable="true" multiselect="true" width="100%" height="100%">
+            <buttonsPanel>
+                <hbox id="fastUploadBox">
+                    <label id="fastUpload"/>
+                    <popupButton id="createAttachBtn"/>
+                </hbox>
+                <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                <button id="copyAttach" icon="icons/copy.png"/>
+                <button id="pasteAttach" icon="icons/paste.png"/>
+                <button id="checkAttachSignatures" visible="false"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name" caption="msg://attachName"/>
+                <column id="file.name" caption="msg://fileName"/>
+                <column id="createTs" caption="msg://createTs">
+                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                               format="msg://dateTimeFormat"/>
+                </column>
+                <column id="createdBy" caption="msg://createdBy"/>
+                <column id="attachType.locName" caption="msg://typeName"/>
+                <column id="file.size" caption="msg://fileSize"/>
+                <column id="versionNum"/>
+                <column id="comment" caption="msg://comment"/>
+            </columns>
+            <rows datasource="attachmentsDs"/>
+        </treeTable>
+    </layout>
+</window>

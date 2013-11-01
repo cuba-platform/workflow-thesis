@@ -1,0 +1,23 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.attachment.AttachmentEditor"
+        messagesPack="com.haulmont.workflow.gui.app.attachment"
+        datasource="attachmentDs"
+        caption="msg://editorCaption">
+
+    <dsContext>
+        <datasource id="attachmentDs" class="com.haulmont.workflow.core.entity.CardAttachment" view="card-edit">
+            <datasource id="fileDs" property="file"/>
+        </datasource>
+    </dsContext>
+
+    <layout expand="windowActions" spacing="true">
+        <iframe id="frame" screen="attachmentFrame"/>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

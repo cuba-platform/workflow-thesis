@@ -7,11 +7,11 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
 
     <menu id="workflow" insertBefore="administration">
-        <item id="wf$Assignment.browse"/>
         <item id="wf$Design.browse"/>
         <item id="wf$Proc.browse"/>
         <item id="wf$WorkCalendar.browse"/>
         <item id="wf$UserGroup.browse"/>
+        <item id="wf$AttachTypes.browse"/>
     </menu>
 
 </menu-config>

@@ -70,4 +70,58 @@
     <screen id="wf$AttachmentType.edit"
             template="/com/haulmont/workflow/gui/app/attachmenttypes/type-edit.xml"/>
 
+    <screen id="transition.form"
+            template="/com/haulmont/workflow/gui/app/base/transition-form.xml"/>
+
+    <screen id="cardRolesFrame"
+            template="/com/haulmont/workflow/gui/app/base/card-roles-frame.xml"/>
+
+    <screen id="cardAttachmentsFrame"
+            template="/com/haulmont/workflow/gui/app/base/card-attachments-frame.xml"/>
+
+    <screen id="wf$UserGroup.browse"
+            template="/com/haulmont/workflow/gui/app/usergroup/usergroup-browse.xml"/>
+
+    <screen id="wf$UserGroup.edit"
+            template="/com/haulmont/workflow/gui/app/usergroup/usergroup-edit.xml"/>
+
+    <screen id="wf$UserGroup.add"
+            template="/com/haulmont/workflow/gui/app/usergroup/usergroup-add.xml"/>
+
+    <screen id="wf$AttachClipboard"
+            template="/com/haulmont/workflow/gui/app/base/attachments/attach-clipboard.xml"/>
+
+    <screen id="wf$AttachUploader"
+            template="/com/haulmont/workflow/gui/app/base/attachments/attach-uploader.xml"/>
+
+    <screen id="wf$RemoveAttachmentConfirmDialog"
+            template="/com/haulmont/workflow/gui/app/base/attachments/remove-attachment-confirm-dialog.xml"/>
+
+    <screen id="wf$Assignment.edit"
+            template="/com/haulmont/workflow/gui/app/base/resolution-edit.xml"/>
+
+    <screen id="resolution.form"
+            template="/com/haulmont/workflow/gui/app/base/resolution-form.xml"/>
+
+    <screen id="subproc.form"
+            template="/com/haulmont/workflow/gui/app/base/subproc-form.xml"/>
+
+    <screen id="wf$CardAttachment.edit"
+            template="/com/haulmont/workflow/gui/app/attachment/card-attachment-edit.xml"/>
+
+    <screen id="attachmentFrame"
+            template="/com/haulmont/workflow/gui/app/attachment/attachment-frame.xml"/>
+
+    <screen id="wf$AssignmentAttachment.edit"
+            template="/com/haulmont/workflow/gui/app/attachment/assignment-attachment-edit.xml"/>
+
+    <screen id="reassign.form"
+            template="/com/haulmont/workflow/gui/app/base/reassign-form.xml"/>
+
+    <screen id="wf$UserNotifiedBySms.browse"
+            template="/com/haulmont/workflow/gui/app/sms/user-notified-by-sms-browse.xml"/>
+
+    <screen id="wf$SendingSms.browse"
+            template="/com/haulmont/workflow/gui/app/sms/sending-sms-browse.xml"/>
+
 </screen-config>
