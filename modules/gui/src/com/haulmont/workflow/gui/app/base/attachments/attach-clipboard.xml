@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.base.attachments.AttachmentClipboard"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        datasource="attachmentsDs"
+        caption="msg://attachClipboard.caption"
+        focusComponent="attachmentsTable">
+
+    <assign name="height" value="200"/>
+
+    <dsContext>
+        <collectionDatasource
+                id="attachmentsDs"
+                class="com.haulmont.workflow.core.entity.Attachment"
+                view="attachments-browse"
+                datasourceClass="com.haulmont.workflow.gui.app.base.attachments.AttachmentsDataSource">
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="attachmentsTable">
+        <table id="attachmentsTable" editable="false" sortable="true" multiselect="true"
+               height="${height}" width="100%">
+            <buttonsPanel>
+                <button id="removeAttach" icon="icons/remove.png"/>
+                <button id="clearAttach" icon="icons/clear.png"/>
+                <button id="refreshAttach" icon="icons/refresh.png"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name" caption="msg://attachName"/>
+                <column id="file.name" caption="msg://fileName"/>
+                <column id="attachType.locName" caption="msg://typeName"/>
+                <column id="file.size" caption="msg://fileSize"/>
+            </columns>
+            <rows datasource="attachmentsDs"/>
+        </table>
+    </layout>
+</window>

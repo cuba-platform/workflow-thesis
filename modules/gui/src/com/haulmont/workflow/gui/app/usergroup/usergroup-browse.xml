@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.usergroup.UserGroupBrowser"
+        messagesPack="com.haulmont.workflow.gui.app.usergroup"
+        caption="msg://userGroupBrowser.caption"
+        focusComponent="genericFilter"
+        >
+
+    <dsContext>
+        <collectionDatasource id="userGroupsDs" class="com.haulmont.workflow.core.entity.UserGroup" view="browse">
+            <query>
+                select ug from wf$UserGroup ug order by ug.name
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local">
+            <query>
+                <![CDATA[select u from sec$User u, wf$UserGroup ug where u member of ug.users and ug.id = :ds$userGroupsDs]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="split" spacing="true">
+        <filter id="genericFilter" datasource="userGroupsDs" margin="false,false,true,false">
+            <properties include=".*"/>
+        </filter>
+
+        <split id="split" orientation="horizontal" pos="30" width="100%">
+            <vbox id="table-panel" expand="userGroupsTable" spacing="true" margin="false;true;false;false" height="100%">
+                <table id="userGroupsTable" width="100%">
+                    <buttonsPanel>
+                        <button action="userGroupsTable.create" icon="icons/create.png"/>
+                        <button action="userGroupsTable.edit" icon="icons/edit.png"/>
+                        <button action="userGroupsTable.remove" icon="icons/remove.png"/>
+                    </buttonsPanel>
+                    <rowsCount/>
+                    <columns>
+                        <column id="name" caption="msg://name"/>
+                    </columns>
+                    <rows datasource="userGroupsDs"/>
+                </table>
+            </vbox>
+
+            <vbox id="usersPanel" expand="usersTable" spacing="true" margin="false;false;false;true" height="100%">
+                <buttonsPanel>
+                    <button action="usersTable.add" icon="icons/add.png"/>
+                    <button action="usersTable.remove" icon="icons/remove.png"/>
+                </buttonsPanel>
+                <table id="usersTable" width="100%">
+                    <columns>
+                        <column id="name" caption="msg://user"/>
+                        <column id="position" caption="msg://position"/>
+                    </columns>
+                    <rows datasource="usersDs"/>
+                </table>
+            </vbox>
+        </split>
+    </layout>
+</window>

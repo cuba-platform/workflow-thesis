@@ -1,0 +1,73 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.base.ResolutionEditor"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        datasource="assignmentDs"
+        caption="msg://resolutionEditCaption"
+        focusComponent="proc">
+
+    <dsContext>
+        <datasource id="assignmentDs" class="com.haulmont.workflow.core.entity.Assignment" view="resolution-edit"/>
+    </dsContext>
+
+    <assign name="width" value="300"/>
+
+    <layout expand="windowActions" spacing="true">
+        <grid spacing="true" width="100%">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="procLabel" value="msg://process"/>
+                    <textField id="proc" datasource="assignmentDs" property="proc"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="createdDateLabel" value="msg://createdDate"/>
+                    <dateField id="createdDate" datasource="assignmentDs" property="createTs"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="finishedDateLabel" value="msg://finishedDate"/>
+                    <dateField id="finishedDate" datasource="assignmentDs" property="finished"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="userLabel" value="msg://user"/>
+                    <textField id="user" datasource="assignmentDs" property="displayUser"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="cardStateLabel" value="msg://cardState"/>
+                    <hbox spacing="true">
+                        <textField id="cardState" datasource="assignmentDs" property="locName"
+                                   width="${width}" editable="false"/>
+
+                        <label id="iterationLabel" value="msg://iteration"/>
+                        <textField id="iteration" datasource="assignmentDs" property="iteration"
+                                   width="30" editable="false"/>
+                    </hbox>
+                </row>
+                <row>
+                    <label id="outcomeLabel" value="msg://outcome"/>
+                    <textField id="outcome" datasource="assignmentDs" property="locOutcomeResult"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="commentLabel" value="msg://comment"/>
+                    <textArea id="comment" datasource="assignmentDs" property="comment"
+                              width="400" rows="6"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

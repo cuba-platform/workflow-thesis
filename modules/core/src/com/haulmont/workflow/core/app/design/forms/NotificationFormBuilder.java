@@ -17,7 +17,7 @@ public class NotificationFormBuilder extends FormBuilder {
     @Override
     public Element writeFormEl(Element parentEl, JSONObject jsProperties) throws DesignCompilationException {
         Element el = parentEl.addElement("invoke");
-        el.addAttribute("class", "com.haulmont.workflow.web.ui.base.NotificationForm");
+        el.addAttribute("class", "com.haulmont.workflow.gui.app.base.NotificationForm");
         el.addAttribute("after", "true");
         String notification = jsProperties.optString("message");
         if (StringUtils.trimToNull(notification)==null){

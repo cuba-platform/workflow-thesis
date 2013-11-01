@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.workflow.gui.app.base.ResolutionsFrame"
+        messagesPack="com.haulmont.workflow.web.ui.base"
+        >
+
+    <dsContext>
+        <hierarchicalDatasource id="resolutionsDs"
+                              class="com.haulmont.workflow.core.entity.Assignment"
+                              view="resolutions" hierarchyProperty="familyAssignment">
+            <query>
+                select a from wf$Assignment a where a.card.id in (select c.id from wf$Card c where c.id = :custom$cardId or c.procFamily.card.id is not null and c.procFamily.card.id=:custom$cardId) and a.user is not null
+                order by a.createTs desc
+            </query>
+        </hierarchicalDatasource>
+    </dsContext>
+
+    <layout expand="resolutionsTable">
+        <treeTable  id="resolutionsTable" editable="false" sortable="true" width="100%">
+            <columns>
+                <column id="proc" caption="msg://process"/>
+                <column id="createTs" caption="msg://createdDate"/>
+                <column id="dueDate" caption="msg://dueDate" visible="true"/>
+                <column id="finished" caption="msg://finishedDate"/>
+                <column id="displayUser" caption="msg://user"/>
+                <column id="locName" caption="msg://cardState"/>
+                <column id="iteration" caption="msg://iteration"/>
+                <column id="locOutcomeResult" caption="msg://outcome"/>
+                <!--<column id="hasAttachments" caption="msg://attachments"/>-->
+                <column id="comment" caption="msg://comment" maxTextLength="50"/>
+                <!--<column id="attachments" caption="msg://attachments"/>-->
+            </columns>
+            <rows datasource="resolutionsDs"/>
+        </treeTable >
+    </layout>
+
+</window>
