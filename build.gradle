@@ -239,13 +239,5 @@ configure(webLegacyModule) {
         archives webArchive
     }
 
-    task setupYui(description: 'Sets up YUI library') << {
-        configurations.webcontent.files.each { dep ->
-            copy {
-                from zipTree(dep.absolutePath)
-                into new File(webLegacyModule.projectDir, 'web/wfdesigner/lib/yui')
-            }
-        }
-    }
-    assemble.dependsOn setupYui
+    assemble.dependsOn webModule.assemble
 }
