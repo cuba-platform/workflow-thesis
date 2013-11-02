@@ -229,7 +229,9 @@ configure(webLegacyModule) {
     }
 
     task webArchive(type: Zip) {
-        from file('web')
+        // copy webcontent from web module
+        from(file('../web/web/wfdesigner/')){ into '/wfdesigner' }
+        from(file('web')){ into '/' }
         classifier = 'web'
     }
 
