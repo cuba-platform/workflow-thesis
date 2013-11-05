@@ -6,7 +6,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.workflow.gui.app.base.attachments.AttachmentClipboard"
-        messagesPack="com.haulmont.workflow.web.ui.base"
+        messagesPack="com.haulmont.workflow.gui.app.base.attachments"
         datasource="attachmentsDs"
         caption="msg://attachClipboard.caption"
         focusComponent="attachmentsTable">
