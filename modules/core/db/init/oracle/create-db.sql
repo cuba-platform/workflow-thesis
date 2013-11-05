@@ -461,15 +461,6 @@ alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOL fore
 alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
 alter table WF_PROC_ROLE add constraint FK_WF_PROC_ROLE_PROC foreign key (PROC_ID) references WF_PROC(ID)^
 
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROL_PER_FRO_PRO_ROL foreign key (PROC_ROLE_FROM_ID) references WF_PROC_ROLE(ID)^
-alter table WF_PROC_ROLE_PERMISSION add constraint FK_WF_PROC_ROLE_PER_TO_PRO_ROL foreign key (PROC_ROLE_TO_ID) references WF_PROC_ROLE(ID)^
-
-alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_PROC foreign key (PROC_ID) references WF_PROC(ID)^
-alter table WF_PROC_STAGE add constraint FK_WF_PROC_STAGE_TYPE foreign key (PROC_STAGE_TYPE_ID) references WF_PROC_STAGE_TYPE(ID)^
-
-alter table WF_PROC_STAGE_PROC_ROLE add constraint FK_WF_PSPR_USER foreign key (PROC_ROLE_ID) references WF_PROC_ROLE(ID)^
-alter table WF_PROC_STAGE_PROC_ROLE add constraint FK_WF_PSPR_PROC_STAGE foreign key (PROC_STAGE_ID) references WF_PROC_STAGE(ID)^
-
 alter table WF_PROC_STATE add constraint FK_WF_PROC_STATE_PROC foreign key (PROC_ID) references WF_PROC(ID)^
 
 alter table WF_TIMER add constraint FK_WF_TIMER_CARD foreign key (CARD_ID) references WF_CARD(ID)^
