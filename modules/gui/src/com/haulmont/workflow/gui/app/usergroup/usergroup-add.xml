@@ -20,13 +20,13 @@
 
     <assign name="width" value="300"/>
 
-    <layout expand="windowActions">
-        <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true">
+    <layout expand="windowActions" spacing="true">
+        <hbox id="searchFilter" align="MIDDLE_CENTER" spacing="true" margin="false;false;true;false;">
             <label id="searchTextLabel" value="msg://searchText"/>
             <textField id="searchText" width="${width}"/>
             <button id="searchButton"/>
         </hbox>
-        <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="18" columns="25"/>
+        <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="19" columns="32"/>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

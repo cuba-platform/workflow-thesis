@@ -48,8 +48,11 @@ public class CardRolesFrame extends AbstractFrame {
 
     public interface Companion {
         void setTableColumnHeader(Table table, Object columnId, String header);
+
         void setTableVisibleColumns(Table table, Object[] visibleColumns);
+
         Object[] getVisibleColumns(Table table);
+
         void setLookupNullSelectionAllowed(LookupField lookupField, boolean value);
     }
 
@@ -332,7 +335,8 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void actionPerform(Component component) {
                 Map<String, Object> params = getUsergroupAddParams(cardRole);
-                getDialogParams().setWidth(680);
+                getDialogParams().setWidth(835);
+                getDialogParams().setHeight(505);
                 final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
                     private static final long serialVersionUID = -4182051025753394757L;
@@ -630,7 +634,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         if (proc != null) {
             //todo implement companion for desktop or wait for ability to manage columns through Table interface, null comparison looks ugly
-            Object[] visibleColumns = (companion == null) ? new Object[] {} : companion.getVisibleColumns(rolesTable);
+            Object[] visibleColumns = (companion == null) ? new Object[]{} : companion.getVisibleColumns(rolesTable);
 
             MetaClass cardRoleMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(CardRole.class);
 
@@ -661,7 +665,7 @@ public class CardRolesFrame extends AbstractFrame {
                         durationTF.setWidth("60px");
                         final CardRole cardRole = (CardRole) entity;
                         if (cardRole != null && cardRole.getDuration() != null)
-                        durationTF.setValue(cardRole.getDuration().toString());
+                            durationTF.setValue(cardRole.getDuration().toString());
                         durationTF.addListener(new ValueListener() {
 
                             @Override
