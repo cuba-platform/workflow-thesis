@@ -1102,6 +1102,11 @@ public class CardRolesFrame extends AbstractFrame {
         if (userColumn != null) {
             userColumn.setEditable(editable);
         }
+
+        if (editable) {
+            initSortOrderColumn();
+        }
+
         createRoleLookup.setEditable(editable);
         for (LookupPickerField cardRoleField : actorFieldsMap.values()) {
             cardRoleField.setEditable(editable);
