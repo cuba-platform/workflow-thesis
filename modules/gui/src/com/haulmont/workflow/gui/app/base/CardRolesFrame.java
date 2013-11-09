@@ -1309,18 +1309,7 @@ public class CardRolesFrame extends AbstractFrame {
         pickerField.setValue(value);
         pickerField.setWidth("100%");
 
-        pickerField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                User selectedUser = (User) value;
-                CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
-                if (cr != null)
-                    cr.setUser(selectedUser);
-                else
-                    cardRole.setUser(selectedUser);
-//                    refreshFieldsWithRole(cardRole);
-            }
-        });
+        pickerField.addListener(getCardRoleFieldValueListener(cardRole));
 
 //            usersSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
 //            for (Object itemId : usersDs.getItemIds()) {
@@ -1337,6 +1326,21 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         return pickerField;
+    }
+
+    protected ValueListener getCardRoleFieldValueListener(final CardRole cardRole) {
+        return new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                User selectedUser = (User) value;
+                CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
+                if (cr != null) {
+                    cr.setUser(selectedUser);
+                } else {
+                    cardRole.setUser(selectedUser);
+                }
+            }
+        };
     }
 
     public void setCombinedStagesEnabled(boolean combinedStagesEnabled) {
