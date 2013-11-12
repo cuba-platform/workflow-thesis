@@ -39,11 +39,14 @@ public class AttachmentColumnGeneratorHelper {
         attachmentsTable.addGeneratedColumn("file.size", new Table.ColumnGenerator<Attachment>() {
             @Override
             public Component generateCell(Attachment attachment) {
-                String formattedSize = FileDownloadHelper.formatFileSize(attachment.getFile().getSize());
-                ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-                Label label = componentsFactory.createComponent(Label.NAME);
-                label.setValue(formattedSize);
-                return label;
+                if (attachment != null) {
+                    String formattedSize = FileDownloadHelper.formatFileSize(attachment.getFile().getSize());
+                    ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+                    Label label = componentsFactory.createComponent(Label.NAME);
+                    label.setValue(formattedSize);
+                    return label;
+                }
+                return null;
             }
         });
     }
