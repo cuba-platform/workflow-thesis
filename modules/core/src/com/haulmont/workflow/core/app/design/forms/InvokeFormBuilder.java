@@ -5,10 +5,12 @@
 
 package com.haulmont.workflow.core.app.design.forms;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.FormBuilder;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -35,6 +37,7 @@ public class InvokeFormBuilder extends FormBuilder {
             }
         }
         throw new DesignCompilationException(
-                MessageProvider.formatMessage(getClass(), "exception.invokeScriptNotFound", script));
+                AppBeans.get(Messages.class).formatMessage(getClass(),
+                        "exception.invokeScriptNotFound", StringEscapeUtils.escapeHtml(script)));
     }
 }

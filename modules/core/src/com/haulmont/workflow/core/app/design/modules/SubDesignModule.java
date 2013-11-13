@@ -20,6 +20,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -46,6 +47,8 @@ public class SubDesignModule extends Module {
     protected Map<String, String> transitionsMap;
     protected Design design;
 
+    protected Messages messages = AppBeans.get(Messages.class);
+
     public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
 
     public void init(Module.Context context) throws DesignCompilationException {
@@ -55,8 +58,8 @@ public class SubDesignModule extends Module {
             jsOptions = jsValue.optJSONObject("options");
             subDesignId = jsOptions.getString("design");
             if (StringUtils.isEmpty(subDesignId)) {
-                throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(AssignmentModule.class,
-                        "exception.subdesignIsEmpty", caption));
+                throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                        "exception.subdesignIsEmpty", StringEscapeUtils.escapeHtml(caption)));
             }
             checkDesignExist(subDesignId);
             tx.commit();
@@ -67,8 +70,8 @@ public class SubDesignModule extends Module {
             tx.end();
         }
         if (StringUtils.isEmpty(subDesignId)) {
-            throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(getClass(),
-                    "exception.noSubDesign", caption));
+            throw new DesignCompilationException(messages.formatMessage(getClass(),
+                    "exception.noSubDesign", StringEscapeUtils.escapeHtml(caption)));
         }
     }
 

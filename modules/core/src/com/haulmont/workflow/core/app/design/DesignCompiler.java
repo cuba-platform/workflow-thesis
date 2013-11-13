@@ -24,6 +24,7 @@ import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,13 +49,15 @@ import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPAR
  */
 public class DesignCompiler {
 
-    private Map<String, String> moduleClassNames;
+    protected Map<String, String> moduleClassNames;
 
-    private volatile Map<String, Class<? extends Module>> moduleClasses;
+    protected volatile Map<String, Class<? extends Module>> moduleClasses;
 
     protected FormCompiler formCompiler;
 
-    private DesignPostProcessor postProcessor;
+    protected DesignPostProcessor postProcessor;
+
+    protected Messages messages;
 
     private Log log = LogFactory.getLog(DesignCompiler.class);
 
@@ -84,6 +87,11 @@ public class DesignCompiler {
     //set from spring.xml
     public void setPostProcessor(DesignPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
+    }
+
+    //set from spring.xml
+    public void setMessages(Messages messages) {
+        this.messages = messages;
     }
 
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
@@ -137,7 +145,7 @@ public class DesignCompiler {
                             "unnamed") : moduleName) + "</li>");
                 }
                 warnings.add(AppBeans.get(Messages.class).formatMessage(getClass(),
-                        "warning.unusedModules", modulesList.toString()));
+                        "warning.unusedModules", StringEscapeUtils.escapeHtml(modulesList.toString())));
             }
 
             String forms = compileForms(modules, errors);
@@ -617,8 +625,8 @@ public class DesignCompiler {
                 errors.add(new ModuleError(module.getName(), e.getMessage()));
             }
             if (module.getName() != null && modulesNames.contains(module.getName())) {
-                errors.add(new DesignError(MessageProvider.formatMessage(getClass(),
-                        "exception.duplicateModuleName", module.getCaption())));
+                errors.add(new DesignError(messages.formatMessage(getClass(),
+                        "exception.duplicateModuleName", StringEscapeUtils.escapeHtml(module.getCaption()))));
             } else
                 modulesNames.add(module.getName());
             modules.add(module);
@@ -660,7 +668,7 @@ public class DesignCompiler {
                             AppBeans.get(Messages.class).formatMessage(
                                     getClass(),
                                     "exception.emptyTransition",
-                                    jsModule.getJSONObject("value").getString("name"))));
+                                    StringEscapeUtils.escapeHtml(jsModule.getJSONObject("value").getString("name")))));
                     continue;
                 }
                 for (TransitionParams currParams : currParamsList) {

@@ -5,10 +5,12 @@
 package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONArray;
@@ -20,15 +22,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AssignmentModule extends Module {
 
     protected String role;
 
     protected String description;
 
-    protected Map<String, String> outputs = new HashMap<String, String>();
+    protected Map<String, String> outputs = new HashMap<>();
 
     protected JSONObject jsOptions;
+
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public AssignmentModule() {
         activityClassName = "com.haulmont.workflow.core.activity.Assigner";
@@ -44,7 +52,7 @@ public class AssignmentModule extends Module {
             if (StringUtils.trimToNull(role) == null) {
                 if (error.length() != 0)
                     error.append("<br />");
-                error.append(MessageProvider.formatMessage(AssignmentModule.class, "exception.noRole", caption));
+                error.append(messages.formatMessage(AssignmentModule.class, "exception.noRole", caption));
             }
             jsOptions = jsValue.optJSONObject("options");
             if (jsOptions != null)
@@ -58,7 +66,8 @@ public class AssignmentModule extends Module {
             if (error.length() != 0)
                 error.append("<br />");
 
-            error.append(MessageProvider.formatMessage(AssignmentModule.class, "exception.noOutputs", caption));
+            error.append(messages.formatMessage(AssignmentModule.class, "exception.noOutputs",
+                    StringEscapeUtils.escapeHtml(caption)));
         }
 
         if (StringUtils.trimToNull(error.toString()) != null) {
@@ -98,7 +107,7 @@ public class AssignmentModule extends Module {
         if (!StringUtils.isBlank(description))
             properties.setProperty(name + ".description", description);
         else
-            properties.setProperty(name + ".description", MessageProvider.getMessage(AssignmentModule.class, "AssignmentModule.description", locale));
+            properties.setProperty(name + ".description", messages.getMessage(AssignmentModule.class, "AssignmentModule.description", locale));
 
         for (Map.Entry<String, String> entry : outputs.entrySet()) {
             properties.setProperty(name + "." + entry.getKey(), entry.getValue());
@@ -169,8 +178,8 @@ public class AssignmentModule extends Module {
                 JSONObject jsProps = jsTimer.getJSONObject("properties");
                 dueDateType = jsProps.getString("dueDateType");
                 if(StringUtils.trimToNull(dueDateType)==null||"null".equals(dueDateType)){
-                    throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
-                            "exception.dueDateTypeNotDefined", caption));
+                    throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                            "exception.dueDateTypeNotDefined", StringEscapeUtils.escapeHtml(caption)));
                 }
                 if ("manual".equals(dueDateType)) {
                     JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
@@ -178,8 +187,8 @@ public class AssignmentModule extends Module {
                         String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
                         dueDates.append(dueDate);
                     } catch (JSONException e) {
-                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
-                                "exception.dueDateInvalid", caption));
+                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                                "exception.dueDateInvalid", StringEscapeUtils.escapeHtml(caption)));
                     }
                 } else if ("form".equals(dueDateType)) {
                     dueDates.append("process");
@@ -189,13 +198,13 @@ public class AssignmentModule extends Module {
                 if (type.equals("script")) {
                     String script = jsProps.getString("name");
                     if (StringUtils.trimToNull(script) == null) {
-                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
-                                "exception.timerScriptNotDefined", caption));
+                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                                "exception.timerScriptNotDefined", StringEscapeUtils.escapeHtml(caption)));
                     }
                     String fileName = scriptNamesMap.get(script);
                     if (fileName == null)
-                        throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
-                                "exception.timerScriptNotFound", caption, script));
+                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                                "exception.timerScriptNotFound", StringEscapeUtils.escapeHtml(caption), script));
                     scripts.append(fileName);
                 } else {
                     String transition = WfUtils.encodeKey(jsProps.getString("name"));
@@ -214,8 +223,8 @@ public class AssignmentModule extends Module {
             writeJpdlStringPropertyEl(element, "scripts", scripts.toString());
 
         } catch (JSONException e) {
-            throw new DesignCompilationException(MessageProvider.formatMessage(AssignmentModule.class,
-                    "exception.compileTimersError", caption));
+            throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
+                    "exception.compileTimersError", StringEscapeUtils.escapeHtml(caption)));
         }
     }
 
