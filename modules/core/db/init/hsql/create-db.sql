@@ -411,8 +411,8 @@ create table WF_CALENDAR (
     UPDATED_BY varchar(50),
     WORK_DAY date,
     WORK_DAY_OF_WEEK boolean,
-    WORK_START_TIME timestamp,
-    WORK_END_TIME timestamp,
+    WORK_START_TIME time,
+    WORK_END_TIME time,
     CALENDAR_COMMENT varchar(500),
     primary key (ID)
 )^
