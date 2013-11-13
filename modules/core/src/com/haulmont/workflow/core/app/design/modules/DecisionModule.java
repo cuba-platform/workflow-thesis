@@ -10,6 +10,7 @@ import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
@@ -45,12 +46,12 @@ public class DecisionModule extends Module {
 
         if (StringUtils.trimToNull(script) == null) {
             throw new DesignCompilationException(messages.formatMessage(getClass(),
-                    "exception.decisionScriptNotDefined", caption));
+                    "exception.decisionScriptNotDefined", StringEscapeUtils.escapeHtml(caption)));
         }
         this.scriptFileName = scriptNamesMap.get(script);
         if (this.scriptFileName == null)
             throw new DesignCompilationException(messages.formatMessage(getClass(),
-                    "exception.decisionScriptNotFound", caption, script));
+                    "exception.decisionScriptNotFound", StringEscapeUtils.escapeHtml(caption), script));
     }
 
     @Override

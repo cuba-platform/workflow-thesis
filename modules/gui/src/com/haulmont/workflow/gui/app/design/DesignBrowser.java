@@ -341,7 +341,7 @@ public class DesignBrowser extends AbstractWindow {
                 }
                 result.append("<br>");
             }
-            showMessageDialog(getMessage("compilationResult"), result.toString(), MessageType.CONFIRMATION);
+            showMessageDialog(getMessage("compilationResult"), result.toString(), MessageType.CONFIRMATION_HTML);
         }
 
         private Pair<String, String> compile(Design design) {
