@@ -401,6 +401,8 @@ public class DesignBrowser extends AbstractWindow {
                     window.addListener(
                             new CloseListener() {
                                 public void windowClosed(String actionId) {
+                                    if ("close".equals(actionId) || "cancel".equals(actionId))
+                                        return;
                                     if ("ok".equals(actionId)) {
                                         ds.refresh();
                                         showNotification(getMessage("notification.deploySuccess"), NotificationType.HUMANIZED);
