@@ -270,6 +270,10 @@ public class ProcessAction extends AbstractAction {
 
     /* Method is invoked after isCardDeleted, no NPE check here */
     protected boolean isCardModified(Card card) {
+        if (PersistenceHelper.isNew(card)) {
+            return false;
+        }
+
         int version = card.getVersion();
         int reloadedCardVersion = getReloadedCard(card).getVersion();
         return reloadedCardVersion > version;
