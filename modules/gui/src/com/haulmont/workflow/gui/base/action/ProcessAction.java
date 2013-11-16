@@ -59,8 +59,7 @@ public class ProcessAction extends AbstractAction {
                 throw new DevelopmentException("Proc.messagePack is null. " +
                         "Make sure you load the card with the view containing this attrbute.");
             return messages.getMessage(card.getProc().getMessagesPack(), getId());
-        }
-        else
+        } else
             return messages.getMessage(AppConfig.getMessagesPack(), getId());
     }
 
@@ -77,7 +76,7 @@ public class ProcessAction extends AbstractAction {
         final FormManagerChain managerChain = FormManagerChain.getManagerChain(currentCard, actionName);
         managerChain.setCard(currentCard);
         managerChain.setAssignmentId(assignmentId);
-        return  managerChain;
+        return managerChain;
     }
 
     public void actionPerform(Component component) {
@@ -94,7 +93,7 @@ public class ProcessAction extends AbstractAction {
 
         if (isCardDeleted(card)) {
             wmp.get().showNotification(
-                    messages.getMessage(getClass(), "cardWasDeletedByAnotherUser"),
+                    messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
                     IFrame.NotificationType.WARNING
             );
             window.close(Window.CLOSE_ACTION_ID, true);
