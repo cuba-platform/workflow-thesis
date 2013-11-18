@@ -91,6 +91,8 @@ public class ProcessAction extends AbstractAction {
         WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
         final UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
 
+        card = (Card) ((Window.Editor) window).getItem();
+
         if (isCardDeleted(card)) {
             wmp.get().showNotification(
                     messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
