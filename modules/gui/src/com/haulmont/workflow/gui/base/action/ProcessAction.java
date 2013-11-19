@@ -105,7 +105,7 @@ public class ProcessAction extends AbstractAction {
         /* Prevent optimistic lock */
         if (isCardModified(card)) {
             wmp.get().showNotification(
-                    messages.getMessage(messages.getMainMessagePack(), "optimisticException.message"),
+                    messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message"),
                     IFrame.NotificationType.WARNING
             );
             return;
