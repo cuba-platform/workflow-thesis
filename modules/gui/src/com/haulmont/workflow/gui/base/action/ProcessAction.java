@@ -104,8 +104,9 @@ public class ProcessAction extends AbstractAction {
 
         /* Prevent optimistic lock */
         if (isCardModified(card)) {
+            String localizedEntityName = messages.getTools().getEntityCaption(card.getMetaClass());
             wmp.get().showNotification(
-                    messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message"),
+                    messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message", "\"" + localizedEntityName + "\""),
                     IFrame.NotificationType.WARNING
             );
             return;
