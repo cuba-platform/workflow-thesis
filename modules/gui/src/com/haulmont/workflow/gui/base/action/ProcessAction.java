@@ -107,7 +107,7 @@ public class ProcessAction extends AbstractAction {
             String localizedEntityName = messages.getTools().getEntityCaption(card.getMetaClass());
             wmp.get().showNotification(
                     messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message", "\"" + localizedEntityName + "\""),
-                    IFrame.NotificationType.WARNING
+                    IFrame.NotificationType.ERROR_HTML
             );
             return;
         }
