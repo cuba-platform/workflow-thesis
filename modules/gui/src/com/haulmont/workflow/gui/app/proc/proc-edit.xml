@@ -31,9 +31,8 @@
     <assign name="width" value="400"/>
 
     <layout  expand="rolesSplit" spacing="true">
-                <grid spacing="true" width="100%">
+                <grid spacing="true">
                     <columns>
-                        <column flex="1"/>
                         <column flex="1"/>
                         <column flex="1"/>
                     </columns>
