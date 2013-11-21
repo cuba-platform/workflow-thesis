@@ -114,6 +114,9 @@ public class ProcessAction extends AbstractAction {
                                     @Override
                                     public void actionPerform(Component component) {
                                         if (((Window.Editor) window).commit()) {
+                                            if (assignmentId != null && checkAssignmentFinished(assignmentId)) {
+                                                return;
+                                            }
                                             final FormManagerChain managerChain = createManagerChain();
                                             managerChain.setHandler(new FormManagerChain.Handler() {
                                                 public void onSuccess(String comment) {
@@ -220,6 +223,16 @@ public class ProcessAction extends AbstractAction {
         }
     }
 
+    protected boolean checkAssignmentFinished(UUID assignmentId) {
+        LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
+        Assignment assignment = dataService.load(lc);
+        if (assignment != null && assignment.getFinished() != null) {
+            String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
+            AppBeans.get(WindowManagerProvider.class).get().showNotification(msg, IFrame.NotificationType.ERROR);
+            return true;
+        }
+        return false;
+    }
 
     protected void startProcess(Window window, FormManagerChain managerChain) {
         wfService.startProcess(card);
