@@ -102,16 +102,6 @@ public class ProcessAction extends AbstractAction {
             return;
         }
 
-        /* Prevent optimistic lock */
-        if (isCardModified(card)) {
-            String localizedEntityName = messages.getTools().getEntityCaption(card.getMetaClass());
-            wmp.get().showNotification(
-                    messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message", "\"" + localizedEntityName + "\""),
-                    IFrame.NotificationType.ERROR_HTML
-            );
-            return;
-        }
-
         //we won't commit the editor if user presses no in cancel process confirmation form
         if (WfConstants.ACTION_CANCEL.equals(actionName)) {
             if (isCardInProcess(card) && isCardInSameProcess(card)) {
@@ -269,17 +259,6 @@ public class ProcessAction extends AbstractAction {
         }
         Card reloadedCard = getReloadedCard(card);
         return reloadedCard == null;
-    }
-
-    /* Method is invoked after isCardDeleted, no NPE check here */
-    protected boolean isCardModified(Card card) {
-        if (PersistenceHelper.isNew(card)) {
-            return false;
-        }
-
-        int version = card.getVersion();
-        int reloadedCardVersion = getReloadedCard(card).getVersion();
-        return reloadedCardVersion > version;
     }
 
     protected Card getReloadedCard(Card card) {
