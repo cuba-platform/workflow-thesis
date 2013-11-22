@@ -106,8 +106,8 @@ public class ProcessAction extends AbstractAction {
         if (WfConstants.ACTION_CANCEL.equals(actionName)) {
             if (isCardInProcess(card) && isCardInSameProcess(card)) {
                 wmp.get().showOptionDialog(
-                        messages.getMessage(getClass(), "confirmationForm.title"),
-                        messages.formatMessage(getClass(), "confirmationForm.msg", card.getProc().getName()),
+                        messages.getMessage(getClass(), "cancelProcess.title"),
+                        messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
                         IFrame.MessageType.CONFIRMATION,
                         new Action[]{
                                 new DialogAction(DialogAction.Type.YES) {
