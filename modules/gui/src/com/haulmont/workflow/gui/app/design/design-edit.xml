@@ -16,12 +16,26 @@
     </dsContext>
 
     <layout expand="windowActions" spacing="true">
-        <fieldGroup datasource="designDs">
-            <column width="100%">
-                <field id="name" width="200px"  required="true"/>
-                <field id="type" width="200px" required="true"/>
-            </column>
-        </fieldGroup>
+        <grid margin="true" spacing="true" stylename="edit-area">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <vbox align="MIDDLE_RIGHT">
+                        <label value="msg://name"/>
+                    </vbox>
+                    <textField width="200px" required="true" datasource="designDs" property="name"/>
+                </row>
+                <row>
+                    <vbox align="MIDDLE_RIGHT">
+                        <label value="msg://designType"/>
+                    </vbox>
+                    <lookupField width="200px" required="true" datasource="designDs" property="type"/>
+                </row>
+            </rows>
+        </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
