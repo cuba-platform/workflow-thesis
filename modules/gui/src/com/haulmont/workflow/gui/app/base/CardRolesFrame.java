@@ -1097,15 +1097,6 @@ public class CardRolesFrame extends AbstractFrame {
         for (Action action : rolesTable.getActions()) {
             action.setVisible(editable);
         }
-        rolesTable.setEditable(editable);
-        Table.Column userColumn = rolesTable.getColumn("user");
-        if (userColumn != null) {
-            userColumn.setEditable(editable);
-        }
-
-        if (editable) {
-            initSortOrderColumn();
-        }
 
         createRoleLookup.setEditable(editable);
         for (LookupPickerField cardRoleField : actorFieldsMap.values()) {
