@@ -3,39 +3,23 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.workflow.gui.app.design.DesignEditor"
         messagesPack="com.haulmont.workflow.gui.app.design"
         caption="msg://editor.caption"
-        datasource="designDs"
-        >
+        datasource="designDs">
 
     <dsContext>
         <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
     </dsContext>
 
     <layout expand="windowActions" spacing="true">
-        <grid margin="true" spacing="true" stylename="edit-area">
-            <columns>
-                <column flex="1"/>
-                <column flex="1"/>
-            </columns>
-            <rows>
-                <row>
-                    <vbox align="MIDDLE_RIGHT">
-                        <label value="msg://name"/>
-                    </vbox>
-                    <textField width="200px" required="true" datasource="designDs" property="name"/>
-                </row>
-                <row>
-                    <vbox align="MIDDLE_RIGHT">
-                        <label value="msg://designType"/>
-                    </vbox>
-                    <lookupField width="200px" required="true" datasource="designDs" property="type"/>
-                </row>
-            </rows>
-        </grid>
+        <fieldGroup datasource="designDs">
+            <column width="100%">
+                <field id="name" width="200px"  required="true"/>
+                <field id="type" width="200px" required="true"/>
+            </column>
+        </fieldGroup>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
