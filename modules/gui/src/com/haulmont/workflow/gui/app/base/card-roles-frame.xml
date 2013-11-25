@@ -51,7 +51,7 @@
         <table id="rolesTable" sortable="false" multiselect="true" editable="true" width="100%">
             <columns>
                 <column id="procRole.name" caption="msg://role" width="150"/>
-                <column id="user" caption="msg://user" editable="true"/>
+                <column id="user" caption="msg://user"/>
                 <column id="sortOrder" caption="msg://sortOrder" width="95"/>
                 <column id="duration" width="60" editable="true"/>
                 <column id="timeUnit" width="60" editable="true"/>
