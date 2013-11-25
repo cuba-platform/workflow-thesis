@@ -5,7 +5,10 @@
 
 package com.haulmont.workflow.gui.app.usergroup;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -96,7 +99,8 @@ public class UserGroupAdd extends AbstractWindow {
 
     protected void initSearchButton() {
         if (searchButton != null) {
-            searchButton.setAction(new AbstractAction("search") {
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            searchButton.setAction(new AbstractAction("search", clientConfig.getFilterApplyShortcut()) {
                 @Override
                 public void actionPerform(Component component) {
                     HashSet selectedItems = twinColumn.getValue();
@@ -114,6 +118,8 @@ public class UserGroupAdd extends AbstractWindow {
                     return getMessage("actions.Apply");
                 }
             });
+
+            addAction(searchButton.getAction());
         }
     }
 
