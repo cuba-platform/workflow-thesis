@@ -1302,17 +1302,11 @@ public class CardRolesFrame extends AbstractFrame {
 
         pickerField.addListener(getCardRoleFieldValueListener(cardRole));
 
-//            usersSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
-//            for (Object itemId : usersDs.getItemIds()) {
-//                User user = (User) usersDs.getItem(itemId);
-//                String userCaption = generateUserCaption(user);
-//                usersSelect.setItemCaption(user, userCaption);
-//            }
-
         pickerField.setEditable(rolesTable.isEditable());
 
         if (cardRole.getProcRole().getMultiUser() && rolesTable.isEditable()) {
             Action addGroupAction = createAddGroupAction(cardRole);
+            addGroupAction.setEnabled(rolesTable.isEditable());
             pickerField.addAction(addGroupAction);
         }
 
