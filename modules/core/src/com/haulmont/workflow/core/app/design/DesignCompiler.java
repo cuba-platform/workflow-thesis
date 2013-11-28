@@ -141,11 +141,13 @@ public class DesignCompiler {
             if (unusedModules.size() > 0) {
                 StringBuilder modulesList = new StringBuilder();
                 for (String moduleName : unusedModules.values()) {
-                    modulesList.append("<li>" + (moduleName == null ? AppBeans.get(Messages.class).getMessage(getClass(),
-                            "unnamed") : moduleName) + "</li>");
+                    String moduleNameCaption = moduleName == null ?
+                            AppBeans.get(Messages.class).getMessage(getClass(), "unnamed") : moduleName;
+
+                    modulesList.append("<li>").append(StringEscapeUtils.escapeHtml(moduleNameCaption)).append("</li>");
                 }
                 warnings.add(AppBeans.get(Messages.class).formatMessage(getClass(),
-                        "warning.unusedModules", StringEscapeUtils.escapeHtml(modulesList.toString())));
+                        "warning.unusedModules", modulesList.toString()));
             }
 
             String forms = compileForms(modules, errors);
