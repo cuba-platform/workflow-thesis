@@ -88,7 +88,7 @@ public class AttachmentActionsHelper {
             @Override
             public void actionPerform(Component component) {
                 List<Attachment> buffer = AttachmentCopyHelper.get();
-                Set<String> bufferIncludedTypes = new HashSet<String>();
+                Set<String> bufferIncludedTypes = new HashSet<>();
                 if ((buffer != null) && (buffer.size() > 0)) {
                     if (exclTypes != null) {
                         for (Attachment attachment : buffer) {
@@ -104,7 +104,7 @@ public class AttachmentActionsHelper {
                                 info.append("<li>" + type + "</li>");
                             }
                             info.append("</ul>");
-                            attachments.getFrame().showNotification(info.toString(), IFrame.NotificationType.WARNING);
+                            attachments.getFrame().showNotification(info.toString(), IFrame.NotificationType.WARNING_HTML);
                             bufferIncludedTypes.clear();
                             return;
                         }

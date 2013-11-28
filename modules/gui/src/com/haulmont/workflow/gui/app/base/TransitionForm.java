@@ -477,7 +477,7 @@ public class TransitionForm extends AbstractForm {
                 sb.append("<li>").append(attachmentTypeName).append("</li>");
             }
             sb.append("</ul>");
-            showNotification(getMessage("missingAttachments.msg"), sb.toString(), IFrame.NotificationType.WARNING);
+            showNotification(getMessage("missingAttachments.msg"), sb.toString(), NotificationType.WARNING_HTML);
             tabsheet.setTab(attachmentsTab);
             return false;
         }
