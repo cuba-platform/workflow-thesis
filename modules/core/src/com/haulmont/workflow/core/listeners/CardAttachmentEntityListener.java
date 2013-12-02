@@ -36,7 +36,8 @@ public class CardAttachmentEntityListener implements AfterInsertEntityListener<C
     @Override
     public void onBeforeDelete(CardAttachment entity) {
         Card card = entity.getCard();
-        if (card.getAttachments().isEmpty()) {
+        /* Next collection will have one element more, cause it was not yet removed. */
+        if (card.getAttachments().size() == 1) {
             executeUpdate(card, Boolean.FALSE);
         }
     }
