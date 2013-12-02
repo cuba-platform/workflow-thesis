@@ -128,7 +128,7 @@ public class AttachmentActionsHelper {
                             while ((i < ids.length) && !find) {
                                 //noinspection unchecked
                                 Attachment obj = (Attachment) attachDs.getItem(ids[i]);
-                                find = obj.getFile().getUuid() == fileUid;
+                                find = obj.getFile().getUuid().equals(fileUid);
                                 i++;
                             }
                             if (!find) {
