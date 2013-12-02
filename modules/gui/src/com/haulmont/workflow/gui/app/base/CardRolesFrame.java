@@ -1101,6 +1101,10 @@ public class CardRolesFrame extends AbstractFrame {
         createRoleLookup.setEditable(editable);
         for (LookupPickerField cardRoleField : actorFieldsMap.values()) {
             cardRoleField.setEditable(editable);
+            Action addUserGroupAction = cardRoleField.getAction("addUserGroup");
+            if (addUserGroupAction != null) {
+                addUserGroupAction.setEnabled(editable);
+            }
         }
     }
 
@@ -1306,7 +1310,6 @@ public class CardRolesFrame extends AbstractFrame {
 
         if (cardRole.getProcRole().getMultiUser() && rolesTable.isEditable()) {
             Action addGroupAction = createAddGroupAction(cardRole);
-            addGroupAction.setEnabled(rolesTable.isEditable());
             pickerField.addAction(addGroupAction);
         }
 
