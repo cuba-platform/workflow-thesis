@@ -7,8 +7,8 @@ package com.haulmont.workflow.core.listeners;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.AfterInsertEntityListener;
-import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.sql.SQLException;
 
-public class CardAttachmentEntityListener implements AfterInsertEntityListener<CardAttachment>, BeforeDeleteEntityListener<CardAttachment> {
+public class CardAttachmentEntityListener implements AfterInsertEntityListener<CardAttachment>, AfterDeleteEntityListener<CardAttachment> {
 
     protected Log log = LogFactory.getLog(CardAttachmentEntityListener.class);
 
@@ -34,10 +34,10 @@ public class CardAttachmentEntityListener implements AfterInsertEntityListener<C
     }
 
     @Override
-    public void onBeforeDelete(CardAttachment entity) {
+    public void onAfterDelete(CardAttachment entity) {
         Card card = entity.getCard();
-        /* Next collection will have one element more, cause it was not yet removed. */
-        if (card.getAttachments().size() == 1) {
+
+        if (card.getAttachments().isEmpty()) {
             executeUpdate(card, Boolean.FALSE);
         }
     }
