@@ -97,6 +97,9 @@
     <screen id="wf$RemoveAttachmentConfirmDialog"
             template="/com/haulmont/workflow/gui/app/base/attachments/remove-attachment-confirm-dialog.xml"/>
 
+    <screen id="wf$Assignment.browse"
+            template="/com/haulmont/workflow/gui/app/assignment/assignment-browse.xml"/>
+
     <screen id="wf$Assignment.edit"
             template="/com/haulmont/workflow/gui/app/base/resolution-edit.xml"/>
 
