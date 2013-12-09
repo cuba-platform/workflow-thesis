@@ -8,12 +8,11 @@ package com.haulmont.workflow.core.enums;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
- *
- * <p>$Id$</p>
- *
  * @author zaharchenko
+ * @version $Id$
  */
 public enum AttributeType implements EnumClass<String> {
+
     STRING("STRING"),
     INTEGER("INTEGER"),
     DOUBLE("DOUBLE"),
@@ -29,6 +28,7 @@ public enum AttributeType implements EnumClass<String> {
         this.id = value;
     }
 
+    @Override
     public String getId() {
         return id;
     }

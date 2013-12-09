@@ -5,9 +5,8 @@
  */
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 
 Wf.Layer = function(options) {

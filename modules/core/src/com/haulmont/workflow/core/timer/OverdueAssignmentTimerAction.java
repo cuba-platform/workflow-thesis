@@ -18,8 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.activity.ActivityExecution;
 
-import java.util.Map;
-
 /**
  * @author gorbunkov
  * @version $Id$
