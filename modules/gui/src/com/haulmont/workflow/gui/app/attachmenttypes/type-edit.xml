@@ -23,7 +23,7 @@
     <assign name="width" value="200"/>
 
     <layout expand="windowActions" spacing="true">
-        <fieldGroup id="fieldsTable" datasource="typeDs">
+        <fieldGroup id="fieldsTable" datasource="typeDs" border="visible">
             <column flex="1">
                 <field id="code" required="true" maxLength="500" width="${width}" requiredMessage="msg://codeMsg"/>
                 <field id="name" required="true" maxLength="500" width="${width}" requiredMessage="msg://nameMsg"/>
