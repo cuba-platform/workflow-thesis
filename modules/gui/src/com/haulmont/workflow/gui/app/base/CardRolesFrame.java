@@ -1103,7 +1103,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRoleField.setEditable(editable);
             Action addUserGroupAction = cardRoleField.getAction("addUserGroup");
             if (addUserGroupAction != null) {
-                addUserGroupAction.setEnabled(editable);
+                addUserGroupAction.setVisible(editable);
             }
         }
     }
