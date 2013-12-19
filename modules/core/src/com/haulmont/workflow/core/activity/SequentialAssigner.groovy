@@ -44,7 +44,7 @@ class SequentialAssigner extends MultiAssigner {
       }
     }
 
-    Assignment master = new Assignment()
+    Assignment master = metadata.create(Assignment.class)
     master.setName(execution.getActivityName())
     master.setJbpmProcessId(execution.getProcessInstance().getId())
     master.setCard(card)
@@ -114,7 +114,7 @@ class SequentialAssigner extends MultiAssigner {
   protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
     EntityManager em = PersistenceProvider.getEntityManager()
 
-    Assignment assignment = new Assignment()
+    Assignment assignment = metadata.create(Assignment.class)
     assignment.setName(execution.getActivityName())
 
     if (StringUtils.isBlank(description))

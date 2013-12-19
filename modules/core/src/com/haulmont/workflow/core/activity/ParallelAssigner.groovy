@@ -47,7 +47,7 @@ public class ParallelAssigner extends MultiAssigner {
       }
     }
 
-    Assignment master = new Assignment()
+    Assignment master = metadata.create(Assignment.class)
     master.setName(execution.getActivityName())
     master.setJbpmProcessId(execution.getProcessInstance().getId())
     master.setCard(card)
@@ -58,7 +58,7 @@ public class ParallelAssigner extends MultiAssigner {
     Assignment familyAssignment = findFamilyAssignment(card)
 
     for (CardRole cr: cardRoles) {
-      Assignment assignment = new Assignment()
+      Assignment assignment = metadata.create(Assignment.class)
       assignment.setName(execution.getActivityName())
 
       if (StringUtils.isBlank(description))

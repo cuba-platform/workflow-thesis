@@ -83,7 +83,7 @@ public class ResolutionForm extends AbstractForm {
         attachmentsTable.addAction(new RemoveAction(attachmentsTable, false));
 
         if (activity.equals(WfConstants.ACTION_CANCEL)) {
-            assignment = new Assignment();
+            assignment = metadata.create(Assignment.class);
             assignment.setName(WfConstants.CARD_STATE_CANCELED);
             assignment.setOutcome("Ok");
             assignment.setUser(userSession.getCurrentOrSubstitutedUser());
