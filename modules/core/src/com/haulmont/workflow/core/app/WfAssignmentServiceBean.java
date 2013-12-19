@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -35,6 +32,8 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     @Inject
     private Persistence persistence;
+    @Inject
+    private Metadata metadata;
     @Inject
     private NotificationMatrixAPI notificationMatrixAPI;
     @Inject
@@ -108,7 +107,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     }
 
     protected void createAssignment(Card card, CardRole cr, String state) {
-        Assignment assignment = new Assignment();
+        Assignment assignment = metadata.create(Assignment.class);
         assignment.setName(state);
         assignment.setDescription("msg://" + state);
         assignment.setJbpmProcessId(card.getJbpmProcessId());

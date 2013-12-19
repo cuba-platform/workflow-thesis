@@ -6,10 +6,14 @@ package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Locator
+import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.EntityLoadInfo
+import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.TimeProvider
+import com.haulmont.cuba.core.sys.AppContext
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.app.WorkCalendarAPI
@@ -39,6 +43,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   String notify
   String notificationScript
   AssignmentTimersFactory timersFactory
+  Metadata metadata = AppBeans.get(Metadata.NAME)
   
   public void execute(ActivityExecution execution) throws Exception {
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
@@ -86,7 +91,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     }
 
     Assignment familyAssignment = findFamilyAssignment(card)
-    Assignment assignment = new Assignment()
+    Assignment assignment = metadata.create(Assignment.class)
     assignment.setName(execution.getActivityName())
 
     if (StringUtils.isBlank(description))
@@ -165,7 +170,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
       Assignment familyAssignment = findFamilyAssignment(card)
 
-      Assignment assignment = new Assignment()
+      Assignment assignment = metadata.create(Assignment.class)
       assignment.setName(execution.getActivityName())
 
       if (StringUtils.isBlank(description))

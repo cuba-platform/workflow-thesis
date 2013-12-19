@@ -66,7 +66,7 @@ public class UniversalAssigner extends MultiAssigner {
 
         Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
-        Assignment master = new Assignment()
+        Assignment master = metadata.create(Assignment.class)
         master.setName(execution.getActivityName())
         master.setJbpmProcessId(execution.getProcessInstance().getId())
         master.setCard(card)
@@ -243,7 +243,7 @@ public class UniversalAssigner extends MultiAssigner {
         for (CardRole cr: cardRoles) {
             EntityManager em = persistence.entityManager;
             Assignment familyAssignment = findFamilyAssignment(card)
-            Assignment assignment = new Assignment()
+            Assignment assignment = metadata.create(Assignment.class)
             assignment.setName(execution.getActivityName())
 
             if (StringUtils.isBlank(description))
