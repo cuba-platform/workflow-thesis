@@ -55,6 +55,7 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule, webL
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
+    apply(plugin: 'checkstyle')
     apply(plugin: 'cuba')
     apply(plugin: 'groovy')
 
@@ -82,6 +83,22 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule, webL
 
     artifacts {
         archives sourceJar
+    }
+
+    String checkstyleConfigDir = "${rootProject.projectDir}/config/checkstyle"
+    checkstyle {
+        configFile = new File("${checkstyleConfigDir}/checkstyle.xml".toString())
+        configProperties = [
+                'checkstyleConfigDir' : checkstyleConfigDir
+        ]
+        reportsDir = new File("${buildDir}/checkstyle".toString())
+    }
+
+    checkstyleMain << {
+        def checkstyleDir = "${project.buildDir}/checkstyle".toString()
+        ant.xslt('in': "$checkstyleDir/main.xml",
+                out: "$checkstyleDir/$project.name-checkstyle.html",
+                style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 }
 
