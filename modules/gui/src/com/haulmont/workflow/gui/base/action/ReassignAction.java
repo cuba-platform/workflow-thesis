@@ -43,7 +43,7 @@ public class ReassignAction extends AbstractAction {
     @Override
     public void actionPerform(Component component) {
         final Window window = ComponentsHelper.getWindow(frame);
-        if ((window instanceof Window.Editor) && ((Window.Editor) window).commit()) {
+        if (commitCardEditor(window)) {
             AbstractWfAccessData accessData = window.getContext().getParamValue("accessData");
             ReassignInfo reassignInfo = accessData.getReassignInfo();
             Window w = window.openWindow("reassign.form", WindowManager.OpenType.DIALOG, ImmutableMap.<String, Object>builder()
@@ -57,8 +57,10 @@ public class ReassignAction extends AbstractAction {
             w.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId))
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        onCommit();
                         window.close(Window.COMMIT_ACTION_ID);
+                    }
                 }
             });
         }
@@ -69,6 +71,13 @@ public class ReassignAction extends AbstractAction {
             return messages.getMessage(card.getProc().getMessagesPack(), getId());
         else
             return messages.getMessage(AppConfig.getMessagesPack(), getId());
+    }
+
+    protected boolean commitCardEditor(Window window) {
+        return (window instanceof Window.Editor) && ((Window.Editor) window).commit();
+    }
+
+    protected void onCommit() {
     }
 
     protected Card reloadCard(Card card) {

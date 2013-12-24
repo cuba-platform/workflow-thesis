@@ -795,10 +795,16 @@ public class DesignCompiler {
             }
         }
 
-        Element onEl = rootEl.addElement("on");
-        onEl.addAttribute("event", "end");
-        Element listenerEl = onEl.addElement("event-listener");
-        listenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
+        Element endEl = rootEl.addElement("on");
+        endEl.addAttribute("event", "end");
+        Element endListenerEl = endEl.addElement("event-listener");
+        endListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
+
+        Element startEl = rootEl.addElement("on");
+        startEl.addAttribute("event", "start");
+        Element startListenerEl = startEl.addElement("event-listener");
+        startListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.StartProcessListener");
+
         processSubdesignJpdl(rootEl);
         postProcessor.processJpdl(rootEl, compileErrors);
         return Dom4j.writeDocument(document, true);
