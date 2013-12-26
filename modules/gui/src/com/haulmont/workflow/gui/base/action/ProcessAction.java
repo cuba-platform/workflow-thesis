@@ -49,6 +49,7 @@ public class ProcessAction extends AbstractAction {
         this.frame = frame;
     }
 
+    @Override
     public String getCaption() {
         if (assignmentInfo != null && !card.equals(assignmentInfo.getCard()) && assignmentInfo.getCard() != null) {
             if (assignmentInfo.getCard().getProc() != null)
@@ -79,6 +80,7 @@ public class ProcessAction extends AbstractAction {
         return managerChain;
     }
 
+    @Override
     public void actionPerform(Component component) {
         final Window window = ComponentsHelper.getWindow(frame);
         if (!(window instanceof Window.Editor)) return;
@@ -113,10 +115,8 @@ public class ProcessAction extends AbstractAction {
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        if (((Window.Editor) window).commit()) {
-                                            if (assignmentId != null && checkAssignmentFinished(assignmentId)) {
-                                                return;
-                                            }
+                                        if (((Window.Editor) window).commit() && ((Window.Editor) window).isModified() || forceCommit(card)) {
+
                                             final FormManagerChain managerChain = createManagerChain();
                                             managerChain.setHandler(new FormManagerChain.Handler() {
                                                 public void onSuccess(String comment) {
@@ -223,15 +223,17 @@ public class ProcessAction extends AbstractAction {
         }
     }
 
-    protected boolean checkAssignmentFinished(UUID assignmentId) {
-        LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
-        Assignment assignment = dataService.load(lc);
-        if (assignment != null && assignment.getFinished() != null) {
-            String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
-            AppBeans.get(WindowManagerProvider.class).get().showNotification(msg, IFrame.NotificationType.ERROR);
-            return true;
-        }
-        return false;
+    /**
+     * We force commit card when datasource is not modified to fire optimistic lock immediately
+     * in cases, when card was moved in process by another user. By this we avoid the creation of
+     * the 'cancel process' assignment.
+     * P.S. 'Cancel process' assignment is created in ResolutionForm, so nature WfEngine lock exception
+     * in middleware can't prevent its creation.
+     */
+    protected boolean forceCommit(Card card) {
+        CommitContext cc = new CommitContext(card);
+        dataService.commit(cc);
+        return true;
     }
 
     protected void startProcess(Window window, FormManagerChain managerChain) {
