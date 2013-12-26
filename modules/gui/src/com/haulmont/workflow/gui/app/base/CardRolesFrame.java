@@ -534,6 +534,7 @@ public class CardRolesFrame extends AbstractFrame {
                     .setViewName("_minimal")
                     .buildCollectionDatasource();
             ((DatasourceImpl) usersDs).valid();
+            usersDs.setAllowCommit(false);
             fillUsersOptionsDs(cardRole, usersDs);
             procRoleUsers.put(cardRole.getProcRole(), usersDs);
         }
