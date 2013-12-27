@@ -100,8 +100,9 @@ public class UniversalAssigner extends MultiAssigner {
             onSuccess(execution, signalName, assignment)
 
             def siblings = getSiblings(assignment)
-            if (finishBySingleUser && statusesForFinish.contains(signalName))
-                finishSiblings(assignment, siblings)
+            if (finishBySingleUser)
+                if (statusesForFinish.size() == 0 || statusesForFinish.contains(signalName))
+                    finishSiblings(assignment, siblings)
 
             String resultTransition = signalName
             for (Assignment sibling: siblings) {
