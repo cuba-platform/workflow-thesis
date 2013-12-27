@@ -241,7 +241,7 @@ public class ProcessAction extends AbstractAction {
         Card reloadedCard = dataService.load(lc);
 
         /* If card was modified, initiate Optimistic Lock */
-        if (!reloadedCard.getVersion().equals(card.getVersion())) {
+        if (reloadedCard.getVersion().compareTo(card.getVersion()) != 0) {
             dataService.commit(new CommitContext(card));
         }
 
