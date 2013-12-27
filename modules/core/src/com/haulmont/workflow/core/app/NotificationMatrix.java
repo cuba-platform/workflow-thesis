@@ -38,12 +38,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @ManagedBean(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixAPI {
 
-    static final String MAIL_SHEET = "Mail";
-    static final String TRAY_SHEET = "Tray";
-    static final String SMS_SHEET = "Sms";
-    static final String ROLES_SHEET = "Roles";
-    static final String STATES_SHEET = "States";
-    static final String ACTIONS_SHEET = "Actions";
+    protected static final String MAIL_SHEET = "Mail";
+    protected static final String TRAY_SHEET = "Tray";
+    protected static final String SMS_SHEET = "Sms";
+    protected static final String ROLES_SHEET = "Roles";
+    protected static final String STATES_SHEET = "States";
+    protected static final String ACTIONS_SHEET = "Actions";
     public static final String OVERDUE_CARD_STATE = "Overdue";
 
     private static Log log = LogFactory.getLog(NotificationMatrixService.class);
@@ -63,8 +63,9 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     @Inject
     protected SmsSenderAPI smsSenderAPI;
 
-    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<>();
-    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<>();
+
+    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
+    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -325,7 +326,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
-    private void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, String> matrix, String state,
+    protected void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, String> matrix, String state,
                             List<User> mailList, List<User> trayList, List<User> smsList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
         String type;
@@ -393,7 +394,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
-    private boolean isUserNotifiedBySms(User user) {
+    protected boolean isUserNotifiedBySms(User user) {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -570,7 +571,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
      * @param text
      * @return new NotificationMessage
      */
-    private NotificationMessageBuilder getNotificationMessageBuilder(String templateType, String text) {
+    protected NotificationMessageBuilder getNotificationMessageBuilder(String templateType, String text) {
         NotificationMessageBuilder message = null;
         if (templateType.equals("Groovy")) {
             message = new GroovyNotificationMessageBuilder(text);
@@ -587,7 +588,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         return message;
     }
 
-    private String getScriptByNotificationType(String processPath, String type) {
+    protected String getScriptByNotificationType(String processPath, String type) {
         String notificationScript = processPath.replace('.', '/') + "/%s" + "Notification.groovy";
         if (type.equals(NotificationType.ACTION.toString()) || type.equals(NotificationType.WARNING.toString())) {
             notificationScript = String.format(notificationScript, "Assignment");
@@ -612,7 +613,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         return matrix != null ? Collections.unmodifiableMap(matrix) : null;
     }
 
-    private void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
+    protected void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = new CardInfo();
         ci.setType(cardInfoType);
         if (card.isSubProcCard()) {
@@ -628,7 +629,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         em.persist(ci);
     }
 
-    private int getCardInfoTypeByState(String type) {
+    protected int getCardInfoTypeByState(String type) {
         if (type.endsWith(NotificationType.SIMPLE.toString())) {
             return CardInfo.TYPE_SIMPLE;
         } else if (type.equals(NotificationType.ACTION.toString()) || type.equals(NotificationType.REASSIGN.toString())) {

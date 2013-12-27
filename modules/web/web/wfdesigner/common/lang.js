@@ -283,6 +283,12 @@ var wfLanguage = {
                         "value": false
                     },
                     {
+                        "type": "string",
+                        "label": "msg://ParallelAssignment.statusesForFinish",
+                        "name": "statusesForFinish",
+                         "value": ""
+                    },
+                    {
                         type: "group",
                         legend: "msg://forms",
                         collapsible: "true",
