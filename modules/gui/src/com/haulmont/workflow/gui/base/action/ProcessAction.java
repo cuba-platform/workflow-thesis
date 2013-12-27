@@ -4,6 +4,7 @@
  */
 package com.haulmont.workflow.gui.base.action;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -115,7 +116,7 @@ public class ProcessAction extends AbstractAction {
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        if (((Window.Editor) window).commit() && ((Window.Editor) window).isModified() || forceCommit(card)) {
+                                        if (((Window.Editor) window).commit() && ((Window.Editor) window).isModified() || checkVersion(card)) {
 
                                             final FormManagerChain managerChain = createManagerChain();
                                             managerChain.setHandler(new FormManagerChain.Handler() {
@@ -154,6 +155,10 @@ public class ProcessAction extends AbstractAction {
                 );
             }
         } else if (((Window.Editor) window).commit()) {
+
+            if (!PersistenceHelper.isNew(card) && !((Window.Editor) window).isModified()) {
+                checkVersion(card);
+            }
 
             final FormManagerChain managerChain = createManagerChain();
 
@@ -224,15 +229,22 @@ public class ProcessAction extends AbstractAction {
     }
 
     /**
-     * We force commit card when datasource is not modified to fire optimistic lock immediately
-     * in cases, when card was moved in process by another user. By this we avoid the creation of
-     * the 'cancel process' assignment.
-     * P.S. 'Cancel process' assignment is created in ResolutionForm, so nature WfEngine lock exception
-     * in middleware can't prevent its creation.
+     * Checks if card in the screen differs with the card in the database
+     * <p/>
+     * If so, optimistic lock exception is thrown
      */
-    protected boolean forceCommit(Card card) {
-        CommitContext cc = new CommitContext(card);
-        dataService.commit(cc);
+    protected boolean checkVersion(Card card) {
+        Preconditions.checkArgument(!PersistenceHelper.isNew(card), "Card can not be new");
+
+        LoadContext lc = new LoadContext(Card.class);
+        lc.setId(card.getId());
+        Card reloadedCard = dataService.load(lc);
+
+        /* If card was modified, initiate Optimistic Lock */
+        if (!reloadedCard.getVersion().equals(card.getVersion())) {
+            dataService.commit(new CommitContext(card));
+        }
+
         return true;
     }
 
