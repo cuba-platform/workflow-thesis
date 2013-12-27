@@ -36,7 +36,8 @@ public class UniversalAssigner extends MultiAssigner {
 
     private Log log = LogFactory.getLog(Assigner.class)
     protected Persistence persistence = AppBeans.get(Persistence.NAME);
-
+    String statusForFinish
+    def statusesForFinish = []
     Boolean finishBySingleUser
 
     @Override
@@ -99,7 +100,7 @@ public class UniversalAssigner extends MultiAssigner {
             onSuccess(execution, signalName, assignment)
 
             def siblings = getSiblings(assignment)
-            if (finishBySingleUser)
+            if (finishBySingleUser && statusesForFinish.contains(signalName))
                 finishSiblings(assignment, siblings)
 
             String resultTransition = signalName
@@ -277,4 +278,13 @@ public class UniversalAssigner extends MultiAssigner {
 
     protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
     }
+
+    public void setStatusesForFinish(String value) {
+        statusForFinish = value
+        if (statusForFinish) {
+            String[] parts = statusForFinish.split('[;,]')
+            statusesForFinish.addAll(parts)
+        }
+    }
+
 }

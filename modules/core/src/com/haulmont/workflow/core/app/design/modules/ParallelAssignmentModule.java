@@ -23,6 +23,10 @@ public class ParallelAssignmentModule extends AssignmentModule {
             if (!StringUtils.isBlank(successTransition)) {
                 writeJpdlStringPropertyEl(element, "successTransition", encodeSuccessTransition(successTransition));
             }
+            String statusesForFinish = jsOptions.optString("statusesForFinish");
+            if (!StringUtils.isBlank(statusesForFinish)) {
+                writeJpdlStringPropertyEl(element, "statusesForFinish", encodeSuccessTransition(statusesForFinish));
+            }
 
             boolean refusedOnly = jsOptions.optBoolean("refusedOnly");
             if (refusedOnly) {
@@ -33,6 +37,7 @@ public class ParallelAssignmentModule extends AssignmentModule {
             if (finishBySingleUser) {
                 writeJpdlBooleanPropertyEl(element, "finishBySingleUser", true);
             }
+
         }
         return element;
     }

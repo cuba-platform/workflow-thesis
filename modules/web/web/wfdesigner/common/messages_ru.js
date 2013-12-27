@@ -100,6 +100,7 @@ var i18nDict = {
     "ParallelAssignment.successTransition": "Успешный переход",
     "ParallelAssignment.refusedOnly": "Только отклонившим",
     "ParallelAssignment.finishBySingleUser": "Завершать назначение одним пользователем",
+    "ParallelAssignment.statusesForFinish": "Статусы завершения одним пользователем",
 
     "Decision": "Выбор",
     "Decision.yes": "Да",
