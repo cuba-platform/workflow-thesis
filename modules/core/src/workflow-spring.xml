@@ -64,7 +64,13 @@
 
     <bean id="workflow_FormCompiler" parent="base_workflow_FormCompiler"/>
 
-    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor"/>
+    <bean id="workflow_DesignPostProcessor" class="com.haulmont.workflow.core.app.design.DesignPostProcessor">
+        <property name="processors">
+            <list>
+                <bean class="com.haulmont.workflow.core.app.design.postprocessors.DisableCachePostProcessor"/>
+            </list>
+        </property>
+    </bean>
 
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 
