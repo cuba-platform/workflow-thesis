@@ -86,6 +86,7 @@ public class ProcessAction extends AbstractAction {
         final Window window = ComponentsHelper.getWindow(frame);
         if (!(window instanceof Window.Editor)) return;
 
+        final Window.Editor editor = (Window.Editor) window;
 
         final Map<String, Object> formManagerParams = new HashMap<>();
 
@@ -94,14 +95,14 @@ public class ProcessAction extends AbstractAction {
         WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
         final UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
 
-        card = (Card) ((Window.Editor) window).getItem();
+        card = (Card) editor.getItem();
 
         if (isCardDeleted(card)) {
             wmp.get().showNotification(
                     messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
                     IFrame.NotificationType.WARNING
             );
-            window.close(Window.CLOSE_ACTION_ID, true);
+            editor.close(Window.CLOSE_ACTION_ID, true);
             return;
         }
 
@@ -116,12 +117,15 @@ public class ProcessAction extends AbstractAction {
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        if (((Window.Editor) window).commit() && ((Window.Editor) window).isModified() || checkVersion(card)) {
+                                        if (editor.commit()) {
+
+                                            card = (Card) editor.getItem();
+                                            checkVersion(card);
 
                                             final FormManagerChain managerChain = createManagerChain();
                                             managerChain.setHandler(new FormManagerChain.Handler() {
                                                 public void onSuccess(String comment) {
-                                                    cancelProcess(window, managerChain);
+                                                    cancelProcess(editor, managerChain);
                                                 }
 
                                                 public void onFail() {
@@ -135,7 +139,7 @@ public class ProcessAction extends AbstractAction {
                         }
                 );
             } else {
-                window.showOptionDialog(
+                editor.showOptionDialog(
                         messages.getMessage(getClass(), "failCancelProcCaption"),
                         messages.getMessage(getClass(), "failCancelProcDescription"),
                         IFrame.MessageType.CONFIRMATION,
@@ -143,7 +147,7 @@ public class ProcessAction extends AbstractAction {
                                 new DialogAction(DialogAction.Type.OK) {
                                     @Override
                                     public void actionPerform(Component c) {
-                                        window.close(Window.CLOSE_ACTION_ID, true);
+                                        editor.close(Window.CLOSE_ACTION_ID, true);
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.NO) {
@@ -154,18 +158,17 @@ public class ProcessAction extends AbstractAction {
                         }
                 );
             }
-        } else if (((Window.Editor) window).commit()) {
+        } else if (editor.commit()) {
 
-            if (!PersistenceHelper.isNew(card) && !((Window.Editor) window).isModified()) {
-                checkVersion(card);
-            }
+            card = (Card) editor.getItem();
+            checkVersion(card);
 
             final FormManagerChain managerChain = createManagerChain();
 
             if (WfConstants.ACTION_SAVE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        ((Window.Editor) window).commit();
+                        editor.commit();
                         managerChain.doManagerAfter(formManagerParams);
                     }
 
@@ -177,7 +180,7 @@ public class ProcessAction extends AbstractAction {
             } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        window.close(Window.COMMIT_ACTION_ID);
+                        editor.close(Window.COMMIT_ACTION_ID);
                         managerChain.doManagerAfter(formManagerParams);
                     }
 
@@ -195,7 +198,7 @@ public class ProcessAction extends AbstractAction {
 
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
-                        startProcess(window, managerChain);
+                        startProcess(editor, managerChain);
                     }
 
                     public void onFail() {
@@ -215,7 +218,7 @@ public class ProcessAction extends AbstractAction {
                 managerChain.setHandler(new FormManagerChain.Handler() {
                     public void onSuccess(String comment) {
                         CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
-                        finishAssignment(window, comment, managerChain, subProcCardContext.getCard());
+                        finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
                     }
 
                     public void onFail() {
@@ -229,9 +232,12 @@ public class ProcessAction extends AbstractAction {
     }
 
     /**
-     * Checks if card in the screen differs with the card in the database
+     * Checks if card opened in editor differs with the card in the database
+     * Check version is performed after editor.commit() call to verify that
+     * card was not modified.
+     * P.S. If datasource was not modified, editor.commit() will not make real commit.
      * <p/>
-     * If so, optimistic lock exception is thrown
+     * If card was modified, optimistic lock exception is thrown
      */
     protected boolean checkVersion(Card card) {
         Preconditions.checkArgument(!PersistenceHelper.isNew(card), "Card can not be new");
