@@ -22,12 +22,11 @@ import org.apache.commons.collections.CollectionUtils;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author pavlov
+ * @version $Id$
  */
 public class RemoveAttachmentAction extends RemoveAction {
-    private static final long serialVersionUID = -5912958394607863731L;
+
     protected AttachmentCreator.CardGetter cardGetter;
 
     public RemoveAttachmentAction(ListComponent owner) {
@@ -70,6 +69,7 @@ public class RemoveAttachmentAction extends RemoveAction {
                 Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
 
                 window.addListener(new Window.CloseListener() {
+                    @Override
                     public void windowClosed(String actionId) {
                         if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
                             migrateToNewLastVersion(selected);
@@ -77,6 +77,9 @@ public class RemoveAttachmentAction extends RemoveAction {
                         } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
                             doRemove(getAllVersions(selected), autocommit);
                         }
+
+                        // move focus to owner
+                        owner.requestFocus();
                     }
                 });
             } else {
@@ -88,15 +91,22 @@ public class RemoveAttachmentAction extends RemoveAction {
                         new Action[]{
                                 new DialogAction(DialogAction.Type.OK) {
 
+                                    @Override
                                     public void actionPerform(Component component) {
                                         migrateToNewLastVersion(selected);
                                         doRemove(selected, autocommit);
-                                    }
-                                }, new DialogAction(DialogAction.Type.CANCEL) {
 
-                            public void actionPerform(Component component) {
-                            }
-                        }
+                                        // move focus to owner
+                                        owner.requestFocus();
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.CANCEL) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        // move focus to owner
+                                        owner.requestFocus();
+                                    }
+                                }
                         }
                 );
             }
@@ -104,7 +114,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     }
 
     protected Set<Attachment> getAllVersions(Set<Attachment> selected) {
-        Set allVersions = new HashSet();
+        Set<Attachment> allVersions = new HashSet<>();
         allVersions.addAll(selected);
 
         CollectionDatasource datasource = owner.getDatasource();
@@ -121,6 +131,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected Boolean userIsCreatorAllAttachments(Set<Attachment> oldLastVesrions) {
         User user = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
+        // PROBLEM constant role name usage
         if (UserSessionProvider.getUserSession().getRoles().contains("Administrators"))
             return true;
         Map<Attachment, List<Attachment>> map = getMapVersions(oldLastVesrions);
@@ -134,7 +145,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     }
 
     protected Map<Attachment, List<Attachment>> getMapVersions(Set<Attachment> oldLastVesrions) {
-        Map<Attachment, List<Attachment>> map = new HashMap<Attachment, List<Attachment>>();
+        Map<Attachment, List<Attachment>> map = new HashMap<>();
         CollectionDatasource datasource = owner.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
@@ -142,7 +153,7 @@ public class RemoveAttachmentAction extends RemoveAction {
             if (versionOf != null && oldLastVesrions.contains(versionOf)) {
                 java.util.List<Attachment> versions = map.get(versionOf);
                 if (versions == null) {
-                    versions = new ArrayList<Attachment>();
+                    versions = new ArrayList<>();
                     map.put(versionOf, versions);
                 }
                 versions.add(attachment);
@@ -152,7 +163,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     }
 
     protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
-        Map<Attachment, List<Attachment>> map = new HashMap<Attachment, List<Attachment>>();
+        Map<Attachment, List<Attachment>> map = new HashMap<>();
         CollectionDatasource datasource = owner.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
@@ -160,7 +171,7 @@ public class RemoveAttachmentAction extends RemoveAction {
             if (versionOf != null && oldLastVesrions.contains(versionOf)) {
                 java.util.List<Attachment> versions = map.get(versionOf);
                 if (versions == null) {
-                    versions = new ArrayList<Attachment>();
+                    versions = new ArrayList<>();
                     map.put(versionOf, versions);
                 }
                 versions.add(attachment);
@@ -197,6 +208,4 @@ public class RemoveAttachmentAction extends RemoveAction {
                 card.getAttachments().removeAll(selected);
         }
     }
-
 }
-
