@@ -319,7 +319,7 @@ public class CardRolesFrame extends AbstractFrame {
                         return orderLookup;
                     } else {
                         Label label = componentsFactory.createComponent(Label.NAME);
-                        label.setValue(cardRole.getSortOrder().toString());
+                        label.setValue(cardRole.getSortOrder() != null ? cardRole.getSortOrder().toString() : "");
                         return label;
                     }
                 }
