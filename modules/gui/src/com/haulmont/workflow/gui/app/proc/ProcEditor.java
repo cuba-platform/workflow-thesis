@@ -23,6 +23,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.DefaultProcActor;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
+import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -59,7 +60,6 @@ public class ProcEditor extends AbstractEditor<Proc> {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-
         createRolesTableActions();
         createDpaTableActions();
 
@@ -82,11 +82,25 @@ public class ProcEditor extends AbstractEditor<Proc> {
             public void afterCommit(CommitContext context, Set<Entity> result) {
             }
         });
+    }
 
+    public void setItem(Entity item) {
+        super.setItem(item);
+        ivisibleRolesFiltering();
+    }
+
+    protected void ivisibleRolesFiltering() {
+        List<ProcRole> roles = new ArrayList<>();
+        for (ProcRole procRole : getItem().getRoles()) {
+            if (BooleanUtils.isNotTrue(procRole.getInvisible())) {
+                roles.add(procRole);
+            }
+        }
+        getItem().setRoles(roles);
     }
 
     protected void createRolesTableActions() {
-        CreateAction createAction = new CreateAction(rolesTable){
+        CreateAction createAction = new CreateAction(rolesTable) {
             @Override
             public Map<String, Object> getInitialValues() {
                 Map<String, Object> values = new HashMap<>();
@@ -113,7 +127,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
                     return;
 
                 ProcRole curCr = (ProcRole) selected.iterator().next();
-                UUID prevId = ((CollectionPropertyDatasourceImpl<ProcRole, UUID>)rolesDs).prevItemId(curCr.getId());
+                UUID prevId = ((CollectionPropertyDatasourceImpl<ProcRole, UUID>) rolesDs).prevItemId(curCr.getId());
                 if (prevId == null)
                     return;
 
@@ -154,7 +168,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
     }
 
     protected void createDpaTableActions() {
-        CreateAction createDpaAction = new CreateAction(dpaTable){
+        CreateAction createDpaAction = new CreateAction(dpaTable) {
             @Override
             public Map<String, Object> getWindowParams() {
                 List<UUID> userIds = new LinkedList<>();
@@ -184,10 +198,10 @@ public class ProcEditor extends AbstractEditor<Proc> {
         createDpaAction.setOpenType(WindowManager.OpenType.DIALOG);
         dpaTable.addAction(createDpaAction);
 
-        EditAction dpaEditAction = new EditAction(dpaTable, WindowManager.OpenType.DIALOG){
+        EditAction dpaEditAction = new EditAction(dpaTable, WindowManager.OpenType.DIALOG) {
             @Override
             public Map<String, Object> getWindowParams() {
-                List<UUID> userIds = new LinkedList<> ();
+                List<UUID> userIds = new LinkedList<>();
                 for (UUID uuid : dpaDs.getItemIds()) {
                     DefaultProcActor dpa = dpaDs.getItem(uuid);
                     User user = null;
@@ -205,7 +219,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
         };
         dpaTable.addAction(dpaEditAction);
 
-        RemoveAction dpaRemoveAction = new RemoveAction(dpaTable,false);
+        RemoveAction dpaRemoveAction = new RemoveAction(dpaTable, false);
         dpaTable.addAction(dpaRemoveAction);
     }
 
@@ -222,7 +236,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
 
     protected int findMaxSortOrder() {
         int max = 0;
-        for (UUID id: rolesDs.getItemIds()) {
+        for (UUID id : rolesDs.getItemIds()) {
             ProcRole pr = rolesDs.getItem(id);
             if (pr != null) {
                 if (pr.getSortOrder() != null && pr.getSortOrder() > max) {
