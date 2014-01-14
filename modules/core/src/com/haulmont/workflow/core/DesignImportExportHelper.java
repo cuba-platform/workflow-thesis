@@ -6,7 +6,9 @@ package com.haulmont.workflow.core;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Design;
@@ -16,6 +18,7 @@ import com.haulmont.workflow.core.entity.DesignScript;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -183,7 +186,11 @@ public class DesignImportExportHelper {
                 for (DesignScript script : existsDesign.getScripts()) {
                     script.setDesign(existsDesign);
                 }
-                existsDesign.setDesignProcessVariables(design.getDesignProcessVariables());
+                if (design.getDesignProcessVariables() != null) {
+                    existsDesign.setDesignProcessVariables(design.getDesignProcessVariables());
+                } else {
+                    existsDesign.setDesignProcessVariables(SetUtils.EMPTY_SET);
+                }
                 for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
                     variable.setDesign(existsDesign);
                 }
@@ -222,10 +229,10 @@ public class DesignImportExportHelper {
         for (DesignScript script : design.getScripts()) {
             em.persist(script);
         }
-        if(CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
-        for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
-            em.persist(variable);
-        }
+        if (CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
+            for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
+                em.persist(variable);
+            }
         return design;
     }
 
@@ -264,14 +271,14 @@ public class DesignImportExportHelper {
             script.setUpdateTs(null);
         }
 
-        if(CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
-        for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
-            variable.setUuid(UUID.randomUUID());
-            variable.setCreateTs(new Date());
-            variable.setCreatedBy(user.getName());
-            variable.setUpdatedBy(null);
-            variable.setUpdateTs(null);
-        }
+        if (CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
+            for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
+                variable.setUuid(UUID.randomUUID());
+                variable.setCreateTs(new Date());
+                variable.setCreatedBy(user.getName());
+                variable.setUpdatedBy(null);
+                variable.setUpdateTs(null);
+            }
         return design;
     }
 }
