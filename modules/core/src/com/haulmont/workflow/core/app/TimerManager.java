@@ -91,19 +91,13 @@ public class TimerManager implements TimerManagerAPI {
     public void removeTimers(ActivityExecution execution) {
         checkNotNull(execution, "execution is null");
 
-        Transaction tx = persistence.getTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query q = em.createQuery("select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2");
-            q.setParameter(1, execution.getId());
-            q.setParameter(2, execution.getActivityName());
-            List<TimerEntity> timerEntities = q.getResultList();
-            for (TimerEntity timerEntity : timerEntities) {
-                em.remove(timerEntity);
-            }
-            tx.commit();
-        } finally {
-            tx.end();
+        EntityManager em = persistence.getEntityManager();
+        Query q = em.createQuery("select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2");
+        q.setParameter(1, execution.getId());
+        q.setParameter(2, execution.getActivityName());
+        List<TimerEntity> timerEntities = q.getResultList();
+        for (TimerEntity timerEntity : timerEntities) {
+            em.remove(timerEntity);
         }
     }
 
