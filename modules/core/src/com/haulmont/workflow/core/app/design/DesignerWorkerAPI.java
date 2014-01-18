@@ -13,6 +13,7 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -26,7 +27,13 @@ public interface DesignerWorkerAPI {
 
     void deployDesign(UUID designId, UUID procId, Role role) throws DesignDeploymentException;
 
+    byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException;
+
     byte[] exportDesign(Design design) throws IOException, FileStorageException;
 
     Design importDesign(byte[] bytes) throws IOException, FileStorageException;
+
+    Collection<Design> importDesigns(byte[] zipBytes) throws IOException, FileStorageException;
+
+    Design importDesign(byte[] zipBytes, Boolean isArchive) throws IOException, FileStorageException;
 }
