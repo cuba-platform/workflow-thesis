@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.workflow.core.DesignImportExportHelper;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
@@ -124,12 +123,12 @@ public class DesignerServiceBean implements DesignerService {
 
     @Override
     public byte[] exportDesigns(Collection<Design> designs) throws IOException, FileStorageException {
-        return DesignImportExportHelper.exportDesigns(designs);
+        return designerWorkerAPI.exportDesigns(designs);
     }
 
     @Override
     public Collection<Design> importDesigns(byte[] bytes) throws IOException, FileStorageException {
-        return DesignImportExportHelper.importDesigns(bytes);
+        return designerWorkerAPI.importDesigns(bytes);
     }
 
     @Override
