@@ -27,6 +27,7 @@ BEGIN
                                                                     UNION select dbid_ from JBPM4_TASK
                                                                     UNION select dbid_ from JBPM4_VARIABLE) unionTables);
     INSERT INTO seq_jbpm_id_gen(ID, CREATE_TS) VALUES (@max_dbid, CURRENT_TIMESTAMP);
+    SET IDENTITY_INSERT seq_jbpm_id_gen OFF;
 END
 
 
