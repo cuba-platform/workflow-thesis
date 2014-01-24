@@ -193,17 +193,15 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     protected AttachmentType getDefaultAttachmentType() {
         String defaultAttachmentCode = configuration.getConfig(WfConfig.class).getDefaultAttachmentType();
         AttachmentType defaultAttachmentType = null;
-        if (defaultAttachmentCode != null) {
+        if (!StringUtils.isEmpty(defaultAttachmentCode)) {
             for (UUID itemId : attachTypesDs.getItemIds()) {
-                AttachmentType attachmentType = attachTypesDs.getItem(itemId);
-                if (attachmentType != null) {
-                    if (attachmentType.getCode().equals(defaultAttachmentCode)) {
-                        defaultAttachmentType = attachmentType;
-                    }
+                AttachmentType attachmentType = attachTypesDs.getItemNN(itemId);
+
+                if (defaultAttachmentCode.equals(attachmentType.getCode())) {
+                    return attachmentType;
                 }
             }
         }
-
         return defaultAttachmentType;
     }
 
