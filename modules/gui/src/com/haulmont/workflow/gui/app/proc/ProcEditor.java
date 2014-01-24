@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.DefaultProcActor;
@@ -86,10 +87,10 @@ public class ProcEditor extends AbstractEditor<Proc> {
 
     public void setItem(Entity item) {
         super.setItem(item);
-        ivisibleRolesFiltering();
+        invisibleRolesFiltering();
     }
 
-    protected void ivisibleRolesFiltering() {
+    protected void invisibleRolesFiltering() {
         List<ProcRole> roles = new ArrayList<>();
         for (ProcRole procRole : getItem().getRoles()) {
             if (BooleanUtils.isNotTrue(procRole.getInvisible())) {
@@ -97,6 +98,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
             }
         }
         getItem().setRoles(roles);
+        ((DatasourceImpl<Proc>) procDs).setModified(false);
     }
 
     protected void createRolesTableActions() {
@@ -254,7 +256,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
     @Override
     protected void postValidate(ValidationErrors errors) {
         for (ProcRole procRole : rolesDs.getItems()) {
-            if (!procRole.getMultiUser() && (procRole.getDefaultProcActors().size() > 1)) {
+            if (!procRole.getMultiUser() && (procRole.getDefaultProcActors() != null && procRole.getDefaultProcActors().size() > 1)) {
                 errors.add(formatMessage("proc.validation.error1", procRole.getName()));
             }
 
@@ -262,7 +264,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
                 errors.add(formatMessage("proc.validation.error2", procRole.getName()));
             }
 
-            if (!procRole.getMultiUser() && (procRole.getDefaultProcActors().size() > 0) && procRole.getAssignToCreator()) {
+            if (!procRole.getMultiUser() && (procRole.getDefaultProcActors() != null && procRole.getDefaultProcActors().size() > 0) && procRole.getAssignToCreator()) {
                 errors.add(formatMessage("proc.validation.error3", procRole.getName()));
             }
         }
