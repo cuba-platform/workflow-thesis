@@ -13,11 +13,9 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignLocKey;
@@ -49,7 +47,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private BiMap<Element, DesignLocValue> valuesMap;
 
     private enum type {
-
         ACTION("action"),
         STATE("state"),
         TRANSITION("transition"),
@@ -286,12 +283,5 @@ public class LocalizeDesignWindow extends AbstractEditor {
                 level++;
             }
         }
-    }
-
-    @Override
-    public void commitAndClose() {
-        ((DatasourceImplementation) keysDs).setModified(false);
-        ((DatasourceImplementation) valuesDs).setModified(false);
-        super.commitAndClose();
     }
 }

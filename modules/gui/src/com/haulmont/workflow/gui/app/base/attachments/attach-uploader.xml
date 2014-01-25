@@ -13,6 +13,7 @@
 
     <dsContext>
         <collectionDatasource id="attachDs" class="com.haulmont.workflow.core.entity.Attachment"
+                              allowCommit="false"
                               view="attachments-browse" refreshMode="NEVER"/>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
                               view="_local" refreshMode="NEVER"/>

@@ -18,11 +18,13 @@
         <hierarchicalDatasource id="keysDs"
                                 class="com.haulmont.workflow.core.entity.DesignLocKey"
                                 hierarchyProperty="parentKey"
+                                allowCommit="false"
                                 datasourceClass="com.haulmont.workflow.gui.app.design.DesignLocKeyDatasource">
         </hierarchicalDatasource>
 
         <collectionDatasource id="valuesDs"
                               class="com.haulmont.workflow.core.entity.DesignLocValue"
+                              allowCommit="false"
                               datasourceClass="com.haulmont.workflow.gui.app.design.DesignLocValueDatasource">
         </collectionDatasource>
 

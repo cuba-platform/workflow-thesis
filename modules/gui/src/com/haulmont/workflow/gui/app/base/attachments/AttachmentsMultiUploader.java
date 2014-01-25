@@ -197,7 +197,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                 attachment.setVersionNum(1);
             }
         }
-        attachDs.setModified(false);
         if (commit()) {
             if (needSave) {
                 saveFile();
