@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
@@ -16,7 +17,7 @@ import java.util.Date;
 @Entity(name = "wf$CardInfo")
 @Table(name = "WF_CARD_INFO")
 @SystemLevel
-public class CardInfo extends BaseUuidEntity implements SoftDelete {
+public class CardInfo extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -49071058042769381L;
 
