@@ -51,7 +51,6 @@ public class Proc extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DESIGN_ID")
-    @OnDeleteInverse(DeletePolicy.UNLINK)
     protected Design design;
 
     @ManyToOne(fetch = FetchType.LAZY)
