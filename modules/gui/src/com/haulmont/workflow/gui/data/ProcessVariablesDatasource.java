@@ -121,6 +121,12 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
             throw new IllegalStateException("Datasource state is " + state);
     }
 
+    @Nullable
+    @Override
+    public ProcessVariablesEntity getItemIfValid() {
+        return getState() == State.VALID ? getItem() : null;
+    }
+
     @Override
     public void setItem(ProcessVariablesEntity item) {
         throw new UnsupportedOperationException();
