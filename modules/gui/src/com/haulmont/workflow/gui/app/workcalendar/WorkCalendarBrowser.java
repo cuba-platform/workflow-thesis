@@ -5,13 +5,15 @@
 package com.haulmont.workflow.gui.app.workcalendar;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 
+import javax.inject.Inject;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorbunkov
@@ -19,84 +21,106 @@ import java.util.Map;
  */
 public class WorkCalendarBrowser extends AbstractWindow {
 
+    @Inject
+    protected Table workDaysTable;
+
+    @Inject
+    protected Table exceptionDaysTable;
+
+    @Inject
+    protected CollectionDatasource<WorkCalendarEntity, UUID> workDaysDs;
+
+    @Inject
+    protected CollectionDatasource<WorkCalendarEntity, UUID> exceptionDaysDs;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        Table workDaysTable = getComponent("workDaysTable");
         TableActionsHelper workDaysHelper = new TableActionsHelper(this, workDaysTable);
         workDaysTable.addAction(new AbstractAction("create") {
+            @Override
             public void actionPerform(Component component) {
                 Window window = openEditor("wf$WorkCalendarWorkDay.edit", new WorkCalendarEntity(), WindowManager.OpenType.DIALOG);
-                window.addListener(new Window.CloseListener() {
+                window.addListener(new CloseListener() {
+                    @Override
                     public void windowClosed(String actionId) {
-                        getDsContext().get("workDaysDs").refresh();
+                        workDaysDs.refresh();
                     }
                 });
             }
 
             @Override
             public String getCaption() {
-                return AppBeans.get(Messages.class).getMainMessage("actions.Create");
+                return messages.getMainMessage("actions.Create");
             }
         });
 
-        workDaysTable.addAction(new AbstractAction("edit") {
+        workDaysTable.addAction(new ItemTrackingAction("edit") {
+            @Override
             public void actionPerform(Component component) {
-                Entity entity = getDsContext().get("workDaysDs").getItem();
+                Entity entity = workDaysDs.getItem();
                 if (entity != null) {
                     Window window = openEditor("wf$WorkCalendarWorkDay.edit", entity, WindowManager.OpenType.DIALOG);
-                    window.addListener(new Window.CloseListener() {
+                    window.addListener(new CloseListener() {
+                        @Override
                         public void windowClosed(String actionId) {
-                            getDsContext().get("workDaysDs").refresh();
+                            workDaysDs.refresh();
                         }
                     });
                 }
-
             }
+
             @Override
             public String getCaption() {
-                return AppBeans.get(Messages.class).getMainMessage("actions.Edit");
+                return messages.getMainMessage("actions.Edit");
             }
         });
         workDaysHelper.createRemoveAction();
 
-        Table exceptionDaysTable = getComponent("exceptionDaysTable");
         TableActionsHelper exceptionDaysHelper = new TableActionsHelper(this, exceptionDaysTable);
         exceptionDaysTable.addAction(new AbstractAction("create") {
+            @Override
             public void actionPerform(Component component) {
                 Window window = openEditor("wf$WorkCalendarExceptionDay.edit", new WorkCalendarEntity(), WindowManager.OpenType.DIALOG);
-                window.addListener(new Window.CloseListener() {
+                window.addListener(new CloseListener() {
+                    @Override
                     public void windowClosed(String actionId) {
-                        getDsContext().get("exceptionDaysDs").refresh();
+                        exceptionDaysDs.refresh();
+
+                        exceptionDaysTable.requestFocus();
                     }
                 });
             }
 
             @Override
             public String getCaption() {
-                return AppBeans.get(Messages.class).getMainMessage("actions.Create");
+                return messages.getMainMessage("actions.Create");
             }
         });
 
-        exceptionDaysTable.addAction(new AbstractAction("edit") {
+        exceptionDaysTable.addAction(new ItemTrackingAction("edit") {
+            @Override
             public void actionPerform(Component component) {
-                Entity entity = getDsContext().get("exceptionDaysDs").getItem();
+                Entity entity = exceptionDaysDs.getItem();
                 if (entity != null) {
                     Window window = openEditor("wf$WorkCalendarExceptionDay.edit", entity, WindowManager.OpenType.DIALOG);
-                    window.addListener(new Window.CloseListener() {
+                    window.addListener(new CloseListener() {
+                        @Override
                         public void windowClosed(String actionId) {
-                            getDsContext().get("exceptionDaysDs").refresh();
+                            exceptionDaysDs.refresh();
+
+                            exceptionDaysTable.requestFocus();
                         }
                     });
                 }
             }
+
             @Override
             public String getCaption() {
-                return AppBeans.get(Messages.class).getMainMessage("actions.Edit");
+                return messages.getMainMessage("actions.Edit");
             }
         });
         exceptionDaysHelper.createRemoveAction();
-
     }
 }

@@ -26,7 +26,9 @@ public class ProcBrowser extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        Table table = getComponent("procTable");
+
+        Table table = getComponentNN("procTable");
+
         table.addAction(new RefreshAction(table));
         table.addAction(new EditAction(table));
         table.addAction(new RemoveProc(table, true));
@@ -46,17 +48,25 @@ public class ProcBrowser extends AbstractWindow {
             public void doActionPerform(Component component) {
                 getDialogParams().setWidth(900);
                 getDialogParams().setHeight(600);
-                openWindow("wf$ProcVariable.browse", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
+
+                Window variablesEditor = openWindow("wf$ProcVariable.browse",
+                        WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
+                variablesEditor.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        table.requestFocus();
+                    }
+                });
             }
         });
     }
 
     protected class RemoveProc extends RemoveAction {
-
         public RemoveProc(ListComponent owner, boolean autocommit) {
             super(owner, autocommit);
         }
 
+        @Override
         public void actionPerform(Component component) {
             if (!isEnabled()) return;
             Set<Proc> selected = owner.getSelected();
@@ -69,6 +79,13 @@ public class ProcBrowser extends AbstractWindow {
             if (!toRemove.isEmpty()) {
                 confirmAndRemove(toRemove);
             }
+        }
+
+        @Override
+        protected void afterRemove(Set selected) {
+            super.afterRemove(selected);
+
+            owner.requestFocus();
         }
     }
 }
