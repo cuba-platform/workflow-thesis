@@ -120,13 +120,13 @@ public class DesignBrowser extends AbstractWindow {
                     @Override
                     public void windowClosed(String actionId) {
                         table.getDatasource().refresh();
+                        table.requestFocus();
                     }
                 });
             }
         });
 
         table.addAction(new AbstractEntityAction<Design>("editProcessVariables", table) {
-
             @Override
             protected Boolean isShowAfterActionNotification() {
                 return false;
@@ -141,16 +141,17 @@ public class DesignBrowser extends AbstractWindow {
             public void doActionPerform(Component component) {
                 getDialogParams().setWidth(900);
                 getDialogParams().setHeight(600);
+
                 final Window window = openWindow("wf$DesignProcessVariable.browse",
                         WindowManager.OpenType.DIALOG,
                         Collections.<String, Object>singletonMap("design", getEntity()));
-                window.addListener(
-                        new CloseListener() {
-                            public void windowClosed(String actionId) {
-                                ds.refresh();
-                            }
-                        }
-                );
+                window.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        ds.refresh();
+                        table.requestFocus();
+                    }
+                });
             }
         });
 
@@ -171,7 +172,8 @@ public class DesignBrowser extends AbstractWindow {
                 }
         );
 
-        PopupButton notificationMatrixBtn = getComponent("notificationMatrix");
+        PopupButton notificationMatrixBtn = getComponentNN("notificationMatrix");
+
         notificationMatrixBtn.addAction(new UploadNotificationMatrixAction());
         notificationMatrixBtn.addAction(new ClearNotificationMatrixAction());
         notificationMatrixBtn.addAction(new DownloadNotificationMatrix());
@@ -252,6 +254,7 @@ public class DesignBrowser extends AbstractWindow {
             super("export");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -275,9 +278,11 @@ public class DesignBrowser extends AbstractWindow {
             super("import");
         }
 
+        @Override
         public void actionPerform(Component component) {
             final ImportDialog importDialog = openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
             importDialog.addListener(new CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
 
@@ -387,6 +392,7 @@ public class DesignBrowser extends AbstractWindow {
             super("deploy");
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set<Design> selected = table.getSelected();
             if (!selected.isEmpty()) {
@@ -436,6 +442,12 @@ public class DesignBrowser extends AbstractWindow {
                         WindowManager.OpenType.THIS_TAB,
                         Collections.<String, Object>singletonMap("design", design)
                 );
+                window.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        table.requestFocus();
+                    }
+                });
             }
         }
     }
@@ -454,14 +466,15 @@ public class DesignBrowser extends AbstractWindow {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
                     Window window = openEditor("wf$Design.localize", design, WindowManager.OpenType.THIS_TAB);
-                    window.addListener(
-                            new CloseListener() {
-                                public void windowClosed(String actionId) {
-                                    if (Window.COMMIT_ACTION_ID.equals(actionId))
-                                        ds.refresh();
-                                }
+                    window.addListener(new CloseListener() {
+                        @Override
+                        public void windowClosed(String actionId) {
+                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                ds.refresh();
                             }
-                    );
+                            table.requestFocus();
+                        }
+                    });
                 }
             }
         }
@@ -535,9 +548,16 @@ public class DesignBrowser extends AbstractWindow {
                                         design.setNotificationMatrixUploaded(false);
                                         dataSupplier.commit(new CommitContext(Collections.singleton(design)));
                                         ds.refresh();
+
+                                        table.requestFocus();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.NO)
+                                new DialogAction(DialogAction.Type.NO) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        table.requestFocus();
+                                    }
+                                }
                         }
                 );
             }
