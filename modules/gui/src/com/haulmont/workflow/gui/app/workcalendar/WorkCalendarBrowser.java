@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 
@@ -37,7 +38,6 @@ public class WorkCalendarBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        TableActionsHelper workDaysHelper = new TableActionsHelper(this, workDaysTable);
         workDaysTable.addAction(new AbstractAction("create") {
             @Override
             public void actionPerform(Component component) {
@@ -76,9 +76,8 @@ public class WorkCalendarBrowser extends AbstractWindow {
                 return messages.getMainMessage("actions.Edit");
             }
         });
-        workDaysHelper.createRemoveAction();
+        workDaysTable.addAction(new RemoveAction(workDaysTable));
 
-        TableActionsHelper exceptionDaysHelper = new TableActionsHelper(this, exceptionDaysTable);
         exceptionDaysTable.addAction(new AbstractAction("create") {
             @Override
             public void actionPerform(Component component) {
@@ -121,6 +120,6 @@ public class WorkCalendarBrowser extends AbstractWindow {
                 return messages.getMainMessage("actions.Edit");
             }
         });
-        exceptionDaysHelper.createRemoveAction();
+        exceptionDaysTable.addAction(new RemoveAction(exceptionDaysTable));
     }
 }

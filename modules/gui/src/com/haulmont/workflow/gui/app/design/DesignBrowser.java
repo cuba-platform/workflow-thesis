@@ -10,8 +10,10 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -72,14 +74,18 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     protected void initActions() {
-        final TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createCreateAction(WindowManager.OpenType.DIALOG);
+        table.addAction(new CreateAction(table, WindowManager.OpenType.DIALOG) {
+            @Override
+            protected void afterCommit(Entity entity) {
+                openDesigner(entity.getId().toString());
+            }
+        });
 
         table.addAction(new CopyAction());
         table.addAction(new ImportAction());
         table.addAction(new ExportAction());
         table.addAction(new EditAction(table, WindowManager.OpenType.DIALOG));
-        helper.createRemoveAction();
+        table.addAction(new RemoveAction(table));
 
         Action designAction = new AbstractAction("design") {
             @Override
@@ -154,23 +160,6 @@ public class DesignBrowser extends AbstractWindow {
                 });
             }
         });
-
-        helper.addListener(
-                new ListActionsHelper.Listener() {
-                    @Override
-                    public void entityCreated(Entity entity) {
-                        openDesigner(entity.getId().toString());
-                    }
-
-                    @Override
-                    public void entityEdited(Entity entity) {
-                    }
-
-                    @Override
-                    public void entityRemoved(Set<Entity> entity) {
-                    }
-                }
-        );
 
         PopupButton notificationMatrixBtn = getComponentNN("notificationMatrix");
 
