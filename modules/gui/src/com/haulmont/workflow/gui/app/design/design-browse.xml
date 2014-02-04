@@ -51,6 +51,20 @@
                                 <button action="designTable.remove" icon="icons/remove.png"/>
                                 <button action="designTable.copy" icon="icons/copy.png"/>
                             </buttonsPanel>
+                            <actions>
+                                <action id="create"/>
+                                <action id="copy"/>
+                                <action id="import"/>
+                                <action id="export"/>
+                                <action id="edit"/>
+                                <action id="remove"/>
+                                <action id="design"/>
+                                <action id="scripts"/>
+                                <action id="localize"/>
+                                <action id="compile"/>
+                                <action id="DeployAction"/>
+                                <action id="showAffectedDesigns"/>
+                            </actions>
                             <columns>
                                 <column id="name"/>
                                 <column id="type"/>

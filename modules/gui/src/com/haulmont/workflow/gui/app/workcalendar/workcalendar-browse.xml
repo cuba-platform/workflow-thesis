@@ -38,6 +38,11 @@
                     <button id="removeAttach" action="workDaysTable.remove" icon="icons/remove.png"/>
                 </hbox>
                 <table id="workDaysTable" width="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
                     <columns>
                         <column id="dayOfWeek" caption="msg://WorkCalendar.dayOfWeek"/>
                         <column id="start" caption="msg://WorkCalendar.start"/>
@@ -55,6 +60,11 @@
                     <button id="removeAttach" action="exceptionDaysTable.remove" icon="icons/remove.png"/>
                 </hbox>
                 <table id="exceptionDaysTable" width="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
                     <columns>
                         <column id="day" caption="msg://WorkCalendar.day">
                             <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="msg://dateFormat"/>

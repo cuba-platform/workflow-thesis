@@ -26,10 +26,15 @@
         </filter>
         <table id="table" width="100%">
             <buttonsPanel>
-                <button id="add" icon="icons/add.png" invoke="addUser"/>
+                <button id="add" action="table.add" icon="icons/add.png"/>
                 <button action="table.remove" icon="icons/remove.png"/>
                 <button action="table.refresh" icon="icons/refresh.png"/>
             </buttonsPanel>
+            <actions>
+                <action id="add"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+            </actions>
             <rowsCount/>
             <columns>
                 <column id="user" caption="msg://UserNotifiedBySms.user"/>
