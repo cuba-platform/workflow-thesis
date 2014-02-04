@@ -4,7 +4,10 @@
  */
 package com.haulmont.workflow.gui.app.usergroup;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -43,10 +46,13 @@ public class UserGroupBrowser extends AbstractWindow {
     @Inject
     protected UserSession userSession;
 
+    protected ClientConfig clientConfig;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         CreateAction createAction = new CreateAction(userGroupsTable, WindowManager.OpenType.DIALOG);
         Map<String, Object> initialValues = new HashMap<>();
         initialValues.put("substitutedCreator", userSession.getCurrentOrSubstitutedUser());
@@ -77,7 +83,7 @@ public class UserGroupBrowser extends AbstractWindow {
             }
         });
 
-        usersTable.addAction(new AbstractAction("add") {
+        usersTable.addAction(new AbstractAction("add", clientConfig.getTableInsertShortcut()) {
             @Override
             public void actionPerform(Component component) {
                 if (userGroupsTable.getSelected().size() == 0) {
@@ -130,6 +136,7 @@ public class UserGroupBrowser extends AbstractWindow {
 
         public DeleteUserAction() {
             super("remove");
+            setShortcut(clientConfig.getTableRemoveShortcut());
         }
 
         @Override

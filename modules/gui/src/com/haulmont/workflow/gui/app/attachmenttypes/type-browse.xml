@@ -29,6 +29,11 @@
                     <button action="table.remove" icon="icons/remove.png"/>
                 </hbox>
                 <table id="table" editable="false" height="100%" width="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
                     <columns>
                         <column id="name" caption="msg://attachType.name"/>
                         <column id="comment" caption="msg://attachType.comment" maxTextLength="70"/>

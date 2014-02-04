@@ -27,6 +27,12 @@
             <button action="procTable.editProcessVariables" icon="icons/edit.png"/>
         </hbox>
         <groupTable id="procTable" editable="false" width="100%">
+            <actions>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+                <action id="editProcessVariables"/>
+            </actions>
             <columns>
                 <column id="updateTs"/>
                 <column id="name"/>

@@ -37,6 +37,11 @@
                         <button action="userGroupsTable.edit" icon="icons/edit.png"/>
                         <button action="userGroupsTable.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
                     <rowsCount/>
                     <columns>
                         <column id="name" caption="msg://name"/>
@@ -51,6 +56,10 @@
                     <button action="usersTable.remove" icon="icons/remove.png"/>
                 </buttonsPanel>
                 <table id="usersTable" width="100%">
+                    <actions>
+                        <action id="add"/>
+                        <action id="remove"/>
+                    </actions>
                     <columns>
                         <column id="name" caption="msg://user"/>
                         <column id="position" caption="msg://position"/>
