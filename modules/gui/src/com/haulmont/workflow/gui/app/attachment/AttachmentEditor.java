@@ -118,7 +118,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             FileDescriptor fdItem = fileDs.getItem();
             if ((fdItem != null) && (fdItem.getCreateDate() != null)) {
                 String uploadFieldFileName = fdItem.getName();
-                nameText.setValue(uploadFieldFileName.substring(0, uploadFieldFileName.lastIndexOf('.')));
+                nameText.setValue(StringUtils.substringBeforeLast(uploadFieldFileName, "."));
                 uploadField.setVisible(false);
                 if (isEdit)
                     needSave = false;
@@ -142,9 +142,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                         fileId = uploadField.getFileId();
 
                         fileNameText.setValue(uploadFieldFileName);
-                        nameText.setValue(uploadFieldFileName.indexOf('.') != -1
-                                ? uploadFieldFileName.substring(0, uploadFieldFileName.lastIndexOf('.'))
-                                : uploadFieldFileName);
+                        nameText.setValue(StringUtils.substringBeforeLast(uploadFieldFileName, "."));
 
                         if (StringUtils.isBlank(nameText.getValue().toString()))
                             nameText.setValue(uploadField.getFileName());
