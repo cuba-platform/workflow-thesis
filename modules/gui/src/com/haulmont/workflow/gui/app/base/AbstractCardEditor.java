@@ -40,13 +40,12 @@ public abstract class AbstractCardEditor<T extends Card> extends AbstractEditor<
     protected Datasource<T> cardDs;
     @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
-    @Inject
+
     protected Table attachmentsTable;
 
-    @Inject
     protected CardProcFrame cardProcFrame;
-    @Inject
     protected CardRolesFrame cardRolesFrame;
+
     @Inject
     protected ResolutionsFrame resolutionsFrame;
     @Inject
@@ -69,6 +68,9 @@ public abstract class AbstractCardEditor<T extends Card> extends AbstractEditor<
             attachmentsTable = getComponent("cardAttachmentsFrame.attachmentsTable");
         else
             attachmentsTable = getComponent("attachmentsTable");
+
+        cardRolesFrame = getComponent("cardRolesFrame");
+        cardProcFrame = getComponent("cardProcFrame");
     }
 
     @Override
