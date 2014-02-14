@@ -62,8 +62,9 @@
                                 <action id="scripts"/>
                                 <action id="localize"/>
                                 <action id="compile"/>
-                                <action id="DeployAction"/>
+                                <action id="deploy"/>
                                 <action id="showAffectedDesigns"/>
+                                <action id="editProcessVariables"/>
                             </actions>
                             <columns>
                                 <column id="name"/>
