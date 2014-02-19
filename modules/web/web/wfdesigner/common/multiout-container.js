@@ -13,6 +13,7 @@ Wf.MultiOutContainer = function(options, layer) {
     Wf.MultiOutContainer.superclass.constructor.call(this, options, layer);
     this.eventAddOutput = new YAHOO.util.CustomEvent("eventAddOutput");
     this.eventDelOutput = new YAHOO.util.CustomEvent("eventDelOutput");
+    this.eventOutputChanged = new YAHOO.util.CustomEvent("eventOutputChanged");
 };
 
 YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
@@ -158,6 +159,8 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         var output = scope[1];
         var outputLabels = scope[2];
         var layer = scope[3];
+        var prevVal = output.name;
+
         if (!pattern.test(args[0])||outputLabels[args[0]]) {
             labelEditor.setValue(output.name);
             return;
@@ -166,6 +169,7 @@ YAHOO.lang.extend(Wf.MultiOutContainer, Wf.Container, {
         delete outputLabels[output.name];
         output.name = args[0];
         outputLabels[output.name] = labelEditor;
+        output.container.eventOutputChanged.fire({prevValue: prevVal, value: output.name});
         layer.eventChanged.fire();
     },
 

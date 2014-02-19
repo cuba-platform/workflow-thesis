@@ -30,6 +30,9 @@ YAHOO.lang.extend(Wf.OutputSelect, inputEx.SelectField, {
         if (this.options.container.eventDelOutput) {
             this.options.container.eventDelOutput.subscribe(this.onDelOutput, this, true);
         }
+        if (this.options.container.eventOutputChanged) {
+            this.options.container.eventOutputChanged.subscribe(this.onOutputChanged, this, true);
+        }
     },
 
     onAddOutput: function(e, params) {
@@ -43,6 +46,17 @@ YAHOO.lang.extend(Wf.OutputSelect, inputEx.SelectField, {
         if (this.getChoicePosition(choice) >= -1)
             this.removeChoice(choice);
     },
+
+    onOutputChanged: function(e, params) {
+    	var currentValue = this.getValue();
+    	var itemToChange = params[0];
+
+    	if(itemToChange.prevValue == currentValue) {
+    		this.setValue(itemToChange.value, false);
+    	} else {
+    		this.setValue(this.getValue(), false);
+    	}
+     },
 
     setValue: function(val, sendUpdatedEvt) {
         if (!val)
