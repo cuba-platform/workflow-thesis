@@ -10,6 +10,10 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "wf$DesignScript")
 @Table(name = "WF_DESIGN_SCRIPT")
 @NamePattern("%s|name")
@@ -22,7 +26,7 @@ public class DesignScript extends StandardEntity {
     @JoinColumn(name = "DESIGN_ID")
     protected Design design;
 
-    @Column(name = "NAME", length = 100)
+    @Column(name = "NAME", length = 100, nullable = false)
     protected String name;
 
     @Column(name = "CONTENT", length = 0)
