@@ -21,6 +21,7 @@ import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.base.AbstractWfAccessData;
+import com.haulmont.workflow.gui.base.action.CardContext;
 import com.haulmont.workflow.gui.base.action.FormManagerChain;
 import com.haulmont.workflow.gui.base.action.ProcessAction;
 import org.apache.commons.lang.BooleanUtils;
@@ -291,6 +292,9 @@ public class CardProcFrame extends AbstractFrame {
                 final FormManagerChain managerChain = FormManagerChain.getManagerChain(card, WfConstants.ACTION_START);
                 managerChain.setCard(card);
 
+                final Map<String, Object> formManagerParams = new HashMap<>();
+                formManagerParams.put("subProcCard", new CardContext());
+
                 managerChain.setHandler(
                         new FormManagerChain.Handler() {
                             @Override
@@ -311,7 +315,8 @@ public class CardProcFrame extends AbstractFrame {
                                 dataSupplier.commit(new CommitContext(commitInstances));
 
                                 WfService wfs = AppBeans.get(WfService.NAME);
-                                wfs.startProcess(card);
+                                CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+                                wfs.startProcess(card, subProcCardContext.getCard());
                                 window.close(Window.COMMIT_ACTION_ID, true);
                                 managerChain.doManagerAfter();
                             }
@@ -327,7 +332,7 @@ public class CardProcFrame extends AbstractFrame {
                             }
                         }
                 );
-                managerChain.doManagerBefore("");
+                managerChain.doManagerBefore("", formManagerParams);
 
             } catch (RuntimeException e) {
                 rollbackStartProcess(prevProc, prevStartCount, cp, prevCardProcState);

@@ -38,6 +38,17 @@ public interface WfService {
      */
     Card startProcess(Card card);
 
+
+    /**
+     * Do the same as <code>WfService.startProcess(Card card)</code>,
+     * but specifies a sub process card that will be used
+     *
+     * @param card card
+     * @param subProcCard sub process card
+     *
+     * */
+    Card startProcess(Card card, Card subProcCard);
+
     /**
      * Aborts a workflow process for a given card.
      *

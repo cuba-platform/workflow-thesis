@@ -41,6 +41,8 @@ public interface WfEngineAPI {
 
     Card startProcess(Card card);
 
+    Card startProcess(Card card, Card subProcCard);
+
     void cancelProcess(Card card);
 
     void deleteNotifications(Card card, int type);
