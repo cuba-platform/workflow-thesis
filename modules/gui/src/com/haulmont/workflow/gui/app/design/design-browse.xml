@@ -34,7 +34,7 @@
         </groupDatasource>
     </dsContext>
 
-    <layout expand="tablePanel" height="100%" margin="true">
+    <layout expand="tablePanel" height="100%">
         <vbox id="tablePanel" expand="table" spacing="true">
             <filter id="genericFilter" datasource="designDs">
                 <properties include=".*"/>
