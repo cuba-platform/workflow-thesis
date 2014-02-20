@@ -20,8 +20,8 @@
     </dsContext>
 
     <layout expand="split">
-        <split id="split" orientation="horizontal" pos="30" height="100%" width="100%">
-            <vbox id="listPane" expand="table" margin="true" height="100%">
+        <split id="split" orientation="horizontal" pos="30" width="100%">
+            <vbox id="listPane" expand="table" margin="false;true;true;false" height="100%">
                 <table id="table" width="100%">
                     <buttonsPanel>
                         <button action="table.new" icon="icons/create.png"/>
