@@ -61,9 +61,14 @@ public class WfServiceBean implements WfService {
 
     @Override
     public Card startProcess(Card card) {
+        return startProcess(card, null);
+    }
+
+    @Override
+    public Card startProcess(Card card, Card subCard) {
         Transaction tx = persistence.createTransaction();
         try {
-            Card c = wfEngine.startProcess(card);
+            Card c = wfEngine.startProcess(card, subCard);
             tx.commit();
             return c;
         } finally {

@@ -409,14 +409,30 @@ public class WfEngine implements WfEngineAPI {
     }
 
     public Card startProcess(Card card) {
-        Map<String, Object> initialProcessVariables = card.getInitialProcessVariables();
+        return startProcess(card, null);
+    }
 
+    public Card startProcess(Card card, Card subProcCard) {
+        Map<String, Object> initialProcessVariables =
+                card.getInitialProcessVariables() != null ? card.getInitialProcessVariables() : new HashMap<String, Object>();
         EntityManager em = persistence.getEntityManager();
         card = em.find(Card.class, card.getId());
         if (card.getProc() == null)
             throw new IllegalStateException("Card.proc required");
 
-        ProcessVariableAPI processVariableAPI = Locator.lookup(ProcessVariableAPI.NAME);
+        if (subProcCard != null) {
+            initialProcessVariables.put("subProcCard", subProcCard.getId().toString());
+            Map<String, Object> subCardInitialVariables = subProcCard.getInitialProcessVariables();
+            if(subCardInitialVariables != null ) {
+                if (subCardInitialVariables.containsKey("dueDate"))
+                    initialProcessVariables.put("subProc_dueDate", subCardInitialVariables.get("dueDate"));
+                if (subCardInitialVariables.containsKey("startProcessComment")) {
+                    initialProcessVariables.put("startSubProcessComment", subCardInitialVariables.get("startProcessComment"));
+                }
+            }
+        }
+
+        ProcessVariableAPI processVariableAPI = AppBeans.get(ProcessVariableAPI.NAME);
         processVariableAPI.createVariablesForCard(card);
 
         if (card.getJbpmProcessId() != null)
