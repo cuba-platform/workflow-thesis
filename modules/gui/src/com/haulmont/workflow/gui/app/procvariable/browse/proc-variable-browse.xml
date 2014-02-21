@@ -29,7 +29,13 @@
                 <button action="table.remove" icon="icons/remove.png"/>
                 <button action="table.refresh" icon="icons/refresh.png"/>
             </buttonsPanel>
-
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+                <action id="override"/>
+            </actions>
             <columns>
                 <column id="name"/>
                 <column id="alias"/>
