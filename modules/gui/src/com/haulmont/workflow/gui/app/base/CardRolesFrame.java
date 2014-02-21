@@ -591,7 +591,9 @@ public class CardRolesFrame extends AbstractFrame {
                 tmpCardRolesDs.fill = true;
                 if (list != null)
                     for (CardRole cardRole : list) {
-                        if (!tmpCardRolesDs.containsItem(cardRole.getUuid())) {
+                        if (!tmpCardRolesDs.containsItem(cardRole.getUuid())
+                                && BooleanUtils.isNotTrue(cardRole.getProcRole().getInvisible())) {
+
                             assignNextSortOrder(cardRole);
                             tmpCardRolesDs.addItem(cardRole);
                         }
