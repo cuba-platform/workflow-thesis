@@ -14,10 +14,10 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.*;
 
 /**
- * @author
+ * @author krivopustov
  * @version $Id$
  */
-public class ProcessVariablesEntity implements Entity, Instance {
+public class ProcessVariablesEntity implements Entity {
 
     private static final long serialVersionUID = -8913144744993978336L;
 
