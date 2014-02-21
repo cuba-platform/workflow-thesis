@@ -157,7 +157,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @SuppressWarnings("unchecked")
     protected List<Assignment> getAssignmentsByState(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY)
+        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, metadata.getReplacedClass(Assignment.class))
                 .setParameter("card", card)
                 .setParameter("state", state);
         List<Assignment> r = q.getResultList();

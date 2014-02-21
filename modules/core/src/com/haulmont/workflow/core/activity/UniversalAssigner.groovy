@@ -211,7 +211,7 @@ public class UniversalAssigner extends MultiAssigner {
         Query q = em.createQuery('''
                 select a from wf$Assignment a
                 where a.masterAssignment.id = ?1 and a.id <> ?2
-              ''')
+              ''', metadata.getReplacedClass(Assignment.class))
         q.setParameter(1, assignment.getMasterAssignment().getId())
         q.setParameter(2, assignment.getId())
         List<Assignment> siblings = q.getResultList()

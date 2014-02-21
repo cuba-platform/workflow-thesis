@@ -63,6 +63,10 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     @Inject
     protected SmsSenderAPI smsSenderAPI;
 
+    @Inject
+    protected Metadata metadata;
+
+
 
     protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
     protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
@@ -270,9 +274,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         return reloadedCard;
     }
 
+    @SuppressWarnings("unchecked")
     private Assignment reloadAssignment(Assignment assignment) {
         EntityManager em = persistence.getEntityManager();
-        Assignment reloadedAssignment = em.find(Assignment.class, assignment.getId());
+        Assignment reloadedAssignment = (Assignment) em.find(
+                metadata.getExtendedEntities().getEffectiveClass(Assignment.class), assignment.getId());
         if (reloadedAssignment == null)
             throw new RuntimeException(String.format("Assignment not found: %s", assignment.getId()));
 
