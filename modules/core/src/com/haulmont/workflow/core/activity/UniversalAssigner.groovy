@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Assignment
@@ -88,7 +87,7 @@ public class UniversalAssigner extends MultiAssigner {
 
         if (assignment.getMasterAssignment() == null) {
             log.debug("No master assignment, just taking $signalName")
-            assignment.setFinished(TimeProvider.currentTimestamp());
+            assignment.setFinished(timeSource.currentTimestamp());
             execution.take(signalName)
             removeTimers(execution)
             onSuccess(execution, signalName, assignment)
@@ -105,7 +104,7 @@ public class UniversalAssigner extends MultiAssigner {
                     finishSiblings(assignment, siblings)
 
             String resultTransition = signalName
-            for (Assignment sibling: siblings) {
+            for (Assignment sibling : siblings) {
                 if (!sibling.finished) {
                     log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
                     execution.waitForSignal()
@@ -211,7 +210,7 @@ public class UniversalAssigner extends MultiAssigner {
         Query q = em.createQuery('''
                 select a from wf$Assignment a
                 where a.masterAssignment.id = ?1 and a.id <> ?2
-              ''', metadata.getReplacedClass(Assignment.class))
+              ''', metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
         q.setParameter(1, assignment.getMasterAssignment().getId())
         q.setParameter(2, assignment.getId())
         List<Assignment> siblings = q.getResultList()
@@ -219,7 +218,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
-        for (Assignment sibling: siblings) {
+        for (Assignment sibling : siblings) {
             sibling.setFinished(assignment.getFinished())
             sibling.setFinishedByUser(assignment.getFinishedByUser())
             sibling.setOutcome(assignment.getOutcome())
@@ -242,7 +241,7 @@ public class UniversalAssigner extends MultiAssigner {
     protected void createUserAssignments(ActivityExecution execution, Card card, Assignment master, Collection<CardRole> cardRoles) {
         Map<Assignment, CardRole> assignmentCardRoleMap = new HashMap<Assignment, CardRole>();
         Persistence persistence = AppBeans.get(Persistence.NAME);
-        for (CardRole cr: cardRoles) {
+        for (CardRole cr : cardRoles) {
             EntityManager em = persistence.entityManager;
             Assignment familyAssignment = findFamilyAssignment(card)
             Assignment assignment = metadata.create(Assignment.class)

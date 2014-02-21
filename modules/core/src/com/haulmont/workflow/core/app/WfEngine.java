@@ -5,7 +5,10 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -360,7 +363,7 @@ public class WfEngine implements WfEngineAPI {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Assignment assignment = em.find(metadata.getReplacedClass(Assignment.class), assignmentId);
+            Assignment assignment = (Assignment) em.find(metadata.getExtendedEntities().getEffectiveClass(Assignment.class), assignmentId);
             if (assignment == null)
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
@@ -423,7 +426,7 @@ public class WfEngine implements WfEngineAPI {
         if (subProcCard != null) {
             initialProcessVariables.put("subProcCard", subProcCard.getId().toString());
             Map<String, Object> subCardInitialVariables = subProcCard.getInitialProcessVariables();
-            if(subCardInitialVariables != null ) {
+            if (subCardInitialVariables != null) {
                 if (subCardInitialVariables.containsKey("dueDate"))
                     initialProcessVariables.put("subProc_dueDate", subCardInitialVariables.get("dueDate"));
                 if (subCardInitialVariables.containsKey("startProcessComment")) {
@@ -488,7 +491,7 @@ public class WfEngine implements WfEngineAPI {
     public void cancelProcessInternal(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
-                metadata.getReplacedClass(Assignment.class));
+                metadata.getExtendedEntities().getEffectiveClass(Assignment.class));
         query.setParameter(1, card);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {

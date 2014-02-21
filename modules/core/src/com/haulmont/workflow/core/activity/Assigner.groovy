@@ -5,15 +5,12 @@
 package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.Persistence
-import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.EntityLoadInfo
 import com.haulmont.cuba.core.global.Metadata
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.cuba.core.sys.AppContext
+import com.haulmont.cuba.core.global.TimeSource
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.app.WorkCalendarAPI
@@ -44,10 +41,12 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   String notificationScript
   AssignmentTimersFactory timersFactory
   Metadata metadata = AppBeans.get(Metadata.NAME)
-  
+  Persistence persistence = AppBeans.get(Persistence.NAME)
+  TimeSource timeSource = AppBeans.get(TimeSource.NAME)
+
   public void execute(ActivityExecution execution) throws Exception {
     checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
-    checkState(Locator.isInTransaction(), 'An active transaction required')
+    checkState(persistence.isInTransaction(), 'An active transaction required')
     delayedNotify = true
     super.execute(execution)
     if (createAssignment(execution))
@@ -55,7 +54,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   }
 
   protected boolean createAssignment(ActivityExecution execution) {
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
 
     CardRole cr
     User user
@@ -124,7 +123,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
             String state
     ) {
         if (!notificationMatrix)
-            notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
+            notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
         notificationMatrix.notifyByCardAndAssignments(card, assignmentCardRoleMap, state)
     }
 
@@ -139,7 +138,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   }
 
   protected Integer calcIteration(Card card, User user, String activityName) {
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
     Query q = em.createQuery('''select max(a.iteration) from wf$Assignment a where a.card.id = ?1 and
                                 a.user.id = ?2 and a.name = ?3 and a.proc.id = ?4''')
     q.setParameter(1, card.id)
@@ -154,7 +153,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   }
 
   protected ProcRole getProcRoleByCode (Card card, String roleCode) {
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
     Query query = em.createQuery('select pr from wf$ProcRole pr where pr.proc.id = :proc and pr.code = :code')
     query.setParameter('proc', card.proc)
     query.setParameter('code', roleCode)
@@ -166,7 +165,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
   }
 
     protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
-      EntityManager em = PersistenceProvider.getEntityManager()
+      EntityManager em = persistence.getEntityManager()
 
       Assignment familyAssignment = findFamilyAssignment(card)
 
@@ -189,7 +188,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       createTimers(execution, assignment, cr)
       em.persist(assignment)
 
-      NotificationMatrixAPI  notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
+      NotificationMatrixAPI  notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
       notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
     }
 
@@ -199,8 +198,8 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         }
 
         if (cardRole.duration && cardRole.timeUnit) {
-            WorkCalendarAPI workCalendar = Locator.lookup(WorkCalendarAPI.NAME);
-            def dueDate = workCalendar.addInterval(TimeProvider.currentTimestamp(), cardRole.duration, cardRole.timeUnit)
+            WorkCalendarAPI workCalendar = AppBeans.get(WorkCalendarAPI.NAME);
+            def dueDate = workCalendar.addInterval(timeSource.currentTimestamp(), cardRole.duration, cardRole.timeUnit)
             def overdueAssignmentTimersFactory = new OverdueAssignmentTimersFactory(dueDate)
             overdueAssignmentTimersFactory.setDueDate(dueDate)
             assignment.dueDate = dueDate
@@ -227,7 +226,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     protected Assignment findFamilyAssignment(Card card)
     {
       if (card.procFamily != null) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery("select a from wf\$Assignment a where a.subProcCard.id = ?1").setParameter(1, card.id)
         List<Assignment> resultList = q.getResultList();
         return resultList.isEmpty() ? null : resultList.get(0);

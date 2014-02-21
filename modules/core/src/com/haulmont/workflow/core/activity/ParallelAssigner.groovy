@@ -6,8 +6,6 @@ package com.haulmont.workflow.core.activity
 
 import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.Locator
-import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
@@ -31,7 +29,7 @@ public class ParallelAssigner extends MultiAssigner {
   protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
 
     Card card = findCard(execution)
 
@@ -92,13 +90,13 @@ public class ParallelAssigner extends MultiAssigner {
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     if (parameters == null)
       throw new RuntimeException('Assignment object expected')
-    Preconditions.checkState(Locator.isInTransaction(), 'An active transaction required')
+    Preconditions.checkState(persistence.isInTransaction(), 'An active transaction required')
 
     Assignment assignment = (Assignment) parameters.get("assignment")
 
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
-      assignment.setFinished(TimeProvider.currentTimestamp());
+      assignment.setFinished(timeSource.currentTimestamp());
       execution.take(signalName)
       if (timersFactory) {
         timersFactory.removeTimers(execution)
@@ -111,11 +109,11 @@ public class ParallelAssigner extends MultiAssigner {
 
       onSuccess(execution, signalName, assignment)
 
-      EntityManager em = PersistenceProvider.getEntityManager()
+      EntityManager em = persistence.getEntityManager()
       Query q = em.createQuery('''
               select a from wf$Assignment a
               where a.masterAssignment.id = ?1 and a.id <> ?2
-            ''', metadata.getReplacedClass(Assignment.class))
+            ''',  metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
       q.setParameter(1, assignment.getMasterAssignment().getId())
       q.setParameter(2, assignment.getId())
       List<Assignment> siblings = q.getResultList()
@@ -161,7 +159,7 @@ public class ParallelAssigner extends MultiAssigner {
   }
 
   protected void deleteNotifications(Assignment assignment) {
-    EntityManager em = PersistenceProvider.getEntityManager();
+    EntityManager em = persistence.getEntityManager();
     Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
             "where ci.card.id = ?3 and ci.user.id = ?4");
     query.setParameter(1, assignment.finished);
