@@ -234,6 +234,8 @@ public class DesignBrowser extends AbstractWindow {
                 final Design design = selected.iterator().next();
                 UUID newId = service.copyDesign(design.getId());
                 openDesigner(newId.toString());
+
+                ds.refresh();
             }
         }
     }
