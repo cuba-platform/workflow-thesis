@@ -8,9 +8,10 @@ package com.haulmont.workflow.core.app;
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -157,7 +158,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @SuppressWarnings("unchecked")
     protected List<Assignment> getAssignmentsByState(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, metadata.getReplacedClass(Assignment.class))
+        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
                 .setParameter("card", card)
                 .setParameter("state", state);
         List<Assignment> r = q.getResultList();
