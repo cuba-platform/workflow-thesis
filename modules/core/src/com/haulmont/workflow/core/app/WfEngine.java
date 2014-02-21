@@ -360,7 +360,7 @@ public class WfEngine implements WfEngineAPI {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Assignment assignment = em.find(Assignment.class, assignmentId);
+            Assignment assignment = em.find(metadata.getReplacedClass(Assignment.class), assignmentId);
             if (assignment == null)
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
@@ -487,7 +487,8 @@ public class WfEngine implements WfEngineAPI {
 
     public void cancelProcessInternal(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
+        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
+                metadata.getReplacedClass(Assignment.class));
         query.setParameter(1, card);
         List<Assignment> assignments = query.getResultList();
         for (Assignment assignment : assignments) {
