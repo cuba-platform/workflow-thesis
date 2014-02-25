@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -91,7 +92,8 @@ public class UserGroupBrowser extends AbstractWindow {
                     return;
                 }
 
-                Map<String, Object> userBrowserParams = Collections.<String, Object>singletonMap("multiSelect", "true");
+                Map<String, Object> userBrowserParams = new HashMap<>();
+                WindowParams.MULTI_SELECT.set(userBrowserParams, true);
 
                 openLookup("sec$User.lookup", new Lookup.Handler() {
                     @Override
