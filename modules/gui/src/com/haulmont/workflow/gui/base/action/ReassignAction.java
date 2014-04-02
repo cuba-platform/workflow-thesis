@@ -8,12 +8,14 @@ package com.haulmont.workflow.gui.base.action;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Card;
@@ -46,6 +48,10 @@ public class ReassignAction extends AbstractAction {
         if (commitCardEditor(window)) {
             AbstractWfAccessData accessData = window.getContext().getParamValue("accessData");
             ReassignInfo reassignInfo = accessData.getReassignInfo();
+            if (reassignInfo == null) {
+                window.showNotification(messages.getMessage(ReassignAction.class, "actionHasAlreadyDone"), IFrame.NotificationType.ERROR);
+                return;
+            }
             Window w = window.openWindow("reassign.form", WindowManager.OpenType.DIALOG, ImmutableMap.<String, Object>builder()
                     .put("card", reloadCard(reassignInfo.getCard() != null ? reassignInfo.getCard() : card))
                     .put("state", WfUtils.trimState(card))
