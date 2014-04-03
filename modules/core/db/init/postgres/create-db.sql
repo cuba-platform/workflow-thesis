@@ -72,7 +72,7 @@ create table WF_PROC (
     CODE varchar(255) ,
     MESSAGES_PACK varchar(200),
     CARD_TYPES varchar(500),
-    STATES varchar(500),
+    STATES varchar(1500),
     PERMISSIONS_ENABLED boolean,
     DESIGN_ID uuid,
     AVAILABLE_ROLE_ID uuid,

@@ -292,7 +292,7 @@ create table WF_PROC (
     CODE varchar2(255),
     MESSAGES_PACK varchar2(200),
     CARD_TYPES varchar2(500),
-    STATES varchar2(500),
+    STATES varchar2(1500),
     PERMISSIONS_ENABLED char(1),
     DESIGN_ID varchar2(32),
     AVAILABLE_ROLE_ID varchar2(32),
