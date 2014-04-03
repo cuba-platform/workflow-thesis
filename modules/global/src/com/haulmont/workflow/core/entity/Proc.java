@@ -46,7 +46,7 @@ public class Proc extends StandardEntity {
     @Column(name = "PERMISSIONS_ENABLED")
     protected Boolean permissionsEnabled = false;
 
-    @Column(name = "STATES", length = 500)
+    @Column(name = "STATES", length = 1500)
     protected String states;
 
     @ManyToOne(fetch = FetchType.LAZY)
