@@ -168,7 +168,7 @@ public class DesignBrowser extends AbstractWindow {
         notificationMatrixBtn.addAction(new DownloadNotificationMatrix());
     }
 
-    private void initColumns() {
+    protected void initColumns() {
         table.addGeneratedColumn("notificationMatrix", new Table.ColumnGenerator<Design>() {
             @Override
             public Component generateCell(final Design entity) {
@@ -208,7 +208,7 @@ public class DesignBrowser extends AbstractWindow {
         });
     }
 
-    private void openDesigner(String id) {
+    protected void openDesigner(String id) {
         String webAppUrl = configuration.getConfig(GlobalConfig.class).getWebAppUrl();
         String designerUrl = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getDesignerUrl();
         StringBuilder url = new StringBuilder();
@@ -222,8 +222,8 @@ public class DesignBrowser extends AbstractWindow {
         showWebPage(url.toString(), Collections.<String, Object>singletonMap("tryToOpenAsPopup", Boolean.TRUE));
     }
 
-    private class CopyAction extends ItemTrackingAction {
-        protected CopyAction() {
+    protected class CopyAction extends ItemTrackingAction {
+        public CopyAction() {
             super("copy");
         }
 
@@ -240,8 +240,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ExportAction extends AbstractAction {
-        protected ExportAction() {
+    protected class ExportAction extends AbstractAction {
+        public ExportAction() {
             super("export");
         }
 
@@ -264,8 +264,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ImportAction extends AbstractAction {
-        protected ImportAction() {
+    protected class ImportAction extends AbstractAction {
+        public ImportAction() {
             super("import");
         }
 
@@ -295,7 +295,7 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class CompileAction extends AbstractEntityAction<Design> {
+    protected class CompileAction extends AbstractEntityAction<Design> {
 
         private final static String ACTION_ID = "compile";
 
@@ -378,7 +378,7 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class DeployAction extends AbstractAction {
+    protected class DeployAction extends AbstractAction {
         public DeployAction() {
             super("deploy");
         }
@@ -418,8 +418,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ScriptsAction extends AbstractAction {
-        protected ScriptsAction() {
+    protected class ScriptsAction extends AbstractAction {
+        public ScriptsAction() {
             super("scripts");
         }
 
@@ -443,8 +443,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class LocalizeAction extends AbstractAction {
-        protected LocalizeAction() {
+    protected class LocalizeAction extends AbstractAction {
+        public LocalizeAction() {
             super("localize");
         }
 
@@ -471,7 +471,7 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private void showDesignProcessVariables(Design design) {
+    protected void showDesignProcessVariables(Design design) {
         getDialogParams().setWidth(900);
         getDialogParams().setHeight(600);
         final Window window = openWindow("wf$DesignProcessVariable.browse",
@@ -486,8 +486,8 @@ public class DesignBrowser extends AbstractWindow {
         );
     }
 
-    private class UploadNotificationMatrixAction extends AbstractAction {
-        protected UploadNotificationMatrixAction() {
+    protected class UploadNotificationMatrixAction extends AbstractAction {
+        public UploadNotificationMatrixAction() {
             super("uploadNotificationMatrix");
         }
 
@@ -516,8 +516,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class ClearNotificationMatrixAction extends AbstractAction {
-        protected ClearNotificationMatrixAction() {
+    protected class ClearNotificationMatrixAction extends AbstractAction {
+        public ClearNotificationMatrixAction() {
             super("clearNotificationMatrix");
         }
 
@@ -555,8 +555,8 @@ public class DesignBrowser extends AbstractWindow {
         }
     }
 
-    private class DownloadNotificationMatrix extends AbstractAction {
-        protected DownloadNotificationMatrix() {
+    protected class DownloadNotificationMatrix extends AbstractAction {
+        public DownloadNotificationMatrix() {
             super("downloadNotificationMatrix");
         }
 
