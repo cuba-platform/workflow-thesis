@@ -5,22 +5,25 @@
 package com.haulmont.workflow.gui.app.usergroup;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.workflow.core.entity.UserGroup;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.workflow.core.entity.UserGroup;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -60,7 +63,17 @@ public class UserGroupBrowser extends AbstractWindow {
         createAction.setInitialValues(initialValues);
         userGroupsTable.addAction(createAction);
 
-        userGroupsTable.addAction(new EditAction(userGroupsTable, WindowManager.OpenType.DIALOG));
+        userGroupsTable.addAction(new EditAction(userGroupsTable, WindowManager.OpenType.DIALOG) {
+            @Override
+            protected void afterCommit(Entity entity) {
+                DataService dataService = AppBeans.get(DataService.NAME);
+
+                LoadContext loadContext = new LoadContext(entity.getMetaClass())
+                        .setId(entity.getId())
+                        .setView(userGroupsDs.getView());
+                userGroupsDs.updateItem((UserGroup) dataService.load(loadContext));
+            }
+        });
 
         userGroupsTable.addAction(new RemoveAction(userGroupsTable));
 
