@@ -95,14 +95,14 @@
                     </vbox>
                 </split>
                 <vbox id="rightPanel" width="190px" margin="true" spacing="true">
-                    <button width="100%" action="designTable.import" icon="icons/wf-design-import.png"/>
-                    <button width="100%" action="designTable.export" icon="icons/wf-design-export.png"/>
+                    <button id="importBtn" width="100%" action="designTable.import" icon="icons/wf-design-import.png"/>
+                    <button id="exportBtn" width="100%" action="designTable.export" icon="icons/wf-design-export.png"/>
                     <button id="showAffectedDesigns" width="100%" action="designTable.showAffectedDesigns"/>
-                    <button width="100%" action="designTable.scripts" icon="icons/wf-design-scripts.png"/>
+                    <button id="scriptsBtn" width="100%" action="designTable.scripts" icon="icons/wf-design-scripts.png"/>
                     <popupButton width="100%" id="notificationMatrix" caption="msg://notificationMatrix"/>
-                    <button width="100%" action="designTable.localize"/>
-                    <button width="100%" action="designTable.compile" icon="icons/wf-design-compile.png"/>
-                    <button width="100%" action="designTable.deploy" icon="icons/wf-design-deploy.png"/>
+                    <button id="localizeBtn" width="100%" action="designTable.localize"/>
+                    <button id="compileBtn" width="100%" action="designTable.compile" icon="icons/wf-design-compile.png"/>
+                    <button id="deployBtn" width="100%" action="designTable.deploy" icon="icons/wf-design-deploy.png"/>
                 </vbox>
             </hbox>
         </vbox>
