@@ -78,6 +78,42 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     @Override
+    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
+        if (role.contains(",")) {
+            List<String> roles = Arrays.asList(role.split(","));
+            EntityManager em = persistence.getEntityManager();
+            List<CardRole> cardRoles = em.createQuery('''select cr from wf$CardRole cr where
+                    cr.card.id = ?1 and
+                    cr.procRole.code in ?2 and
+                    cr.procRole.proc.id = ?3
+                    order by cr.sortOrder, cr.createTs''')
+                    .setParameter(1, card)
+                    .setParameter(2, roles)
+                    .setParameter(3, card.proc)
+                    .getResultList();
+
+            if (forRefusedOnly(execution)) {
+                cardRoles = cardRoles.findAll {
+                    CardRole cr ->
+                        List list = em.createQuery('''select a.outcome from wf$Assignment a where a.card.id = ?1 and a.user.id = ?2 and a.name = ?3 and a.finished is not null order by a.createTs''')
+                                .setParameter(1, card.id)
+                                .setParameter(2, cr.user.id)
+                                .setParameter(3, execution.activityName)
+                                .getResultList();
+                        if (list.isEmpty()) {
+                            return true
+                        } else {
+                            return !successTransitions.contains(list.last())
+                        }
+                }
+            }
+            return cardRoles
+        } else {
+            return super.getCardRoles(execution, card);
+        }
+    }
+
+    @Override
     void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
         if (parameters == null)
             throw new RuntimeException('Assignment object expected')
