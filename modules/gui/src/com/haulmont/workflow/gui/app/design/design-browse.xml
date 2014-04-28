@@ -44,12 +44,12 @@
                     <vbox id="designBox" expand="designTable" width="100%" height="100%">
                         <groupTable id="designTable" multiselect="true" width="100%" height="100%">
                             <buttonsPanel>
-                                <button action="designTable.create" icon="icons/create.png"/>
-                                <button action="designTable.edit" icon="icons/edit.png"/>
-                                <button action="designTable.design" icon="icons/edit.png"/>
-                                <button action="designTable.editProcessVariables"/>
-                                <button action="designTable.remove" icon="icons/remove.png"/>
-                                <button action="designTable.copy" icon="icons/copy.png"/>
+                                <button id="createButtonBP" action="designTable.create" icon="icons/create.png"/>
+                                <button id="editButtonBP" action="designTable.edit" icon="icons/edit.png"/>
+                                <button id="designButtonBP" action="designTable.design" icon="icons/edit.png"/>
+                                <button id="editProcessVariablesButtonBP" action="designTable.editProcessVariables"/>
+                                <button id="removeButtonBP" action="designTable.remove" icon="icons/remove.png"/>
+                                <button id="copyButtonBP" action="designTable.copy" icon="icons/copy.png"/>
                             </buttonsPanel>
                             <actions>
                                 <action id="create"/>
