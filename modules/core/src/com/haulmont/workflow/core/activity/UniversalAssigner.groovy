@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.WfHelper
-import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
@@ -302,8 +301,7 @@ public class UniversalAssigner extends MultiAssigner {
             assignmentCardRoleMap.put(assignment, cr);
         }
 
-        NotificationMatrixAPI notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
-        notificationMatrix.notifyByCardAndAssignments(card, assignmentCardRoleMap, notificationState)
+        notifyUser(execution, card, assignmentCardRoleMap, getNotificationState(execution))
     }
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {

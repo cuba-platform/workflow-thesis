@@ -8,18 +8,14 @@ import org.jbpm.api.activity.ActivityExecution
 import com.google.common.base.Preconditions
 import org.apache.commons.lang.StringUtils
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
 import com.haulmont.workflow.core.entity.Assignment
-import com.haulmont.cuba.core.Locator
 import com.haulmont.workflow.core.WfHelper
 import org.jbpm.api.ExecutionService
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.workflow.core.app.NotificationMatrixAPI
 
 class SequentialAssigner extends MultiAssigner {
 
@@ -28,7 +24,7 @@ class SequentialAssigner extends MultiAssigner {
   protected boolean createAssignment(ActivityExecution execution) {
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
 
     Card card = findCard(execution)
 
@@ -58,13 +54,13 @@ class SequentialAssigner extends MultiAssigner {
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
     if (parameters == null)
       throw new RuntimeException('Assignment object expected')
-    Preconditions.checkState(Locator.isInTransaction(), 'An active transaction required')
+    Preconditions.checkState(persistence.isInTransaction(), 'An active transaction required')
     Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
     Assignment assignment = (Assignment) parameters.get("assignment")
     if (assignment.getMasterAssignment() == null) {
       log.debug("No master assignment, just taking $signalName")
-      assignment.setFinished(TimeProvider.currentTimestamp());
+      assignment.setFinished(timeSource.currentTimestamp());
       execution.take(signalName)
       if (timersFactory) {
         timersFactory.removeTimers(execution)
@@ -112,7 +108,7 @@ class SequentialAssigner extends MultiAssigner {
   }
 
   protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = persistence.getEntityManager()
 
     Assignment assignment = metadata.create(Assignment.class)
     assignment.setName(execution.getActivityName())
@@ -134,9 +130,6 @@ class SequentialAssigner extends MultiAssigner {
     }
     em.persist(assignment)
 
-    if (!notificationMatrix) {
-      notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME)
-    }
-    notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
+    notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
   }
 }

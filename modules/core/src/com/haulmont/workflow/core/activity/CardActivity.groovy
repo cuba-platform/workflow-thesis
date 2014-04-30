@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.core.activity
 
-import com.haulmont.cuba.core.Locator
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Card
@@ -33,8 +32,6 @@ public class CardActivity extends ProcessVariableActivity {
 
     Card card = findCard(execution)
 
-    String prevActivityName = execution.getVariable(PREV_ACTIVITY_VAR_NAME)
-    notificationState = (prevActivityName != null ? prevActivityName + '.' :'') + execution.getActivityName()
     StringBuilder sb = new StringBuilder(',')
     //find all current executions
     def executions = execution.getIsProcessInstance() ? [execution] : execution.getProcessInstance().getExecutions()
@@ -48,7 +45,18 @@ public class CardActivity extends ProcessVariableActivity {
     CardProc cp = card.procs.find { it.proc == card.proc }
     cp?.setState(card.state)
     if (!delayedNotify)
-      notificationMatrix.notifyByCard(card, notificationState)
+      notificationMatrix.notifyByCard(card, getNotificationState(execution))
+  }
+
+  protected String getNotificationState(ActivityExecution execution) {
+      if (!notificationState)
+          initializeNotificationState(execution)
+      return notificationState
+  }
+
+  protected void initializeNotificationState(ActivityExecution execution) {
+      def prevActivityName = execution.getVariable(PREV_ACTIVITY_VAR_NAME)
+      notificationState = (prevActivityName ? prevActivityName + '.' :'') + execution.getActivityName()
   }
 
   protected Card findCard(ActivityExecution execution) {

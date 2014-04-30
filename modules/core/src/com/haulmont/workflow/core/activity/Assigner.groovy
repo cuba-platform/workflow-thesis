@@ -109,31 +109,25 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
 
     em.persist(assignment)
 
-    notifyUser(execution, card, [(assignment): cr], notificationState)
+    notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
 
     afterCreateAssignment(assignment)
 
     return true
   }
 
-    protected void notifyUser(
-            ActivityExecution execution,
-            Card card,
-            Map<Assignment, CardRole> assignmentCardRoleMap,
-            String state
-    ) {
+    protected void notifyUser(ActivityExecution execution, Card card, Map<Assignment, CardRole> assignmentCardRoleMap,
+                              String state) {
         if (!notificationMatrix)
             notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
         notificationMatrix.notifyByCardAndAssignments(card, assignmentCardRoleMap, state)
     }
 
-  protected void afterCreateAssignment(Assignment assignment) {}
+    protected void afterCreateAssignment(Assignment assignment) {}
 
   public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
     execution.take(signalName)
     removeTimers(execution, null)
-    Card card = findCard(execution)
-
     afterSignal(execution, signalName, parameters)
   }
 
@@ -188,8 +182,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
       createTimers(execution, assignment, cr)
       em.persist(assignment)
 
-      NotificationMatrixAPI  notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME)
-      notificationMatrix.notifyByCardAndAssignments(card, [(assignment): cr], notificationState)
+      notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
     }
 
     protected void createTimers(ActivityExecution execution, Assignment assignment, CardRole cardRole) {
