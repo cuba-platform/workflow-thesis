@@ -7,7 +7,6 @@ package com.haulmont.workflow.core.activity
 import com.google.common.base.Preconditions
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Query
-import com.haulmont.cuba.core.global.TimeProvider
 import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
@@ -82,7 +81,7 @@ public class ParallelAssigner extends MultiAssigner {
       assignmentsCardRoleMap.put(assignment, cr)
     }
 
-    notificationMatrix.notifyByCardAndAssignments(card, assignmentsCardRoleMap, notificationState);
+    notifyUser(execution, card, assignmentsCardRoleMap, getNotificationState(execution))
     return true
   }
 
@@ -143,7 +142,6 @@ public class ParallelAssigner extends MultiAssigner {
       }
 
       es.signalExecutionById(execution.getId(), resultTransition, params)
-      Card card = findCard(execution)
       afterSignal(execution, signalName, parameters)
     }
   }
