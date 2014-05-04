@@ -367,7 +367,10 @@ public class WfEngine implements WfEngineAPI {
             if (assignment == null)
                 throw new RuntimeException("Assignment not found: " + assignmentId);
 
-            assignment.setFinished(timeSource.currentTimestamp());
+            String cardStateBefore = assignment.getCard().getState();
+            Date currentTs = timeSource.currentTimestamp();
+
+            assignment.setFinished(currentTs);
             assignment.setFinishedByUser(userSessionSource.getUserSession().getUser());
             assignment.setOutcome(outcome);
             assignment.setComment(comment);
@@ -403,6 +406,20 @@ public class WfEngine implements WfEngineAPI {
                     }
                 }
                 assignment.getCard().setJbpmProcessId(null);
+
+                Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null and a.id <> ?2",
+                        metadata.getExtendedEntities().getEffectiveClass(Assignment.class));
+                query.setParameter(1, assignment.getCard());
+                query.setParameter(2, assignment.getId());
+                List<Assignment> assignments = query.getResultList();
+                String finishMsg = messages.getMessage(WfEngine.class, "anotherForkBranchFinish.msg");
+                for (Assignment assignmentToFinish : assignments) {
+                    assignmentToFinish.setComment(finishMsg);
+                    assignmentToFinish.setFinished(currentTs);
+                }
+
+                String cardStateAfter = assignment.getCard().getState();
+                assignment.getCard().setState(extractChangedState(cardStateBefore, cardStateAfter));
             }
 
             tx.commit();
@@ -531,6 +548,31 @@ public class WfEngine implements WfEngineAPI {
                 .setParameter("card", topFamily)
                 .setParameter("procId", topFamily.getJbpmProcessId());
         return query.getResultList();
+    }
+
+    /**
+     * Method is used in cases, when process flow was forked and card got several states.
+     * When process is finished in one of the fork branches, we need to know which
+     * card state is real and which card states belong to 'dead' fork branches.
+     * <p/>
+     * If method can't detect actual state, it returns current state
+     *
+     * @return actual card state
+     */
+    protected String extractChangedState(String stateBefore, String stateAfter) {
+        String[] statesBeforeArray = StringUtils.substring(stateBefore, 1, stateBefore.length() - 1).split(",");
+        List<String> statesBefore = Arrays.asList(statesBeforeArray);
+
+        String[] statesAfter = StringUtils.substring(stateAfter, 1, stateAfter.length() - 1).split(",");
+        String resultState = null;
+
+        for (String after : statesAfter) {
+            if (!statesBefore.contains(after)) {
+                resultState = "," + after + ",";
+            }
+        }
+
+        return resultState != null ? resultState : "";
     }
 
     public void addListener(Listener listener) {
