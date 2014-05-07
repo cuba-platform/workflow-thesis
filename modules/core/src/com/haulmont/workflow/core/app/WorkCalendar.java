@@ -377,6 +377,10 @@ public class WorkCalendar implements WorkCalendarAPI {
             return false;
 
         for (CalendarItem ci : currentDayCalendarItems) {
+            if (ci.getStartH() == 0 && ci.getEndH() == 0 && ci.getStartM() == 0 && ci.getEndM() == 0) {
+                // If time is not specified, day is not a work day
+                return false;
+            }
             if (ci.getDuration() > 0) return true;
         }
         return false;
