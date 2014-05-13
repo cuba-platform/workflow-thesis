@@ -31,7 +31,7 @@ public class CardActivity extends ProcessVariableActivity {
     notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
 
     Card card = findCard(execution)
-
+    initializeNotificationState(execution);
     StringBuilder sb = new StringBuilder(',')
     //find all current executions
     def executions = execution.getIsProcessInstance() ? [execution] : execution.getProcessInstance().getExecutions()
