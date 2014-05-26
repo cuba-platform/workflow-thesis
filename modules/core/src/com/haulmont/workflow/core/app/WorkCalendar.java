@@ -584,10 +584,17 @@ public class WorkCalendar implements WorkCalendarAPI {
         public Long getDuration() {
             Calendar startTime = Calendar.getInstance();
             Calendar endTime = Calendar.getInstance();
+
             startTime.set(Calendar.HOUR_OF_DAY, startH);
             startTime.set(Calendar.MINUTE, startM);
+            startTime.set(Calendar.SECOND, 0);
+            startTime.set(Calendar.MILLISECOND, 0);
+
             endTime.set(Calendar.HOUR_OF_DAY, endH);
             endTime.set(Calendar.MINUTE, endM);
+            endTime.set(Calendar.SECOND, 0);
+            endTime.set(Calendar.MILLISECOND, 0);
+
             return endTime.getTimeInMillis() - startTime.getTimeInMillis();
         }
 
