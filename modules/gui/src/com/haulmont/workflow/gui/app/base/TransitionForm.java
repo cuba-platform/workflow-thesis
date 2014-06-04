@@ -408,12 +408,21 @@ public class TransitionForm extends AbstractForm {
         return true;
     }
 
-    protected boolean validated() {
+    protected boolean isTwoProcessStarting() {
         if (card.getJbpmProcessId() == null) {
             if (wfService.processStarted(card)) {
                 showNotification(getMessage("processAlreadyStarted"), IFrame.NotificationType.ERROR);
-                return false;
+                return true;
             }
+        }
+        return false;
+    }
+
+    protected boolean validated() {
+
+        boolean isTwoProcessStarting = isTwoProcessStarting();
+        if (isTwoProcessStarting) {
+            return false;
         }
 
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
