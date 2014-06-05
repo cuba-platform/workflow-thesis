@@ -15,6 +15,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
 import groovy.lang.Binding;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -294,23 +295,27 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (fis == null)
             return;
 
-        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(fis);
+        try {
+            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(fis);
 
-        Map<String, String> rolesMap = readRoles(hssfWorkbook);
-        Map<String, String> statesMap = readStates(hssfWorkbook);
+            Map<String, String> rolesMap = readRoles(hssfWorkbook);
+            Map<String, String> statesMap = readStates(hssfWorkbook);
 
-        messageCache.put(processPath, new HashMap<String, NotificationMessageBuilder>());
-        loadMessages(hssfWorkbook, processPath);
+            messageCache.put(processPath, new HashMap<String, NotificationMessageBuilder>());
+            loadMessages(hssfWorkbook, processPath);
 
-        matrix = new HashMap<>();
-        boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
-        boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
-        boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+            matrix = new HashMap<>();
+            boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+            boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+            boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
 
-        postLoad(processPath, matrix);
+            postLoad(processPath, matrix);
 
-        if (mailMatrixFilled || trayMatrixFilled || smsMatrixFilled)
-            cache.put(processPath, matrix);
+            if (mailMatrixFilled || trayMatrixFilled || smsMatrixFilled)
+                cache.put(processPath, matrix);
+        } finally {
+            IOUtils.closeQuietly(fis);
+        }
     }
 
     protected void postLoad(String processPath, Map<String, String> matrix) {
