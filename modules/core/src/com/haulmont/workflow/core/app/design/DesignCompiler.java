@@ -22,6 +22,7 @@ import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -573,16 +574,22 @@ public class DesignCompiler {
             }
 
             Document document = DocumentHelper.parseText(jpdl);
-            String templatePath = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getNotificationTemplatePath();
-            Workbook wb = new HSSFWorkbook(AppBeans.get(Resources.class).getResourceAsStream(templatePath));
-
             List<String> rolesList = parseRoles(document);
             Map<String, String> states = parseStates(document, properties);
-            createRolesSheet(wb, rolesList);
-            createStatesSheet(wb, states);
-            createNotificationSheet(wb, rolesList, states.values(), "Mail");
-            createNotificationSheet(wb, rolesList, states.values(), "Tray");
-            createNotificationSheet(wb, rolesList, states.values(), "Sms");
+
+            String templatePath = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getNotificationTemplatePath();
+            InputStream stream = AppBeans.get(Resources.class).getResourceAsStream(templatePath);
+            Workbook wb;
+            try {
+                wb = new HSSFWorkbook(stream);
+                createRolesSheet(wb, rolesList);
+                createStatesSheet(wb, states);
+                createNotificationSheet(wb, rolesList, states.values(), "Mail");
+                createNotificationSheet(wb, rolesList, states.values(), "Tray");
+                createNotificationSheet(wb, rolesList, states.values(), "Sms");
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
 
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             wb.write(buffer);
