@@ -48,39 +48,20 @@
                         <textField id="outcomeText" width="${width}"/>
                     </hbox>
 
-                    <accessControl id="cardRolesFrameAccessControl"
-                                   data="com.haulmont.workflow.gui.app.base.TransitionFormAccessData" param="accessData">
-                        <visible property="cardRolesVisible"/>
-                        <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
-                    </accessControl>
+                    <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
 
-                    <accessControl id="refusedOnlyControl"
-                                   data="com.haulmont.workflow.gui.app.base.TransitionFormAccessData"
-                                   param="accessData">
-                        <visible property="refusedOnlyVisible"/>
-                        <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly"
-                                  caption="msg://refusedOnly"/>
-                    </accessControl>
+                    <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly"
+                              caption="msg://refusedOnly"/>
 
-                    <accessControl id="dueDateAccessControl"
-                                   data="com.haulmont.workflow.gui.app.base.TransitionFormAccessData"
-                                   param="accessData">
-                        <visible property="dueDateVisible"/>
-                        <hbox id="dueDatePane">
-                            <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
-                            <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
-                        </hbox>
-                    </accessControl>
+                    <hbox id="dueDatePane">
+                        <label id="dueDateLabel" value="msg://dueDate" width="${labelWidth}"/>
+                        <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
+                    </hbox>
 
-                    <accessControl id="commentTextAccessControl"
-                                   data="com.haulmont.workflow.gui.app.base.TransitionFormAccessData"
-                                   param="accessData">
-                        <visible property="commentVisible"/>
-                        <hbox id="commentTextPane">
-                            <label value="msg://comment" width="${labelWidth}"/>
-                            <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
-                        </hbox>
-                    </accessControl>
+                    <hbox id="commentTextPane">
+                        <label value="msg://comment" width="${labelWidth}"/>
+                        <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
+                    </hbox>
                 </vbox>
             </tab>
             <tab id="attachmentsTab" caption="msg://attachmentsTab" expand="attachmentsFrame" margin="true"

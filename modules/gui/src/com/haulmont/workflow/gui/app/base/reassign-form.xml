@@ -28,13 +28,10 @@
 
     <layout expand="cardRolesFrame" spacing="true">
         <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
-        <accessControl data="com.haulmont.workflow.gui.app.base.ReassignFormAccessData" param="accessData">
-            <visible property="commentVisible"/>
-            <hbox id="commentTextPane">
-                <label value="msg://comment" width="${labelWidth}"/>
-                <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
-            </hbox>
-        </accessControl>
+        <hbox id="commentTextPane">
+            <label value="msg://comment" width="${labelWidth}"/>
+            <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
+        </hbox>
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
