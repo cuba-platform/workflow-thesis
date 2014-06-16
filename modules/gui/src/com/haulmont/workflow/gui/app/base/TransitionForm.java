@@ -55,6 +55,9 @@ public class TransitionForm extends AbstractForm {
     protected TextField outcomeText;
 
     @Inject
+    private BoxLayout dueDatePane;
+
+    @Inject
     protected CardAttachmentsFrame attachmentsFrame;
 
     @Inject
@@ -111,6 +114,12 @@ public class TransitionForm extends AbstractForm {
 
     protected String visibleRoles;
 
+    protected String commentVisible;
+    protected String cardRolesVisible;
+    protected String dueDateVisible;
+    protected String attachmentsVisible;
+    protected String refusedOnlyVisible;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -121,6 +130,8 @@ public class TransitionForm extends AbstractForm {
         String activity = (String) params.get("activity");
         String transition = (String) params.get("transition");
         Object assignmentId = params.get("assignmentId");
+        initComponentVisibilityParameters(params);
+        setComponentsVisibility();
 
         cardDs.setItem(dataSupplier.reload(card, cardDs.getView()));
 
@@ -228,6 +239,21 @@ public class TransitionForm extends AbstractForm {
         if (hideAttachments) {
             attachmentsTab.setVisible(false);
         }
+    }
+
+    protected void initComponentVisibilityParameters(Map<String, Object> params) {
+        commentVisible = (String) params.get("commentVisible");
+        cardRolesVisible = (String) params.get("cardRolesVisible");
+        dueDateVisible = (String) params.get("dueDateVisible");
+        attachmentsVisible = (String) params.get("attachmentsVisible");
+        refusedOnlyVisible = (String) params.get("refusedOnlyVisible");
+    }
+
+    protected void setComponentsVisibility() {
+        refusedOnly.setVisible(isRefusedOnlyVisible());
+        dueDatePane.setVisible(isDueDateVisible());
+        commentTextPane.setVisible(isCommentVisible());
+        cardRolesFrame.setVisible(isCardRolesVisible());
     }
 
     @Override
@@ -411,7 +437,7 @@ public class TransitionForm extends AbstractForm {
     protected boolean isTwoProcessStarting() {
         if (card.getJbpmProcessId() == null) {
             if (wfService.processStarted(card)) {
-                showNotification(getMessage("processAlreadyStarted"), IFrame.NotificationType.ERROR);
+                showNotification(getMessage("processAlreadyStarted"), NotificationType.ERROR);
                 return true;
             }
         }
@@ -426,15 +452,15 @@ public class TransitionForm extends AbstractForm {
         }
 
         if (commentText != null && commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
-            showNotification(getMessage("putComments"), IFrame.NotificationType.WARNING);
+            showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;
         }
         if ((dueDate != null) && (dueDate.getValue() != null) && (((Date) dueDate.getValue()).compareTo(timeSource.currentTimestamp()) < 0)) {
-            showNotification(getMessage("dueDateIsLessThanNow"), IFrame.NotificationType.WARNING);
+            showNotification(getMessage("dueDateIsLessThanNow"), NotificationType.WARNING);
             return false;
         }
         if ((dueDate != null) && dueDate.isRequired() && (dueDate.getValue() == null)) {
-            showNotification(getMessage("putDueDate"), IFrame.NotificationType.WARNING);
+            showNotification(getMessage("putDueDate"), NotificationType.WARNING);
             return false;
         }
         if (cardRolesFrame != null) {
@@ -444,7 +470,7 @@ public class TransitionForm extends AbstractForm {
                 for (String emptyRoleName : emptyRolesNames) {
                     message += messages.formatMessage(TransitionForm.class, "actorNotDefined.msg", emptyRoleName) + "\n";
                 }
-                showNotification(message, IFrame.NotificationType.WARNING);
+                showNotification(message, NotificationType.WARNING);
                 return false;
             }
         }
@@ -453,7 +479,7 @@ public class TransitionForm extends AbstractForm {
             if (component instanceof Field) {
                 Field field = (Field) component;
                 if (field.isVisible() && field.isEditable() && field.isEnabled() && !field.isValid()) {
-                    showNotification(getMessage("fillRequiredFields"), IFrame.NotificationType.WARNING);
+                    showNotification(getMessage("fillRequiredFields"), NotificationType.WARNING);
                     return false;
                 }
             }
@@ -503,5 +529,29 @@ public class TransitionForm extends AbstractForm {
             return commentText.getValue();
         else
             return null;
+    }
+
+    protected boolean isCommentVisible() {
+        return commentVisible != null && Boolean.valueOf(commentVisible);
+    }
+
+    protected boolean isCardRolesVisible() {
+        return cardRolesVisible != null && Boolean.valueOf(cardRolesVisible);
+    }
+
+    protected boolean isDueDateVisible() {
+        //If duration in process is enabled we won't show duration field in transition form.
+        //Assignments' dueDates will be set by roles' durations.
+        if (card != null && card.getProc() != null && BooleanUtils.isTrue(card.getProc().getDurationEnabled()))
+            return false;
+        return dueDateVisible != null && Boolean.valueOf(dueDateVisible);
+    }
+
+    protected boolean isAttachmentsVisible() {
+        return attachmentsVisible != null && Boolean.valueOf(attachmentsVisible);
+    }
+
+    protected boolean isRefusedOnlyVisible() {
+        return refusedOnlyVisible != null && Boolean.valueOf(refusedOnlyVisible);
     }
 }

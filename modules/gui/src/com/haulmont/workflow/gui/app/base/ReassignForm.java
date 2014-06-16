@@ -13,10 +13,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -43,6 +40,10 @@ public class ReassignForm extends AbstractWindow {
 
     @Inject
     protected CardRolesFrame cardRolesFrame;
+
+    @Inject
+    private BoxLayout commentTextPane;
+
     protected TextField commentText;
 
     @Inject
@@ -60,6 +61,7 @@ public class ReassignForm extends AbstractWindow {
     protected Card card;
     protected String state;
     protected String role;
+    protected boolean commentVisible;
 
     private static final int DEFAULT_FORM_HEIGHT = 500;
     private static final int DEFAULT_FORM_WIDTH = 835;
@@ -69,6 +71,7 @@ public class ReassignForm extends AbstractWindow {
         super.init(params);
         commentText = getComponent("commentText");
         tmpCardRolesDs = cardRolesFrame.getDsContext().get("tmpCardRolesDs");
+        commentVisible = BooleanUtils.isTrue((Boolean) params.get("commentVisible"));
 
         card = (Card) params.get("card");
         state = (String) params.get("state");
@@ -128,6 +131,8 @@ public class ReassignForm extends AbstractWindow {
                 return messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel");
             }
         });
+
+        setCommentVisible();
     }
 
 
@@ -168,5 +173,9 @@ public class ReassignForm extends AbstractWindow {
             return commentText.getValue();
         }
         return null;
+    }
+
+    protected void setCommentVisible() {
+        commentTextPane.setVisible(commentVisible);
     }
 }
