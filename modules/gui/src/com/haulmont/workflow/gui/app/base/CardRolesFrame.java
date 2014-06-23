@@ -628,13 +628,9 @@ public class CardRolesFrame extends AbstractFrame {
             component.setEnabled(proc != null && isEnabled());
         }
 
-        if (proc != null && proc.getJbpmProcessKey().equals("EndorsementFull")) {
-            moveDown.setVisible(true);
-            moveUp.setVisible(true);
-        } else {
-            moveDown.setVisible(false);
-            moveUp.setVisible(false);
-        }
+        boolean visible = isMoveCardRoleButtonsVisible(proc);
+        moveDown.setVisible(visible);
+        moveUp.setVisible(visible);
 
         if (proc != null) {
             //todo implement companion for desktop or wait for ability to manage columns through Table interface, null comparison looks ugly
@@ -727,6 +723,11 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
+    //needed for extension
+    protected boolean isMoveCardRoleButtonsVisible(Proc proc) {
+        return true;
+    }
+
     public void initDefaultActors(Proc proc) {
         //if (!tmpCardRolesDs.getItemIds().isEmpty())
         //    return;
@@ -792,52 +793,23 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    /*private void assignNextSortOrder(CardRole cr) {
-        if (cr.getSortOrder() != null)
-            return;
-        List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
-        if (cardRoles.size() == 0) {
-            cr.setSortOrder(1);
-        } else if (cr.getProcRole().getMultiUser()) {
-            int max = getMaxSortOrderInCardRoles(cardRoles);
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.PARALLEL)) {
-                cr.setSortOrder(max);
-            }
-            if (OrderFillingType.fromId(cr.getProcRole().getOrderFillingType()).equals(OrderFillingType.SEQUENTIAL)) {
-                cr.setSortOrder(max + 1);
-            }
-        }
-    }*/
-
     protected void assignNextSortOrder(CardRole cr) {
         if (cr.getSortOrder() != null)
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
-            if (isEndorsementFullProcess(cr))
-                cr.setSortOrder(cr.getProcRole().getSortOrder());
-            else
                 cr.setSortOrder(1);
         } else if (cr.getProcRole().getMultiUser()) {
             int max = getMaxSortOrderInCardRoles(cardRoles);
             if (cr.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL) {
                 cr.setSortOrder(max);
-                if (isEndorsementFullProcess(cr))
-                    changeSortOrderByAllParallelCardRoles(max);
             }
             if (cr.getProcRole().getOrderFillingType() == OrderFillingType.SEQUENTIAL) {
-                int parallelGroupNumb = getParallelGroupNumberCardRoles();
-                if (parallelGroupNumb >= max)
-                    cr.setSortOrder(parallelGroupNumb + 1);
-                else
-                    cr.setSortOrder(max + 1);
+                cr.setSortOrder(max + 1);
             }
         }
     }
 
-    protected boolean isEndorsementFullProcess(CardRole cr) {
-        return "EndorsementFull".equals(cr.getProcRole().getProc().getJbpmProcessKey());
-    }
 
     protected void assignDurationAndTimeUnit(CardRole cardRole) {
         for (UUID uuid : tmpCardRolesDs.getItemIds()) {
@@ -850,23 +822,6 @@ public class CardRolesFrame extends AbstractFrame {
                     cardRole.setTimeUnit(timeUnit);
                 break;
             }
-        }
-    }
-
-    protected int getParallelGroupNumberCardRoles() {
-        for (UUID id : tmpCardRolesDs.getItemIds()) {
-            CardRole role = tmpCardRolesDs.getItem(id);
-            if (role.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL)
-                return role.getSortOrder();
-        }
-        return 0;
-    }
-
-    protected void changeSortOrderByAllParallelCardRoles(int sortOrder) {
-        for (UUID id : tmpCardRolesDs.getItemIds()) {
-            CardRole role = tmpCardRolesDs.getItem(id);
-            if (role.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL)
-                role.setSortOrder(sortOrder);
         }
     }
 
