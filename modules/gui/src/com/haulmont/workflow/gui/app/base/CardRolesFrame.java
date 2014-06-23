@@ -570,6 +570,7 @@ public class CardRolesFrame extends AbstractFrame {
             cr.setCard(card);
             cardRoles.add(cr);
             assignNextSortOrder(cr);
+            assignDurationAndTimeUnit(cr);
             tmpCardRolesDs.addItem(cr);
 //            }
         }
@@ -813,7 +814,7 @@ public class CardRolesFrame extends AbstractFrame {
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
-            if (cr.getProcRole().getProc().getJbpmProcessKey().equals("EndorsementFull"))
+            if (isEndorsementFullProcess(cr))
                 cr.setSortOrder(cr.getProcRole().getSortOrder());
             else
                 cr.setSortOrder(1);
@@ -821,7 +822,8 @@ public class CardRolesFrame extends AbstractFrame {
             int max = getMaxSortOrderInCardRoles(cardRoles);
             if (cr.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL) {
                 cr.setSortOrder(max);
-                changeSortOrderByAllParallelCardRoles(max);
+                if (isEndorsementFullProcess(cr))
+                    changeSortOrderByAllParallelCardRoles(max);
             }
             if (cr.getProcRole().getOrderFillingType() == OrderFillingType.SEQUENTIAL) {
                 int parallelGroupNumb = getParallelGroupNumberCardRoles();
@@ -831,6 +833,10 @@ public class CardRolesFrame extends AbstractFrame {
                     cr.setSortOrder(max + 1);
             }
         }
+    }
+
+    protected boolean isEndorsementFullProcess(CardRole cr) {
+        return "EndorsementFull".equals(cr.getProcRole().getProc().getJbpmProcessKey());
     }
 
     protected void assignDurationAndTimeUnit(CardRole cardRole) {
@@ -882,7 +888,7 @@ public class CardRolesFrame extends AbstractFrame {
             range.add(cardRoles.get(0).getSortOrder());
         } else {
             int min = getMinSortOrderInCardRoles(cardRoles);
-            int max = cardRoles.size() - 1; //getMaxSortOrderInCardRoles(cardRoles);
+            int max = getMaxSortOrderInCardRoles(cardRoles);
             for (int i = min - 1; i <= max + 1; i++) {
                 if (i > 0) range.add(i);
             }
