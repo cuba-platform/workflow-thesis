@@ -8,7 +8,6 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
@@ -23,47 +22,40 @@ import java.util.*;
 @ManagedBean(WorkCalendarAPI.NAME)
 public class WorkCalendar implements WorkCalendarAPI {
 
-    private static Log log = LogFactory.getLog(WorkCalendar.class);
+    protected Log log = LogFactory.getLog(WorkCalendar.class);
 
-    private volatile Map<Date, List<CalendarItem>> exceptionDays;
-    private volatile Map<Integer, List<CalendarItem>> defaultDays;
-
-    @Inject
-    private Resources resources;
+    protected volatile Map<Date, List<CalendarItem>> exceptionDays;
+    protected volatile Map<Integer, List<CalendarItem>> defaultDays;
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private synchronized void loadCaches() {
+    protected synchronized void loadCaches() {
         if (exceptionDays == null) {
-            synchronized (this) {
-                if (exceptionDays == null) {
-                    exceptionDays = new HashMap<Date, List<CalendarItem>>();
-                    Transaction tx = persistence.createTransaction();
-                    try {
-                        EntityManager em = persistence.getEntityManager();
-                        Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
-                                "order by c.day, c.start");
-                        List<WorkCalendarEntity> list = q.getResultList();
-                        for (WorkCalendarEntity c : list) {
-                            CalendarItem ci = new CalendarItem(c);
-                            List<CalendarItem> mapValue = exceptionDays.get(c.getDay());
-                            if (mapValue == null)
-                                mapValue = new LinkedList<CalendarItem>();
-                            mapValue.add(ci);
-                            exceptionDays.put(c.getDay(), mapValue);
-                        }
-
-                        tx.commit();
-                    } finally {
-                        tx.end();
-                    }
+            exceptionDays = new HashMap<>();
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
+                        "order by c.day, c.start");
+                List<WorkCalendarEntity> list = q.getResultList();
+                for (WorkCalendarEntity c : list) {
+                    CalendarItem ci = new CalendarItem(c);
+                    List<CalendarItem> mapValue = exceptionDays.get(c.getDay());
+                    if (mapValue == null)
+                        mapValue = new LinkedList<>();
+                    mapValue.add(ci);
+                    exceptionDays.put(c.getDay(), mapValue);
                 }
+
+                tx.commit();
+            } finally {
+                tx.end();
             }
         }
 
         if (defaultDays == null) {
-            defaultDays = new HashMap<Integer, List<CalendarItem>>();
+            defaultDays = new HashMap<>();
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
@@ -75,7 +67,7 @@ public class WorkCalendar implements WorkCalendarAPI {
                     CalendarItem ci = new CalendarItem(c);
                     List<CalendarItem> mapValue = defaultDays.get(c.getDayOfWeek().getId());
                     if (mapValue == null)
-                        mapValue = new LinkedList<CalendarItem>();
+                        mapValue = new LinkedList<>();
                     mapValue.add(ci);
                     defaultDays.put(c.getDayOfWeek().getId(), mapValue);
                 }
