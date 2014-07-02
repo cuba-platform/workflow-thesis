@@ -33,9 +33,10 @@ public class AssignmentBrowser extends AbstractWindow {
         if (selected.size() == 1) {
             Card card = selected.iterator().next().getCard();
 
-            String windowAlias = card.getMetaClass() + ".assignment";
-            if (!windowConfig.hasWindow(windowAlias))
-                windowAlias = card.getMetaClass() + ".edit";
+            String windowAlias = windowConfig.getMetaClassScreenId(card.getMetaClass(), ".assignment");
+            if (!windowConfig.hasWindow(windowAlias)) {
+                windowAlias = windowConfig.getEditorScreenId(card.getMetaClass());
+            }
 
             Window window = openEditor(windowAlias, card, WindowManager.OpenType.THIS_TAB);
             window.addListener(new CloseListener() {
