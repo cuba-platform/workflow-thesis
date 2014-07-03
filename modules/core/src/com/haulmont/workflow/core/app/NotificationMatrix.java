@@ -344,6 +344,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         String key = state + "_" + cardRole.getCode();
         final User user = cardRole.getUser();
 
+        if (user == null) {
+            log.warn("User in card role with id '" + cardRole.getId() + "' is null. Notification will not be sent");
+            return;
+        }
+
         Map variables = new HashMap();
         variables.put("assignment", assignment);
         variables.put("card", card);
