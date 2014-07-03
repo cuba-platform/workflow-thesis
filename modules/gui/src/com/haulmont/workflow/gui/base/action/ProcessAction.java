@@ -17,6 +17,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashMap;
@@ -315,7 +316,7 @@ public class ProcessAction extends AbstractAction {
         LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(withProcess);
         Card reloadedCard = dataService.load(lc);
 
-        if (card.getProcs() == null) {
+        if (CollectionUtils.isEmpty(card.getProcs())) {
             return true;
         }
 
@@ -327,7 +328,7 @@ public class ProcessAction extends AbstractAction {
         }
 
         CardProc reloadedCardCP = null;
-        if (cardCP != null && reloadedCard != null && !reloadedCard.getProcs().isEmpty()) {
+        if (cardCP != null && reloadedCard != null && CollectionUtils.isNotEmpty(reloadedCard.getProcs())) {
             for (CardProc cp : reloadedCard.getProcs()) {
                 if (cp.getProc() != null && cardCP.getProc() != null &&
                         cp.getProc().equals(cardCP.getProc())) {
