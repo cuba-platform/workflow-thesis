@@ -201,20 +201,22 @@ public class CardRolesFrame extends AbstractFrame {
         rolesTable.addGeneratedColumn("user", new Table.ColumnGenerator<CardRole>() {
             @Override
             public Component generateCell(CardRole cardRole) {
-                LookupPickerField cardRoleField = actorFieldsMap.get(cardRole);
-                if (cardRoleField != null) {
-                    cardRoleField.setValue(cardRole.getUser());
-                } else {
-                    cardRoleField = fillActorActionsFieldsMap(cardRole);
-                }
-                return cardRoleField;
-
+                return generateUserFieldComponent(cardRole);
             }
         });
 
         initSortOrderColumn();
         initDurationColumns();
-//        vRolesTable.setColumnCollapsingAllowed(false);
+    }
+
+    protected LookupPickerField generateUserFieldComponent(CardRole cardRole) {
+        LookupPickerField cardRoleField = actorFieldsMap.get(cardRole);
+        if (cardRoleField != null) {
+            cardRoleField.setValue(cardRole.getUser());
+        } else {
+            cardRoleField = fillActorActionsFieldsMap(cardRole);
+        }
+        return cardRoleField;
     }
 
     protected LookupPickerField fillActorActionsFieldsMap(CardRole cardRole) {
@@ -298,32 +300,7 @@ public class CardRolesFrame extends AbstractFrame {
         rolesTable.addGeneratedColumn("sortOrder", new Table.ColumnGenerator<CardRole>() {
             @Override
             public Component generateCell(final CardRole cardRole) {
-                if (cardRole != null && cardRole.getProcRole().getMultiUser()) {
-                    if (editable) {
-                        LookupField orderLookup = componentsFactory.createComponent(LookupField.NAME);
-                        orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
-                        orderLookup.setValue(cardRole.getSortOrder());
-                        orderLookup.setWidth("100%");
-                        if (companion != null) {
-                            companion.setLookupNullSelectionAllowed(orderLookup, false);
-                        } else {
-                            orderLookup.setRequired(true);
-                        }
-
-                        orderLookup.addListener(new ValueListener() {
-                            public void valueChanged(Object source, String property, Object prevValue, final Object value) {
-                                cardRole.setSortOrder((Integer) value);
-                                tmpCardRolesDs.doSort();
-                            }
-                        });
-                        return orderLookup;
-                    } else {
-                        Label label = componentsFactory.createComponent(Label.NAME);
-                        label.setValue(cardRole.getSortOrder() != null ? cardRole.getSortOrder().toString() : "");
-                        return label;
-                    }
-                }
-                return null;
+                return getSortOrderGeneratedComponent(cardRole);
             }
         });
     }
@@ -661,51 +638,13 @@ public class CardRolesFrame extends AbstractFrame {
                 rolesTable.addGeneratedColumn("duration", new Table.ColumnGenerator() {
                     @Override
                     public Component generateCell(Entity entity) {
-                        final TextField durationTF = componentsFactory.createComponent(TextField.NAME);
-                        durationTF.setWidth("60px");
-                        final CardRole cardRole = (CardRole) entity;
-                        if (cardRole != null && cardRole.getDuration() != null)
-                            durationTF.setValue(cardRole.getDuration().toString());
-                        durationTF.addListener(new ValueListener() {
-
-                            @Override
-                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                try {
-                                    Integer duration = Integer.parseInt((String) value);
-                                    if (cardRole != null)
-                                        cardRole.setDuration(duration);
-
-                                } catch (NumberFormatException ex) {
-                                    String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
-                                    String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
-                                    showNotification(caption, msg, NotificationType.TRAY);
-                                    durationTF.setValue(null);
-                                }
-                            }
-                        });
-                        return durationTF;
+                        return generateDurationComponent((CardRole) entity);
                     }
                 });
                 rolesTable.addGeneratedColumn("timeUnit", new Table.ColumnGenerator() {
                     @Override
                     public Component generateCell(Entity entity) {
-                        final LookupField timeUnitField = componentsFactory.createComponent(LookupField.NAME);
-                        timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
-                        timeUnitField.setWidth("60");
-                        timeUnitField.setNullOption(TimeUnit.HOUR);
-                        final CardRole cardRole = (CardRole) entity;
-                        if (cardRole != null && cardRole.getTimeUnit() != null) {
-                            timeUnitField.setValue(cardRole.getTimeUnit());
-                        }
-                        timeUnitField.addListener(new ValueListener() {
-                            @Override
-                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if (cardRole != null)
-                                    cardRole.setTimeUnit((TimeUnit) value);
-                            }
-                        });
-
-                        return timeUnitField;
+                        return generateTimeUnitComponent((CardRole) entity, timeUnitMpp);
                     }
                 });
                 if (!ArrayUtils.contains(visibleColumns, timeUnitMpp)) {
@@ -720,6 +659,118 @@ public class CardRolesFrame extends AbstractFrame {
 
             if (companion != null)
                 companion.setTableVisibleColumns(rolesTable, visibleColumns);
+        }
+    }
+
+    protected TextField generateDurationComponent(final CardRole cardRole) {
+        final TextField durationTF = componentsFactory.createComponent(TextField.NAME);
+        durationTF.setWidth("60px");
+        if (cardRole != null && cardRole.getDuration() != null)
+            durationTF.setValue(cardRole.getDuration().toString());
+        durationTF.addListener(getDurationValueListener(cardRole, durationTF));
+        return durationTF;
+    }
+
+    protected ValueListener getDurationValueListener(CardRole cardRole, TextField field) {
+        return new DurationValueListener(cardRole, field);
+    }
+
+    protected class DurationValueListener implements ValueListener {
+
+        protected CardRole cardRole;
+        protected TextField field;
+
+        public DurationValueListener(CardRole cardRole, TextField field ) {
+            this.cardRole = cardRole;
+            this.field = field;
+        }
+
+        @Override
+        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            try {
+                Integer duration = Integer.parseInt((String) value);
+                if (cardRole != null)
+                    cardRole.setDuration(duration);
+
+            } catch (NumberFormatException ex) {
+                String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
+                String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
+                showNotification(caption, msg, NotificationType.TRAY);
+                field.setValue(null);
+            }
+        }
+    }
+
+    protected LookupField generateTimeUnitComponent(final CardRole cardRole, MetaPropertyPath timeUnitMpp) {
+        final LookupField timeUnitField = componentsFactory.createComponent(LookupField.NAME);
+        timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
+        timeUnitField.setWidth("60");
+        timeUnitField.setNullOption(TimeUnit.HOUR);
+        if (cardRole != null && cardRole.getTimeUnit() != null) {
+            timeUnitField.setValue(cardRole.getTimeUnit());
+        }
+        timeUnitField.addListener(getTimeUnitValueListener(cardRole));
+
+        return timeUnitField;
+    }
+
+    protected ValueListener getTimeUnitValueListener(CardRole cardRole) {
+        return new TimeUnitValueListener(cardRole);
+    }
+
+    protected class TimeUnitValueListener implements ValueListener {
+        protected CardRole cardRole;
+
+        public TimeUnitValueListener(CardRole cardRole) {
+            this.cardRole = cardRole;
+        }
+
+        @Override
+        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            if (cardRole != null)
+                cardRole.setTimeUnit((TimeUnit) value);
+        }
+    }
+
+    protected Component getSortOrderGeneratedComponent(final CardRole cardRole) {
+        if (cardRole != null && cardRole.getProcRole().getMultiUser()) {
+            if (editable) {
+                LookupField orderLookup = componentsFactory.createComponent(LookupField.NAME);
+                orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
+                orderLookup.setValue(cardRole.getSortOrder());
+                orderLookup.setWidth("100%");
+                if (companion != null) {
+                    companion.setLookupNullSelectionAllowed(orderLookup, false);
+                } else {
+                    orderLookup.setRequired(true);
+                }
+
+                orderLookup.addListener(getSortOrderValueListener(cardRole));
+                return orderLookup;
+            } else {
+                Label label = componentsFactory.createComponent(Label.NAME);
+                label.setValue(cardRole.getSortOrder() != null ? cardRole.getSortOrder().toString() : "");
+                return label;
+            }
+        }
+        return null;
+    }
+
+    protected ValueListener getSortOrderValueListener(final CardRole cardRole) {
+        return new SortOrderValueListener(cardRole);
+    }
+
+    protected class SortOrderValueListener implements ValueListener {
+        protected CardRole cardRole;
+
+        public SortOrderValueListener(CardRole cardRole) {
+            this.cardRole = cardRole;
+        }
+
+        @Override
+        public void valueChanged(Object source, String property, Object prevValue, final Object value) {
+            cardRole.setSortOrder((Integer) value);
+            tmpCardRolesDs.doSort();
         }
     }
 
