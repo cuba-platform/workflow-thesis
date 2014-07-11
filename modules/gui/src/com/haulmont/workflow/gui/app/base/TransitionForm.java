@@ -7,9 +7,11 @@ package com.haulmont.workflow.gui.app.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -29,8 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-import static com.haulmont.cuba.gui.ServiceLocator.getDataService;
-
 /**
  * @author gorbunkov
  * @version $Id$
@@ -39,79 +39,57 @@ public class TransitionForm extends AbstractForm {
 
     protected static final int DEFAULT_FORM_HEIGHT = 500;
 
+    protected int noCardRolesHeight = 300;
+    protected int noCardRolesWidth = 540;
+
     @Inject
     protected TextArea commentText;
-
     @Inject
     protected CardRolesFrame cardRolesFrame;
-
     @Inject
     protected CollectionDatasource<CardRole, UUID> cardRolesDs;
-
     @Inject
     protected DateField dueDate;
-
     @Inject
     protected TextField outcomeText;
-
     @Inject
     private BoxLayout dueDatePane;
-
     @Inject
     protected CardAttachmentsFrame attachmentsFrame;
-
     @Inject
     protected TabSheet.Tab attachmentsTab;
-
     @Inject
     protected TabSheet tabsheet;
-
     @Inject
     protected BoxLayout mainPane;
-
     @Inject
     protected BoxLayout commentTextPane;
-
     @Inject
     protected CheckBox refusedOnly;
-
     @Inject
     protected TimeSource timeSource;
-
     @Inject
     protected Datasource<Assignment> assignmentDs;
-
     @Inject
     protected Datasource<Card> cardDs;
-
     @Inject
     protected CollectionDatasource<Attachment, UUID> attachmentsDs;
-
     @Inject
     protected Datasource varsDs;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected WfService wfService;
-
     @Inject
     protected UserSession userSession;
-
-    protected Card card;
-
     @Inject
     protected DataSupplier dataSupplier;
 
+    protected Card card;
     protected Boolean hideAttachments = false;
-
     protected List<String> requiredAttachmentTypes = new ArrayList<>();
-
     protected Map<String, AttachmentType> attachmentTypes;
-
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
-
     protected String visibleRoles;
 
     protected String commentVisible;
@@ -142,7 +120,13 @@ public class TransitionForm extends AbstractForm {
         } catch (NumberFormatException ignored) {
         }
 
-        getDialogParams().setHeight(formHeight);
+        if (Boolean.valueOf((String) params.get("cardRolesVisible")) || StringUtils.isNotBlank(formHeightStr)) {
+            getDialogParams().setHeight(formHeight);
+        } else {
+            getDialogParams().setHeight(noCardRolesHeight);
+            getDialogParams().setWidth(noCardRolesWidth);
+            commentText.setHeight("160");
+        }
 
         if (cardRolesFrame != null) {
             initCardRolesFrame(params);
@@ -159,7 +143,7 @@ public class TransitionForm extends AbstractForm {
         if (assignmentId != null) {
             ctx.setId(assignmentId);
             ctx.setView("resolution-edit");
-            Assignment assignment = AppBeans.get(DataService.class).load(ctx);
+            Assignment assignment = getDsContext().getDataSupplier().load(ctx);
             assignmentDs.setItem(assignment);
             String parentMessagesPack = messagesPack;
             if (card.isSubProcCard())
@@ -366,11 +350,10 @@ public class TransitionForm extends AbstractForm {
     protected AttachmentType getAttachmentType(String code) {
         if (attachmentTypes == null) attachmentTypes = new HashMap<>();
         if (!attachmentTypes.containsKey(code)) {
-            DataService dataService = getDataService();
             LoadContext ctx = new LoadContext(AttachmentType.class);
             ctx.setView("_local");
             ctx.setQueryString("select att from wf$AttachmentType att where att.code = :code").setParameter("code", code);
-            List list = dataService.loadList(ctx);
+            List list = getDsContext().getDataSupplier().loadList(ctx);
             attachmentTypes.put(code, list.isEmpty() ? null : (AttachmentType) list.get(0));
         }
         return attachmentTypes.get(code);
