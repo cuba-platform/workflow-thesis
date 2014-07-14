@@ -150,11 +150,11 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<CardRole> items) {
                 initCreateRoleLookup();
-                if (operation.equals(Operation.ADD)) tmpCardRolesDs.doSort();
+                if (operation.equals(Operation.ADD) || operation.equals(Operation.REMOVE)) {
+                    normalizeSortOrders();
+                    tmpCardRolesDs.doSort();
+                }
             }
-
-            Action editAction = rolesTable.getAction("edit");
-            Action removeAction = rolesTable.getAction("remove");
         });
 
         createRoleLookup.setValueChangingListener(new ValueChangingListener() {
@@ -770,6 +770,7 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void valueChanged(Object source, String property, Object prevValue, final Object value) {
             cardRole.setSortOrder((Integer) value);
+            normalizeSortOrders();
             tmpCardRolesDs.doSort();
         }
     }
@@ -861,6 +862,32 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
+    protected void normalizeSortOrders() {
+        for (UUID uuid : procRolesDs.getItemIds()) {
+            ProcRole pr = procRolesDs.getItem(uuid);
+            if(pr != null && pr.getMultiUser()) {
+                List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
+                int index = 1;
+                Map<Integer, List<CardRole>> cardRolesBySortOrder = new HashMap<>();
+
+                for (CardRole cr : cardRoles) {
+                    List<CardRole> cardRolesList = cardRolesBySortOrder.get(cr.getSortOrder());
+                    if(cardRolesList == null) {
+                        cardRolesList = new ArrayList<>();
+                        cardRolesBySortOrder.put(cr.getSortOrder(), cardRolesList);
+                    }
+                    cardRolesList.add(cr);
+                }
+
+                for (Map.Entry<Integer, List<CardRole>> entry : cardRolesBySortOrder.entrySet()) {
+                    for (CardRole cardRole : entry.getValue())
+                        cardRole.setSortOrder(index);
+                    index++;
+                }
+            }
+        }
+    }
+
 
     protected void assignDurationAndTimeUnit(CardRole cardRole) {
         for (UUID uuid : tmpCardRolesDs.getItemIds()) {
@@ -895,7 +922,7 @@ public class CardRolesFrame extends AbstractFrame {
         } else {
             int min = getMinSortOrderInCardRoles(cardRoles);
             int max = getMaxSortOrderInCardRoles(cardRoles);
-            for (int i = min - 1; i <= max + 1; i++) {
+            for (int i = min - 1; i <= (max == cardRoles.size() ? max : max + 1); i++) {
                 if (i > 0) range.add(i);
             }
         }
