@@ -905,8 +905,9 @@ public class CardRolesFrame extends AbstractFrame {
 
     protected List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
         List<CardRole> cardRoles = new ArrayList<>();
-        for (UUID id : tmpCardRolesDs.getItemIds()) {
-            CardRole cr = tmpCardRolesDs.getItem(id);
+        CollectionDatasource<CardRole, UUID> datasource = tmpCardRolesDs.fill ? tmpCardRolesDs.activeDs : tmpCardRolesDs;
+        for (UUID id : datasource.getItemIds()) {
+            CardRole cr = datasource.getItem(id);
             if (cr.getProcRole().equals(pr)) {
                 cardRoles.add(cr);
             }
