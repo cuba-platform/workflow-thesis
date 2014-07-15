@@ -375,6 +375,7 @@ public class TransitionForm extends AbstractForm {
                     cardAttachment.setCard(loadAssignment.getCard());
                     cardAttachment.setFile(attachment.getFile());
                     cardAttachment.setName(attachment.getName());
+                    cardAttachment.setAttachType(attachment.getAttachType());
                     commitList.add(cardAttachment);
                 }
                 commitList.add(card);
