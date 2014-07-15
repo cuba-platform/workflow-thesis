@@ -103,6 +103,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected List deletedEmptyRoleCodes;
     protected boolean editable = true;
     protected boolean combinedStagesEnabled;
+    protected Proc currentProcess;
 
     public void addListener(Listener listener) {
         listeners.add(listener);
@@ -150,8 +151,10 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<CardRole> items) {
                 initCreateRoleLookup();
-                if (operation.equals(Operation.ADD) || operation.equals(Operation.REMOVE)) {
+                if(operation.equals(Operation.REMOVE) && !tmpCardRolesDs.fill)
                     normalizeSortOrders();
+
+                if (operation.equals(Operation.ADD) || operation.equals(Operation.REMOVE)) {
                     tmpCardRolesDs.doSort();
                 }
             }
@@ -597,6 +600,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void procChanged(Proc proc, Card card) {
+        currentProcess = proc;
         procRolesDs.refresh(Collections.<String, Object>singletonMap("procId", proc));
         initCreateRoleLookup();
         tmpCardRolesDs.fillForProc(proc);
@@ -863,6 +867,9 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void normalizeSortOrders() {
+        if(currentProcess == null || !(currentProcess.getCombinedStagesEnabled() || combinedStagesEnabled))
+            return;
+
         for (UUID uuid : procRolesDs.getItemIds()) {
             ProcRole pr = procRolesDs.getItem(uuid);
             if(pr != null && pr.getMultiUser()) {
