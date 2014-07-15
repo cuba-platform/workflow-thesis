@@ -213,6 +213,7 @@ public class ResolutionForm extends AbstractForm {
                     cardAttachment.setCard(item.getCard().getFamilyTop());
                     cardAttachment.setFile(attachment.getFile());
                     cardAttachment.setName(attachment.getName());
+                    cardAttachment.setAttachType(attachment.getAttachType());
                     copyAttachmentList.add(cardAttachment);
                     commitList.add(cardAttachment);
                 }
