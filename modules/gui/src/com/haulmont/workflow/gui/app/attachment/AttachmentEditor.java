@@ -32,7 +32,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AttachmentEditor extends AbstractEditor<Attachment> {
 
     @Inject
@@ -163,7 +166,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                         }
 
                         if (tmpFile != null) {
-                            fileDescriptor.setSize((int) tmpFile.length());
+                            fileDescriptor.setSize(tmpFile.length());
                         }
                         fileDescriptor.setCreateDate(timeSource.currentTimestamp());
 
