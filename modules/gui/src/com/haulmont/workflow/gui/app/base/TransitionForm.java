@@ -38,9 +38,9 @@ import java.util.*;
 public class TransitionForm extends AbstractForm {
 
     protected static final int DEFAULT_FORM_HEIGHT = 500;
+    protected static final int DEFAULT_FORM_WIDTH = 835;
 
-    protected int noCardRolesHeight = 300;
-    protected int noCardRolesWidth = 540;
+    protected int noCardRolesHeight = 350;
 
     @Inject
     protected TextArea commentText;
@@ -102,7 +102,7 @@ public class TransitionForm extends AbstractForm {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidth(835);
+        getDialogParams().setWidth(DEFAULT_FORM_WIDTH);
         card = (Card) params.get("card");
         String messagesPack = card.getProc().getMessagesPack();
         String activity = (String) params.get("activity");
@@ -122,19 +122,13 @@ public class TransitionForm extends AbstractForm {
 
         if (Boolean.valueOf((String) params.get("cardRolesVisible")) || StringUtils.isNotBlank(formHeightStr)) {
             getDialogParams().setHeight(formHeight);
+            if (cardRolesFrame != null) {
+                initCardRolesFrame(params);
+            }
         } else {
             getDialogParams().setHeight(noCardRolesHeight);
-            getDialogParams().setWidth(noCardRolesWidth);
-            commentText.setHeight("160");
-        }
-
-        if (cardRolesFrame != null) {
-            initCardRolesFrame(params);
-        } else {
             if (commentTextPane != null) {
                 mainPane.expand(commentTextPane);
-                commentText.setRows(0);
-                commentText.setHeight("100%");
             }
         }
 
