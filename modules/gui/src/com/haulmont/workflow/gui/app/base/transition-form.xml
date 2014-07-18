@@ -41,8 +41,8 @@
 
     <layout expand="tabsheet" margin="true" spacing="true">
         <tabSheet id="tabsheet" width="100%">
-            <tab id="mainTab" caption="msg://mainTab">
-                <vbox id="mainPane" spacing="true" margin="true">
+            <tab id="mainTab" caption="msg://mainTab" expand="mainPane">
+                <vbox id="mainPane" spacing="true" margin="true" expand="cardRolesFrame">
                     <hbox id="outcomeTextBox">
                         <label value="msg://transition" width="${labelWidth}"/>
                         <textField id="outcomeText" width="${width}"/>
@@ -58,9 +58,9 @@
                         <dateField id="dueDate" datasource="varsDs" property="dueDate" resolution="MIN"/>
                     </hbox>
 
-                    <hbox id="commentTextPane">
+                    <hbox id="commentTextPane" expand="commentText" width="100%" height="50px">
                         <label value="msg://comment" width="${labelWidth}"/>
-                        <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
+                        <textArea id="commentText" height="100%" maxLength="4000"/>
                     </hbox>
                 </vbox>
             </tab>
