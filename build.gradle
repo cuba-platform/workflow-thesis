@@ -117,7 +117,7 @@ configure(globalModule) {
     }
 	
     task enhanceTransient(type: CubaEnhanceTransient) {
-        metadataXml = "$workflowGlobalModule.projectDir/src/workflow-metadata.xml"
+        metadataXml = "$globalModule.projectDir/src/workflow-metadata.xml"
     }	
 }
 
