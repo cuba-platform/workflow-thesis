@@ -115,6 +115,10 @@ configure(globalModule) {
     task enhance(type: CubaEnhancing, dependsOn: compileJava) {
         persistenceXml = "$globalModule.projectDir/src/workflow-persistence.xml"
     }
+	
+    task enhanceTransient(type: CubaEnhanceTransient) {
+        metadataXml = "$workflowGlobalModule.projectDir/src/workflow-metadata.xml"
+    }	
 }
 
 configure(coreModule) {
