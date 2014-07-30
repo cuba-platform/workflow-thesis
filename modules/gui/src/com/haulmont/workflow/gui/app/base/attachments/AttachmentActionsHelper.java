@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import javax.annotation.Nullable;
@@ -28,7 +27,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Create {@link Attachment} actions and buttons for attachments table
  */
-@SuppressWarnings("unused")
 public class AttachmentActionsHelper {
 
     public static final String COPY_ACTION_ID = "actions.Copy";
@@ -51,7 +49,7 @@ public class AttachmentActionsHelper {
             public void actionPerform(Component component) {
                 Set<Attachment> descriptors = attachments.getSelected();
                 if (descriptors.size() > 0) {
-                    ArrayList<Attachment> selected = new ArrayList<Attachment>();
+                    ArrayList<Attachment> selected = new ArrayList<>();
                     for (Attachment descriptor : descriptors) {
                         selected.add(descriptor);
                     }
@@ -80,9 +78,7 @@ public class AttachmentActionsHelper {
 
     public static Action createPasteAction(Table attachmentsTable, final AttachmentCreator creator, @Nullable Map<String,Object> params) {
         final Table attachments = attachmentsTable;
-        final AttachmentCreator propsSetter = creator;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
-        final UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         final List<String> exclTypes = params == null ? null: (List<String>)params.get("exclTypes");
         return new AbstractAction(PASTE_ACTION_ID) {
             @Override
@@ -110,7 +106,7 @@ public class AttachmentActionsHelper {
                         }
                     }
                     for (Attachment attach : buffer) {
-                        Attachment attachment = propsSetter.createObject();
+                        Attachment attachment = creator.createObject();
                         attachment.setFile(attach.getFile());
                         attachment.setComment(attach.getComment());
                         attachment.setName(attach.getName());
@@ -153,7 +149,9 @@ public class AttachmentActionsHelper {
 
             @Override
             public boolean isEnabled() {
-                return super.isEnabled() && userSession.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE);
+                Security security = AppBeans.get(Security.NAME);
+
+                return super.isEnabled() && security.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE);
             }
         };
     }
@@ -163,7 +161,6 @@ public class AttachmentActionsHelper {
      *
      * @param attachmentsTable Table with attachments
      * @param window           Window
-     * @return Action
      */
     public static void createLoadAction(Table attachmentsTable, IFrame window) {
         final Table attachments = attachmentsTable;
@@ -207,17 +204,15 @@ public class AttachmentActionsHelper {
         final Table attachments = attachmentsTable;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
         final IFrame frame = window;
-        final AttachmentCreator fCreator = creator;
-        final UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         return new AbstractAction("actions.MultiUpload") {
             @Override
             public void actionPerform(Component component) {
-                Map<String, Object> paramz = new HashMap<String, Object>();
+                Map<String, Object> paramz = new HashMap<>();
                 if (params != null) {
                     paramz.putAll(params);
                 }
-                paramz.put("creator", fCreator);
+                paramz.put("creator", creator);
 
                 final Window editor = frame.openEditor("wf$AttachUploader", null,
                         openType,
@@ -246,7 +241,9 @@ public class AttachmentActionsHelper {
 
             @Override
             public boolean isEnabled() {
-                return super.isEnabled() && userSession.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE);
+                Security security = AppBeans.get(Security.NAME);
+
+                return super.isEnabled() && security.isEntityOpPermitted(attachDs.getMetaClass(), EntityOp.CREATE);
             }
         };
     }

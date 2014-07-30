@@ -4,13 +4,11 @@
  */
 package com.haulmont.workflow.gui.app.usergroup;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -49,6 +47,9 @@ public class UserGroupBrowser extends AbstractWindow {
 
     @Inject
     protected UserSession userSession;
+
+    @Inject
+    protected Security security;
 
     protected ClientConfig clientConfig;
 
@@ -89,10 +90,13 @@ public class UserGroupBrowser extends AbstractWindow {
                     boolean isEnabled = getUserGroupEditable(item);
                     userGroupsTable.getAction("edit").setEnabled(isEnabled);
                     userGroupsTable.getAction("remove").setEnabled(isEnabled);
+
+                    MetaClass metaClass = userGroupsTable.getDatasource().getMetaClass();
+
                     usersTable.getAction("add").setEnabled(isEnabled &&
-                            userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.CREATE));
+                            security.isEntityOpPermitted(metaClass, EntityOp.CREATE));
                     usersTable.getAction("remove").setEnabled(isEnabled &&
-                            userSession.isEntityOpPermitted(userGroupsTable.getDatasource().getMetaClass(), EntityOp.DELETE));
+                            security.isEntityOpPermitted(metaClass, EntityOp.DELETE));
                 }
             }
         });
