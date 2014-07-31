@@ -67,10 +67,17 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     @Inject
     protected Metadata metadata;
 
-
+    /**
+     * Allows specific WfMailWorker implementations to handle email notification event
+     */
+    protected boolean sendNotificationToBlankEmail = false;
 
     protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
     protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
+
+    public void setSendNotificationToBlankEmail(boolean sendNotificationToBlankEmail) {
+        this.sendNotificationToBlankEmail = sendNotificationToBlankEmail;
+    }
 
     private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
         HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
@@ -349,14 +356,15 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             return;
         }
 
-        Map variables = new HashMap();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("assignment", assignment);
         variables.put("card", card);
         variables.put("user", user);
         variables.put("cardRole", cardRole);
 
         //email
-        if (StringUtils.trimToNull(user.getEmail()) != null && !mailList.contains(user) &&
+        boolean notifyByEmail = StringUtils.isNotBlank(user.getEmail()) || sendNotificationToBlankEmail;
+        if (notifyByEmail && !mailList.contains(user) &&
                 BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
                 ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
             NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
