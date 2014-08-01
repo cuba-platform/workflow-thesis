@@ -72,13 +72,18 @@ public class UserGroupBrowser extends AbstractWindow {
                 LoadContext loadContext = new LoadContext(entity.getMetaClass())
                         .setId(entity.getId())
                         .setView(userGroupsDs.getView());
-                userGroupsDs.updateItem((UserGroup) dataService.load(loadContext));
+                UserGroup committedGroup = dataService.load(loadContext);
+                if (committedGroup != null) {
+                    userGroupsDs.updateItem(committedGroup);
+                } else {
+                    userGroupsDs.refresh();
+                }
             }
         });
 
         userGroupsTable.addAction(new RemoveAction(userGroupsTable));
 
-        userGroupsDs.addListener(new CollectionDsListenerAdapter<UserGroup>(){
+        userGroupsDs.addListener(new CollectionDsListenerAdapter<UserGroup>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List items) {
                 usersDs.refresh();
@@ -175,7 +180,7 @@ public class UserGroupBrowser extends AbstractWindow {
                     getMessage("deleteFromGroup.dialogHeader"),
                     getMessage("deleteFromGroup.dialogMessage"),
                     MessageType.CONFIRMATION,
-                    new Action[] {
+                    new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
