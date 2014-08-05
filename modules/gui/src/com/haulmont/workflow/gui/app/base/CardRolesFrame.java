@@ -317,102 +317,8 @@ public class CardRolesFrame extends AbstractFrame {
                 Map<String, Object> params = getUsergroupAddParams(cardRole);
                 getDialogParams().setWidth(835);
                 getDialogParams().setHeight(505);
-                final Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
-                window.addListener(new Window.CloseListener() {
-                    private static final long serialVersionUID = -4182051025753394757L;
-
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            Set<User> validUsers = new HashSet<>();
-                            Set<User> invalidUsers = new HashSet<>();
-
-                            Set<User> selectedUsers = getSelectedUsers(window);
-
-                            User oldUser = cardRole.getUser();
-                            //if code is right worked, then this comment need to REMOVE
-                            /*cardRole.setUser(null);
-                            tmpCardRolesDs.updateItem(cardRole);
-                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
-                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                                if (cr.getCode().equals(cardRole.getCode()) && !cardRole.getId().equals(cr.getId())) {
-                                    tmpCardRolesDs.removeItem(cr);
-                                }
-                            }*/
-
-                            Role secRole = cardRole.getProcRole().getRole();
-                            for (User user : selectedUsers) {
-                                if (!procActorExists(cardRole.getProcRole(), user)
-                                        || ((cardRole.getUser() != null) && cardRole.getUser().equals(user))) {
-                                    validUsers.add(user);
-                                    if ((secRole != null) && !(userInRole(user, secRole))) {
-                                        invalidUsers.add(user);
-                                        validUsers.remove(user);
-                                    }
-                                }
-                            }
-
-                            ProcRole procRole = cardRole.getProcRole();
-                            String code = cardRole.getCode();
-
-                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
-                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                                if (cr.getCode().equals(cardRole.getCode()) && cr.getProcRole().getMultiUser() && !selectedUsers.contains(cr.getUser()))
-                                    tmpCardRolesDs.removeItem(cr);
-                            }
-
-                            if (!validUsers.isEmpty()) {
-                                if (oldUser == null) {
-                                    oldUser = validUsers.iterator().next();
-                                    CardRole cr = metadata.create(CardRole.class);
-                                    cr.setUser(oldUser);
-                                    cr.setProcRole(cardRole.getProcRole());
-                                    cr.setCode(cardRole.getCode());
-                                    cr.setNotifyByEmail(true);
-                                    cr.setNotifyByCardInfo(true);
-                                    cr.setCard(card);
-                                    assignNextSortOrder(cr);
-                                    tmpCardRolesDs.addItem(cr);
-                                    validUsers.remove(oldUser);
-                                } else {
-                                    if (validUsers.contains(oldUser)) {
-                                        cardRole.setUser(oldUser);
-                                        actorFieldsMap.get(cardRole).setValue(oldUser);
-                                        validUsers.remove(oldUser);
-                                        tmpCardRolesDs.updateItem(cardRole);
-                                    }
-                                }
-                            } else {
-                                if (selectedUsers.size() == 0) {
-                                    CardRole cr = metadata.create(CardRole.class);
-                                    cr.setUser(null);
-                                    cr.setProcRole(cardRole.getProcRole());
-                                    cr.setCode(cardRole.getCode());
-                                    cr.setNotifyByEmail(true);
-                                    cr.setNotifyByCardInfo(true);
-                                    cr.setCard(card);
-                                    assignNextSortOrder(cr);
-                                    tmpCardRolesDs.addItem(cr);
-                                }
-                            }
-                            List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);
-
-                            if (!invalidUsers.isEmpty()) {
-                                String usersList = "";
-                                for (User user : invalidUsers) {
-                                    usersList += user.getName() + ", ";
-                                }
-                                usersList = usersList.substring(0, usersList.length() - 2);
-                                String invalidUsersMessage;
-                                if (invalidUsers.size() == 1)
-                                    invalidUsersMessage = messages.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
-                                else
-                                    invalidUsersMessage = messages.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
-
-                                showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
-                            }
-                        }
-                    }
-                });
+                Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
+                window.addListener(new AddUserGroupWindowCloseListener(window, cardRole));
             }
         };
         addUserGroupAction.setIcon("icons/wf-user-group-button.png");
@@ -1390,4 +1296,116 @@ public class CardRolesFrame extends AbstractFrame {
         return actorFieldsMap;
     }
 
+    protected class AddUserGroupWindowCloseListener implements Window.CloseListener {
+
+        protected Window window;
+        protected CardRole cardRole;
+
+        public AddUserGroupWindowCloseListener(Window window, CardRole cardRole) {
+            this.window = window;
+            this.cardRole = cardRole;
+        }
+
+        @Override
+        public void windowClosed(String actionId) {
+            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                Set<User> validUsers = new HashSet<>();
+                Set<User> invalidUsers = new HashSet<>();
+
+                Set<User> selectedUsers = getSelectedUsers(window);
+
+                User oldUser = cardRole.getUser();
+                //if code is right worked, then this comment need to REMOVE
+                            /*cardRole.setUser(null);
+                            tmpCardRolesDs.updateItem(cardRole);
+                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
+                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+                                if (cr.getCode().equals(cardRole.getCode()) && !cardRole.getId().equals(cr.getId())) {
+                                    tmpCardRolesDs.removeItem(cr);
+                                }
+                            }*/
+
+                Role secRole = cardRole.getProcRole().getRole();
+                for (User user : selectedUsers) {
+                    if (!procActorExists(cardRole.getProcRole(), user)
+                            || ((cardRole.getUser() != null) && cardRole.getUser().equals(user))) {
+                        validUsers.add(user);
+                        if ((secRole != null) && !(userInRole(user, secRole))) {
+                            invalidUsers.add(user);
+                            validUsers.remove(user);
+                        }
+                    }
+                }
+
+                ProcRole procRole = cardRole.getProcRole();
+                String code = cardRole.getCode();
+
+                for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
+                    CardRole cr = tmpCardRolesDs.getItem((UUID) o);
+                    if (isNeedRemoveCardRole(cr))
+                        tmpCardRolesDs.removeItem(cr);
+                }
+
+                if (!validUsers.isEmpty()) {
+                    if (oldUser == null) {
+                        oldUser = validUsers.iterator().next();
+                        CardRole cr = metadata.create(CardRole.class);
+                        cr.setUser(oldUser);
+                        cr.setProcRole(cardRole.getProcRole());
+                        cr.setCode(cardRole.getCode());
+                        cr.setNotifyByEmail(true);
+                        cr.setNotifyByCardInfo(true);
+                        cr.setCard(card);
+                        assignNextSortOrder(cr);
+                        tmpCardRolesDs.addItem(cr);
+                        validUsers.remove(oldUser);
+                    } else {
+                        if (validUsers.contains(oldUser)) {
+                            cardRole.setUser(oldUser);
+                            actorFieldsMap.get(cardRole).setValue(oldUser);
+                            validUsers.remove(oldUser);
+                            tmpCardRolesDs.updateItem(cardRole);
+                        }
+                    }
+                } else {
+                    if (isNeedCreateEmptyCardRole()) {
+                        CardRole cr = metadata.create(CardRole.class);
+                        cr.setUser(null);
+                        cr.setProcRole(cardRole.getProcRole());
+                        cr.setCode(cardRole.getCode());
+                        cr.setNotifyByEmail(true);
+                        cr.setNotifyByCardInfo(true);
+                        cr.setCard(card);
+                        assignNextSortOrder(cr);
+                        tmpCardRolesDs.addItem(cr);
+                    }
+                }
+                List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);
+
+                if (!invalidUsers.isEmpty()) {
+                    String usersList = "";
+                    for (User user : invalidUsers) {
+                        usersList += user.getName() + ", ";
+                    }
+                    usersList = usersList.substring(0, usersList.length() - 2);
+                    String invalidUsersMessage;
+                    if (invalidUsers.size() == 1)
+                        invalidUsersMessage = messages.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
+                    else
+                        invalidUsersMessage = messages.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
+
+                    showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
+                }
+            }
+        }
+
+        protected boolean isNeedRemoveCardRole(CardRole cr) {
+            return cr.getCode().equals(cardRole.getCode()) && cr.getProcRole().getMultiUser()
+                    && !getSelectedUsers(window).contains(cr.getUser());
+        }
+
+        protected boolean isNeedCreateEmptyCardRole() {
+            return getSelectedUsers(window).size() == 0;
+        }
+    }
 }
