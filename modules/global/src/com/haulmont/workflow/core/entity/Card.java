@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "CARD_TYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
-@Listeners({"com.haulmont.workflow.core.listeners.CardListener"})
+@Listeners("workflow_CardListener")
 @NamePattern("%s|description")
 @SystemLevel
 public class Card extends CategorizedEntity implements Updatable, SoftDelete, Versioned {

@@ -6,7 +6,6 @@ package com.haulmont.workflow.core.listeners;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.AfterInsertEntityListener;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
@@ -16,15 +15,22 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.sql.SQLException;
 
-public class CardAttachmentEntityListener implements AfterInsertEntityListener<CardAttachment>, AfterDeleteEntityListener<CardAttachment> {
+/**
+ * @author chernov
+ * @version $Id$
+ */
+@ManagedBean("workflow_CardAttachmentEntityListener")
+public class CardAttachmentEntityListener implements
+        AfterInsertEntityListener<CardAttachment>, AfterDeleteEntityListener<CardAttachment> {
 
     protected Log log = LogFactory.getLog(CardAttachmentEntityListener.class);
 
-    protected Persistence persistence = AppBeans.get(Persistence.NAME);
-
-    protected DbTypeConverter converter = persistence.getDbTypeConverter();
+    @Inject
+    protected Persistence persistence;
 
     protected static final String CARD_UPDATE_QUERY = "update WF_CARD set HAS_ATTACHMENTS = ? where ID = ?";
 
@@ -47,6 +53,7 @@ public class CardAttachmentEntityListener implements AfterInsertEntityListener<C
      */
     protected void executeUpdate(Card card, Boolean hasAttachments) {
         try {
+            DbTypeConverter converter = persistence.getDbTypeConverter();
             Object hasAttachmentsParam = converter.getSqlObject(hasAttachments);
             Object idParam = converter.getSqlObject(card.getId());
 
