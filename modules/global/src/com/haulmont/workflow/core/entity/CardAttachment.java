@@ -12,7 +12,7 @@ import javax.persistence.*;
 
 @Entity(name = "wf$CardAttachment")
 @DiscriminatorValue("C")
-@Listeners("com.haulmont.workflow.core.listeners.CardAttachmentEntityListener")
+@Listeners("workflow_CardAttachmentEntityListener")
 @NamePattern("%s|name")
 @SystemLevel
 public class CardAttachment extends Attachment {

@@ -10,27 +10,32 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
-public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpdateEntityListener<Card>, BeforeInsertEntityListener<Card> {
+@ManagedBean("workflow_CardListener")
+public class CardListener implements
+        BeforeDeleteEntityListener<Card>,
+        BeforeUpdateEntityListener<Card>,
+        BeforeInsertEntityListener<Card> {
 
+    @Inject
     protected Persistence persistence;
 
     @Override
     public void onBeforeDelete(Card card) {
-        EntityManager em = getPersistence().getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery();
         query.setQueryString("select t from wf$Timer t where t.card.id=:id");
         query.setParameter("id", card.getId());
@@ -59,9 +64,9 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
     }
 
     private Category getCategory(Card card) {
-        Transaction tx = getPersistence().getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = getPersistence().getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(false);
             Card c = em.find(Card.class, card.getId());
             Category category = null;
@@ -74,12 +79,5 @@ public class CardListener implements BeforeDeleteEntityListener<Card>, BeforeUpd
         } finally {
             tx.end();
         }
-    }
-
-    protected Persistence getPersistence() {
-        if (persistence == null) {
-            persistence = AppBeans.get(Persistence.NAME);
-        }
-        return persistence;
     }
 }
