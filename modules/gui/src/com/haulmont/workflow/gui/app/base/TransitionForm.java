@@ -91,6 +91,7 @@ public class TransitionForm extends AbstractForm {
     protected Map<String, AttachmentType> attachmentTypes;
     protected Map<Card, AssignmentInfo> cardAssignmentInfoMap;
     protected String visibleRoles;
+    protected boolean cardProcRolesInited = false;
 
     protected String commentVisible;
     protected String cardRolesVisible;
@@ -263,6 +264,7 @@ public class TransitionForm extends AbstractForm {
             }
         });
         cardRolesDs.refresh();
+        cardProcRolesInited = true;
     }
 
     protected String getRequiredRoles() {
@@ -441,7 +443,7 @@ public class TransitionForm extends AbstractForm {
             showNotification(getMessage("putDueDate"), NotificationType.WARNING);
             return false;
         }
-        if (cardRolesFrame != null) {
+        if (cardRolesFrame != null && cardProcRolesInited) {
             Set<String> emptyRolesNames = getEmptyRolesNames();
             if (!emptyRolesNames.isEmpty()) {
                 String message = "";
