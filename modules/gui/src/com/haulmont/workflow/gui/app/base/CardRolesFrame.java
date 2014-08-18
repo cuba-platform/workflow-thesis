@@ -125,16 +125,13 @@ public class CardRolesFrame extends AbstractFrame {
 
         companion = getCompanion();
 
+        rolesTable.removeAction(rolesTable.getAction(RemoveAction.ACTION_ID));
         RemoveAction removeAction = new RemoveAction(rolesTable, false) {
             @Override
             protected void afterRemove(Set selected) {
                 if (selected != null) {
                     for (Object item : selected) {
                         actorFieldsMap.remove(item);
-                        CardRole cardRole = (CardRole) item;
-                        if (cardRole.getUser() != null) {
-//                            refreshFieldsWithRole(cardRole);
-                        }
                     }
                 }
             }
