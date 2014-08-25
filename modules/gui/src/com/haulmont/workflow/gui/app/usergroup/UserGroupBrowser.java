@@ -18,10 +18,12 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.UserGroup;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -120,10 +122,9 @@ public class UserGroupBrowser extends AbstractWindow {
                 openLookup("sec$User.lookup", new Lookup.Handler() {
                     @Override
                     public void handleLookup(Collection items) {
-                        userGroupsDs.refresh();
                         UserGroup userGroup = userGroupsDs.getItem();
                         Set<User> users = userGroup.getUsers();
-                        if (users.size() == 0) {
+                        if (CollectionUtils.isEmpty(users)) {
                             users = new HashSet<>();
                         }
                         for (Object user : items) {
@@ -132,11 +133,8 @@ public class UserGroupBrowser extends AbstractWindow {
                         userGroup.setUsers(users);
                         CommitContext ctx = new CommitContext();
                         ctx.getCommitInstances().add(userGroup);
-                        Set commited = getDsContext().getDataSupplier().commit(ctx);
-                        usersDs.refresh();
-                        userGroup = (UserGroup) commited.iterator().next();
-                        userGroupsDs.updateItem(userGroup);
-                        userGroupsDs.setItem(userGroup);
+                        getDsContext().getDataSupplier().commit(ctx);
+                        userGroupsDs.refresh();
                     }
                 }, WindowManager.OpenType.THIS_TAB, userBrowserParams);
             }
