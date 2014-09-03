@@ -168,7 +168,7 @@ public class WfEngine implements WfEngineAPI {
 
         RepositoryService rs = getProcessEngine().getRepositoryService();
         Set<String> resourceNames = rs.getResourceNames(deploymentId);
-        List<String> multiUserRoles = new ArrayList<String>();
+        Map<String, OrderFillingType> multiUserRoles = new HashMap<>();
         for (String resourceName : resourceNames) {
             if (resourceName.endsWith(".jpdl.xml")) {
                 InputStream is = rs.getResourceAsStream(deploymentId, resourceName);
@@ -192,8 +192,9 @@ public class WfEngine implements WfEngineAPI {
                                     String[] strings = role.split(",");
                                     for (String string : strings) {
                                         roles.add(string.trim());
-                                        if (checkMultyUserRole(clazz)) {
-                                            multiUserRoles.add(string.trim());
+                                        OrderFillingType orderFillingType = getTypeMultyUserRole(clazz);
+                                        if (orderFillingType != null) {
+                                            multiUserRoles.put(string.trim(), orderFillingType);
                                         }
                                     }
                                 }
@@ -232,8 +233,9 @@ public class WfEngine implements WfEngineAPI {
                         procRole.setInvisible(true);
                         procRole.setAssignToCreator(true);
                     }
-                    if (multiUserRoles.contains(role)) {
+                    if (multiUserRoles.containsKey(role)) {
                         procRole.setMultiUser(true);
+                        procRole.setOrderFillingType(multiUserRoles.get(role));
                     }
                     em.persist(procRole);
                 }
@@ -283,22 +285,22 @@ public class WfEngine implements WfEngineAPI {
         return deleted;
     }
 
-    private boolean checkMultyUserRole(String className) {
+    private OrderFillingType getTypeMultyUserRole(String className) {
         if (className == null)
-            return false;
+            return null;
         Class<?> parallelClass = scripting.loadClass(PARALLEL_ASSIGMENT_CLASS);
         Class<?> sequentialClass = scripting.loadClass(SEQUENTIAL_ASSIGNER_CLASS);
         Class<?> universalClass = scripting.loadClass(UNIVERSAL_ASSIGNER_CLASS);
         Class<?> currentClass = scripting.loadClass(className);
 
         if (parallelClass != null && parallelClass.isAssignableFrom(currentClass))
-            return true;
+            return OrderFillingType.PARALLEL;
         else if (sequentialClass != null && sequentialClass.isAssignableFrom(currentClass))
-            return true;
+            return OrderFillingType.SEQUENTIAL;
         else if (universalClass != null && universalClass.isAssignableFrom(currentClass))
-            return true;
+            return OrderFillingType.PARALLEL;
 
-        return false;
+        return null;
     }
 
     public List<Assignment> getUserAssignments(UUID userId) {
