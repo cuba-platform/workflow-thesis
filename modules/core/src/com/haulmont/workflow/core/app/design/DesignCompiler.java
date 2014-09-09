@@ -329,6 +329,8 @@ public class DesignCompiler {
                         if (StringUtils.isBlank(designProcessVariable.getValue())) {
                             designProcessVariable.setValue(processVariable.getValue());
                         }
+                        Set<String> tags = processVariable.getTagsFromComment();
+                        designProcessVariable.addTagsToComment(tags);
                     } else {
                         throw new DesignCompilationException(String.format(AppBeans.get(Messages.class).getMessage(getClass(),
                                 "variablesWithoutSameAttributeType"), designProcessVariable.getAlias()));
@@ -764,7 +766,11 @@ public class DesignCompiler {
             if (designProcessVariable != null) {
                 if (BooleanUtils.isNotTrue(exists.getOverridden())) {
                     exists.setValue(designProcessVariable.getValue());
+                    exists.setModuleName(designProcessVariable.getModuleName());
+                    exists.setPropertyName(designProcessVariable.getPropertyName());
                 }
+                Set<String> tags = designProcessVariable.getTagsFromComment();
+                exists.addTagsToComment(tags);
                 designProcessVariables.remove(designProcessVariable);
                 em.merge(exists);
             } else if (StringUtils.isNotBlank(exists.getModuleName())) {
