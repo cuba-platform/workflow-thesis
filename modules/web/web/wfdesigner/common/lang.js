@@ -626,7 +626,13 @@ var wfLanguage = {
                           "name": "design",
                           "label": "msg://SubDesign",
                           "required": false
-                     }
+                    },
+                    {
+                        "type": "string",
+                        "name": "params",
+                        "label": "msg://params",
+                        "required": false
+                    },
                  ],
 
                  "terminals": [

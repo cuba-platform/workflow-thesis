@@ -30,6 +30,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
 import static com.haulmont.workflow.core.global.WfConstants.SUBDESIGN_SEPARATOR;
@@ -43,6 +45,7 @@ public class SubDesignModule extends Module {
 
     protected JSONObject jsOptions;
     protected String subDesignId;
+    protected String params;
 
     protected Map<String, String> transitionsMap;
     protected Design design;
@@ -50,6 +53,7 @@ public class SubDesignModule extends Module {
     protected Messages messages = AppBeans.get(Messages.class);
 
     public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
+    protected Pattern variablePattern = Pattern.compile("^\\$\\{([a-zA-Z0-9]*)\\}.*$");
 
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
@@ -62,6 +66,7 @@ public class SubDesignModule extends Module {
                         "exception.subdesignIsEmpty", StringEscapeUtils.escapeHtml(caption)));
             }
             checkDesignExist(subDesignId);
+            params = jsValue.optString("params");
             tx.commit();
         } catch (JSONException e) {
             throw new DesignCompilationException(e);
@@ -138,7 +143,7 @@ public class SubDesignModule extends Module {
         propEl.addAttribute("startTransitionName", startTransitionName);
     }
 
-    private Element processNode(Element node) {
+    protected Element processNode(Element node) {
         node.detach();
         node.addAttribute("name", getAttributeWithPrefix(node, "name"));
         for (Element transition : (List<Element>) node.elements("transition")) {
@@ -153,13 +158,45 @@ public class SubDesignModule extends Module {
         return node;
     }
 
+    public static Map<String, String> parseParamsString(String paramsStr) throws DesignCompilationException {
+        Map<String, String> params = new HashMap<String, String>();
+        if (StringUtils.isEmpty(paramsStr)) {
+            return params;
+        }
+
+        String[] keyValues = StringUtils.split(paramsStr, ",");
+        for (String keyValue : keyValues) {
+            String[] keyValueArray = keyValue.split(":");
+            if (keyValueArray.length != 2) {
+                throw new DesignCompilationException("Invalid parameters string : " + paramsStr);
+            }
+            String key = StringUtils.trimToEmpty(keyValueArray[0]);
+            String value = StringUtils.trimToEmpty(keyValueArray[1]);
+            params.put(key, value);
+        }
+        return params;
+
+    }
+
     @Override
     public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
         super.generateDesignProcessVariables();
+        Map<String, String> paramsMap = parseParamsString(params);
         for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
             DesignProcessVariable newDesignParameter = (DesignProcessVariable) designProcessVariable.copyTo(new DesignProcessVariable());
             newDesignParameter.setModuleName(prepareModuleNames(designProcessVariable.getModuleName()));
             newDesignParameter.setAlias(designProcessVariable.getAlias());
+            if (paramsMap.containsKey(designProcessVariable.getAlias())) {
+                String value = paramsMap.get(designProcessVariable.getAlias());
+                Matcher matcher = variablePattern.matcher(value);
+                if (matcher.find()) {
+                    String alias = matcher.group(1);
+                    newDesignParameter.setAlias(alias);
+                } else {
+                    newDesignParameter.setValue(value);
+                    newDesignParameter.setAlias(name + "_" + designProcessVariable.getAlias());
+                }
+            }
             newDesignParameter.setShouldBeOverridden(designProcessVariable.getShouldBeOverridden());
             designProcessVariables.add(newDesignParameter);
         }

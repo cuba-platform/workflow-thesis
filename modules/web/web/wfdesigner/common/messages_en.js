@@ -112,6 +112,7 @@ var i18nDict = {
     SubDesign : "Subdesign",
     Variable: "Variable alias",
     OpenDesign : "Open design",
+    "params" : "Params",
     ////////////////////////////////
     ///Messages
 
