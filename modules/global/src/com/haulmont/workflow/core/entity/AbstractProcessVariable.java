@@ -7,9 +7,14 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.workflow.core.enums.AttributeType;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>$Id$</p>
@@ -19,6 +24,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class AbstractProcessVariable extends StandardEntity {
     private static final long serialVersionUID = -8393724105946755178L;
+
+    public static final String VARIABLE_TAG_PATTERN = "<([a-zA-Z0-9]*)>";
 
     @Column(name = "NAME", length = 100)
     protected String name;
@@ -130,5 +137,37 @@ public abstract class AbstractProcessVariable extends StandardEntity {
         to.setModuleName(getModuleName());
         to.setComment(getComment());
         return to;
+    }
+
+    public Set<String> getTagsFromComment() {
+        Set<String> tags = new HashSet<>();
+        if (StringUtils.isBlank(getComment()))
+            return tags;
+
+        Pattern variablePattern = Pattern.compile(VARIABLE_TAG_PATTERN);
+        Matcher matcher = variablePattern.matcher(comment);
+        while (matcher.find()) {
+            tags.add(matcher.group(1));
+        }
+        return tags;
+    }
+
+    public void addTagsToComment(Set<String> tags) {
+        Set<String> ownTags = getTagsFromComment();
+        ownTags.addAll(tags);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String tag : ownTags) {
+            stringBuilder.append("<").append(tag).append("> ");
+        }
+        setComment(stringBuilder.toString() + getCommentWithoutTags());
+    }
+
+    public String getCommentWithoutTags() {
+        if (StringUtils.isBlank(getComment()))
+            return "";
+        Pattern variablePattern = Pattern.compile(VARIABLE_TAG_PATTERN);
+        Matcher matcher = variablePattern.matcher(getComment());
+        String result = matcher.replaceAll("");
+        return result.trim();
     }
 }

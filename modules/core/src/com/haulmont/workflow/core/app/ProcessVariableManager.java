@@ -194,7 +194,7 @@ public class ProcessVariableManager implements ProcessVariableAPI {
             if (designVariables.containsKey(key)) {
                 DesignProcessVariable designProcessVariable = (DesignProcessVariable) designVariables.get(key);
                 cardVariable.setModuleName(designProcessVariable.getModuleName());
-                designProcessVariable.setPropertyName(designProcessVariable.getPropertyName());
+                cardVariable.setPropertyName(designProcessVariable.getPropertyName());
             }
             em.persist(cardVariable);
             cardVariables.add(cardVariable);
