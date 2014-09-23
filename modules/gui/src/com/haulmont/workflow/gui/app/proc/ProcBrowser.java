@@ -21,7 +21,7 @@ import java.util.Set;
  * @author devyatkin
  * @version $Id$
  */
-public class ProcBrowser extends AbstractWindow {
+public class ProcBrowser extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {

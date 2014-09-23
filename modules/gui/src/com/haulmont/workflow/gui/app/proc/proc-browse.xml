@@ -9,6 +9,7 @@
         messagesPack="com.haulmont.workflow.gui.app.proc"
         caption="msg://procBrowser.caption"
         focusComponent="procTable"
+        lookupComponent="procTable"
         >
 
     <dsContext>
