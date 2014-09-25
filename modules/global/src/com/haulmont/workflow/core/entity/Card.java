@@ -262,7 +262,7 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
         this.subCards = subCards;
     }
 
-    @MetaProperty
+    @MetaProperty(related = {"state", "proc"})
     public String getLocState() {
         if (getState() == null)
             return "";
