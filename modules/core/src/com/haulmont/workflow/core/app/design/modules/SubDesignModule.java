@@ -10,10 +10,8 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.workflow.core.app.ProcessVariableAPI;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.entity.Design;
@@ -51,6 +49,8 @@ public class SubDesignModule extends Module {
     protected Design design;
 
     protected Messages messages = AppBeans.get(Messages.class);
+
+    protected ProcessVariableAPI processVariableAPI = AppBeans.get(ProcessVariableAPI.NAME);
 
     public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
     protected Pattern variablePattern = Pattern.compile("^\\$\\{([a-zA-Z0-9]*)\\}.*$");
@@ -195,6 +195,11 @@ public class SubDesignModule extends Module {
                 } else {
                     newDesignParameter.setValue(value);
                     newDesignParameter.setAlias(name + "_" + designProcessVariable.getAlias());
+                    try {
+                        Object varValue = processVariableAPI.getValue(newDesignParameter);
+                    } catch (IllegalStateException e) {
+                        throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class, "incorrectValueInSubprocessParams"), value, designProcessVariable.getAlias(), MessageProvider.getMessage(designProcessVariable.getAttributeType())));
+                    }
                 }
             }
             newDesignParameter.setShouldBeOverridden(designProcessVariable.getShouldBeOverridden());
