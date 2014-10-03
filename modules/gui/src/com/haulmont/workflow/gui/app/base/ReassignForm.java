@@ -83,6 +83,7 @@ public class ReassignForm extends AbstractWindow {
         if (cardRolesFrame != null) {
             role = (String) params.get("role");
             Iterable<String> visibleRoles = Splitter.on(",").split(StringUtils.defaultIfEmpty((String) params.get("visibleRoles"), ""));
+            cardRolesFrame.setInactiveRoleVisible(false);
             cardRolesFrame.init();
             cardRolesFrame.setCard(card);
             tmpCardRolesDs.setVisibleRoles(ImmutableSet.<String>builder().add(role).addAll(visibleRoles).build());

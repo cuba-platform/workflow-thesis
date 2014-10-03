@@ -247,6 +247,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected void initCardRolesFrame(Map<String, Object> params) {
+        cardRolesFrame.setInactiveRoleVisible(false);
         cardRolesFrame.init();
         visibleRoles = (String) params.get("visibleRoles");
         if (StringUtils.isNotBlank(visibleRoles))

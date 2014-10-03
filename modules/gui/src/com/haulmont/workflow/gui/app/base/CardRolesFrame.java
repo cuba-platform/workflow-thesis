@@ -41,6 +41,7 @@ import java.util.*;
 public class CardRolesFrame extends AbstractFrame {
 
     protected Map<ProcRole, CollectionDatasource> procRoleUsers = new HashMap<>();
+    protected boolean isInactiveRoleVisible = true;
 
     public interface Listener {
         void afterInitDefaultActors(Proc proc);
@@ -148,7 +149,7 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<CardRole> items) {
                 initCreateRoleLookup();
-                if(operation.equals(Operation.REMOVE) && !tmpCardRolesDs.fill)
+                if (operation.equals(Operation.REMOVE) && !tmpCardRolesDs.fill)
                     normalizeSortOrders();
 
                 if (operation.equals(Operation.ADD) || operation.equals(Operation.REMOVE)) {
@@ -587,7 +588,7 @@ public class CardRolesFrame extends AbstractFrame {
         protected CardRole cardRole;
         protected TextField field;
 
-        public DurationValueListener(CardRole cardRole, TextField field ) {
+        public DurationValueListener(CardRole cardRole, TextField field) {
             this.cardRole = cardRole;
             this.field = field;
         }
@@ -757,7 +758,7 @@ public class CardRolesFrame extends AbstractFrame {
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
-                cr.setSortOrder(1);
+            cr.setSortOrder(1);
         } else if (cr.getProcRole().getMultiUser()) {
             int max = getMaxSortOrderInCardRoles(cardRoles);
             if (cr.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL) {
@@ -770,19 +771,19 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void normalizeSortOrders() {
-        if(currentProcess == null || !(currentProcess.getCombinedStagesEnabled() || combinedStagesEnabled))
+        if (currentProcess == null || !(currentProcess.getCombinedStagesEnabled() || combinedStagesEnabled))
             return;
 
         for (UUID uuid : procRolesDs.getItemIds()) {
             ProcRole pr = procRolesDs.getItem(uuid);
-            if(pr != null && pr.getMultiUser()) {
+            if (pr != null && pr.getMultiUser()) {
                 List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
                 int index = 1;
                 Map<Integer, List<CardRole>> cardRolesBySortOrder = new HashMap<>();
 
                 for (CardRole cr : cardRoles) {
                     List<CardRole> cardRolesList = cardRolesBySortOrder.get(cr.getSortOrder());
-                    if(cardRolesList == null) {
+                    if (cardRolesList == null) {
                         cardRolesList = new ArrayList<>();
                         cardRolesBySortOrder.put(cr.getSortOrder(), cardRolesList);
                     }
@@ -1067,7 +1068,7 @@ public class CardRolesFrame extends AbstractFrame {
             if (cr.getCode().equals(cardRole.getCode()) && !cr.equals(cardRole)) {
                 LookupPickerField cardRoleField = actorFieldsMap.get(cr);
                 CardRole role = tmpCardRolesDs.getItem(cr.getId());
-                cardRoleField = initCardRoleField(role == null ? cr : role, cardRoleField.getValue());
+                cardRoleField = initCardRoleField(role == null ? cr : role, cardRoleField.<User>getValue());
             }
         }
     }
@@ -1250,9 +1251,18 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    public LookupPickerField initCardRoleField(final CardRole cardRole, Object value) {
-        final CollectionDatasource usersDs = createUserOptionsDs(cardRole);
-
+    public LookupPickerField initCardRoleField(final CardRole cardRole, User value) {
+        final CollectionDatasource<User, UUID> usersDs = createUserOptionsDs(cardRole);
+        if (value != null) {
+            Role role = cardRole.getProcRole().getRole();
+            if (!usersDs.containsItem(value.getId()) && isInactiveRoleVisible)
+                usersDs.includeItem(value);
+            else if (usersDs.containsItem(value.getId()) &&
+                    roleUsersMap.containsKey(role) &&
+                    !roleUsersMap.get(role).contains(value)) {
+                usersDs.excludeItem(value);
+            }
+        }
         LookupPickerField pickerField = componentsFactory.createComponent(LookupPickerField.NAME);
         pickerField.setOptionsDatasource(usersDs);
         pickerField.setValue(value);
@@ -1404,5 +1414,9 @@ public class CardRolesFrame extends AbstractFrame {
         protected boolean isNeedCreateEmptyCardRole() {
             return getSelectedUsers(window).size() == 0;
         }
+    }
+
+    public void setInactiveRoleVisible(boolean isInactiveRoleVisible) {
+        this.isInactiveRoleVisible = isInactiveRoleVisible;
     }
 }
