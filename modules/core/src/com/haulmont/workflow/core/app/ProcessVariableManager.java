@@ -20,13 +20,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 /**
- *
  * <p>$Id$</p>
  *
  * @author Zaharchenko
@@ -101,31 +98,23 @@ public class ProcessVariableManager implements ProcessVariableAPI {
                     break;
 
                 case ENUM:
+                    Class enumClass = Class.forName(designProcessVariable.getMetaClassName());
                     try {
-                        Class enumClass = Class.forName(designProcessVariable.getMetaClassName());
+                        value = enumClass.getMethod("fromId", String.class).invoke(null, stringValue);
+                    } catch (NoSuchMethodException ex) {
                         try {
-                            value = enumClass.getMethod("fromId", String.class).invoke(null, stringValue);
-                        } catch (NoSuchMethodException ex) {
-                            try {
-                                value = enumClass.getMethod("fromId", Integer.class).invoke(null, Integer.parseInt(stringValue));
-                            } catch (NoSuchMethodException e) {
-                                log.error(e);
-                            }
+                            value = enumClass.getMethod("fromId", Integer.class).invoke(null, Integer.parseInt(stringValue));
+                        } catch (NoSuchMethodException e) {
+                            throw new IllegalStateException(e);
                         }
-                    } catch (ClassNotFoundException | InvocationTargetException | IllegalAccessException e) {
-                        log.error(e);
                     }
                     break;
 
                 default:
 
             }
-        } catch (ParseException e) {
-            log.error(e);
-            return null;
-        } catch (NumberFormatException e) {
-            log.error(e);
-            return null;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
         return value;
     }
