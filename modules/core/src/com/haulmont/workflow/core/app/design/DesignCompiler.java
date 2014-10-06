@@ -762,6 +762,10 @@ public class DesignCompiler {
         List<DesignProcessVariable> existsDesignProcessVariables = existsParametersQuery.getResultList();
 
         for (DesignProcessVariable exists : existsDesignProcessVariables) {
+            exists.setComment(exists.getCommentWithoutTags());
+        }
+
+        for (DesignProcessVariable exists : existsDesignProcessVariables) {
             DesignProcessVariable designProcessVariable = designProcessVariableMap.get(new Pair<>(exists.getModuleName(), exists.getAlias()));
             if (designProcessVariable != null) {
                 if (BooleanUtils.isNotTrue(exists.getOverridden())) {
