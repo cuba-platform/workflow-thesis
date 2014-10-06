@@ -436,7 +436,7 @@ public class TransitionForm extends AbstractForm {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
             return false;
         }
-        if ((dueDate != null) && (dueDate.getValue() != null) && (((Date) dueDate.getValue()).compareTo(timeSource.currentTimestamp()) < 0)) {
+        if (dueDateIsLessThanNow()) {
             showNotification(getMessage("dueDateIsLessThanNow"), NotificationType.WARNING);
             return false;
         }
@@ -473,6 +473,11 @@ public class TransitionForm extends AbstractForm {
         }
 
         return true;
+    }
+
+    protected boolean dueDateIsLessThanNow() {
+        return (dueDate != null) && (dueDate.getValue() != null) &&
+                (((Date) dueDate.getValue()).compareTo(timeSource.currentTimestamp()) < 0);
     }
 
     protected boolean attachmentsValidated() {
