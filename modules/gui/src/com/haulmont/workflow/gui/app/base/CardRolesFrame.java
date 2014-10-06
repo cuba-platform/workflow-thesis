@@ -1390,11 +1390,7 @@ public class CardRolesFrame extends AbstractFrame {
                 List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);
 
                 if (!invalidUsers.isEmpty()) {
-                    String usersList = "";
-                    for (User user : invalidUsers) {
-                        usersList += user.getName() + ", ";
-                    }
-                    usersList = usersList.substring(0, usersList.length() - 2);
+                    String usersList = buildInvalidUserString(invalidUsers);
                     String invalidUsersMessage;
                     if (invalidUsers.size() == 1)
                         invalidUsersMessage = messages.formatMessage(getClass(), "invalidUser.message", usersList, cardRole.getProcRole().getName());
@@ -1404,6 +1400,14 @@ public class CardRolesFrame extends AbstractFrame {
                     showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
                 }
             }
+        }
+
+        protected String buildInvalidUserString(Set<User> invalidUsers) {
+            String usersList = "";
+            for (User user : invalidUsers) {
+                usersList += user.getName() + ", ";
+            }
+            return usersList.substring(0, usersList.length() - 2);
         }
 
         protected boolean isNeedRemoveCardRole(CardRole cr) {
