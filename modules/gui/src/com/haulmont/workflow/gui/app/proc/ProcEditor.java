@@ -232,8 +232,6 @@ public class ProcEditor extends AbstractEditor<Proc> {
         RemoveAction dpaRemoveAction = new RemoveAction(dpaTable, false);
         dpaTable.addAction(dpaRemoveAction);
 
-        final List<AbstractAction> actionsToRefreshEnabled = Lists.newArrayList();
-        actionsToRefreshEnabled.add(createDpaAction);
         rolesDs.addListener(new DsListenerAdapter<ProcRole>() {
             @Override
             public void itemChanged(Datasource<ProcRole> ds, @Nullable ProcRole prevItem, @Nullable ProcRole item) {
