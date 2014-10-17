@@ -331,7 +331,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
         design.setUpdateTs(null);
 
         for (DesignScript script : design.getScripts()) {
-            script.setUuid(UUID.randomUUID());
+            script.setId(UUID.randomUUID());
             script.setCreateTs(new Date());
             script.setCreatedBy(user.getName());
             script.setUpdatedBy(null);
@@ -340,7 +340,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
 
         if (CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
             for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
-                variable.setUuid(UUID.randomUUID());
+                variable.setId(UUID.randomUUID());
                 variable.setCreateTs(new Date());
                 variable.setCreatedBy(user.getName());
                 variable.setUpdatedBy(null);
