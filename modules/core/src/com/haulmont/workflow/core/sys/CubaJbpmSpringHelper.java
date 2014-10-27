@@ -25,10 +25,9 @@ import java.util.List;
 
 /**
  * Configures jBPM depending on {@link DbmsType}.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class CubaJbpmSpringHelper extends SpringHelper {
 
@@ -38,30 +37,27 @@ public class CubaJbpmSpringHelper extends SpringHelper {
     public CubaJbpmSpringHelper() {
         super();
 
-        String hibernateDialect;
-        switch (DbmsType.getCurrent()) {
-            case HSQL:
-                hibernateDialect = "org.hibernate.dialect.HSQLDialect";
-                break;
-            case POSTGRES:
-                hibernateDialect = "org.hibernate.dialect.PostgreSQLDialect";
-                break;
-            case MSSQL:
-                hibernateDialect = "org.hibernate.dialect.SQLServerDialect";
-                break;
-            case ORACLE:
-                hibernateDialect = "org.hibernate.dialect.Oracle10gDialect";
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown DBMS type: " + DbmsType.getCurrent());
-        }
-
         String dataDir = AppContext.getProperty("cuba.dataDir");
-        File hibernateCfgFile = modifyHibernateCfgXml(dataDir, hibernateDialect);
+        File hibernateCfgFile = modifyHibernateCfgXml(dataDir, getHibernateDialectName());
         File jbpmCfgFile = modifyJbpmCfgXml(dataDir, hibernateCfgFile);
 
         jbpmConfiguration = jbpmCfgFile.toURI().toString();
         hibernateConfiguration = hibernateCfgFile.toURI().toString();
+    }
+
+    protected String getHibernateDialectName() {
+        switch (DbmsType.getType()) {
+            case "hsql":
+                return "org.hibernate.dialect.HSQLDialect";
+            case "postgres":
+                return "org.hibernate.dialect.PostgreSQLDialect";
+            case "mssql":
+                return "org.hibernate.dialect.SQLServerDialect";
+            case "oracle":
+                return "org.hibernate.dialect.Oracle10gDialect";
+            default:
+                throw new UnsupportedOperationException("Unknown DBMS type: " + DbmsType.getType());
+        }
     }
 
     public ProcessEngine createProcessEngine() {
@@ -71,9 +67,7 @@ public class CubaJbpmSpringHelper extends SpringHelper {
                     .setInputStream(new FileInputStream(new File(new URI(getJbpmConfiguration()))))
                     .buildProcessEngine();
             return processEngine;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
+        } catch (FileNotFoundException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.global.SequenceSupport;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,11 +108,7 @@ public class CubaJbpmDbidGenerator extends DbidGenerator {
     }
 
     private SequenceSupport getSequenceSqlProvider() {
-        DbDialect dialect = persistence.getDbDialect();
-        if (dialect instanceof SequenceSupport)
-            return (SequenceSupport) dialect;
-        else
-            throw new UnsupportedOperationException("DB sequences not supported");
+        return DbmsSpecificFactory.getSequenceSupport();
     }
 
     private Object executeScript(String sqlScript) {
