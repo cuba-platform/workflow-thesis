@@ -45,6 +45,7 @@
         <property name="formCompiler" ref="workflow_FormCompiler"/>
         <property name="postProcessor" ref="workflow_DesignPostProcessor"/>
         <property name="messages" ref="cuba_Messages"/>
+        <property name="serverInfo" ref="cuba_ServerInfo"/>
     </bean>
 
     <bean id="workflow_DesignCompiler" parent="base_workflow_DesignCompiler"/>

@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.ServerInfo;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.WfUtils;
@@ -60,6 +61,8 @@ public class DesignCompiler {
 
     protected Messages messages;
 
+    protected ServerInfo serverInfo;
+
     private Log log = LogFactory.getLog(DesignCompiler.class);
 
     // set from spring.xml
@@ -93,6 +96,11 @@ public class DesignCompiler {
     //set from spring.xml
     public void setMessages(Messages messages) {
         this.messages = messages;
+    }
+
+    //set from spring.xml
+    public void setServerInfo(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
     }
 
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
@@ -893,7 +901,7 @@ public class DesignCompiler {
 
     private String compileForms(List<Module> modules, List<DesignCompilationError> errors) {
         Document document = DocumentHelper.createDocument();
-        Element rootEl = document.addElement("forms", "http://www.haulmont.com/schema/cuba/workflow/forms.xsd");
+        Element rootEl = document.addElement("forms", "http://schemas.haulmont.com/workflow/" + getPlatformVersion() + "/forms.xsd");
 
         for (Module module : modules) {
             try {
@@ -904,6 +912,20 @@ public class DesignCompiler {
         }
         postProcessor.processForms(rootEl, modules, errors);
         return Dom4j.writeDocument(document, true);
+    }
+
+    private String getPlatformVersion() {
+        String releaseNumber = serverInfo.getReleaseNumber();
+        int dashIndex = releaseNumber.indexOf("-");
+        if (dashIndex != -1) {
+            return releaseNumber.substring(0, dashIndex);
+        } else {
+            int secondDotIndex = StringUtils.ordinalIndexOf(releaseNumber, ".", 2);
+            if (secondDotIndex != -1) {
+                return releaseNumber.substring(0, secondDotIndex);
+            }
+        }
+        return "5.3";
     }
 
     public Map<String, Properties> compileMessagesForLocalization(Design design, List<String> languages) throws DesignCompilationException {
