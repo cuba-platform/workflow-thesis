@@ -1,13 +1,8 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 28.01.11 12:10
- *
- * $Id$
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
+
 Wf.MultiOutContainer = function(options, layer) {
     this.outputLabels = {};
     Wf.MultiOutContainer.superclass.constructor.call(this, options, layer);
