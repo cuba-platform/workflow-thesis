@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,7 +111,7 @@ public class SubDesignModule extends Module {
         try {
             DesignFile messagesFile = getDesignFile("messages", fileName);
             Properties subProcProperties = new Properties();
-            subProcProperties.load(new ByteArrayInputStream(messagesFile.getContent().getBytes()));
+            subProcProperties.load(new StringReader(messagesFile.getContent()));
             for (String key : subProcProperties.stringPropertyNames()) {
                 if (!propertiesForExclude.contains(key)) {
                     properties.setProperty(name + SUBDESIGN_SEPARATOR + key, subProcProperties.getProperty(key));
