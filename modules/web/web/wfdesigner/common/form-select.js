@@ -1,13 +1,8 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 14.01.11 12:42
- *
- * $Id$
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
+
 Wf.FormSelect = function(options) {
     Wf.FormSelect.superclass.constructor.call(this, options);
 };

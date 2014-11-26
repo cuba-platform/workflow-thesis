@@ -1,13 +1,8 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.01.11 11:13
- *
- * $Id$
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
+
 Wf.TimerSelect = function(options) {
     Wf.TimerSelect.superclass.constructor.call(this, options);
 };

@@ -1,15 +1,6 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 24.12.10 14:03
- *
- * $Id$
- *
- * Based on 'javascript i18n that almost doesn't suck' by markos
- * http://markos.gaivo.net/blog/?p=100
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 /*
