@@ -50,6 +50,9 @@ public interface NotificationMatrixAPI {
 
     void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state);
 
+    void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state,
+                                    List<String> extraExcludedRoles);
+
     void notifyUser(Card card, String state, User user);
 
     void notifyCardRole(Card card, CardRole cardRole, String state, Assignment assignment);

@@ -77,9 +77,7 @@ public class WfWorkerBean implements WfWorkerAPI {
                     ProcessDefinition pd = pdList.get(pdList.size() - 1);
 
                     Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
-                    for (Transition transition : activity.getOutgoingTransitions()) {
-                        info.getActions().add(activityName + "." + transition.getName());
-                    }
+                    addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
                 }
             }
             tx.commit();
@@ -87,6 +85,14 @@ public class WfWorkerBean implements WfWorkerAPI {
             tx.end();
         }
         return info;
+    }
+
+    @SuppressWarnings("unused")
+    protected void addActionsToAssignmentInfo(AssignmentInfo info, String activityName, Activity activity,
+                                              Card card, Assignment assignment) {
+        for (Transition transition : activity.getOutgoingTransitions()) {
+            info.getActions().add(activityName + "." + transition.getName());
+        }
     }
 
     @Override

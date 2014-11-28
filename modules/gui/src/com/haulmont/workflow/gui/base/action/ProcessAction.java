@@ -264,12 +264,18 @@ public class ProcessAction extends AbstractAction {
 
     protected void finishAssignment(Window window, String comment, FormManagerChain managerChain, Card subProcCard) {
         String outcome = actionName.substring(actionName.lastIndexOf('.') + 1);
-        wfService.finishAssignment(assignmentInfo.getAssignmentId(), outcome, comment, subProcCard);
+        callFinishAssignment(comment, subProcCard, outcome, managerChain);
         window.close(Window.COMMIT_ACTION_ID, true);
 
         managerChain.doManagerAfter();
 
         afterFinish();
+    }
+
+    @SuppressWarnings("unused")
+    protected void callFinishAssignment(String comment, Card subProcCard, String outcome,
+                                        FormManagerChain managerChain) {
+        wfService.finishAssignment(assignmentInfo.getAssignmentId(), outcome, comment, subProcCard);
     }
 
     protected void afterFinish() {
