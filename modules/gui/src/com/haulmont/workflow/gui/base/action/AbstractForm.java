@@ -8,12 +8,13 @@ package com.haulmont.workflow.gui.base.action;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.workflow.gui.base.action.WfForm;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
 //        }
     }
 
-    protected void initActions(){
+    protected void initActions() {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         addAction(new AbstractAction("windowCommit", clientConfig.getCommitShortcut()) {
             public void actionPerform(Component component) {
@@ -66,13 +67,18 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
         });
     }
 
-    protected void onWindowCommit(){
+    protected void onWindowCommit() {
 
     }
 
-    protected void onWindowClose(){
+    protected void onWindowClose() {
 
     }
 
     public abstract String getComment();
+
+    @Nullable
+    public FormResult getFormResult() {
+        return null;
+    }
 }

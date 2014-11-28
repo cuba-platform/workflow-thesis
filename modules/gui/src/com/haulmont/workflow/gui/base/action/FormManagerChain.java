@@ -43,6 +43,9 @@ public class FormManagerChain {
     private List<FormManager> managersAfter = new ArrayList<>();
     private int positionAfter = 0;
 
+    // Results from forms after manager chain working. Key is a screen id.
+    protected Map<String, FormResult> formResults = new HashMap<>();
+
     public static FormManagerChain getManagerChain(Card card, String actionName) {
         if (card.getProc() == null)
             return nullObject;
@@ -192,6 +195,20 @@ public class FormManagerChain {
 
     public void addManagerAfter(FormManager manager) {
         managersAfter.add(manager);
+    }
+
+    public void addFormResult(String key, FormResult value) {
+        formResults.put(key, value);
+    }
+
+    @SuppressWarnings("unused")
+    public Map<String, FormResult> getFormResults() {
+        return formResults;
+    }
+
+    @SuppressWarnings("unused")
+    public FormResult getFormResult(String id) {
+        return formResults.get(id);
     }
 
     private FormManager getNextManagerAfter() {
