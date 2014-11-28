@@ -4,7 +4,6 @@
  */
 
 
-
 package com.haulmont.workflow.core.activity
 
 import com.google.common.base.Preconditions
@@ -147,12 +146,16 @@ public class UniversalAssigner extends MultiAssigner {
                     return
                 }
 
-                if (sibling.getOutcome() != null && !successTransitions.contains(sibling.getOutcome()))
+                if (isNeededToUseThisSiblingOutcome(sibling))
                     resultTransition = sibling.getOutcome()
             }
             processSignal(assignment, resultTransition, execution, signalName, parameters)
             removeTimers(execution, assignment)
         }
+    }
+
+    protected boolean isNeededToUseThisSiblingOutcome(Assignment sibling) {
+        return sibling.getOutcome() != null && !successTransitions.contains(sibling.getOutcome());
     }
 
     protected void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
@@ -273,7 +276,17 @@ public class UniversalAssigner extends MultiAssigner {
         query.executeUpdate()
     }
 
-    protected void createUserAssignments(ActivityExecution execution, Card card, Assignment master, Collection<CardRole> cardRoles) {
+    protected Map<Assignment, CardRole> createUserAssignments(ActivityExecution execution, Card card,
+                                                              Assignment master, Collection<CardRole> cardRoles) {
+        Map<Assignment, CardRole> assignmentCardRoleMap = createUserAssignmentsWithoutNotifying(execution, card,
+                master, cardRoles)
+        notifyUser(execution, card, assignmentCardRoleMap, getNotificationState(execution))
+        return assignmentCardRoleMap
+    }
+
+    protected Map<Assignment, CardRole> createUserAssignmentsWithoutNotifying(ActivityExecution execution, Card card,
+                                                                              Assignment master,
+                                                                              Collection<CardRole> cardRoles) {
         Map<Assignment, CardRole> assignmentCardRoleMap = new HashMap<Assignment, CardRole>();
         Persistence persistence = AppBeans.get(Persistence.NAME);
         for (CardRole cr : cardRoles) {
@@ -300,8 +313,7 @@ public class UniversalAssigner extends MultiAssigner {
 
             assignmentCardRoleMap.put(assignment, cr);
         }
-
-        notifyUser(execution, card, assignmentCardRoleMap, getNotificationState(execution))
+        return assignmentCardRoleMap;
     }
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {

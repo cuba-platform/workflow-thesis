@@ -144,8 +144,7 @@ public class TransitionForm extends AbstractForm {
             if (card.isSubProcCard())
                 parentMessagesPack = card.getProcFamily().getCard().getProc().getMessagesPack();
             outcomeText.setValue(messages.getMessage(parentMessagesPack, activity + "." + transition));
-            if (commentText != null)
-                commentText.setDatasource(assignmentDs, "comment");
+            setCommentTextAssignmentDatasource();
         } else {
             outcomeText.setValue(messages.getMessage(messagesPack, WfConstants.ACTION_START));
         }
@@ -165,6 +164,11 @@ public class TransitionForm extends AbstractForm {
         initAttachments(params);
 
         cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
+    }
+
+    protected void setCommentTextAssignmentDatasource() {
+        if (commentText != null)
+            commentText.setDatasource(assignmentDs, "comment");
     }
 
     protected void initDueDate(Map<String, Object> params, String messagesPack) {

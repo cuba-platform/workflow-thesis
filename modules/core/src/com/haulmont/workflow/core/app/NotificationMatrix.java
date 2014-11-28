@@ -4,6 +4,7 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.google.common.collect.Lists;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
@@ -345,7 +346,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     protected void notifyUser(Card card, CardRole cardRole, Assignment assignment, Map<String, String> matrix, String state,
-                            List<User> mailList, List<User> trayList, List<User> smsList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
+                              List<User> mailList, List<User> trayList, List<User> smsList, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
         String type;
         String key = state + "_" + cardRole.getCode();
@@ -476,6 +477,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     public void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state) {
+        notifyByCardAndAssignments(card, assignmentsCardRoleMap, state, Lists.<String>newArrayList());
+    }
+
+    public void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state,
+                                           List<String> extraExcludedRoles) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
         Map<String, String> matrix = getMatrix(processPath);
@@ -489,7 +495,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             List<User> mailList = new ArrayList<>();
             List<User> trayList = new ArrayList<>();
             List<User> smsList = new ArrayList<>();
-            List<String> excludeRoleCodes = new ArrayList<>();
+            List<String> excludeRoleCodes = new ArrayList<>(extraExcludedRoles);
 
             NotificationMatrixMessage.MessageGenerator messageGenerator = new DefaultMessageGenerator();
 
@@ -497,7 +503,8 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                 for (Map.Entry<Assignment, CardRole> entry : assignmentsCardRoleMap.entrySet()) {
                     CardRole cardRole = entry.getValue();
                     if (!currentUser.equals(cardRole.getUser()))
-                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, smsList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, smsList, trayList,
+                                messageGenerator);
 
                     excludeRoleCodes.add(cardRole.getCode());
                 }
@@ -509,9 +516,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
 
             if (roleList != null) {
                 for (CardRole cardRole : roleList) {
-                    if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(cardRole.getProcRole().getProc()) &&
+                    if (!currentUser.equals(cardRole.getUser()) && reloadedCard.getProc().equals(
+                            cardRole.getProcRole().getProc()) &&
                             !excludeRoleCodes.contains(cardRole.getCode()) &&
-                            ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) || assignmentsCardRoleMap == null)) {
+                            ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) ||
+                                    assignmentsCardRoleMap == null)) {
 
                         notifyUser(card, cardRole, null, matrix, state, mailList, smsList, trayList, messageGenerator);
                     }
