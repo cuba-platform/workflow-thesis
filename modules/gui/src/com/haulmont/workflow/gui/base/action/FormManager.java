@@ -162,6 +162,13 @@ public abstract class FormManager implements Serializable {
             final Window window = wmp.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
+                    if (window instanceof WfForm) {
+                        WfForm wfForm = (WfForm) window;
+                        FormResult formResult = wfForm.getFormResult();
+                        if (formResult != null) {
+                            chain.addFormResult(screenId, formResult);
+                        }
+                    }
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String comment = window instanceof WfForm ?
                                 ((WfForm) window).getComment() : "";

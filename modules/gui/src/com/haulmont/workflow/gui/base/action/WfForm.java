@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.gui.base.action;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -25,4 +26,12 @@ public interface WfForm {
      * @return comment or empty string
      */
     String getComment();
+
+    /**
+     * Called by Wf framework for setting result from form to {@link com.haulmont.workflow.gui.base.action.FormManager.ScreenFormManager}.
+     * Result can be used in ProcessAction afterwards.
+     * @return result from form
+     */
+    @Nullable
+    FormResult getFormResult();
 }
