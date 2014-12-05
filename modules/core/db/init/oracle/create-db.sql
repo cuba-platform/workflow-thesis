@@ -303,8 +303,10 @@ create table WF_PROC (
 create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC(CODE, DELETE_TS)^
 
 create table WF_PROC_APP_FOLDER (
-    FOLDER_ID varchar2(32),
-    PROC_CONDITIONS_XML clob)^
+    FOLDER_ID varchar2(32) not null,
+    PROC_CONDITIONS_XML clob,
+    primary key(FOLDER_ID)
+)^
 
 create table WF_PROC_ROLE (
     ID varchar2(32) not null,
