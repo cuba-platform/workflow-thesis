@@ -363,11 +363,7 @@ div.WiringEditor-module-Start div.body,div.WiringEditor-module-End div.body{
 .inputEx-label label{
     color:#000 !important;
 }
-.inputEx-Field .inputEx-StringField-wrapper input {
-    border-color:#373738;
-    border-width:1px;
-    border-style:solid;
-}
+
 div.WireIt-Container-closebutton {
     background-image: url("./res/icons/cancel.png");
 }

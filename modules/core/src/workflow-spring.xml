@@ -73,9 +73,13 @@
         </property>
     </bean>
 
+    <bean id="workflow_DeployPostProcessor" class="com.haulmont.workflow.core.app.design.DeployPostProcessor"/>
+
     <bean id="workflow_ProcessMigrator" class="com.haulmont.workflow.core.app.design.ProcessMigratorImpl"/>
 
-    <bean id="workflow_DesignDeployer" class="com.haulmont.workflow.core.app.design.DesignDeployer"/>
+    <bean id="workflow_DesignDeployer" class="com.haulmont.workflow.core.app.design.DesignDeployer">
+        <property name="postProcessor" ref="workflow_DeployPostProcessor"/>
+    </bean>
 
     <!-- Annotation-based beans -->
 

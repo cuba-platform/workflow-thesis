@@ -118,5 +118,6 @@ var i18nDict = {
     "TurnTheChromeFrame" : "Please, turn the ChromeFrame plugin \nand reopen browser",
     "DuplicateName" : "Duplicate module name",
     "EmptyName" : "Empty module name",
-    "NotSupportedBrowser" : "Sorry, your browser is not supported.Please use Google Chrome or Mozilla Firefox"
+    "NotSupportedBrowser" : "Sorry, your browser is not supported.Please use Google Chrome or Mozilla Firefox",
+    "moduleWithoutTransition" : "Saved\<br\/\>\<br\/\>Warning! Design contain module without transition"
 };

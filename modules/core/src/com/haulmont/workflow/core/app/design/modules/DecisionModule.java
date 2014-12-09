@@ -9,9 +9,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
+import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -22,6 +25,8 @@ public class DecisionModule extends Module {
     protected JSONObject jsOptions;
 
     protected String scriptFileName;
+
+    protected String scriptPath;
 
     public DecisionModule() {
         activityClassName = "com.haulmont.workflow.core.activity.Decision";
@@ -40,14 +45,29 @@ public class DecisionModule extends Module {
 
         String script = null;
         this.scriptFileName = null;
-        script = jsOptions.optString("script");
 
         Messages messages = AppBeans.get(Messages.class);
 
-        if (StringUtils.trimToNull(script) == null) {
-            throw new DesignCompilationException(messages.formatMessage(getClass(),
-                    "exception.decisionScriptNotDefined", StringEscapeUtils.escapeHtml(caption)));
+        if (jsOptions != null) {
+            script = jsOptions.optString("script");
+
+            if (StringUtils.trimToNull(script) == null) {
+                throw new DesignCompilationException(messages.formatMessage(getClass(),
+                        "exception.decisionScriptNotDefined", StringEscapeUtils.escapeHtml(caption)));
+            }
+
+            for (DesignScript designScript : context.getDesign().getScripts()) {
+                if (ObjectUtils.equals(designScript.getName(), script)
+                        && StringUtils.isNotEmpty(designScript.getContent())
+                        && designScript.getContent().trim().endsWith(".groovy")) {
+                    this.scriptPath = designScript.getContent().trim();
+                }
+            }
+            if (scriptPath == null) {
+                this.scriptFileName = scriptNamesMap.get(script);
+            }
         }
+
         this.scriptFileName = scriptNamesMap.get(script);
         if (this.scriptFileName == null)
             throw new DesignCompilationException(messages.formatMessage(getClass(),
@@ -67,8 +87,11 @@ public class DecisionModule extends Module {
     @Override
     public Element writeJpdlXml(Element parentEl) throws DesignCompilationException {
         Element element = super.writeJpdlXml(parentEl);
-        if (!StringUtils.isEmpty(scriptFileName))
+        if (scriptFileName != null) {
             writeJpdlStringPropertyEl(element, "scriptName", scriptFileName);
+        } else if (scriptPath != null) {
+            writeJpdlStringPropertyEl(element, "scriptPath", scriptPath);
+        }
         return element;
     }
 }

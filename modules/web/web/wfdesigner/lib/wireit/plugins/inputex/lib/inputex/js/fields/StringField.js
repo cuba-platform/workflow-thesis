@@ -39,6 +39,7 @@ lang.extend(inputEx.StringField, inputEx.Field, {
 	   this.options.minLength = options.minLength;
 	   this.options.typeInvite = options.typeInvite;
 	   this.options.readonly = options.readonly;
+	   this.options.disabled = options.disabled;
 	   this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
 	                                  inputEx.browserAutocomplete :
 	                                  (options.autocomplete === false || options.autocomplete === "off") ? false : true;
@@ -61,6 +62,7 @@ lang.extend(inputEx.StringField, inputEx.Field, {
       if(this.options.size) { attributes.size = this.options.size; }
       if(this.options.name) { attributes.name = this.options.name; }
       if(this.options.readonly) { attributes.readonly = 'readonly'; }
+      if (this.options.disabled) { attributes.disabled = 'disabled'; }
 
       if(this.options.maxLength) { attributes.maxLength = this.options.maxLength; }
       attributes.autocomplete = this.options.autocomplete ? 'on' : 'off';

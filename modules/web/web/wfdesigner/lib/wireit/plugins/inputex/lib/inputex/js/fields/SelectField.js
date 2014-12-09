@@ -27,7 +27,7 @@
 			var i, length;
 		
 			inputEx.SelectField.superclass.setOptions.call(this, options);
-		
+		    this.options.disabled = options.disabled;
 			this.options.choices = lang.isArray(options.choices) ? options.choices : [];
 		
 			// Retro-compatibility with old pattern (changed since 2010-06-30)
@@ -59,6 +59,8 @@
 				name: this.options.name || ''
 			
 			});
+
+			if(this.options.disabled) { this.el.disabled = 'disabled'; }
 		
 			// list of choices (e.g. [{ label: "France", value:"fr", node:<DOM-node>, visible:true }, {...}, ...])
 			this.choicesList = [];

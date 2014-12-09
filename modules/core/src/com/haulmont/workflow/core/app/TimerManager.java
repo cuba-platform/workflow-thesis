@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
@@ -145,35 +146,38 @@ public class TimerManager implements TimerManagerAPI {
             List<TimerEntity> timers = loadTimers(currentTime);
 
             for (TimerEntity timer : timers) {
-                fireTimer(timer);
+                try {
+                    processTimer(timer);
+                } catch (Throwable e) {
+                    log.error("Error firing timer " + timer, e);
+                }
             }
         } finally {
             authentication.end();
         }
     }
 
-    private void fireTimer(TimerEntity timer) {
+    @Override
+    public void processTimer(TimerEntity timer) {
+        Transaction tx = persistence.createTransaction();
         try {
             Class<? extends TimerAction> taskClass = scripting.loadClass(timer.getActionClass());
             TimerAction action = taskClass.newInstance();
 
-            Transaction tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                TimerEntity t = em.find(TimerEntity.class, timer.getId());
+            EntityManager em = persistence.getEntityManager();
+            TimerEntity t = em.find(TimerEntity.class, timer.getId());
 
-                TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
-                        t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
-                action.execute(context);
-
-                em.remove(t);
-
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        } catch (Throwable e) {
-            log.error("Error firing timer " + timer, e);
+            TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
+                    t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
+            action.execute(context);
+            em.remove(t);
+            tx.commit();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } finally {
+            tx.end();
         }
     }
 

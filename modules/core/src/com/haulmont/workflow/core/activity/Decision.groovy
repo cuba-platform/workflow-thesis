@@ -21,6 +21,7 @@ class Decision extends ProcessVariableActivity {
     final String NO_TRANSITION = "no";
 
     String scriptName
+    String scriptPath
 
     private Log log = LogFactory.getLog(Decision.class);
 
@@ -28,24 +29,30 @@ class Decision extends ProcessVariableActivity {
         super.execute(execution);
         Card card = ActivityHelper.findCard(execution)
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("card", card);
-        params.put("activity", execution.getActivityName())
-
-        String processKey = card.getProc().getJbpmProcessKey()
-        String fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName
-
+        String fileName
+        if (scriptName != null) {
+            String processKey = card.getProc().getJbpmProcessKey()
+            fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName
+        } else {
+            fileName = scriptPath
+        }
         log.debug("Running script " + fileName)
         Scripting scripting = AppBeans.get(Scripting.class);
-        Resources resources = AppBeans.get(Resources.class);
-        Object result = scripting.evaluateGroovy(resources.getResourceAsString(fileName), params)
+        Object result = scripting.runGroovyScript(fileName, prepareParams(card, execution))
         if (result instanceof Boolean) {
             if (result)
                 execution.take(YES_TRANSITION)
             else
                 execution.take(NO_TRANSITION)
         } else {
-            throw new RuntimeException("The script must return a boolean value");
+            throw new RuntimeException(String.format("The script %s must return a boolean value", scriptPath));
         }
+    }
+
+    protected Map<String, Object> prepareParams(Card card, ActivityExecution execution) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("card", card);
+        params.put("activity", execution.getActivityName())
+        return params;
     }
 }

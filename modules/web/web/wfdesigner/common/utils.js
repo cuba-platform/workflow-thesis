@@ -221,15 +221,79 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
 
 		this.tempSavedWiring = {name: value.name, working: value.working, language: this.options.languageName };
         this.adapter.saveWiring(this.tempSavedWiring, {
-       	    success: this.saveModuleSuccess,
+       	    success: this.saveModuleSuccess(this.checkModules(value)),
        	    failure: this.saveModuleFailure,
        	    scope: this
     	});
     },
+
+    checkModules : function(value){
+        var modules = value.working.modules;
+        var wires = value.working.wires;
+        var moduleDefinitions = this.modules;
+        for(var i = 0; i<modules.length;i++){
+            var module = modules[i];
+            var moduleDefinition = this.findModuleDef(module,moduleDefinitions);
+            var outputs = new Array();
+            var inputs = new Array();
+            var terminals = moduleDefinition.container.terminals;
+            if (module.value.outputs) {
+                outputs = module.value.outputs
+            }
+            for (j = 0; j < terminals.length; j++) {
+                var terminal = terminals[j];
+
+                if (!module.value.outputs && terminal.ddConfig.type == 'out') {
+                    outputs.push(terminal);
+                } else if (terminal.ddConfig.type == 'in') {
+                    inputs.push(terminal)
+                }
+            }
+            if(!this.checkWires(wires,i,outputs,inputs)){
+                return i18nDict.moduleWithoutTransition;
+            }
+
+        }
+
+        return null;
+    },
+
+    checkWires: function(wires ,moduleId, outputs, inputs){
+       //ищем вход в модуль и все выходы. их число должно совпасть с размером outputs.
+        var outputWires = new Array();
+        var inputWires = new Array();
+        // ищем вход в модуль
+        for (var i = 0; i < wires.length; i++) {
+            var wire = wires[i];
+            if(wire.src.moduleId == moduleId){
+                outputWires.push(wire)
+            }
+            if(wire.tgt.moduleId == moduleId){
+                inputWires.push(wire);
+            }
+        }
+
+        return inputWires.length >= inputs.length && outputWires.length == outputs.length;
+    },
+
+    findModuleDef : function(module, moduleDefinitions) {
+        var moduleName = module.name;
+        for (var i = 0; i < moduleDefinitions.length; i++) {
+            if (moduleDefinitions[i].name == moduleName) {
+                return moduleDefinitions[i];
+            }
+        }
+        return null;
+    },
+
     saveModuleSuccess: function(o) {
 
-	   this.markSaved();
-       this.alert(i18nDict.Saved);
+        this.markSaved();
+        if (o==null) {
+            this.alert(i18nDict.Saved);
+        } else {
+            this.alert(o)
+        }
     },
     renderAlertPanel: function() {
     /**

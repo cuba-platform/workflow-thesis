@@ -38,6 +38,8 @@ public class AssignmentModule extends Module {
 
     protected Messages messages = AppBeans.get(Messages.class);
 
+    private static final String TIMERS_FACTORY = "com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory";
+    
     public AssignmentModule() {
         activityClassName = "com.haulmont.workflow.core.activity.Assigner";
     }
@@ -153,78 +155,11 @@ public class AssignmentModule extends Module {
     }
 
     protected void writeJpdlTimers(Element parentEl) throws DesignCompilationException {
-        if (jsOptions == null)
-            return;
-
         try {
-            JSONObject jsTimers = jsOptions.optJSONObject("timers");
-            if (jsTimers == null)
-                return;
-
-            JSONArray jsTimersList = jsTimers.optJSONArray("list");
-            if (jsTimersList == null || jsTimersList.length() == 0)
-                return;
-
-            Element element = writeJpdlObjectPropertyEl(
-                    parentEl, "timersFactory", "com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory");
-
-            String dueDateType;
-            StringBuilder dueDates = new StringBuilder();
-            StringBuilder transitions = new StringBuilder();
-            StringBuilder scripts = new StringBuilder();
-            for (int i = 0; i < jsTimersList.length(); i++) {
-                JSONObject jsTimer = jsTimersList.getJSONObject(i);
-
-                JSONObject jsProps = jsTimer.getJSONObject("properties");
-                dueDateType = jsProps.getString("dueDateType");
-                if(StringUtils.trimToNull(dueDateType)==null||"null".equals(dueDateType)){
-                    throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
-                            "exception.dueDateTypeNotDefined", StringEscapeUtils.escapeHtml(caption)));
-                }
-                if ("manual".equals(dueDateType)) {
-                    JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
-                    try {
-                        String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
-                        dueDates.append(dueDate);
-                    } catch (JSONException e) {
-                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
-                                "exception.dueDateInvalid", StringEscapeUtils.escapeHtml(caption)));
-                    }
-                } else if ("form".equals(dueDateType)) {
-                    dueDates.append("process");
-                }
-
-                String type = jsTimer.getString("type");
-                if (type.equals("script")) {
-                    String script = jsProps.getString("name");
-                    if (StringUtils.trimToNull(script) == null) {
-                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
-                                "exception.timerScriptNotDefined", StringEscapeUtils.escapeHtml(caption)));
-                    }
-                    String fileName = scriptNamesMap.get(script);
-                    if (fileName == null)
-                        throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
-                                "exception.timerScriptNotFound", StringEscapeUtils.escapeHtml(caption), script));
-                    scripts.append(fileName);
-                } else {
-                    String transition = WfUtils.encodeKey(jsProps.getString("name"));
-                    transitions.append(transition);
-                }
-
-                if (i < jsTimersList.length() - 1) {
-                    dueDates.append("|");
-                    transitions.append("|");
-                    scripts.append("|");
-                }
-            }
-
-            writeJpdlStringPropertyEl(element, "dueDates", dueDates.toString());
-            writeJpdlStringPropertyEl(element, "transitions", transitions.toString());
-            writeJpdlStringPropertyEl(element, "scripts", scripts.toString());
-
+            JSONObject jsTimers = jsOptions.getJSONObject("timers");
+            writeJpdlTimers(parentEl, jsTimers);
         } catch (JSONException e) {
-            throw new DesignCompilationException(messages.formatMessage(AssignmentModule.class,
-                    "exception.compileTimersError", StringEscapeUtils.escapeHtml(caption)));
+            throw new DesignCompilationException("Unable to compile timers for module " + caption, e);
         }
     }
 
@@ -247,5 +182,9 @@ public class AssignmentModule extends Module {
         Element transitionEl = activityEl.addElement("transition");
         transitionEl.addAttribute("name", transitionName);
         return transitionEl;
+    }
+
+    protected String getTimersFactory() {
+        return TIMERS_FACTORY;
     }
 }

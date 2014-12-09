@@ -430,6 +430,21 @@ public class WfEngine implements WfEngineAPI {
         }
     }
 
+    public void signalExecution(String jbpmExecutionId, String transition, Card card) {
+        ExecutionService es = getProcessEngine().getExecutionService();
+        ProcessInstance pi = es.signalExecutionById(jbpmExecutionId, transition);
+
+        if (Execution.STATE_ENDED.equals(pi.getState())) {
+            Proc proc = card.getProc();
+            for (CardProc cp : card.getProcs()) {
+                if (cp.getProc().equals(proc)) {
+                    cp.setActive(false);
+                }
+            }
+            card.setJbpmProcessId(null);
+        }
+    }
+
     public Card startProcess(Card card) {
         return startProcess(card, null);
     }

@@ -15,6 +15,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -31,7 +32,14 @@ public class DesignDeployer {
 
     private Log log = LogFactory.getLog(DesignDeployer.class);
 
-    public void deployDesign(UUID designId, UUID procId, Role role) {
+    private DeployPostProcessor postProcessor;
+
+    //set from spring.xml
+    public void setPostProcessor(DeployPostProcessor postProcessor) {
+        this.postProcessor = postProcessor;
+    }
+
+    public Proc deployDesign(UUID designId, UUID procId, Role role) {
         Preconditions.checkArgument(designId != null, "designId is null");
 
         log.info("Deploying design " + designId + " into process " + procId);
@@ -43,7 +51,7 @@ public class DesignDeployer {
             if (design.getCompileTs() == null)
                 throw new IllegalStateException("Design is not compiled");
 
-            String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(AppBeans.get(TimeSource.class).currentTimestamp());
+            String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(AppBeans.get(TimeSource.class).currentTimestamp());
 
             Proc proc = procId != null ? em.find(Proc.class, procId) : null;
 
@@ -61,7 +69,7 @@ public class DesignDeployer {
 
             proc = deployJpdl(design, designFiles, procKey, proc, dir);
 
-            if (role!=null)
+            if (role != null)
                 proc.setAvailableRole(role);
 
             deployMessages(designFiles, dir);
@@ -72,9 +80,13 @@ public class DesignDeployer {
 
             deployNotificationMatrix(designFiles, dir);
 
+            postProcessor.doAfterDeploy(design, dir, designFiles, proc);
+
             tx.commit();
 
             log.info("Design " + designId + " deployed succesfully");
+
+            return proc;
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -143,9 +155,12 @@ public class DesignDeployer {
             dir.mkdir();
 
         for (DesignScript designScript : designScripts) {
-            String script = "// " + designScript.getName() + "\n" + designScript.getContent();
-            File file = new File(scriptsDir, designScript.getFileName());
-            FileUtils.writeStringToFile(file, script, "UTF-8");
+            if (StringUtils.isNotEmpty(designScript.getContent()) &&
+                    !designScript.getContent().trim().endsWith(".groovy")) {
+                String script = "// " + designScript.getName() + "\n" + designScript.getContent();
+                File file = new File(scriptsDir, designScript.getFileName());
+                FileUtils.writeStringToFile(file, script, "UTF-8");
+            }
         }
     }
 

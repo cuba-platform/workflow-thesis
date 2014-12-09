@@ -39,6 +39,8 @@ public interface WfEngineAPI {
 
     void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard);
 
+    void signalExecution(String jbpmExecutionId, String transition, Card card);
+
     Card startProcess(Card card);
 
     Card startProcess(Card card, Card subProcCard);

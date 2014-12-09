@@ -296,4 +296,10 @@
     <view class="com.haulmont.cuba.security.entity.UserRole" name="card-role-add" extends="_local">
         <property name="role" view="_minimal"/>
     </view>
+
+    <view entity="wf$Timer" name="browse" extends="_local">
+        <property name="card">
+            <property name="description"/>
+        </property>
+    </view>
 </views>

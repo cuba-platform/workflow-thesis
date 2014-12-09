@@ -35,6 +35,7 @@ lang.extend(inputEx.CheckBox, inputEx.Field, {
 	   this.options.sentValues = this.sentValues; // for compatibility
 	   this.checkedValue = this.sentValues[0];
 	   this.uncheckedValue = this.sentValues[1];
+	   this.options.disabled = options.disabled;
 	},
 	   
 	/**
@@ -54,6 +55,7 @@ lang.extend(inputEx.CheckBox, inputEx.Field, {
 	   // This is useful for non-javascript form submit (it allows custom checked/unchecked values to be submitted)
 	   this.hiddenEl = inputEx.cn('input', {type: 'hidden', name: this.options.name || '', value: this.uncheckedValue});
 	   this.fieldContainer.appendChild(this.hiddenEl);
+	   if (this.options.disabled) { this.el.disabled = 'disabled'; }
 	},
 	   
 	/**

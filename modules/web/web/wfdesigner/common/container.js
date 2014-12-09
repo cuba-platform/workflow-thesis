@@ -72,8 +72,11 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
       if(!this.optionsValue){
           this.optionsValue = this.optionsForm.getValue();
       }
-      this.optionsValue.name = args[0].name;
-      this.optionsForm.setValue(this.optionsValue);
+      for(key in args[0]){
+          this.optionsValue[key] = args[0][key];
+      }
+
+      this.optionsForm.setValue(this.optionsValue,false);
    },
 
     onContainerFocus: function(eventName, containers) {
@@ -116,6 +119,16 @@ YAHOO.lang.extend(Wf.Container, WireIt.FormContainer, {
     },
 
     setValue: function(val) {
+
+        if (val.options) {
+            for (key in val.options) {
+                if (val[key] == null) {
+                    val[key] = val.options[key];
+                }
+            }
+        }
+
+
         Wf.Container.superclass.setValue.call(this, val);
         Wf.OptionFieldsHelper.setValue(this, val.options);
         Wf.OptionFieldsHelper.setVariables(this, val.variables);
