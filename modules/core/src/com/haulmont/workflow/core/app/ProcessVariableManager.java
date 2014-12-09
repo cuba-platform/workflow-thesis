@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.enums.AttributeType;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -58,8 +59,14 @@ public class ProcessVariableManager implements ProcessVariableAPI {
 
         Object value = null;
         String stringValue = designProcessVariable.getValue();
-        if (StringUtils.isBlank(stringValue)) return stringValue;
         if (designProcessVariable.getAttributeType() == null) return stringValue;
+        if (StringUtils.isBlank(stringValue)) {
+            if (AttributeType.STRING == designProcessVariable.getAttributeType()) {
+                return stringValue;
+            } else {
+                return null;
+            }
+        }
         try {
             switch (designProcessVariable.getAttributeType()) {
                 case INTEGER:
