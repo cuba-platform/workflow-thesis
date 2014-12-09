@@ -20,7 +20,7 @@ public class DisableCachePostProcessor extends BaseDesignPostProcessor {
 
     @Override
     public void processJpdl(Element rootElement, List<DesignCompilationError> compileErrors) {
-        List<Element> activities = (List<Element>) rootElement.elements();
+        List<Element> activities = (List<Element>) rootElement.elements("custom");
         if (!activities.isEmpty()) {
             for (Element element : activities) {
                 element.addAttribute("cache", "disabled");
