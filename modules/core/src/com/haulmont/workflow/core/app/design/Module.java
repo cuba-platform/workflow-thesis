@@ -4,9 +4,7 @@
  */
 package com.haulmont.workflow.core.app.design;
 
-import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Design;
@@ -196,7 +194,7 @@ public abstract class Module {
                     variable.setName(alias);
                     variable.setPropertyName(key);
                     variable.setModuleName(name);
-                    String value = options.getString(key);
+                    String value = options.optString(key, null);
                     variable.setValue(value);
                     variable.setShouldBeOverridden(StringUtils.isBlank(value));
                     designProcessVariables.add(variable);
