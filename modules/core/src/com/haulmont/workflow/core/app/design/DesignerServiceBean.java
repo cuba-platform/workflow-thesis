@@ -18,6 +18,7 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
+import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;

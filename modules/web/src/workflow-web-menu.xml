@@ -13,6 +13,7 @@
         <item id="wf$WorkCalendar.browse"/>
         <item id="wf$UserGroup.browse"/>
         <item id="wf$AttachTypes.browse"/>
+        <item id="wf$Timer.browse"/>
     </menu>
 
 </menu-config>

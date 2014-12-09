@@ -22,6 +22,14 @@ div.inputEx-Group div.inputEx-label {
     width: 75px;
 }
 
+div.inputEx-Group div input[type="checkbox"]  {
+    width : auto;
+}
+
+div.inputEx-Group div select,div.inputEx-Group div input {
+    width : 140px;
+}
+
 #optionsForm div.inputEx-Group div.inputEx-label {
     width: auto;
 }

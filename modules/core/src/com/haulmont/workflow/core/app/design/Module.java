@@ -11,8 +11,10 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -162,6 +164,74 @@ public abstract class Module {
     public void writeFormsXml(Element rootEl) throws DesignCompilationException {
     }
 
+    protected void writeJpdlTimers(Element parentEl,JSONObject jsTimers) throws DesignCompilationException {
+        if (jsTimers == null)
+            return;
+        try {
+            JSONArray jsTimersList = jsTimers.optJSONArray("list");
+            if (jsTimersList == null || jsTimersList.length() == 0)
+                return;
+
+            Element element = writeJpdlObjectPropertyEl(
+                    parentEl, "timersFactory", getTimersFactory());
+
+            String dueDateType;
+            StringBuilder dueDates = new StringBuilder();
+            StringBuilder transitions = new StringBuilder();
+            StringBuilder scripts = new StringBuilder();
+            for (int i = 0; i < jsTimersList.length(); i++) {
+                JSONObject jsTimer = jsTimersList.getJSONObject(i);
+
+                JSONObject jsProps = jsTimer.getJSONObject("properties");
+                dueDateType = jsProps.getString("dueDateType");
+                if ("manual".equals(dueDateType)) {
+                    JSONArray jsDueDate = jsProps.getJSONArray("dueDate");
+                    String dueDate = jsDueDate.getInt(0) + " " + jsDueDate.getString(1) + " " + jsDueDate.getString(2);
+                    dueDates.append(dueDate);
+                } else {
+                    dueDates.append("process");
+                }
+
+                String type = jsTimer.getString("type");
+                if (type.equals("script")) {
+                    String script = jsProps.getString("name");
+                    String fileName=null;
+                    for (DesignScript designScript : context.getDesign().getScripts()) {
+                        if (ObjectUtils.equals(designScript.getName(), script)
+                                && StringUtils.isNotEmpty(designScript.getContent())
+                                && designScript.getContent().endsWith(".groovy")) {
+                            fileName = "path:" + designScript.getContent();
+                        }
+                    }
+
+                    if (fileName == null) {
+                        fileName = scriptNamesMap.get(script);
+                    }
+                    if (fileName == null)
+                        throw new DesignCompilationException("Unable to compile timers for module " + caption
+                                + ": script '" + script + "' not found");
+                    scripts.append(fileName);
+                } else {
+                    String transition = WfUtils.encodeKey(jsProps.getString("name"));
+                    transitions.append(transition);
+                }
+
+                if (i < jsTimersList.length() - 1) {
+                    dueDates.append("|");
+                    transitions.append("|");
+                    scripts.append("|");
+                }
+            }
+
+            writeJpdlStringPropertyEl(element, "dueDates", dueDates.toString());
+            writeJpdlStringPropertyEl(element, "transitions", transitions.toString());
+            writeJpdlStringPropertyEl(element, "scripts", scripts.toString());
+
+        } catch (JSONException e) {
+            throw new DesignCompilationException("Unable to compile timers for module " + caption, e);
+        }
+    }
+
     public Boolean isVariableExists(String key) throws DesignCompilationException {
         try {
             if (jsValue.isNull("variables")) return false;
@@ -212,6 +282,10 @@ public abstract class Module {
                 return variable;
             }
         }
+        return null;
+    }
+
+    protected String getTimersFactory() {
         return null;
     }
 }

@@ -5,6 +5,8 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -21,6 +23,8 @@ import java.util.Map;
 public class GenericAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(GenericAssignmentTimerAction.class);
+
+    public static final String SCRIPT_PATH_PREFIX = "path:";
 
     private void debug(String msg, User user) {
         log.debug(msg + " [" + user + "]");
@@ -59,7 +63,7 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
     protected void takeTransition(TimerActionContext context, User user, String transition) {
         Assignment assignment = null;
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.NAME,Persistence.class).getEntityManager();
         Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
         query.setParameter(1, context.getCard());
         List<Assignment> assignments = query.getResultList();
@@ -78,11 +82,14 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
         params.put("dueDate", context.getDueDate());
         params.put("activity", context.getActivity());
         params.put("user", user);
-
-        String processKey = context.getCard().getProc().getJbpmProcessKey();
-        String fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + script;
-
+        String fileName;
+        if (script.startsWith(SCRIPT_PATH_PREFIX)) {
+            fileName = script.substring(SCRIPT_PATH_PREFIX.length());
+        } else {
+            String processKey = context.getCard().getProc().getJbpmProcessKey();
+            fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + script;
+        }
         debug("Running script " + fileName, user);
-        ScriptingProvider.runGroovyScript(fileName, params);
+        AppBeans.get(Scripting.NAME,Scripting.class).runGroovyScript(fileName, params);
     }
 }

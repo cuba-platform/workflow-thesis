@@ -127,4 +127,7 @@
     <screen id="wf$SendingSms.browse"
             template="/com/haulmont/workflow/gui/app/sms/sending-sms-browse.xml"/>
 
+    <screen id="wf$Timer.browse"
+            template="/com/haulmont/workflow/gui/app/timer/timer-browse.xml"/>
+
 </screen-config>

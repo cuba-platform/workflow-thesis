@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.Role;
@@ -160,6 +161,11 @@ public class WfServiceBean implements WfService {
         } finally {
             tx.end();
         }
+    }
+
+    public void processTimer(TimerEntity timer) {
+        TimerManagerAPI timerManager = AppBeans.get(TimerManagerAPI.NAME);
+        timerManager.processTimer(timer);
     }
 
     @Override

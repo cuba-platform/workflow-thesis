@@ -8,6 +8,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
+import com.haulmont.workflow.core.entity.TimerEntity;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
 import javax.annotation.Nullable;
@@ -152,6 +153,13 @@ public interface WfService {
      * @param type notification type
      */
     void deleteNotifications(Card card, User user, int type);
+
+    /**
+     * Fires given timer
+     *
+     * @param timer timer in workflow
+     */
+    void processTimer(TimerEntity timer);
 
     /**
      * Sets a HasAttachment attribute in a card.

@@ -77,7 +77,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
     onFormTypeChanged: function(e, params) {
         this.formName = params[0];
         //console.log(this.formName);
-        Wf.editor.layer.eventChanged.fire();
+        this.onDataChanged(e,params);
         this.renderFormParams();
     },
 

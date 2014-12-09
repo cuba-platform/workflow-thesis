@@ -116,9 +116,7 @@ public class WfUtils {
             StringBuilder sb = new StringBuilder(text.length());
             for (char symbol : charBuffer) {
                 String replace = charTable[symbol];
-                if ((replace == null) && (!(CharUtils.isAsciiAlphaLower(symbol)
-                        || CharUtils.isAsciiAlphaUpper(symbol)
-                        || CharUtils.isAsciiNumeric(symbol)))) {
+                if ((replace == null) && (!CharUtils.isAsciiAlphanumeric(symbol))) {
                     replace = "_";
                 }
                 sb.append(replace == null ? symbol : replace);
