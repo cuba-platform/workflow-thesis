@@ -30,6 +30,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -182,6 +184,18 @@ public class WfEngine implements WfEngineAPI {
                         if (StringUtils.isNotBlank(state))
                             states.add(state);
                     }
+
+                    if("foreach".equals(stateElem.getName())) {
+                        String inAttributeValue = stateElem.attributeValue("in");
+                        if(StringUtils.isNotBlank(inAttributeValue)) {
+                            Pattern rolePattern =
+                                    Pattern.compile("(#\\{wf:getUsersByProcRole\\(execution, \")(\\w+)(\"\\)\\})");
+                            Matcher matcher = rolePattern.matcher(inAttributeValue);
+                            if(matcher.matches())
+                                roles.add(matcher.group(2));
+                        }
+                    }
+
                     for (Element element : Dom4j.elements(stateElem)) {
                         String name = element.attributeValue("name");
                         if (name != null && "property".equals(element.getName())) {
