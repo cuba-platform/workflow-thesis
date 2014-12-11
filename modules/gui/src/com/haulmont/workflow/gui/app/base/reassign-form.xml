@@ -17,7 +17,7 @@
                               view="transition-form">
             <query>
                 <![CDATA[select cr from wf$CardRole cr
-                where cr.card.id = :param$card and cr.procRole.proc.id = :param$card.proc
+                where cr.card.id = :param$procContextCard and cr.procRole.proc.id = :param$procContextCard.proc
                 order by cr.code]]>
             </query>
         </collectionDatasource>

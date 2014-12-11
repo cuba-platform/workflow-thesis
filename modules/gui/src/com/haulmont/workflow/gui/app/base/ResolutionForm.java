@@ -64,7 +64,10 @@ public class ResolutionForm extends AbstractForm {
         super.init(params);
 
         final Card card = (Card) params.get("card");
-        String messagesPack = card.getProc().getMessagesPack();
+        Card procContextCard = (Card) params.get("procContextCard");
+        if (procContextCard == null) procContextCard = card;
+
+        String messagesPack = procContextCard.getProc().getMessagesPack();
         String activity = (String) params.get("activity");
         String transition = (String) params.get("transition");
 

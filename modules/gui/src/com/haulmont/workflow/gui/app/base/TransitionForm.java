@@ -86,6 +86,7 @@ public class TransitionForm extends AbstractForm {
     protected DataSupplier dataSupplier;
 
     protected Card card;
+    protected Card procContextCard;
     protected Boolean hideAttachments = false;
     protected List<String> requiredAttachmentTypes = new ArrayList<>();
     protected Map<String, AttachmentType> attachmentTypes;
@@ -105,7 +106,13 @@ public class TransitionForm extends AbstractForm {
 
         getDialogParams().setWidth(DEFAULT_FORM_WIDTH);
         card = (Card) params.get("card");
-        String messagesPack = card.getProc().getMessagesPack();
+        procContextCard = (Card) params.get("procContextCard");
+        if (procContextCard == null) {
+            procContextCard = card;
+            params.put("procContextCard", procContextCard);
+        }
+
+        String messagesPack = procContextCard.getProc().getMessagesPack();
         String activity = (String) params.get("activity");
         String transition = (String) params.get("transition");
         Object assignmentId = params.get("assignmentId");
@@ -141,8 +148,8 @@ public class TransitionForm extends AbstractForm {
             Assignment assignment = getDsContext().getDataSupplier().load(ctx);
             assignmentDs.setItem(assignment);
             String parentMessagesPack = messagesPack;
-            if (card.isSubProcCard())
-                parentMessagesPack = card.getProcFamily().getCard().getProc().getMessagesPack();
+            if (procContextCard.isSubProcCard())
+                parentMessagesPack = procContextCard.getProcFamily().getCard().getProc().getMessagesPack();
             outcomeText.setValue(messages.getMessage(parentMessagesPack, activity + "." + transition));
             setCommentTextAssignmentDatasource();
         } else {
@@ -257,12 +264,12 @@ public class TransitionForm extends AbstractForm {
         if (StringUtils.isNotBlank(visibleRoles))
             cardRolesFrame.tmpCardRolesDs.setVisibleRoles(Sets.newHashSet(visibleRoles.split("\\s*,\\s*")));
 
-        cardRolesFrame.setCard(card);
+        cardRolesFrame.setCard(procContextCard);
         cardRolesDs.addListener(new DsListenerAdapter<CardRole>() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 if (state == Datasource.State.VALID) {
-                    cardRolesFrame.procChanged(card.getProc());
+                    cardRolesFrame.procChanged(procContextCard.getProc());
                     cardRolesFrame.setRequiredRolesCodesStr(getRequiredRoles());
                     cardRolesFrame.fillMissingRoles();
                 }

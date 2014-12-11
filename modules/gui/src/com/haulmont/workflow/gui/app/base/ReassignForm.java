@@ -59,6 +59,7 @@ public class ReassignForm extends AbstractWindow {
     protected Configuration configuration;
 
     protected Card card;
+    protected Card procContextCard;
     protected String state;
     protected String role;
     protected boolean commentVisible;
@@ -74,6 +75,11 @@ public class ReassignForm extends AbstractWindow {
         commentVisible = BooleanUtils.isTrue((Boolean) params.get("commentVisible"));
 
         card = (Card) params.get("card");
+        procContextCard = (Card) params.get("procContextCard");
+        if (procContextCard == null) {
+            procContextCard = card;
+            params.put("procContextCard", procContextCard);
+        }
         state = (String) params.get("state");
         cardDs.setItem((Card) InstanceUtils.copy(card));
 
@@ -85,13 +91,13 @@ public class ReassignForm extends AbstractWindow {
             Iterable<String> visibleRoles = Splitter.on(",").split(StringUtils.defaultIfEmpty((String) params.get("visibleRoles"), ""));
             cardRolesFrame.setInactiveRoleVisible(false);
             cardRolesFrame.init();
-            cardRolesFrame.setCard(card);
+            cardRolesFrame.setCard(procContextCard);
             tmpCardRolesDs.setVisibleRoles(ImmutableSet.<String>builder().add(role).addAll(visibleRoles).build());
             cardRolesDs.addListener(new DsListenerAdapter() {
                 @Override
                 public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                     if (state == Datasource.State.VALID) {
-                        cardRolesFrame.procChanged(card.getProc());
+                        cardRolesFrame.procChanged(procContextCard.getProc());
                         cardRolesFrame.setRequiredRolesCodesStr(role);
                         cardRolesFrame.fillMissingRoles();
                     }

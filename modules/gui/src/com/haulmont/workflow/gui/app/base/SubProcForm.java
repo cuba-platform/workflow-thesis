@@ -23,7 +23,7 @@ public class SubProcForm extends TransitionForm {
         Card card = (Card) params.get("card");
         String subProcCode = (String) params.get("subProcCode");
         Card subProcCard = createSubProcCard(card, subProcCode);
-        params.put("card", subProcCard);
+        params.put("procContextCard", subProcCard);
         if (params.containsKey("subProcCard")) {
             CardContext subProcCardContext = (CardContext) params.get("subProcCard");
             subProcCardContext.setCard(subProcCard);
