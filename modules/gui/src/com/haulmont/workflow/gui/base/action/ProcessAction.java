@@ -77,7 +77,8 @@ public class ProcessAction extends AbstractAction {
         else
             currentCard = assignmentInfo.getCard();
         final FormManagerChain managerChain = FormManagerChain.getManagerChain(currentCard, actionName);
-        managerChain.setCard(currentCard);
+        managerChain.setCard(card);
+        managerChain.getCommonParams().put("procContextCard", currentCard);
         managerChain.setAssignmentId(assignmentId);
         return managerChain;
     }
