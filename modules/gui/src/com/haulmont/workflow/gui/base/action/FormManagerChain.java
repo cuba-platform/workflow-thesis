@@ -187,6 +187,7 @@ public class FormManagerChain {
         FormManager nextManager = getNextManagerBefore();
         if (nextManager != null) {
             params.putAll(commonParams);
+            nextManager.setComment(comment);
             nextManager.doBefore(params);
         } else {
             handler.onSuccess(comment);

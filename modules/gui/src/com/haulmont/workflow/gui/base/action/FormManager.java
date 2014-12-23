@@ -40,6 +40,7 @@ public abstract class FormManager implements Serializable {
     protected String transition;
     protected boolean before;
     protected boolean after;
+    protected String comment;
 
     protected FormManagerChain chain;
 
@@ -124,6 +125,14 @@ public abstract class FormManager implements Serializable {
 
     public abstract void doAfter(Map<String, Object> params);
 
+    public String getComment() {
+        return comment == null ? "" : comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     public FormManager copy() {
         FormManager copiedFormManager = null;
         try {
@@ -154,6 +163,7 @@ public abstract class FormManager implements Serializable {
         @Override
         public void doBefore(Map<String, Object> params) {
             params.put("before", true);
+            params.put("chainComment", getComment());
             params.putAll(this.params);
 
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
@@ -170,8 +180,7 @@ public abstract class FormManager implements Serializable {
                         }
                     }
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        String comment = window instanceof WfForm ?
-                                ((WfForm) window).getComment() : "";
+                        String comment = window instanceof WfForm ? ((WfForm) window).getComment() : "";
                         try {
                             chain.doManagerBefore(comment);
                         } catch (RuntimeException e) {
@@ -241,7 +250,7 @@ public abstract class FormManager implements Serializable {
             try {
                 Boolean result = runnable.call();
                 if (!BooleanUtils.isFalse(result)) {
-                    chain.doManagerBefore("", params);
+                    chain.doManagerBefore(getComment(), params);
                 } else {
                     chain.fail();
                 }
@@ -288,7 +297,7 @@ public abstract class FormManager implements Serializable {
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    chain.doManagerBefore("");
+                                    chain.doManagerBefore(getComment());
                                 }
                             },
                             new DialogAction(DialogAction.Type.NO) {
