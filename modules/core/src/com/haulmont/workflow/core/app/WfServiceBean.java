@@ -50,6 +50,11 @@ public class WfServiceBean implements WfService {
     }
 
     @Override
+    public AssignmentInfo getAssignmentInfo(Assignment assignment, String processId) {
+        return wfWorkerAPI.getAssignmentInfo(assignment, processId);
+    }
+
+    @Override
     public void cancelProcess(Card card) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -221,7 +226,7 @@ public class WfServiceBean implements WfService {
 
     @Override
     public Card createSubProcCard(Card parentCard, String procCode) {
-        Transaction tx = persistence.createTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             Card familyTop = parentCard.getFamilyTop();

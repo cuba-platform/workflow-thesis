@@ -6,6 +6,7 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.TimerEntity;
@@ -30,6 +31,16 @@ public interface WfService {
      */
     @Nullable
     AssignmentInfo getAssignmentInfo(Card card);
+
+
+    /**
+     * Creates assignment info for the provided assignment and process id
+     *
+     * @param assignment assignment
+     * @param processId process id
+     * @return assignment information created from provided assignment
+     */
+    AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
     /**
      * Starts a workflow process for a given card.

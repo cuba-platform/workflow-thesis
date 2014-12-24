@@ -6,6 +6,7 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 
@@ -31,6 +32,8 @@ public interface WfWorkerAPI {
      */
     @Nullable
     AssignmentInfo getAssignmentInfo(Card card);
+
+    AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
     Map<String, Object> getProcessVariables(Card card);
 
