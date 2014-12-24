@@ -15,6 +15,9 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.AssignmentInfo;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.ProcessDefinition;
 import org.jbpm.api.ProcessDefinitionQuery;
 import org.jbpm.api.ProcessInstance;
@@ -52,38 +55,45 @@ public class WfWorkerBean implements WfWorkerAPI {
                         userSessionSource.currentOrSubstitutedUserId(), card);
                 if (!assignments.isEmpty()) {
                     Assignment assignment = assignments.get(0);
-                    info = new AssignmentInfo(assignment);
-                    String activityName = assignment.getName();
                     if (!card.equals(assignment.getCard()))
                         processId = assignment.getCard().getJbpmProcessId();
-
-                    ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
-
-                    ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
-
-                    // Getting List instead of uniqueResult because of rare bug in process deployment which leads
-                    // to creation of 2 PD with the same ID
-                    List<ProcessDefinition> pdList = query.processDefinitionId(pi.getProcessDefinitionId()).list();
-                    if (pdList.isEmpty())
-                        throw new RuntimeException("ProcessDefinition not found: " + pi.getProcessDefinitionId());
-                    Collections.sort(
-                            pdList,
-                            new Comparator<ProcessDefinition>() {
-                                public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
-                                    return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
-                                }
-                            }
-                    );
-                    ProcessDefinition pd = pdList.get(pdList.size() - 1);
-
-                    Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
-                    addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
+                    info = getAssignmentInfo(assignment, processId, card);
                 }
             }
             tx.commit();
         } finally {
             tx.end();
         }
+        return info;
+    }
+
+    @Override
+    public AssignmentInfo getAssignmentInfo(Assignment assignment, String processId) {
+        return getAssignmentInfo(assignment, processId, null);
+    }
+
+    public AssignmentInfo getAssignmentInfo(Assignment assignment, String processId, Card card) {
+        AssignmentInfo info = new AssignmentInfo(assignment);
+        String activityName = assignment.getName();
+        ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
+        ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
+        // Getting List instead of uniqueResult because of rare bug in process deployment which leads
+        // to creation of 2 PD with the same ID
+        List<ProcessDefinition> pdList = query.processDefinitionId(pi.getProcessDefinitionId()).list();
+        if (pdList.isEmpty())
+            throw new RuntimeException("ProcessDefinition not found: " + pi.getProcessDefinitionId());
+        Collections.sort(
+                pdList,
+                new Comparator<ProcessDefinition>() {
+                    public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
+                        return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
+                    }
+                }
+        );
+        ProcessDefinition pd = pdList.get(pdList.size() - 1);
+
+        Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
+        addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
         return info;
     }
 
