@@ -216,11 +216,15 @@ public abstract class FormManager implements Serializable {
     public static class ClassFormManager extends FormManager {
 
         private String className;
+        private String script;
         private Map<String, Object> params;
 
         public ClassFormManager(Element element, String activity, String transition, FormManagerChain chain) {
             super(element, activity, transition, chain);
             className = element.attributeValue("class");
+            Element scriptEl = element.element("script");
+            if (scriptEl != null)
+                script = scriptEl.getStringValue();
             params = getScreenParams(element);
         }
 
@@ -241,14 +245,20 @@ public abstract class FormManager implements Serializable {
             return runnable;
         }
 
+        private Boolean call(Map<String, Object> params) throws Exception {
+            if (className != null) {
+                return getCallable(params).call();
+            } else {
+                return AppBeans.get(Scripting.class).evaluateGroovy(script, params);
+            }
+        }
+
         @Override
         public void doBefore(Map<String, Object> params) {
             params.put("before", true);
             params.putAll(this.params);
-
-            Callable<Boolean> runnable = getCallable(params);
             try {
-                Boolean result = runnable.call();
+                Boolean result = call(params);
                 if (!BooleanUtils.isFalse(result)) {
                     chain.doManagerBefore(getComment(), params);
                 } else {
@@ -263,10 +273,8 @@ public abstract class FormManager implements Serializable {
         public void doAfter(Map<String, Object> params) {
             params.put("after", true);
             params.putAll(this.params);
-
-            Callable<Boolean> runnable = getCallable(params);
             try {
-                Boolean result = runnable.call();
+                Boolean result = call(params);
                 if (!BooleanUtils.isFalse(result)) {
                     chain.doManagerAfter();
                 }
