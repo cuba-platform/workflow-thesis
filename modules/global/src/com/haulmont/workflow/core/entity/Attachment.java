@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 
 @Entity(name = "wf$Attachment")
@@ -25,6 +26,11 @@ import javax.persistence.*;
 public class Attachment extends StandardEntity {
 
     private static final long serialVersionUID = 8954537950047549199L;
+
+    @PostConstruct
+    protected void init() {
+        setVersionNum(1);
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FILE_ID")
