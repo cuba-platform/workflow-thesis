@@ -11,6 +11,8 @@ Wf.ScriptSelect = function(options) {
 
 YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
 
+    allowVariable: false,
+
     setOptions: function(options) {
         Wf.OutputSelect.superclass.setOptions.call(this, options);
 
