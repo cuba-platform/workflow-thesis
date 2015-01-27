@@ -24,6 +24,8 @@ YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
         if (!val)
             return;
         this.refresh(true);
+        this.newVal = val;
+        this.sendUpdateEvt = sendUpdatedEvt;
         Wf.ScriptSelect.superclass.setValue.call(this, val, sendUpdatedEvt);
     },
 
@@ -55,6 +57,12 @@ YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
             var v = {value: scripts[i]};
             if (this.getChoicePosition(v) == -1)
                 this.addChoice(v);
+        }
+        //set value executed early then choice list arrived from server
+        if (this.newVal) {
+            Wf.ScriptSelect.superclass.setValue.call(this, this.newVal, this.sendUpdatedEvt);
+            this.options.container.previousValue = this.newVal;
+            this.newVal = null;
         }
     }
 });
