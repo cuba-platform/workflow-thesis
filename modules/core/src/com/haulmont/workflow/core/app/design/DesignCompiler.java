@@ -7,19 +7,22 @@ package com.haulmont.workflow.core.app.design;
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerInfo;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.WfUtils;
-import com.haulmont.workflow.core.app.design.modules.SubDesignModule;
-import com.haulmont.workflow.core.entity.DesignProcessVariable;
-import com.haulmont.workflow.core.error.DesignError;
-import com.haulmont.workflow.core.error.DesignCompilationError;
-import com.haulmont.workflow.core.error.ModuleError;
 import com.haulmont.workflow.core.app.design.modules.StartModule;
+import com.haulmont.workflow.core.app.design.modules.SubDesignModule;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
+import com.haulmont.workflow.core.error.DesignCompilationError;
+import com.haulmont.workflow.core.error.DesignError;
+import com.haulmont.workflow.core.error.ModuleError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
@@ -30,7 +33,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -63,14 +66,14 @@ public class DesignCompiler {
 
     protected ServerInfo serverInfo;
 
-    private Log log = LogFactory.getLog(DesignCompiler.class);
+    protected Log log = LogFactory.getLog(DesignCompiler.class);
 
     // set from spring.xml
     public void setModuleClasses(Map<String, String> moduleClassNames) {
         this.moduleClassNames = moduleClassNames;
     }
 
-    private Map<String, Class<? extends Module>> getModuleClasses() {
+    protected Map<String, Class<? extends Module>> getModuleClasses() {
         if (moduleClasses == null) {
             synchronized (this) {
                 moduleClasses = new HashMap<>();
@@ -198,7 +201,7 @@ public class DesignCompiler {
         }
     }
 
-    private List<DesignCompilationError> checkRequiredModules(List<Module> modules) {
+    protected List<DesignCompilationError> checkRequiredModules(List<Module> modules) {
         boolean startExist = false;
         List<DesignCompilationError> errors = new LinkedList<>();
         for (Module module : modules) {
@@ -211,7 +214,7 @@ public class DesignCompiler {
         return errors;
     }
 
-    private Boolean checkEndReachable(String jpdl) {
+    protected Boolean checkEndReachable(String jpdl) {
         Map<String, Element> modulesByName = getModulesByName(jpdl);
         List<String> visitedModules = new ArrayList<>();
         List<String> visitingModules = new ArrayList<>();
@@ -227,7 +230,7 @@ public class DesignCompiler {
         return false;
     }
 
-    private boolean visitNext(String moduleName, Map<String, Element> modulesByName, List<String> visitedModules, List<String> visitingModules) {
+    protected boolean visitNext(String moduleName, Map<String, Element> modulesByName, List<String> visitedModules, List<String> visitingModules) {
         if (moduleName == null)
             return false;
         visitedModules.add(moduleName);
@@ -247,7 +250,7 @@ public class DesignCompiler {
         return false;
     }
 
-    private Map<String, Element> getModulesByName(String jpdl) {
+    protected Map<String, Element> getModulesByName(String jpdl) {
         Map<String, Element> modulesByName = new HashMap<>();
         Document document;
         try {
@@ -264,7 +267,7 @@ public class DesignCompiler {
         return modulesByName;
     }
 
-    private Element getStartElement(Collection<Element> elements) {
+    protected Element getStartElement(Collection<Element> elements) {
         for (Element element : elements) {
             if ("start".equals(element.getName())) {
                 return element;
@@ -273,7 +276,7 @@ public class DesignCompiler {
         return null;
     }
 
-    private Map<String, String> checkUnusedModules(String jpdl, List<Module> modules) {
+    protected Map<String, String> checkUnusedModules(String jpdl, List<Module> modules) {
         Map<String, String> errors = new HashMap<>();
 
         Map<String, Element> modulesByName;
@@ -301,7 +304,7 @@ public class DesignCompiler {
         return errors;
     }
 
-    private void findNext(Element element, Map<String, Element> modulesByName, Map<String, String> modulesNames) {
+    protected void findNext(Element element, Map<String, Element> modulesByName, Map<String, String> modulesNames) {
         List<Element> transitionsEl = element.elements("transition");
         for (Element transitionEl : transitionsEl) {
             String moduleName = transitionEl.attributeValue("to");
@@ -316,7 +319,7 @@ public class DesignCompiler {
         }
     }
 
-    private Collection<DesignProcessVariable> getProcessVariables(List<Module> modules) throws DesignCompilationException {
+    protected Collection<DesignProcessVariable> getProcessVariables(List<Module> modules) throws DesignCompilationException {
         Map<String, DesignProcessVariable> designProcessVariables = new HashMap<>();
         for (Module module : modules) {
             for (DesignProcessVariable processVariable : module.generateDesignProcessVariables()) {
@@ -349,13 +352,13 @@ public class DesignCompiler {
         return designProcessVariables.values();
     }
 
-    private boolean isSameVariable(DesignProcessVariable processVariable, DesignProcessVariable designProcessVariable) {
+    protected boolean isSameVariable(DesignProcessVariable processVariable, DesignProcessVariable designProcessVariable) {
         if (designProcessVariable.getAttributeType() == null || processVariable.getAttributeType() == null) return true;
         return designProcessVariable.getAttributeType() == processVariable.getAttributeType()
                 && ObjectUtils.equals(designProcessVariable.getMetaClassName(), processVariable.getMetaClassName());
     }
 
-    private List<String> parseRoles(Document document) {
+    protected List<String> parseRoles(Document document) {
         List<String> rolesList = new LinkedList<>();
         List<Element> elements = document.getRootElement().elements("custom");
         for (Element e : elements) {
@@ -373,7 +376,7 @@ public class DesignCompiler {
         return rolesList;
     }
 
-    private Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
+    protected Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
         Map<String, String> states = new LinkedHashMap<>();
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
@@ -400,7 +403,7 @@ public class DesignCompiler {
         return states;
     }
 
-    private String getNextAssignmentStates(String stateKey, List<Element> elements, List<String> previosElements) throws TemplateGenerationException {
+    protected String getNextAssignmentStates(String stateKey, List<Element> elements, List<String> previosElements) throws TemplateGenerationException {
         for (Element element : elements) {
             Attribute nameAttr = element.attribute("name");
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
@@ -429,7 +432,7 @@ public class DesignCompiler {
         return null;
     }
 
-    private boolean checkState(String stateKey, List<Element> elements) {
+    protected boolean checkState(String stateKey, List<Element> elements) {
         for (Element element : elements) {
             Attribute nameAttr = element.attribute("name");
             if (nameAttr != null && stateKey.equals(nameAttr.getValue())) {
@@ -449,7 +452,7 @@ public class DesignCompiler {
         return false;
     }
 
-    private boolean checkJoin(String elementName, List<Element> elements) throws TemplateGenerationException {
+    protected boolean checkJoin(String elementName, List<Element> elements) throws TemplateGenerationException {
         for (Element element : elements) {
             if (elementName.equals(element.attributeValue("name"))) {
                 if ("join".equals(element.getName())) {
@@ -463,7 +466,7 @@ public class DesignCompiler {
     }
 
 
-    private void createStatesSheet(Workbook book, Map<String, String> statesMap) {
+    protected void createStatesSheet(Workbook book, Map<String, String> statesMap) {
         Sheet statesSheet = book.getSheet("States");
 
         Set<Map.Entry<String, String>> set = statesMap.entrySet();
@@ -484,7 +487,7 @@ public class DesignCompiler {
 
     }
 
-    private void createRolesSheet(Workbook book, List<String> rolesList) {
+    protected void createRolesSheet(Workbook book, List<String> rolesList) {
 
         Sheet roles = book.getSheet("Roles");
         int i = 0;
@@ -504,7 +507,7 @@ public class DesignCompiler {
 
     }
 
-    private void createNotificationSheet(Workbook book, List<String> rolesList, Collection<String> states, String sheetName) {
+    protected void createNotificationSheet(Workbook book, List<String> rolesList, Collection<String> states, String sheetName) {
         Sheet mail = book.getSheet(sheetName);
         if (mail != null) {
             Row statesRow = mail.getRow(1);
@@ -612,7 +615,7 @@ public class DesignCompiler {
     }
 
 
-    private List<DesignCompilationError> createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
+    protected List<DesignCompilationError> createModules(Design design, List<Module> modules) throws JSONException, DesignCompilationException {
         List<DesignCompilationError> errors = new LinkedList<>();
         List<String> modulesNames = new ArrayList<>();
 
@@ -660,7 +663,7 @@ public class DesignCompiler {
         return errors;
     }
 
-    private void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires, List<DesignCompilationError> errors) throws JSONException, DesignCompilationException {
+    protected void addTransitions(List<Module> modules, JSONArray jsModules, JSONArray jsWires, List<DesignCompilationError> errors) throws JSONException, DesignCompilationException {
         Map<Integer, Module> otherModules = new HashMap<>();
 
         for (int i = 0; i < modules.size(); i++) {
@@ -715,7 +718,7 @@ public class DesignCompiler {
         }
     }
 
-    private Map<String, List<TransitionParams>> getModuleTransitionsParams(Module module, int moduleId, JSONArray jsWires) throws JSONException {
+    protected Map<String, List<TransitionParams>> getModuleTransitionsParams(Module module, int moduleId, JSONArray jsWires) throws JSONException {
         Map<String, List<TransitionParams>> wires = new HashMap<>();
 
         for (int i = 0; i < jsWires.length(); i++) {
@@ -738,7 +741,7 @@ public class DesignCompiler {
         return wires;
     }
 
-    private class TransitionParams {
+    protected class TransitionParams {
         TransitionParams(int dstModuleId, String dstModuleTerminal) {
             this.dstModuleId = dstModuleId;
             this.dstModuleTerminal = dstModuleTerminal;
@@ -748,7 +751,7 @@ public class DesignCompiler {
         String dstModuleTerminal;
     }
 
-    private void cleanup(Design design) {
+    protected void cleanup(Design design) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         Query q = em.createQuery("delete from wf$DesignFile df where df.design.id = ?1");
@@ -756,7 +759,7 @@ public class DesignCompiler {
         q.executeUpdate();
     }
 
-    private void saveParameters(Design design, Collection<DesignProcessVariable> designProcessVariables) {
+    protected void saveParameters(Design design, Collection<DesignProcessVariable> designProcessVariables) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         Map<Pair<String, String>, DesignProcessVariable> designProcessVariableMap = new HashMap<>();
@@ -796,7 +799,7 @@ public class DesignCompiler {
         }
     }
 
-    private void saveDesignFile(Design design, String name, String type, String content, byte[] binaryContent) {
+    protected void saveDesignFile(Design design, String name, String type, String content, byte[] binaryContent) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         DesignFile df = new DesignFile();
@@ -808,7 +811,7 @@ public class DesignCompiler {
         em.persist(df);
     }
 
-    private String compileJpdl(List<Module> modules, List<DesignCompilationError> compileErrors) throws DesignCompilationException {
+    protected String compileJpdl(List<Module> modules, List<DesignCompilationError> compileErrors) throws DesignCompilationException {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("process", "http://jbpm.org/4.2/jpdl");
 
@@ -820,19 +823,39 @@ public class DesignCompiler {
             }
         }
 
-        Element endEl = rootEl.addElement("on");
-        endEl.addAttribute("event", "end");
-        Element endListenerEl = endEl.addElement("event-listener");
-        endListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
-
-        Element startEl = rootEl.addElement("on");
-        startEl.addAttribute("event", "start");
-        Element startListenerEl = startEl.addElement("event-listener");
-        startListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.StartProcessListener");
+        addEndProcessListener(rootEl);
+        addStartProcessListener(rootEl);
 
         processSubdesignJpdl(rootEl);
         postProcessor.processJpdl(rootEl, compileErrors);
         return Dom4j.writeDocument(document, true);
+    }
+
+    protected void addEndProcessListener(Element rootEl) {
+        List<Element> endElements = rootEl.elements("end");
+        List<String> endModuleNames = new ArrayList<>();
+        for (Element element : endElements) {
+            endModuleNames.add(element.attributeValue("name"));
+        }
+
+        List<Element> customElements = rootEl.elements("custom");
+        for (Element customElement : customElements) {
+            List<Element> transitionEls = customElement.elements("transition");
+            for (Element transitionEl : transitionEls) {
+                String to = transitionEl.attributeValue("to");
+                if (endModuleNames.contains(to)) {
+                    Element eventListener = transitionEl.addElement("event-listener");
+                    eventListener.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
+                }
+            }
+        }
+    }
+
+    protected void addStartProcessListener(Element rootEl) {
+        Element startEl = rootEl.addElement("on");
+        startEl.addAttribute("event", "start");
+        Element startListenerEl = startEl.addElement("event-listener");
+        startListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.StartProcessListener");
     }
 
     public void processSubdesignJpdl(Element rootElement) {
@@ -859,7 +882,7 @@ public class DesignCompiler {
         }
     }
 
-    private String compileMessages(List<Module> modules, String lang, Element localization) {
+    protected String compileMessages(List<Module> modules, String lang, Element localization) {
         Properties properties = new Properties();
 
         Locale locale = new Locale(lang);
@@ -895,11 +918,11 @@ public class DesignCompiler {
         return writer.toString();
     }
 
-    private void compileMessage(Properties properties, Locale locale, String key, String messagePack) {
+    protected void compileMessage(Properties properties, Locale locale, String key, String messagePack) {
         properties.setProperty(key, AppBeans.get(Messages.class).getMessage(messagePack, key, locale));
     }
 
-    private String compileForms(List<Module> modules, List<DesignCompilationError> errors) {
+    protected String compileForms(List<Module> modules, List<DesignCompilationError> errors) {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("forms", "http://schemas.haulmont.com/workflow/" + getPlatformVersion() + "/forms.xsd");
 
@@ -914,7 +937,7 @@ public class DesignCompiler {
         return Dom4j.writeDocument(document, true);
     }
 
-    private String getPlatformVersion() {
+    protected String getPlatformVersion() {
         String releaseNumber = serverInfo.getReleaseNumber();
         int dashIndex = releaseNumber.indexOf("-");
         if (dashIndex != -1) {
@@ -952,9 +975,9 @@ public class DesignCompiler {
         return result;
     }
 
-    private static class L10nHelper {
+    protected static class L10nHelper {
 
-        private Element root;
+        protected Element root;
 
         L10nHelper(Element root) {
             this.root = root;
