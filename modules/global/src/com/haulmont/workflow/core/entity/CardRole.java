@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.global.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 
 @Entity(name = "wf$CardRole")
@@ -43,18 +42,13 @@ public class CardRole extends StandardEntity {
     protected Boolean notifyByCardInfo = true;
 
     @Column(name = "SORT_ORDER")
-    protected Integer sortOrder;
+    protected Integer sortOrder = 0;
 
     @Column(name = "DURATION")
     protected Integer duration;
 
     @Column(name = "TIME_UNIT")
     protected String timeUnit = "H";
-
-    @PostConstruct
-    protected void postConstruct(){
-        sortOrder=0;
-    }
 
     public Card getCard() {
         return card;

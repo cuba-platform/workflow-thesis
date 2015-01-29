@@ -233,7 +233,7 @@ public class CardRolesFrame extends AbstractFrame {
                 if ("duration".equals(property)) {
                     for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                         CardRole cr = tmpCardRolesDs.getItem(uuid);
-                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
+                        if (cr.getSortOrder() != 0 && cr.getSortOrder().equals(source.getSortOrder())
                                 && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
                             cr.setDuration(source.getDuration());
                         }
@@ -241,7 +241,7 @@ public class CardRolesFrame extends AbstractFrame {
                 } else if ("timeUnit".equals(property)) {
                     for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                         CardRole cr = tmpCardRolesDs.getItem(uuid);
-                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
+                        if (cr.getSortOrder() != 0 && cr.getSortOrder().equals(source.getSortOrder())
                                 && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
                             TimeUnit timeUnit = source.getTimeUnit();
                             if (timeUnit != null)
@@ -754,7 +754,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void assignNextSortOrder(CardRole cr) {
-        if (cr.getSortOrder() != null)
+        if (cr.getSortOrder() != 0)
             return;
         List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
         if (cardRoles.size() == 0) {
@@ -899,7 +899,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public void addProcActor(Proc proc, String roleCode, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
-        addProcActor(proc, roleCode, user, null, notifyByEmail, notifyByCardInfo);
+        addProcActor(proc, roleCode, user, 0, notifyByEmail, notifyByCardInfo);
     }
 
     public void addProcActor(Proc proc, String roleCode, User user, Integer sortOrder, boolean notifyByEmail, boolean notifyByCardInfo) {
