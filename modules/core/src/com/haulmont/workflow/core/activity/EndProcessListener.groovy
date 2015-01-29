@@ -6,29 +6,41 @@
 package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.workflow.core.global.WfConstants
-import org.jbpm.api.listener.EventListenerExecution
+import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardProc
-import com.haulmont.workflow.core.app.NotificationMatrixAPI
-import com.haulmont.cuba.core.Locator
-import org.jbpm.api.activity.ActivityExecution
+import com.haulmont.workflow.core.global.WfConstants
+import org.apache.commons.lang.StringUtils
+import org.jbpm.api.listener.EventListenerExecution
+import org.jbpm.pvm.internal.model.ExecutionImpl
+
+import javax.annotation.Nullable
 
 class EndProcessListener implements org.jbpm.api.listener.EventListener {
 
+    @Override
     void notify(EventListenerExecution execution) {
         NotificationMatrixAPI notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
-        Card card = com.haulmont.workflow.core.activity.ActivityHelper.findCard(execution);
+        Card card = ActivityHelper.findCard(execution);
         for (CardProc cp in card.procs) {
             cp.active = false;
         }
         card.jbpmProcessId = null;
 
         if (!WfConstants.CARD_STATE_CANCELED.equals(execution.state)) {
-            String activityName = ((ActivityExecution) execution).getActivityName();
-            String prevActivityName = execution.getVariable("prevActivityName")
-            notificationMatrix.notifyByCard(card, prevActivityName + "." + activityName);
+            String nextActivityName = getNextActivityName(execution)
+            if (StringUtils.isNotBlank(nextActivityName)) {
+                String prevActivityName = execution.getVariable("prevActivityName")
+                notificationMatrix.notifyByCard(card, prevActivityName + "." + nextActivityName);
+            }
         }
     }
 
+    @Nullable
+    protected String getNextActivityName(EventListenerExecution execution) {
+        if (execution instanceof ExecutionImpl) {
+            return execution.transition?.destination?.name;
+        }
+        return null;
+    }
 }
