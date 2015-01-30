@@ -42,7 +42,7 @@ public class CardRole extends StandardEntity {
     protected Boolean notifyByCardInfo = true;
 
     @Column(name = "SORT_ORDER")
-    protected Integer sortOrder = 0;
+    protected Integer sortOrder;
 
     @Column(name = "DURATION")
     protected Integer duration;
