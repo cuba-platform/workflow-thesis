@@ -44,7 +44,7 @@ public class DesignDeployer {
 
         log.info("Deploying design " + designId + " into process " + procId);
 
-        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).getTransaction();
         try {
             EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
