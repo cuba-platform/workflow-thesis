@@ -112,7 +112,7 @@ public class DesignCompiler {
         Preconditions.checkArgument(designId != null, "designId is null");
         log.info("Compiling design " + designId);
 
-        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).getTransaction();
         try {
             EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
