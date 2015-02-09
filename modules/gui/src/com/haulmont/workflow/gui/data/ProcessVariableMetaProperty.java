@@ -18,7 +18,7 @@ import java.lang.reflect.AnnotatedElement;
  * @author krivopustov
  * @version $Id$
  */
-public class ProcessVariableMetaProperty extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
+public class ProcessVariableMetaProperty extends MetadataObjectImpl implements MetaProperty {
 
     private MetaClass metaClass;
     private Range range;
