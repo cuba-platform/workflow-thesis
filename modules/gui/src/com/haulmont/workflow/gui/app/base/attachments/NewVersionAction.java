@@ -28,7 +28,8 @@ import java.util.Map;
  * @author pavlov
  */
 public class NewVersionAction extends CreateAction {
-    private Attachment prevVersion;
+
+    protected Attachment prevVersion;
 
     public NewVersionAction(ListComponent owner) {
         super(owner);
@@ -70,6 +71,7 @@ public class NewVersionAction extends CreateAction {
         prevVersion = prevVersion.getVersionOf() == null ? prevVersion : prevVersion.getVersionOf();
 
         super.actionPerform(component);
+        owner.getFrame().getContext().getParams().remove("prevVersion");
     }
 
     @Override
