@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory
 import org.jbpm.api.ExecutionService
 import org.jbpm.api.activity.ActivityExecution
 
+import java.sql.Timestamp
+
 /**
  *
  *
@@ -41,7 +43,7 @@ public class UniversalAssigner extends MultiAssigner {
     protected boolean createAssignment(ActivityExecution execution) {
         Card card = findCard(execution)
 
-        List<CardRole> srcCardRoles = getCardRoles(execution, card)
+        List<CardRole> srcCardRoles = getCardRoles(execution, card, true)
         def cardRoles = []
         if (srcCardRoles) {
             int minSortOrder = srcCardRoles[0].sortOrder;
@@ -80,39 +82,81 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     @Override
-    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
+    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, boolean transitionToState) {
+        EntityManager em = persistence.getEntityManager();
+        List<String> roles;
         if (role.contains(",")) {
-            List<String> roles = Arrays.asList(role.split(","));
-            EntityManager em = persistence.getEntityManager();
-            List<CardRole> cardRoles = em.createQuery('''select cr from wf$CardRole cr where
-                    cr.card.id = ?1 and
-                    cr.procRole.code in ?2 and
-                    cr.procRole.proc.id = ?3
-                    order by cr.sortOrder, cr.createTs''')
-                    .setParameter(1, card)
-                    .setParameter(2, roles)
-                    .setParameter(3, card.proc)
-                    .getResultList();
-
-            if (forRefusedOnly(execution)) {
-                cardRoles = cardRoles.findAll {
-                    CardRole cr ->
-                        List list = em.createQuery('''select a.outcome from wf$Assignment a where a.card.id = ?1 and a.user.id = ?2 and a.name = ?3 and a.finished is not null order by a.createTs''')
-                                .setParameter(1, card.id)
-                                .setParameter(2, cr.user.id)
-                                .setParameter(3, execution.activityName)
-                                .getResultList();
-                        if (list.isEmpty()) {
-                            return true
-                        } else {
-                            return !successTransitions.contains(list.last())
-                        }
-                }
-            }
-            return cardRoles
+            roles = Arrays.asList(role.split(","));
         } else {
-            return super.getCardRoles(execution, card);
+            roles = new ArrayList<>();
+            roles.add(role);
         }
+        List<CardRole> cardRoles = em.createQuery('''select cr from wf$CardRole cr where
+            cr.card.id = ?1 and
+            cr.procRole.code in ?2 and
+            cr.procRole.proc.id = ?3
+            order by cr.sortOrder, cr.createTs''')
+                .setParameter(1, card)
+                .setParameter(2, roles)
+                .setParameter(3, card.proc)
+                .getResultList();
+
+        if (forRefusedOnly(execution)) {
+            if (!execution.hasVariable("date")) {
+                String state;
+                if (transitionToState) {
+                    state = em.createQuery("select b.name from wf\$Assignment b where b.card.id=?1 and b.proc.id=?2 and b.createTs = " +
+                            "(select MAX(a.createTs) from wf\$Assignment a where a.card.id=?1 and a.proc.id=?2 and a.jbpmProcessId is not null)")
+                            .setParameter(1, card)
+                            .setParameter(2, card.proc)
+                            .getFirstResult();
+                } else {
+                    state = em.createQuery("select b.name from wf\$Assignment b where b.card.id=?1 and b.proc.id=?2 and b.createTs = " +
+                            "(select MAX(a.createTs) from wf\$Assignment a where a.card.id=?1 and a.proc.id=?2 and (a.outcome not in (?3) and a.outcome is not null " +
+                            "or a.name = 'Started') and a.masterAssignment.id is null)")
+                            .setParameter(1, card)
+                            .setParameter(2, card.proc)
+                            .setParameter(3, successTransitions)
+                            .getFirstResult();
+                }
+                Timestamp date = em.createQuery("select max(b.createTs) from wf\$Assignment b where b.card.id=?1 and b.proc.id=?2 " +
+                        "and b.name IN ('Started',?3) and b.createTs < (select max(c.createTs) from wf\$Assignment c " +
+                        "where c.card.id=?1 and c.proc.id=?2 and c.name = ?3)")
+                        .setParameter(1, card)
+                        .setParameter(2, card.proc)
+                        .setParameter(3, state)
+                        .getFirstResult();
+                execution.createVariable("date", date)
+            }
+
+            cardRoles = cardRoles.findAll {
+                CardRole cr ->
+
+                    if (!roles.contains(cr.procRole.code)) {
+                        return false;
+                    }
+
+                    List<Assignment> assignments = em.createQuery("select a from wf\$Assignment a " +
+                            "where a.card.id = ?1 and a.user.id = ?2 and a.proc.id = ?3 and a.name = ?4 and " +
+                            "a.iteration >= ALL " +
+                            "(select b.iteration from wf\$Assignment b where b.card.id = ?1 and b.proc.id = ?3 " +
+                            "and b.user.id = ?2 and b.iteration is not null and b.createTs > ?5) and " +
+                            "a.createTs > ?5 " +
+                            "order by a.finished desc")
+                            .setParameter(1, card)
+                            .setParameter(2, cr.user)
+                            .setParameter(3, card.proc)
+                            .setParameter(4, execution.activityName)
+                            .setParameter(5, execution.getVariable("date"))
+                            .getResultList();
+                    return assignments.isEmpty() || !successTransitions.contains(assignments.get(0).outcome);
+            }
+        } else {
+            if (execution.hasVariable("date")) {
+                execution.removeVariable("date")
+            }
+        }
+        return cardRoles
     }
 
     @Override
@@ -202,39 +246,54 @@ public class UniversalAssigner extends MultiAssigner {
         ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
         Map<String, Object> params = new HashMap<String, Object>()
         params.put("assignment", assignment.getMasterAssignment())
-
-        def cardRoles = getCardRoles(execution, assignment.card)
-        List<UUID> ids = getRoleIds(assignment.card);
-        def currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user && (ids.contains(cr.id) || ids.isEmpty()) }
-        //Use for processes where variable "cardRoleUuids" is not correctly cleared after not-success transition
-        if (currentCardRole == null)
-            currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user }
-
-        def nextCardRoles = []
-        int nextSortOrder = Integer.MAX_VALUE
-
-        //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
-        //                we don't know exactly)
-        cardRoles.each { CardRole cr ->
-            if (cr.sortOrder == nextSortOrder) {
-                nextCardRoles.add(cr)
-            } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
-                nextSortOrder = cr.sortOrder
-                nextCardRoles = [cr]
+        def cardRoles = getCardRoles(execution, assignment.card, false)
+        if (forRefusedOnly(execution)) {
+            if (cardRoles) {
+                int minSortOrder = cardRoles[0].sortOrder;
+                cardRoles = cardRoles.findAll { CardRole cr -> cr.sortOrder == minSortOrder }
             }
-        }
+            if (cardRoles.isEmpty()) {
+                setRoleIds(assignment.card, null)
+                es.signalExecutionById(execution.getId(), signalName, params)
+                afterSignal(execution, signalName, parameters)
+            } else {
+                setRoleIds(assignment.card, cardRoles);
+                createUserAssignments(execution, assignment.card, assignment.masterAssignment, cardRoles)
+                execution.waitForSignal()
+            }
+        } else {
+            List<UUID> ids = getRoleIds(assignment.card);
+            def currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user && (ids.contains(cr.id) || ids.isEmpty()) }
+            //Use for processes where variable "cardRoleUuids" is not correctly cleared after not-success transition
+            if (currentCardRole == null)
+                currentCardRole = cardRoles.find { CardRole cr -> cr.user == assignment.user }
+
+            def nextCardRoles = []
+            int nextSortOrder = Integer.MAX_VALUE
+
+            //finding cardRoles with next sortOrder (next sort order can be current+1 or current+2, etc.
+            //                we don't know exactly)
+            cardRoles.each { CardRole cr ->
+                if (cr.sortOrder == nextSortOrder) {
+                    nextCardRoles.add(cr)
+                } else if ((cr.sortOrder < nextSortOrder) && (cr.sortOrder > currentCardRole.sortOrder)) {
+                    nextSortOrder = cr.sortOrder
+                    nextCardRoles = [cr]
+                }
+            }
 
 //                def nextCardRoles = cardRoles.findAll {CardRole cr -> cr.sortOrder == currentCardRole.sortOrder + 1}
-        if (nextCardRoles.isEmpty()) {
-            log.debug("Last user assignment finished, taking $signalName")
-            setRoleIds(assignment.card, null)
-            es.signalExecutionById(execution.getId(), signalName, params)
-            afterSignal(execution, signalName, parameters)
-        } else {
-            log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
-            setRoleIds(assignment.card, nextCardRoles);
-            createUserAssignments(execution, assignment.card, assignment.masterAssignment, nextCardRoles)
-            execution.waitForSignal()
+            if (nextCardRoles.isEmpty()) {
+                log.debug("Last user assignment finished, taking $signalName")
+                setRoleIds(assignment.card, null)
+                es.signalExecutionById(execution.getId(), signalName, params)
+                afterSignal(execution, signalName, parameters)
+            } else {
+                log.debug("Creating assignments for group of users # ${currentCardRole.sortOrder + 1} in card role $role")
+                setRoleIds(assignment.card, nextCardRoles);
+                createUserAssignments(execution, assignment.card, assignment.masterAssignment, nextCardRoles)
+                execution.waitForSignal()
+            }
         }
     }
 
@@ -333,8 +392,8 @@ public class UniversalAssigner extends MultiAssigner {
         return assignmentCardRoleMap;
     }
 
-    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder) {
-        def cardRoles = getCardRoles(execution, card)
+    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, Integer sortOrder, boolean transitionToState) {
+        def cardRoles = getCardRoles(execution, card, transitionToState)
         def cardRolesBySortOrder = cardRoles.findAll { CardRole cr -> cr.sortOrder == sortOrder }
         return cardRolesBySortOrder
     }

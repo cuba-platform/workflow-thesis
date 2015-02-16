@@ -32,7 +32,7 @@ public class ParallelAssigner extends MultiAssigner {
 
     Card card = findCard(execution)
 
-    List<CardRole> cardRoles = getCardRoles(execution, card)
+    List<CardRole> cardRoles = getCardRoles(execution, card, true)
     if (cardRoles.isEmpty()) {
       if (forRefusedOnly(execution)) {
         log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")

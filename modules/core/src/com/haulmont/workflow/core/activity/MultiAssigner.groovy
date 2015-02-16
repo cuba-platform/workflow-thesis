@@ -35,7 +35,7 @@ abstract class MultiAssigner extends Assigner {
         }
     }
 
-    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
+    protected List<CardRole> getCardRoles(ActivityExecution execution, Card card, boolean transitionToState) {
     EntityManager em = AppBeans.get(Persistence.class).getEntityManager()
     Query q = em.createQuery('''
           select cr from wf$CardRole cr where cr.card.id = ?1 and cr.procRole.code = ?2 and cr.procRole.proc.id = ?3

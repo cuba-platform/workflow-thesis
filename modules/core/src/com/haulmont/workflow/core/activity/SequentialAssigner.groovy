@@ -28,7 +28,7 @@ class SequentialAssigner extends MultiAssigner {
 
     Card card = findCard(execution)
 
-    List<CardRole> cardRoles = getCardRoles(execution, card)
+    List<CardRole> cardRoles = getCardRoles(execution, card, true)
     if (cardRoles.isEmpty()) {
       if (forRefusedOnly(execution)) {
         log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")
@@ -82,7 +82,7 @@ class SequentialAssigner extends MultiAssigner {
 
         log.debug("Looking for the next user")
         Card card = assignment.card
-        List<CardRole> cardRoles = getCardRoles(execution, card)
+        List<CardRole> cardRoles = getCardRoles(execution, card, false)
 
         CardRole nextCr = null
         cardRoles.eachWithIndex { CardRole cr, int idx ->
