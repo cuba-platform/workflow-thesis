@@ -10,6 +10,7 @@ import com.haulmont.workflow.core.enums.AttributeType;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,7 +40,8 @@ public abstract class AbstractProcessVariable extends StandardEntity {
     @Column(name = "ALIAS", length = 100)
     protected String alias;
 
-    @Column(name = "VALUE", length = 0)
+    @Column(name = "VALUE")
+    @Lob
     protected String value;
 
     @Column(name = "ATTRIBUTE_TYPE")
@@ -52,6 +54,7 @@ public abstract class AbstractProcessVariable extends StandardEntity {
     protected Boolean overridden = Boolean.FALSE;
 
     @Column(name = "VARIABLE_COMMENT")
+    @Lob
     protected String comment;
 
     public String getName() {
