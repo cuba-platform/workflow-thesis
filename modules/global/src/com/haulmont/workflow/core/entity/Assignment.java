@@ -9,9 +9,9 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.ObjectUtils;
@@ -220,11 +220,11 @@ public class Assignment extends StandardEntity {
             return "";
         }
 
+        UserFormatTools formatTools = AppBeans.get(UserFormatTools.NAME);
         if (finishedByUser == null || ObjectUtils.equals(user, finishedByUser)) {
-            return userNameOrLogin(user);
+            return formatTools.formatOfficial(user);
         }
-        return MessageProvider.formatMessage(getClass(), "assignmentDisplayUserFormat",
-                userNameOrLogin(finishedByUser), userNameOrLogin(user));
+        return formatTools.formatSubstitution(finishedByUser, user);
     }
 
     private String userNameOrLogin(User user) {

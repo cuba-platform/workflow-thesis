@@ -10,7 +10,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -103,11 +103,11 @@ public class CardComment extends StandardEntity {
             return "";
         }
 
+        UserFormatTools formatTools = AppBeans.get(UserFormatTools.NAME);
         if (substitutedSender == null || ObjectUtils.equals(sender, substitutedSender)) {
-            return userNameOrLogin(sender);
+            return formatTools.formatOfficial(sender);
         }
-        return AppBeans.get(Messages.class).formatMessage(getClass(), "assignmentDisplayUserFormat",
-                userNameOrLogin(sender), userNameOrLogin(substitutedSender));
+        return formatTools.formatSubstitution(sender, substitutedSender);
     }
 
     private String userNameOrLogin(User user) {
