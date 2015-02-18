@@ -49,7 +49,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     @Override
     protected void confirmAndRemove(final Set selected) {
         boolean versionExists = false;
-        CollectionDatasource datasource = owner.getDatasource();
+        CollectionDatasource datasource = getTargetDatasourceNN();
         for (Object attachment : selected) {
             for (Object id : datasource.getItemIds()) {
                 Attachment versionAttachment = (Attachment) datasource.getItem(id);
@@ -65,8 +65,8 @@ public class RemoveAttachmentAction extends RemoveAction {
             super.confirmAndRemove(selected);
         } else {
             if (userIsCreatorAllAttachments(selected)) {
-                owner.getFrame().getDialogParams().setWidth(500);
-                Window window = owner.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+                target.getFrame().getDialogParams().setWidth(500);
+                Window window = target.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
 
                 window.addListener(new Window.CloseListener() {
                     @Override
@@ -79,12 +79,12 @@ public class RemoveAttachmentAction extends RemoveAction {
                         }
 
                         // move focus to owner
-                        owner.requestFocus();
+                        target.requestFocus();
                     }
                 });
             } else {
                 final String messagesPackage = AppConfig.getMessagesPack();
-                owner.getFrame().showOptionDialog(
+                target.getFrame().showOptionDialog(
                         getConfirmationTitle(messagesPackage),
                         getConfirmationMessage(messagesPackage),
                         IFrame.MessageType.CONFIRMATION,
@@ -97,14 +97,14 @@ public class RemoveAttachmentAction extends RemoveAction {
                                         doRemove(selected, autocommit);
 
                                         // move focus to owner
-                                        owner.requestFocus();
+                                        target.requestFocus();
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.CANCEL) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         // move focus to owner
-                                        owner.requestFocus();
+                                        target.requestFocus();
                                     }
                                 }
                         }
@@ -117,7 +117,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         Set<Attachment> allVersions = new HashSet<>();
         allVersions.addAll(selected);
 
-        CollectionDatasource datasource = owner.getDatasource();
+        CollectionDatasource datasource = getTargetDatasourceNN();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -146,7 +146,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected Map<Attachment, List<Attachment>> getMapVersions(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<>();
-        CollectionDatasource datasource = owner.getDatasource();
+        CollectionDatasource datasource = getTargetDatasourceNN();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -164,7 +164,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<>();
-        CollectionDatasource datasource = owner.getDatasource();
+        CollectionDatasource datasource = getTargetDatasourceNN();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -180,6 +180,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
         for (java.util.List<Attachment> list : map.values()) {
             Collections.sort(list, new Comparator<Attachment>() {
+                @Override
                 public int compare(Attachment o1, Attachment o2) {
                     return o2.getVersionNum().compareTo(o1.getVersionNum());
                 }

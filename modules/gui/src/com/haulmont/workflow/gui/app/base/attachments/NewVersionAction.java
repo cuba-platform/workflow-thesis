@@ -45,10 +45,10 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public void actionPerform(Component component) {
-        prevVersion = owner.getSingleSelected();
-        Collection<Attachment> attachments = owner.getSelected();
+        prevVersion = target.getSingleSelected();
+        Collection<Attachment> attachments = target.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
-            owner.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "selectAttachmentForVersion"),
+            target.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "selectAttachmentForVersion"),
                     IFrame.NotificationType.WARNING);
             return;
         }
@@ -57,12 +57,12 @@ public class NewVersionAction extends CreateAction {
         if (map != null && map.containsKey("card")) {
             Card card = (Card) map.get("card");
             if (!PersistenceHelper.isNew(card)) {
-                owner.getDatasource().refresh();
-                prevVersion = (Attachment) owner.getDatasource().getItem(prevVersion.getId());
+                target.getDatasource().refresh();
+                prevVersion = (Attachment) target.getDatasource().getItem(prevVersion.getId());
                 if (prevVersion == null) {
-                    owner.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "warning.itemWasDeleted"),
+                    target.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "warning.itemWasDeleted"),
                             IFrame.NotificationType.HUMANIZED);
-                    owner.setSelected((Entity) null);
+                    target.setSelected((Entity) null);
                     return;
                 }
             }
@@ -71,7 +71,7 @@ public class NewVersionAction extends CreateAction {
         prevVersion = prevVersion.getVersionOf() == null ? prevVersion : prevVersion.getVersionOf();
 
         super.actionPerform(component);
-        owner.getFrame().getContext().getParams().remove("prevVersion");
+        target.getFrame().getContext().getParams().remove("prevVersion");
     }
 
     @Override
@@ -84,7 +84,7 @@ public class NewVersionAction extends CreateAction {
         }
         newVersion.setVersionNum(prevVersion.getVersionNum() + 1);
 
-        CollectionDatasource attachmentsDs = owner.getDatasource();
+        CollectionDatasource attachmentsDs = target.getDatasource();
         for (Object id : attachmentsDs.getItemIds()) {
             Attachment item = (Attachment) attachmentsDs.getItem(id);
             if (prevVersion.equals(item.getVersionOf())) {
@@ -101,7 +101,7 @@ public class NewVersionAction extends CreateAction {
                 attachmentsDs.refresh();
             }
         }
-        owner.setSelected((Entity) null);
+        target.setSelected((Entity) null);
     }
 
     @Override
