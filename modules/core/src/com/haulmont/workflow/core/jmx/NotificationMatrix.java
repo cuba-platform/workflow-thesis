@@ -9,6 +9,7 @@ import com.haulmont.workflow.core.app.NotificationMatrixAPI;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
 /**
  * @author krivopustov
@@ -17,6 +18,7 @@ import javax.annotation.ManagedBean;
 @ManagedBean("workflow_NotificationMatrixMBean")
 public class NotificationMatrix implements NotificationMatrixMBean {
 
+    @Inject
     protected NotificationMatrixAPI notificationMatrix;
 
     @Override
