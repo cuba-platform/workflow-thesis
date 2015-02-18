@@ -21,7 +21,7 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ATTACHMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("-")
-@Listeners("com.haulmont.workflow.core.listeners.AttachmentEntityListener")
+@Listeners("workflow_AttachmentEntityListener")
 @SystemLevel
 public class Attachment extends StandardEntity {
 
