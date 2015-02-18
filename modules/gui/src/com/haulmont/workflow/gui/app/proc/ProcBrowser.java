@@ -69,7 +69,7 @@ public class ProcBrowser extends AbstractLookup {
         @Override
         public void actionPerform(Component component) {
             if (!isEnabled()) return;
-            Set<Proc> selected = owner.getSelected();
+            Set<Proc> selected = getTargetSelection();
             final Set toRemove = new HashSet();
             for (Proc item : selected) {
                 if (item.getDesign() != null) {
@@ -85,7 +85,7 @@ public class ProcBrowser extends AbstractLookup {
         protected void afterRemove(Set selected) {
             super.afterRemove(selected);
 
-            owner.requestFocus();
+            target.requestFocus();
         }
     }
 }
