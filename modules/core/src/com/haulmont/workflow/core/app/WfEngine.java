@@ -549,6 +549,7 @@ public class WfEngine implements WfEngineAPI {
             assignment.setFinished(timeSource.currentTimestamp());
         }
 
+        setCanceledState(card);
         if (card.getJbpmProcessId() != null) {
             ProcessInstance processInstance = WfHelper.getExecutionService().findProcessInstanceById(card.getJbpmProcessId());
             //Top process is not canceled when all sub process are canceled
@@ -556,6 +557,15 @@ public class WfEngine implements WfEngineAPI {
                 WfHelper.getExecutionService().endProcessInstance(card.getJbpmProcessId(), state);
         }
 
+        card.setJbpmProcessId(null);
+        for (Listener listener : listeners) {
+            listener.onProcessCancel(card);
+        }
+
+        notificationBean.notifyByCard(card, WfConstants.CARD_STATE_CANCELED);
+    }
+
+    protected void setCanceledState(Card card) {
         Proc proc = card.getProc();
         for (CardProc cp : card.getProcs()) {
             if (cp.getProc().equals(proc)) {
@@ -564,13 +574,7 @@ public class WfEngine implements WfEngineAPI {
                 break;
             }
         }
-        card.setJbpmProcessId(null);
         card.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
-        for (Listener listener : listeners) {
-            listener.onProcessCancel(card);
-        }
-
-        notificationBean.notifyByCard(card, WfConstants.CARD_STATE_CANCELED);
     }
 
     protected List<Card> findFamilyCards(Card topFamily) {
