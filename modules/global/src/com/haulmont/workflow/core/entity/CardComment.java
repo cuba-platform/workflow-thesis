@@ -104,10 +104,7 @@ public class CardComment extends StandardEntity {
         }
 
         UserFormatTools formatTools = AppBeans.get(UserFormatTools.NAME);
-        if (substitutedSender == null || ObjectUtils.equals(sender, substitutedSender)) {
-            return formatTools.formatOfficial(sender);
-        }
-        return formatTools.formatSubstitution(sender, substitutedSender);
+        return formatTools.formatUser(sender, substitutedSender);
     }
 
     private String userNameOrLogin(User user) {
