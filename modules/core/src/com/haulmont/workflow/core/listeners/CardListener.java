@@ -8,7 +8,6 @@ package com.haulmont.workflow.core.listeners;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
@@ -56,28 +55,10 @@ public class CardListener implements
     }
 
     private void setHasAttributesForCard(Card card) {
-        Category c = getCategory(card);
+        Category c = card.getCategory();
         if (c != null && c.getCategoryAttrs() != null && c.getCategoryAttrs().size() > 0)
             card.setHasAttributes(true);
         else
             card.setHasAttributes(false);
-    }
-
-    private Category getCategory(Card card) {
-        Transaction tx = persistence.getTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            em.setSoftDeletion(false);
-            Card c = em.find(Card.class, card.getId());
-            Category category = null;
-            if (c.getCategory() != null) {
-                category = em.find(Category.class, c.getCategory().getId());
-            }
-            em.setSoftDeletion(true);
-            tx.commit();
-            return category;
-        } finally {
-            tx.end();
-        }
     }
 }
