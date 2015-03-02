@@ -18,12 +18,17 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DesignEditor extends AbstractEditor {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
 
-        getDsContext().get("designDs").addListener(
+        getDsContext().getNN("designDs").addListener(
                 new DsListenerAdapter() {
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {

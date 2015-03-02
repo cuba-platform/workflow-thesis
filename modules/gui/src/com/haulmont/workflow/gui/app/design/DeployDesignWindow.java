@@ -7,9 +7,7 @@ package com.haulmont.workflow.gui.app.design;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
@@ -38,17 +36,19 @@ public class DeployDesignWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         design = (Design) params.get("design");
         procDs.refresh();
 
-        Label designNameLab = getComponent("designNameLab");
+        Label designNameLab = getComponentNN("designNameLab");
         designNameLab.setValue(design.getName());
 
         procField = getComponent("procField");
 
         roleField = getComponent("roleField");
 
-        newProcField = getComponent("newProcField");
+        newProcField = getComponentNN("newProcField");
         newProcField.setValue(true);
         newProcField.addListener(
                 new ValueListener() {
@@ -72,7 +72,7 @@ public class DeployDesignWindow extends AbstractWindow {
             procField.setValue(designProc);
         }
 
-        Button deployBtn = getComponent("deployBtn");
+        Button deployBtn = getComponentNN("deployBtn");
         deployBtn.setAction(
                 new AbstractAction("deployBtn") {
                     public void actionPerform(Component component) {
@@ -100,7 +100,7 @@ public class DeployDesignWindow extends AbstractWindow {
                 }
         );
 
-        Button cancelBtn = getComponent("cancelBtn");
+        Button cancelBtn = getComponentNN("cancelBtn");
         cancelBtn.setAction(
                 new AbstractAction("cancelBtn") {
                     public void actionPerform(Component component) {

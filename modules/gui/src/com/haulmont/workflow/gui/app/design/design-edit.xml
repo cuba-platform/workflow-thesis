@@ -13,10 +13,10 @@
         <datasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="_local"/>
     </dsContext>
 
-    <layout expand="windowActions" spacing="true">
+    <layout spacing="true">
         <fieldGroup datasource="designDs">
-            <column width="100%">
-                <field id="name" width="200px"  required="true"/>
+            <column>
+                <field id="name" width="200px" required="true"/>
                 <field id="type" width="200px" required="true"/>
             </column>
         </fieldGroup>
