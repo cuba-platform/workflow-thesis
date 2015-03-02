@@ -49,7 +49,7 @@ public class RemoveAttachmentAction extends RemoveAction {
     @Override
     protected void confirmAndRemove(final Set selected) {
         boolean versionExists = false;
-        CollectionDatasource datasource = getTargetDatasourceNN();
+        CollectionDatasource datasource = target.getDatasource();
         for (Object attachment : selected) {
             for (Object id : datasource.getItemIds()) {
                 Attachment versionAttachment = (Attachment) datasource.getItem(id);
@@ -117,7 +117,7 @@ public class RemoveAttachmentAction extends RemoveAction {
         Set<Attachment> allVersions = new HashSet<>();
         allVersions.addAll(selected);
 
-        CollectionDatasource datasource = getTargetDatasourceNN();
+        CollectionDatasource datasource = target.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -146,7 +146,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected Map<Attachment, List<Attachment>> getMapVersions(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<>();
-        CollectionDatasource datasource = getTargetDatasourceNN();
+        CollectionDatasource datasource = target.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
@@ -164,7 +164,7 @@ public class RemoveAttachmentAction extends RemoveAction {
 
     protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
         Map<Attachment, List<Attachment>> map = new HashMap<>();
-        CollectionDatasource datasource = getTargetDatasourceNN();
+        CollectionDatasource datasource = target.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
