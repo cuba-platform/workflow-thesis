@@ -3,12 +3,10 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
         class="com.haulmont.workflow.gui.app.design.DeployDesignWindow"
         messagesPack="com.haulmont.workflow.gui.app.design"
-        caption="msg://deploy.caption"
-        >
+        caption="msg://deploy.caption">
 
     <dsContext>
         <collectionDatasource id="procDs" class="com.haulmont.workflow.core.entity.Proc" view="proc-deploy">
@@ -48,7 +46,7 @@
                 </row>
             </rows>
         </grid>
-        <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false" expandable="false" height="100%">
+        <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false" height="100%">
             <button id="deployBtn" icon="icons/ok.png"/>
             <button id="cancelBtn" icon="icons/cancel.png"/>
         </hbox>
