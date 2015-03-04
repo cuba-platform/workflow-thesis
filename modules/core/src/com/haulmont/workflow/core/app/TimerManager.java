@@ -139,11 +139,7 @@ public class TimerManager implements TimerManagerAPI {
         log.debug("Processing timers");
         authentication.begin();
         try {
-            Date currentTime = timeSource.currentTimestamp();
-            if (!workCalendarAPI.isDateWorkDay(currentTime))
-                return;
-
-            List<TimerEntity> timers = loadTimers(currentTime);
+            List<TimerEntity> timers = loadTimers(timeSource.currentTimestamp());
 
             for (TimerEntity timer : timers) {
                 try {
