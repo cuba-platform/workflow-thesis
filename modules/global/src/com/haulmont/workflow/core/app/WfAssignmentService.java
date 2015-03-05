@@ -28,9 +28,11 @@ public interface WfAssignmentService {
      *
      * @param card      card in a workflow process
      * @param state     process state
-     * @param cardRoles list of CardRole entities
+     * @param newRoles list of CardRole entities
+     * @param oldRoles list of CardRole before update card entity
      * @param comment   reassignment comment
      */
-    void reassign(Card card, String state, List<CardRole> cardRoles, String comment);
+    void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment);
+
 
 }
