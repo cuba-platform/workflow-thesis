@@ -30,7 +30,7 @@
         <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
         <hbox id="commentTextPane">
             <label value="msg://comment" width="${labelWidth}"/>
-            <textField id="commentText" width="${width}" rows="4" maxLength="4000"/>
+            <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
         </hbox>
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

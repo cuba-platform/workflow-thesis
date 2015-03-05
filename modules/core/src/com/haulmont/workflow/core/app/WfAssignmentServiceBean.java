@@ -6,20 +6,25 @@
 package com.haulmont.workflow.core.app;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
@@ -32,16 +37,18 @@ import java.util.*;
 public class WfAssignmentServiceBean implements WfAssignmentService {
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
     @Inject
-    private Metadata metadata;
+    protected NotificationMatrixAPI notificationMatrixAPI;
     @Inject
-    private NotificationMatrixAPI notificationMatrixAPI;
+    protected UserSessionSource userSessionSource;
     @Inject
-    private UserSessionSource userSessionSource;
+    protected TimeSource timeSource;
+
     @Inject
-    private TimeSource timeSource;
-    private List<AssignmentListener> listeners = new ArrayList<>();
+    protected Metadata metadata;
+
+    protected List<AssignmentListener> listeners = new ArrayList<AssignmentListener>();
 
     public static interface AssignmentListener {
 
@@ -51,12 +58,27 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     }
 
-    private static final String FIND_ASSIGNMENTS_BY_STATE_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state";
-    private static final String FIND_MASTER_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state " +
-            "and a.finished is null and a.masterAssignment is null";
-    private static final String FIND_FAMILY_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.subProcCard.id = :card";
-    private static final String DELETE_CARD_INFO_QUERY = "update wf$CardInfo ci set ci.deleteTs = :deleteTs, ci.deletedBy = :deletedBy " +
-            "where ci.card.id = :card and ci.user.id = :user";
+    protected static final String FIND_ASSIGNMENTS_BY_STATE_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state";
+    protected static final String FIND_MASTER_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state " +
+            "and a.finished is null and a.masterAssignment is null order by a.createTs desc";
+    protected static final String FIND_FAMILY_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.subProcCard.id = :card";
+
+    protected static Comparator<Assignment> BY_CREATE_TS_COMPARATOR = new Comparator<Assignment>() {
+        @Override
+        public int compare(Assignment a1, Assignment a2) {
+            if (a1.getCreateTs() == null && a1.getCreateTs() == null) {
+                return 0;
+            }
+            if (a1.getCreateTs() == null) {
+                return -1;
+            }
+            if (a2.getCreateTs() == null) {
+                return 1;
+            }
+            return a1.getCreateTs().compareTo(a2.getCreateTs());
+        }
+    };
+
 
     private final AssignmentListener notificationMatrixListener = new AssignmentListener() {
         @Override
@@ -76,38 +98,52 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         listeners.add(notificationMatrixListener);
     }
 
-
     @Override
     @Transactional
-    public void reassign(Card card, String state, List<CardRole> roles, String comment) {
+    public void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment) {
         Preconditions.checkNotNull(card, "Card is null");
-        Preconditions.checkState(roles != null && roles.size() > 0, "Roles list is empty");
-        Set<User> usersSet = new LinkedHashSet<>();
+        Preconditions.checkState(newRoles != null && newRoles.size() > 0, "Roles list is empty");
+        Set<User> usersSet = new LinkedHashSet<User>();
         EntityManager em = persistence.getEntityManager();
         card = em.find(card.getClass(), card.getId());
-        for (CardRole cr : roles)
+        for (CardRole cr : newRoles)
             usersSet.add(cr.getUser());
-        Set<User> assignedUser = new LinkedHashSet<>();
+        Multimap<User, Assignment> assignmentsMap = ArrayListMultimap.create();
         for (Assignment assignment : getAssignmentsByState(card, state)) {
-            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null)
-                closeAssignment(assignment, createDummyCardRole(assignment, roles.get(0).getCode()), comment);
-            assignedUser.add(assignment.getUser());
+            assignmentsMap.put(assignment.getUser(), assignment);
         }
-        for (CardRole cr : roles) {
-            if (!assignedUser.contains(cr.getUser()))
+        for (CardRole cr : newRoles) {
+            if (assignmentsMap.containsKey(cr.getUser())) {
+                final Assignment lastAssignment = Collections.max(assignmentsMap.get(cr.getUser()), BY_CREATE_TS_COMPARATOR);
+                Predicate<CardRole> predicate = new Predicate<CardRole>() {
+                    @Override
+                    public boolean apply(@Nullable CardRole input) {
+                        return input != null && ObjectUtils.equals(lastAssignment.getUser(), input.getUser());
+                    }
+                };
+                if (lastAssignment.getFinished() != null && !Iterables.any(oldRoles, predicate)) {
+                    createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+                }
+            } else {
                 createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+            }
+        }
+        for (Assignment assignment : assignmentsMap.values()) {
+            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null) {
+                closeAssignment(assignment, createDummyCardRole(assignment, newRoles.get(0).getCode()), comment);
+            }
         }
     }
 
     protected void closeAssignment(Assignment assignment, CardRole cr, String comment) {
         assignment.setFinished(timeSource.currentTimestamp());
         assignment.setFinishedByUser(userSessionSource.getUserSession().getUser());
+        assignment.setOutcome(WfConstants.ACTION_REASSIGN);
         assignment.setComment(comment);
-        //TODO: set reassign outcome result on assignment
         fireCloseEvent(assignment, cr);
     }
 
-    protected void createAssignment(Card card, CardRole cr, String state) {
+    protected Assignment createAssignment(Card card, CardRole cr, String state) {
         Assignment assignment = metadata.create(Assignment.class);
         assignment.setName(state);
         assignment.setDescription("msg://" + state);
@@ -115,21 +151,23 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         assignment.setCard(card);
         assignment.setProc(card.getProc());
         assignment.setUser(cr.getUser());
+        Assignment master = getMasterAssignment(card, state);
         assignment.setIteration(1);
-        assignment.setMasterAssignment(getMasterAssignment(card, state));
+        assignment.setMasterAssignment(master);
         assignment.setFamilyAssignment(getFamilyAssignment(card));
         persistence.getEntityManager().persist(assignment);
         fireCreateEvent(assignment, cr);
+        return assignment;
     }
 
-    private void fireCloseEvent(Assignment assignment, CardRole cr) {
+    protected void fireCloseEvent(Assignment assignment, CardRole cr) {
         if (listeners != null) {
             for (AssignmentListener listener : listeners)
                 listener.closeAssignment(assignment, cr);
         }
     }
 
-    private void fireCreateEvent(Assignment assignment, CardRole cr) {
+    protected void fireCreateEvent(Assignment assignment, CardRole cr) {
         if (listeners != null) {
             for (AssignmentListener listener : listeners)
                 listener.createAssignment(assignment, cr);
@@ -143,7 +181,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
      * @param code - process role code
      * @return
      */
-    private CardRole createDummyCardRole(Assignment assignment, String code) {
+    protected CardRole createDummyCardRole(Assignment assignment, String code) {
         CardRole cr = new CardRole();
         cr.setDeletedBy(userSessionSource.getUserSession().getUser().getLogin());
         cr.setDeleteTs(timeSource.currentTimestamp());
@@ -157,21 +195,38 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     @SuppressWarnings("unchecked")
     protected List<Assignment> getAssignmentsByState(Card card, String state) {
+        List<Assignment> r = loadAssignmentsByState(card, state);
+        Set<Assignment> masterAssignments = new HashSet<Assignment>();
+        for (Assignment assignment : r) {
+            if (assignment.getMasterAssignment() != null) {
+                masterAssignments.add(assignment.getMasterAssignment());
+            }
+        }
+        //single assignment
+        if (masterAssignments.isEmpty()) {
+            for (Assignment assignment : r) {
+                if (assignment.getFinished() == null) {
+                    return Collections.singletonList(assignment);
+                }
+            }
+        }
+        //universal assignment
+        Assignment lastMasterAssignment = Collections.max(masterAssignments, BY_CREATE_TS_COMPARATOR);
+        List<Assignment> filter = new LinkedList<Assignment>();
+        for (Assignment assignment : r) {
+            if (lastMasterAssignment.equals(assignment.getMasterAssignment()))
+                filter.add(assignment);
+        }
+        return filter;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Assignment> loadAssignmentsByState(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
                 .setParameter("card", card)
                 .setParameter("state", state);
-        List<Assignment> r = q.getResultList();
-        if (r.size() > 1) {
-            List<Assignment> filter = new LinkedList<>();
-            for (Assignment assignment : r) {
-                if (assignment.getMasterAssignment() != null)
-                    filter.add(assignment);
-            }
-            return filter;
-        }
-        return r;
-
+        return (List<Assignment>) q.getResultList();
     }
 
     protected Assignment getMasterAssignment(Card card, String state) {
@@ -179,6 +234,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         Query q = em.createQuery(FIND_MASTER_ASSIGNMENT_QUERY)
                 .setParameter("card", card)
                 .setParameter("state", state);
+        q.setMaxResults(1);
         List r = q.getResultList();
         return r.isEmpty() ? null : (Assignment) r.get(0);
     }
@@ -193,11 +249,11 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     protected void deleteNotification(Assignment assignment) {
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery(DELETE_CARD_INFO_QUERY)
-                .setParameter("deleteTs", assignment.getFinished())
-                .setParameter("deletedBy", userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getLogin())
-                .setParameter("card", assignment.getCard())
-                .setParameter("user", assignment.getUser());
-        query.executeUpdate();
+        Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = :card and ci.user.id = :user");
+        query.setParameter("card", assignment.getCard());
+        query.setParameter("user", assignment.getUser());
+        List<CardInfo> cardInfoList = query.getResultList();
+        for (CardInfo ci : cardInfoList)
+            em.remove(ci);
     }
 }

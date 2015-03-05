@@ -10,8 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -44,7 +43,7 @@ public class ReassignForm extends AbstractWindow {
     @Inject
     private BoxLayout commentTextPane;
 
-    protected TextField commentText;
+    protected TextArea commentText;
 
     @Inject
     protected CollectionDatasource cardRolesDs;
@@ -54,9 +53,10 @@ public class ReassignForm extends AbstractWindow {
 
     @Inject
     protected WfAssignmentService assignmentEngine;
-
     @Inject
     protected Configuration configuration;
+    @Inject
+    protected Metadata metadata;
 
     protected Card card;
     protected Card procContextCard;
@@ -145,16 +145,11 @@ public class ReassignForm extends AbstractWindow {
 
     protected boolean commit() {
         if (__validate()) {
+            Card reloadedCard = getDsContext().getDataSupplier().reload(card, metadata.getViewRepository()
+                    .getView(Card.class, "with-roles"));
             if (cardRolesFrame != null)
                 cardRolesDs.commit();
-            List<CardRole> roles = new LinkedList<CardRole>();
-            for (Object id : cardRolesDs.getItemIds()) {
-                @SuppressWarnings("unchecked")
-                CardRole cr = (CardRole) cardRolesDs.getItem(id);
-                if (ObjectUtils.equals(role, cr.getCode()) && cr.getUser() != null)
-                    roles.add(cr);
-            }
-            assignmentEngine.reassign(card, state, roles, getComment());
+            assignmentEngine.reassign(card, state, getCardRoles(), reloadedCard.getRoles(), getComment());
             return true;
         }
         return false;
@@ -180,6 +175,17 @@ public class ReassignForm extends AbstractWindow {
             return commentText.getValue();
         }
         return null;
+    }
+
+    protected List<CardRole> getCardRoles() {
+        List<CardRole> roles = new LinkedList<CardRole>();
+        for (Object id : cardRolesDs.getItemIds()) {
+            @SuppressWarnings("unchecked")
+            CardRole cr = (CardRole) cardRolesDs.getItem(id);
+            if (ObjectUtils.equals(role, cr.getCode()) && cr.getUser() != null)
+                roles.add(cr);
+        }
+        return roles;
     }
 
     protected void setCommentVisible() {
