@@ -15,6 +15,7 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -537,18 +538,7 @@ public class WfEngine implements WfEngineAPI {
     }
 
     public void cancelProcessInternal(Card card, String state) {
-        EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
-                metadata.getExtendedEntities().getEffectiveClass(Assignment.class));
-        query.setParameter(1, card);
-        List<Assignment> assignments = query.getResultList();
-        for (Assignment assignment : assignments) {
-            if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName())) {
-                assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
-            }
-            assignment.setFinished(timeSource.currentTimestamp());
-        }
-
+        cancelAssignments(card);
         setCanceledState(card);
         if (card.getJbpmProcessId() != null) {
             ProcessInstance processInstance = WfHelper.getExecutionService().findProcessInstanceById(card.getJbpmProcessId());
@@ -577,6 +567,27 @@ public class WfEngine implements WfEngineAPI {
         card.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
     }
 
+    protected void cancelAssignments(Card card) {
+        List<Assignment> assignments = findCardAssignments(card);
+        if (CollectionUtils.isNotEmpty(assignments))
+            for (Assignment assignment : assignments) {
+                if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName())) {
+                    assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
+                }
+                assignment.setFinished(timeSource.currentTimestamp());
+            }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Assignment> findCardAssignments(Card card) {
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
+                metadata.getExtendedEntities().getEffectiveClass(Assignment.class));
+        query.setParameter(1, card);
+        return query.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
     protected List<Card> findFamilyCards(Card topFamily) {
         EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("select c from wf$Card c where c.procFamily.card.id = :card and c.procFamily.jbpmProcessId = :procId")
