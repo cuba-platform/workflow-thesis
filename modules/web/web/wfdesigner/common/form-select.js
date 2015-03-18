@@ -186,19 +186,6 @@ Wf.registerForms = function() {
         ]
     });
 
-    Wf.FormSelect.registerForm("subProc", {
-        label: i18n.get("subProcForm"),
-        fields: [
-            {type: "boolean", name: "commentVisible", label: i18n.get("commentVisible")},
-            {type: "boolean", name: "commentRequired", label: i18n.get("commentRequired")},
-            {type: "boolean", name: "dueDateVisible", label: i18n.get("dueDateVisible")},
-            {type: "boolean", name: "cardRolesVisible", label: i18n.get("cardRolesVisible")},
-            {type: "WfJbpmProcSelect", name: "subProcCode", label: i18n.get("SubProc.proc")},
-            {type: "string", name: "requiredRoles", label: i18n.get("requiredRoles")},
-            {type: "string", name: "visibleRoles", label: i18n.get("visibleRoles")}
-        ]
-    });
-
     Wf.FormSelect.registerForm("invoke", {
         label: i18n.get("invoke"),
         fields: [

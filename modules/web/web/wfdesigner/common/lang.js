@@ -524,64 +524,6 @@ var wfLanguage = {
             }
         },
         {
-            "name": "SubProc",
-            "label": "msg://SubProc",
-            "description": "msg://SubProc",
-            "category": "common",
-            "container": {
-                "xtype": "Wf.Container",
-                "icon": "../common/res/icons/assignment_icon.png",
-                "width": 320,
-
-                "fields": [
-                    {
-                        "type": "string",
-                        "name": "name",
-                        "label": "msg://name",
-                        "required": false,
-                        "value": "msg://SubProc"
-                    },
-                    {
-                        "type": "WfJbpmProcSelect",
-                        "name": "subProcCode",
-                        "label": "msg://SubProc.proc",
-                        "required": true
-                    }
-                ],
-
-                "optFields": [
-                    {
-                        "type": "string",
-                        "label": "msg://name",
-                        "name": "name",
-                        "required": false,
-                        "value": "msg://SubProc",
-                        "readonly":"true"
-                    },
-
-                    {
-                        "type": "string",
-                        "label": "msg://description",
-                        "name": "description",
-                        "required": false,
-                        "value": ""
-                    }
-                ],
-
-                "terminals": [
-                    {
-                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 152, "top": -15},
-                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
-                    },
-                    {
-                        "direction": [0,1], "offsetPosition": {"left": 152, "bottom": -15 }, "name": "subProcCompleted",
-                        "label": "msg://SubProc.subProcCompleted", "labelPosition": {"left": 172, "bottom": -15},
-                        "ddConfig": {"type": "out","allowedTypes": ["in"]},"alwaysSrc": true, "nMaxWires": 1
-                    }
-                ]
-            }
-        },
-        {
              "name": "SubDesign",
              "label": "msg://SubDesign",
              "description": "msg://SubDesign",
