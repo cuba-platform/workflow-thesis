@@ -20,6 +20,7 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
+import com.haulmont.workflow.gui.app.attachment.ProcessAttachmentsManager;
 import com.haulmont.workflow.gui.base.action.AbstractForm;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
@@ -54,6 +55,9 @@ public class ResolutionForm extends AbstractForm {
 
     @Inject
     protected UserSession userSession;
+
+    @Inject
+    protected ProcessAttachmentsManager processAttachments;
 
     protected Assignment assignment;
 
@@ -159,11 +163,13 @@ public class ResolutionForm extends AbstractForm {
         if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {
-            CommitContext commitContext = new CommitContext();
-            commitContext.getCommitInstances().addAll(copyAttachments());
-            getDsContext().getDataSupplier().commit(commitContext);
-            getDsContext().commit();
-            onCommit();
+            if (!assignmentDs.getItems().isEmpty()) {
+                CommitContext commitContext = new CommitContext();
+                commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
+                getDsContext().getDataSupplier().commit(commitContext);
+                getDsContext().commit();
+                onCommit();
+            }
             close(COMMIT_ACTION_ID);
         }
     }
@@ -196,34 +202,6 @@ public class ResolutionForm extends AbstractForm {
                 }
             });
         }
-    }
-
-    protected List<CardAttachment> copyAttachments() {
-        List<CardAttachment> attachmentList = assignmentDs.getItem().getAttachments();
-        List<CardAttachment> commitList = new ArrayList<>();
-        if (assignmentDs.getItemIds().size() > 1 && attachmentList != null) {
-            for (Object key : assignmentDs.getItemIds()) {
-                if (key.equals(assignment.getId())) {
-                    continue;
-                }
-
-                Assignment item = assignmentDs.getItem((UUID) key);
-                Preconditions.checkNotNull(item, "Assignment is null");
-                List<CardAttachment> copyAttachmentList = new ArrayList<>();
-                for (CardAttachment attachment : attachmentList) {
-                    CardAttachment cardAttachment = metadata.create(CardAttachment.class);
-                    cardAttachment.setAssignment(item);
-                    cardAttachment.setCard(item.getCard().getFamilyTop());
-                    cardAttachment.setFile(attachment.getFile());
-                    cardAttachment.setName(attachment.getName());
-                    cardAttachment.setAttachType(attachment.getAttachType());
-                    copyAttachmentList.add(cardAttachment);
-                    commitList.add(cardAttachment);
-                }
-                item.setAttachments(copyAttachmentList);
-            }
-        }
-        return commitList;
     }
 
     private Assignment reloadAssignment(Object id) {

@@ -24,6 +24,7 @@ import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
+import com.haulmont.workflow.gui.app.attachment.ProcessAttachmentsManager;
 import com.haulmont.workflow.gui.base.action.AbstractForm;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -84,6 +85,8 @@ public class TransitionForm extends AbstractForm {
     protected UserSession userSession;
     @Inject
     protected DataSupplier dataSupplier;
+    @Inject
+    protected ProcessAttachmentsManager processAttachments;
 
     protected Card card;
     protected Card procContextCard;
@@ -368,29 +371,13 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected List<Entity> copyAttachments() {
-        List<Entity> commitList = new ArrayList<>();
+        Collection<Assignment> assignments = new ArrayList<>();
         for (Map.Entry<Card, AssignmentInfo> entry : cardAssignmentInfoMap.entrySet()) {
-            AssignmentInfo assignmentInfo = entry.getValue();
-            if (assignmentInfo != null && !assignmentDs.getItem().getUuid().equals(assignmentInfo.getAssignmentId())) {
-                Assignment loadAssignment = getDsContext().getDataSupplier().load(new
-                        LoadContext(Assignment.class).setView("resolutions").setId(assignmentInfo.getAssignmentId()));
-                Preconditions.checkNotNull(loadAssignment, "Assignment is null");
-                for (UUID uuid : attachmentsDs.getItemIds()) {
-                    CardAttachment attachment = (CardAttachment) attachmentsDs.getItem(uuid);
-                    Preconditions.checkNotNull(attachment, "Attachment is null");
-                    CardAttachment cardAttachment = metadata.create(CardAttachment.class);
-                    cardAttachment.setAssignment(loadAssignment);
-                    cardAttachment.setCard(loadAssignment.getCard());
-                    cardAttachment.setFile(attachment.getFile());
-                    cardAttachment.setName(attachment.getName());
-                    cardAttachment.setAttachType(attachment.getAttachType());
-                    commitList.add(cardAttachment);
-                }
-                commitList.add(card);
-            }
-            wfService.setHasAttachmentsInCard(entry.getKey(), true);
+            Assignment assignment = getDsContext().getDataSupplier().<Assignment>load(new
+                    LoadContext(Assignment.class).setView("resolutions").setId(entry.getValue().getAssignmentId()));
+            assignments.add(assignment);
         }
-        return commitList;
+        return processAttachments.copyAttachments(assignments);
     }
 
     protected boolean doCommit() {
@@ -412,7 +399,7 @@ public class TransitionForm extends AbstractForm {
 
         if (dueDate != null || refusedOnly != null)
             varsDs.commit();
-        if (cardAssignmentInfoMap != null) {
+        if (cardAssignmentInfoMap != null && !cardAssignmentInfoMap.isEmpty()) {
             CommitContext commitContext = new CommitContext();
             commitContext.getCommitInstances().addAll(copyAttachments());
             getDsContext().getDataSupplier().commit(commitContext);
