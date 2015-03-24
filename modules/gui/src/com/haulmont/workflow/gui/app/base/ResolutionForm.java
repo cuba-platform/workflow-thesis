@@ -164,6 +164,7 @@ public class ResolutionForm extends AbstractForm {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {
             commitAttachments();
+            onCommit();
             close(COMMIT_ACTION_ID);
         }
     }
@@ -215,8 +216,6 @@ public class ResolutionForm extends AbstractForm {
             CommitContext commitContext = new CommitContext();
             commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
             getDsContext().getDataSupplier().commit(commitContext);
-            getDsContext().commit();
-            onCommit();
         }
     }
 }
