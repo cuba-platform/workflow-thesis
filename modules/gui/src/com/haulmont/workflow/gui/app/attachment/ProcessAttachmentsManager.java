@@ -28,30 +28,32 @@ public class ProcessAttachmentsManager implements ProcessAttachmentsAPI {
 
     @Override
     public List<Entity> copyAttachments(Collection<Assignment> assignments) {
-        Assignment assignment = assignments.iterator().next();
-        List<CardAttachment> attachmentList = assignment.getAttachments();
         List<Entity> commitList = new ArrayList<>();
-        if (assignments.size() > 1 && attachmentList != null) {
-            for (Assignment item : assignments) {
-                if (item.getId().equals(assignment.getId())) {
-                    continue;
-                }
-                Preconditions.checkNotNull(item, "Assignment is null");
-                List<CardAttachment> copyAttachmentList = new ArrayList<>();
-                for (CardAttachment attachment : attachmentList) {
-                    CardAttachment cardAttachment = AppBeans.get(Metadata.class).create(CardAttachment.class);
-                    cardAttachment.setAssignment(item);
-                    cardAttachment.setCard(item.getCard().getFamilyTop());
-                    cardAttachment.setFile(attachment.getFile());
-                    cardAttachment.setName(attachment.getName());
-                    cardAttachment.setAttachType(attachment.getAttachType());
-                    cardAttachment.setComment(attachment.getComment());
-                    copyAttachmentList.add(cardAttachment);
-                    commitList.add(cardAttachment);
-                }
-                if (!copyAttachmentList.isEmpty()) {
-                    item.setAttachments(copyAttachmentList);
-                    AppBeans.get(WfService.class).setHasAttachmentsInCard(item.getCard(), true);
+        if (!assignments.isEmpty()) {
+            Assignment assignment = assignments.iterator().next();
+            List<CardAttachment> attachmentList = assignment.getAttachments();
+            if (assignments.size() > 1 && attachmentList != null) {
+                for (Assignment item : assignments) {
+                    if (item.getId().equals(assignment.getId())) {
+                        continue;
+                    }
+                    Preconditions.checkNotNull(item, "Assignment is null");
+                    List<CardAttachment> copyAttachmentList = new ArrayList<>();
+                    for (CardAttachment attachment : attachmentList) {
+                        CardAttachment cardAttachment = AppBeans.get(Metadata.class).create(CardAttachment.class);
+                        cardAttachment.setAssignment(item);
+                        cardAttachment.setCard(item.getCard().getFamilyTop());
+                        cardAttachment.setFile(attachment.getFile());
+                        cardAttachment.setName(attachment.getName());
+                        cardAttachment.setAttachType(attachment.getAttachType());
+                        cardAttachment.setComment(attachment.getComment());
+                        copyAttachmentList.add(cardAttachment);
+                        commitList.add(cardAttachment);
+                    }
+                    if (!copyAttachmentList.isEmpty()) {
+                        item.setAttachments(copyAttachmentList);
+                        AppBeans.get(WfService.class).setHasAttachmentsInCard(item.getCard(), true);
+                    }
                 }
             }
         }

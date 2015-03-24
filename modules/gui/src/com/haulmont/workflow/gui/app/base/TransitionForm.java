@@ -399,7 +399,7 @@ public class TransitionForm extends AbstractForm {
 
         if (dueDate != null || refusedOnly != null)
             varsDs.commit();
-        if (cardAssignmentInfoMap != null && !cardAssignmentInfoMap.isEmpty()) {
+        if (cardAssignmentInfoMap != null) {
             CommitContext commitContext = new CommitContext();
             commitContext.getCommitInstances().addAll(copyAttachments());
             getDsContext().getDataSupplier().commit(commitContext);
