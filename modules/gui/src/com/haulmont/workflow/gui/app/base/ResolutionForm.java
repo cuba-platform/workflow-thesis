@@ -163,13 +163,7 @@ public class ResolutionForm extends AbstractForm {
         if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {
-            if (!assignmentDs.getItems().isEmpty()) {
-                CommitContext commitContext = new CommitContext();
-                commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
-                getDsContext().getDataSupplier().commit(commitContext);
-                getDsContext().commit();
-                onCommit();
-            }
+            commitAttachments();
             close(COMMIT_ACTION_ID);
         }
     }
@@ -214,5 +208,15 @@ public class ResolutionForm extends AbstractForm {
     @Override
     public String getComment() {
         return commentText.getValue();
+    }
+
+    public void commitAttachments() {
+        if (!assignmentDs.getItems().isEmpty()) {
+            CommitContext commitContext = new CommitContext();
+            commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
+            getDsContext().getDataSupplier().commit(commitContext);
+            getDsContext().commit();
+            onCommit();
+        }
     }
 }

@@ -6,10 +6,7 @@
 package com.haulmont.workflow.gui.app.base;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -18,6 +15,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
@@ -27,6 +25,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -51,6 +50,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
     protected Table attachmentsTable;
     protected AttachmentCreator attachmentCreator;
     protected FileUploadField fastUploadButton;
+    protected UUID assignmentId;
 
     @Inject
     protected PopupButton createAttachBtn;
@@ -65,7 +65,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
     public void init(@Nullable Map<String, Object> params) {
         cardDs = getDsContext().get("cardDs");
         attachmentsTable = getComponent("attachmentsTable");
-
+        assignmentId = (UUID) params.get("assignmentId");
 
         attachmentCreator = new AttachmentCreator.CardAttachmentCreator() {
             public Attachment createObject() {
@@ -75,6 +75,11 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 attachment.setCreatedBy(userSessionSource.getUserSession().getCurrentOrSubstitutedUser().getLogin());
                 attachment.setCreateTs(timeSource.currentTimestamp());
                 attachment.setSubstitutedCreator(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+                if (assignmentId != null) {
+                    Assignment assignment = getDsContext().getDataSupplier().<Assignment>load(new
+                            LoadContext(Assignment.class).setId(assignmentId));
+                    attachment.setAssignment(assignment);
+                }
                 return attachment;
             }
 
