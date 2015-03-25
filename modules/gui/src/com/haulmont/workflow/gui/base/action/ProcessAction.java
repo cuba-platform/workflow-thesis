@@ -119,7 +119,7 @@ public class ProcessAction extends AbstractAction {
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        if (editor.commit()) {
+                                        if (commitEditor(editor)) {
 
                                             card = (Card) editor.getItem();
                                             checkVersion(card);
@@ -160,7 +160,7 @@ public class ProcessAction extends AbstractAction {
                         }
                 );
             }
-        } else if (editor.commit()) {
+        } else if (commitEditor(editor)) {
 
             card = (Card) editor.getItem();
             checkVersion(card);
@@ -254,6 +254,10 @@ public class ProcessAction extends AbstractAction {
         }
 
         return true;
+    }
+
+    protected boolean commitEditor(Window.Editor editor) {
+        return editor.commit();
     }
 
     protected void startProcess(Window window, FormManagerChain managerChain) {
