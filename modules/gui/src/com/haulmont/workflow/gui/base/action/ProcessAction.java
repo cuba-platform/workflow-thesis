@@ -38,10 +38,13 @@ public class ProcessAction extends AbstractAction {
     protected AssignmentInfo assignmentInfo;
     protected Window frame;
 
+    protected Window.Editor editor;
+
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected WfService wfService = AppBeans.get(WfService.NAME);
     protected DataService dataService = AppBeans.get(DataService.NAME);
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
+    protected WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
 
     public ProcessAction(Card card, String actionName, AssignmentInfo assignmentInfo, Window frame) {
         super(actionName);
@@ -88,14 +91,11 @@ public class ProcessAction extends AbstractAction {
         final Window window = ComponentsHelper.getWindow(frame);
         if (!(window instanceof Window.Editor)) return;
 
-        final Window.Editor editor = (Window.Editor) window;
+        editor = (Window.Editor) window;
 
         final Map<String, Object> formManagerParams = new HashMap<>();
 
         formManagerParams.put("subProcCard", new CardContext());
-
-        WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
-        final UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
 
         card = (Card) editor.getItem();
 
@@ -110,56 +110,7 @@ public class ProcessAction extends AbstractAction {
 
         //we won't commit the editor if user presses no in cancel process confirmation form
         if (WfConstants.ACTION_CANCEL.equals(actionName)) {
-            if (isCardInProcess(card) && isCardInSameProcess(card)) {
-                wmp.get().showOptionDialog(
-                        messages.getMessage(getClass(), "cancelProcess.title"),
-                        messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
-                        IFrame.MessageType.CONFIRMATION,
-                        new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        if (commitEditor(editor)) {
-
-                                            card = (Card) editor.getItem();
-                                            checkVersion(card);
-
-                                            final FormManagerChain managerChain = createManagerChain();
-                                            managerChain.setHandler(new FormManagerChain.Handler() {
-                                                public void onSuccess(String comment) {
-                                                    cancelProcess(editor, managerChain);
-                                                }
-
-                                                public void onFail() {
-                                                }
-                                            });
-                                            managerChain.doManagerBefore("", formManagerParams);
-                                        }
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.NO)
-                        }
-                );
-            } else {
-                editor.showOptionDialog(
-                        messages.getMessage(getClass(), "failCancelProcCaption"),
-                        messages.getMessage(getClass(), "failCancelProcDescription"),
-                        IFrame.MessageType.CONFIRMATION,
-                        new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
-                                    @Override
-                                    public void actionPerform(Component c) {
-                                        editor.close(Window.CLOSE_ACTION_ID, true);
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.NO) {
-                                    @Override
-                                    public void actionPerform(Component c) {
-                                    }
-                                }
-                        }
-                );
-            }
+            handleActionCancel(formManagerParams);
         } else if (commitEditor(editor)) {
 
             card = (Card) editor.getItem();
@@ -167,68 +118,19 @@ public class ProcessAction extends AbstractAction {
 
             final FormManagerChain managerChain = createManagerChain();
 
-            if (WfConstants.ACTION_SAVE.equals(actionName)) {
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void onSuccess(String comment) {
-                        editor.commit();
-                        managerChain.doManagerAfter(formManagerParams);
-                    }
-
-                    public void onFail() {
-                    }
-                });
-                managerChain.doManagerBefore("", formManagerParams);
-
-            } else if (WfConstants.ACTION_SAVE_AND_CLOSE.equals(actionName)) {
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void onSuccess(String comment) {
-                        editor.close(Window.COMMIT_ACTION_ID);
-                        managerChain.doManagerAfter(formManagerParams);
-                    }
-
-                    public void onFail() {
-                    }
-                });
-                managerChain.doManagerBefore("", formManagerParams);
-
-            } else if (WfConstants.ACTION_START.equals(actionName)) {
-                if (isCardInProcess(card)) {
-                    String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
-                    wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
-                    return;
-                }
-
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void onSuccess(String comment) {
-                        startProcess(editor, managerChain);
-                    }
-
-                    public void onFail() {
-                    }
-                });
-                managerChain.doManagerBefore("", formManagerParams);
-
-            } else {
-                LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
-                Assignment assignment = dataService.load(lc);
-                if (assignment.getFinished() != null) {
-                    String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
-                    wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
-                    return;
-                }
-
-                managerChain.setHandler(new FormManagerChain.Handler() {
-                    public void onSuccess(String comment) {
-                        CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
-                        finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
-                    }
-
-                    public void onFail() {
-                        CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
-                        removeSubProcCard(subProcCardContext.getCard());
-                    }
-                });
-                managerChain.doManagerBefore(assignment.getComment(), formManagerParams);
+            switch (actionName) {
+                case WfConstants.ACTION_SAVE:
+                    handleActionSave(managerChain, formManagerParams);
+                    break;
+                case WfConstants.ACTION_SAVE_AND_CLOSE:
+                    handleActionSaveAndClose(managerChain, formManagerParams);
+                    break;
+                case WfConstants.ACTION_START:
+                    handleActionStart(managerChain, formManagerParams);
+                    break;
+                default:
+                    handleFallback(managerChain, formManagerParams);
+                    break;
             }
         }
     }
@@ -351,5 +253,131 @@ public class ProcessAction extends AbstractAction {
         return (cardCP != null && reloadedCardCP != null
                 && cardCP.equals(reloadedCardCP)
                 && cardCP.getStartCount().equals(reloadedCardCP.getStartCount()));
+    }
+
+    protected void handleActionCancel(final Map<String, Object> formManagerParams) {
+        if (isCardInProcess(card) && isCardInSameProcess(card)) {
+            wmp.get().showOptionDialog(
+                    messages.getMessage(getClass(), "cancelProcess.title"),
+                    messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
+                    IFrame.MessageType.CONFIRMATION,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.YES) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    if (commitEditor(editor)) {
+
+                                        card = (Card) editor.getItem();
+                                        checkVersion(card);
+
+                                        final FormManagerChain managerChain = createManagerChain();
+                                        managerChain.setHandler(new FormManagerChain.Handler() {
+                                            public void onSuccess(String comment) {
+                                                cancelProcess(editor, managerChain);
+                                            }
+
+                                            public void onFail() {
+                                            }
+                                        });
+                                        managerChain.doManagerBefore("", formManagerParams);
+                                    }
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO)
+                    }
+            );
+        } else {
+            editor.showOptionDialog(
+                    messages.getMessage(getClass(), "failCancelProcCaption"),
+                    messages.getMessage(getClass(), "failCancelProcDescription"),
+                    IFrame.MessageType.CONFIRMATION,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.OK) {
+                                @Override
+                                public void actionPerform(Component c) {
+                                    editor.close(Window.CLOSE_ACTION_ID, true);
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO) {
+                                @Override
+                                public void actionPerform(Component c) {
+                                }
+                            }
+                    }
+            );
+        }
+    }
+
+    protected void handleActionSave(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
+        managerChain.setHandler(new FormManagerChain.Handler() {
+            @Override
+            public void onSuccess(String comment) {
+                managerChain.doManagerAfter(formManagerParams);
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
+        managerChain.doManagerBefore("", formManagerParams);
+    }
+
+    protected void handleActionSaveAndClose(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
+        managerChain.setHandler(new FormManagerChain.Handler() {
+            @Override
+            public void onSuccess(String comment) {
+                editor.close(Window.COMMIT_ACTION_ID);
+                managerChain.doManagerAfter(formManagerParams);
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
+        managerChain.doManagerBefore("", formManagerParams);
+    }
+
+    protected void handleActionStart(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
+        if (isCardInProcess(card)) {
+            String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
+            wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
+            return;
+        }
+
+        managerChain.setHandler(new FormManagerChain.Handler() {
+            @Override
+            public void onSuccess(String comment) {
+                startProcess(editor, managerChain);
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
+        managerChain.doManagerBefore("", formManagerParams);
+    }
+
+    protected void handleFallback(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
+        UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
+        LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
+        Assignment assignment = dataService.load(lc);
+        if (assignment.getFinished() != null) {
+            String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
+            wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
+            return;
+        }
+
+        managerChain.setHandler(new FormManagerChain.Handler() {
+            public void onSuccess(String comment) {
+                CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+                finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
+            }
+
+            public void onFail() {
+                CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+                removeSubProcCard(subProcCardContext.getCard());
+            }
+        });
+        managerChain.doManagerBefore(assignment.getComment(), formManagerParams);
     }
 }
