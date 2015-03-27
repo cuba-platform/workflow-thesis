@@ -20,6 +20,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.dom4j.dom.DOMElement;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -321,6 +322,21 @@ public abstract class FormManager implements Serializable {
         @Override
         public void doAfter(Map<String, Object> params) {
             log.warn("Confirm form doesn't make sense 'after'");
+        }
+    }
+
+    public static class SimpleFormManager extends FormManager {
+
+        public SimpleFormManager(FormManagerChain chain) {
+            super(new DOMElement(""), "", "", chain);
+        }
+
+        @Override
+        public void doBefore(Map<String, Object> params) {
+        }
+
+        @Override
+        public void doAfter(Map<String, Object> params) {
         }
     }
 }
