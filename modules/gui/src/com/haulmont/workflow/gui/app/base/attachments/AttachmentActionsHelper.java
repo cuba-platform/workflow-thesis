@@ -274,8 +274,6 @@ public class AttachmentActionsHelper {
         checkNotNull(creator);
 
         final IFrame frame = attachmentsTable.getFrame();
-
-        ButtonsPanel buttonsPanel = attachmentsTable.getButtonsPanel();
         final FileUploadField fileUploadField = AppConfig.getFactory().createComponent(FileUploadField.NAME);
         fileUploadField.setFrame(frame);
         fileUploadField.addListener(new FileUploadField.Listener() {
@@ -331,8 +329,6 @@ public class AttachmentActionsHelper {
             }
         });
         fileUploadField.setCaption(AppBeans.get(Messages.class).getMessage(AttachmentActionsHelper.class, "wf.upload.submit"));
-        buttonsPanel.add(fileUploadField);
-
         return fileUploadField;
     }
 }
