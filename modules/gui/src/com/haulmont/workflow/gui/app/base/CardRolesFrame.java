@@ -596,15 +596,23 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
             try {
-                Integer duration = Integer.parseInt((String) value);
-                if (cardRole != null)
-                    cardRole.setDuration(duration);
-
+                setValue(value);
             } catch (NumberFormatException ex) {
                 String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
                 String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
                 showNotification(caption, msg, NotificationType.TRAY);
-                field.setValue(null);
+                setValue(prevValue);
+            }
+        }
+
+        protected void setValue(@Nullable Object value) throws NumberFormatException{
+            if (value != null) {
+                Integer duration = Integer.parseInt((String) value);
+                if (cardRole != null)
+                    cardRole.setDuration(duration);
+            } else {
+                if (cardRole != null)
+                    cardRole.setDuration(null);
             }
         }
     }
