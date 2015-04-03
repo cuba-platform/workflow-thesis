@@ -131,7 +131,7 @@ public interface WfService {
      * @param card card in a workflow process
      * @param user user
      */
-    void deleteNotifications(Card card, User user);
+    int deleteNotifications(Card card, User user);
 
     /**
      * Deletes process notification defined by a given cardInfo

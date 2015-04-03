@@ -133,7 +133,7 @@ public class WfServiceBean implements WfService {
     }
 
     @Override
-    public void deleteNotifications(Card card, User user) {
+    public int deleteNotifications(Card card, User user) {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -144,6 +144,7 @@ public class WfServiceBean implements WfService {
             for (CardInfo ci : cardInfoList)
                 em.remove(ci);
             tx.commit();
+            return cardInfoList.size();
         } finally {
             tx.end();
         }
