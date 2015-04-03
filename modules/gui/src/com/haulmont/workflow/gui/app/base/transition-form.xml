@@ -18,8 +18,7 @@
 
         <hierarchicalDatasource id="attachmentsDs" class="com.haulmont.workflow.core.entity.CardAttachment"
                                 view="card-edit" hierarchyProperty="versionOf">
-            <query>select a from wf$CardAttachment a where (a.card.id = :ds$cardDs or a.card.id in (select c.id from
-                wf$Card c where c.procFamily.card.id = :ds$cardDs)) order by a.createTs desc
+            <query>select a from wf$CardAttachment a where a.card.id = :ds$cardDs order by a.createTs desc
             </query>
         </hierarchicalDatasource>
 
