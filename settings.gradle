@@ -6,11 +6,10 @@
 
 rootProject.name = 'workflow'
 
-include(':workflow-shared-lib', ':workflow-global', ':workflow-core', ':workflow-gui', ':workflow-web', ':workflow-web6')
+include(':workflow-shared-lib', ':workflow-global', ':workflow-core', ':workflow-gui', ':workflow-web')
 
 project(':workflow-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':workflow-global').projectDir = new File(settingsDir, 'modules/global')
 project(':workflow-core').projectDir = new File(settingsDir, 'modules/core')
 project(':workflow-gui').projectDir = new File(settingsDir, 'modules/gui')
 project(':workflow-web').projectDir = new File(settingsDir, 'modules/web')
-project(':workflow-web6').projectDir = new File(settingsDir, 'modules/web6')
