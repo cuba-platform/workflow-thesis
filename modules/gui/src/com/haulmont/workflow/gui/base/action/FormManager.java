@@ -325,11 +325,14 @@ public abstract class FormManager implements Serializable {
         }
     }
 
-    public static class SimpleFormManager extends FormManager {
+    public abstract static class SimpleFormManager extends FormManager {
 
         public SimpleFormManager(FormManagerChain chain) {
             super(new DOMElement(""), "", "", chain);
         }
+
+        // provide your specific implementation
+        public abstract FormManager copy();
 
         @Override
         public void doBefore(Map<String, Object> params) {
