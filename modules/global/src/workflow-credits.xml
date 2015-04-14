@@ -14,7 +14,7 @@
 
         <item name="Javassist" web="http://www.csg.is.titech.ac.jp/~chiba/javassist/" license="lgpl-2.1"/>
 
-        <item name="jBPM" web="http://www.jboss.org/jbpm" license="lgpl-2.1"/>
+        <item name="jBPM" web="http://www.jboss.org/jbpm" license="lgpl-2.1" fork="true"/>
 
         <item name="JUEL" web="http://juel.sourceforge.net" license="apache-2.0"/>
 
