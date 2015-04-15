@@ -13,6 +13,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.UserGroup;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,25 +50,20 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
                     data.put(uuid, obj);
             }
         }
-
-//        State prevState = state;
-//        valid();
-//        forceStateChanged(prevState);
     }
 
-    protected List<User> loadUsers(Role secRole) {
-        String queryString;
+    protected List<User> loadUsers(@Nullable Role secRole) {
+        LoadContext.Query query;
         if (secRole != null) {
-            queryString = "select u from sec$User u join u.userRoles ur where u.active = true and ur.role.id = :secRole order by u.name";
+            query = new LoadContext.Query("select u from sec$User u join u.userRoles ur " +
+                    "where u.active = true and ur.role.id = :secRole order by u.name")
+                    .setParameter("secRole", secRole);
         } else {
-            queryString = "select u from sec$User u where u.active = true order by u.name";
+            query = new LoadContext.Query("select u from sec$User u where u.active = true order by u.name");
         }
-
-        LoadContext ctx = new LoadContext(User.class).setView("usergroup-add");
-        LoadContext.Query query = ctx.setQueryString(queryString);
-        query.setParameter("secRole", secRole);
-
-        return dataSupplier.loadList(ctx);
+        return dataSupplier.loadList(new LoadContext(User.class)
+                .setView("usergroup-add")
+                .setQuery(query));
     }
 
     protected List<UserGroup> loadUserGroups(){
