@@ -5,94 +5,28 @@
 
 package com.haulmont.workflow.gui.base.action;
 
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.workflow.core.app.cardroles.CardRolesFrameWorker;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
-import com.haulmont.workflow.core.entity.ProcRole;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 /**
+ * Deprecated - use {@link com.haulmont.workflow.core.app.cardroles.CardRolesFrameWorker}
+ *
  * @author pavlov
  * @version $Id$
+ * @version $Id$
  */
+@Deprecated
 public class CardRolesFrameHelper {
 
-    public static Set<String> getEmptyRolesNames(Card card, Set<CardRole> cardRoles, String requiredRolesCodesStr, List<String> deletedEmptyRoleCodes) {
-        Set<String> emptyRolesNames = new HashSet<>();
-        Map<String, String> procRolesNames = new HashMap<>();
-        List<ProcRole> procRoles = card.getProc().getRoles();
-        if (procRoles == null) {
-            LoadContext ctx = new LoadContext(ProcRole.class);
-            LoadContext.Query query = ctx.setQueryString("select pr from wf$ProcRole pr where pr.proc.id = :proc");
-            query.setParameter("proc", card.getProc());
-            procRoles = AppBeans.get(DataService.class).loadList(ctx);
-        }
-        for (ProcRole procRole : procRoles) {
-            procRolesNames.put(procRole.getCode(), procRole.getName());
-        }
+    public static Set<String> getEmptyRolesNames(Card card, Set<CardRole> cardRoles, String requiredRolesCodesStr,
+                                                 List<String> deletedEmptyRoleCodes) {
 
-        //if we removed required role from datasource
-        Set<String> emptyRequiredRolesCodes = new HashSet<>();
-
-        if (StringUtils.isNotEmpty(requiredRolesCodesStr)) {
-            String[] s = requiredRolesCodesStr.split("\\s*,\\s*");
-            emptyRequiredRolesCodes = new LinkedHashSet<>(Arrays.asList(s));
-        }
-
-        Set<String> requiredRolesChoiceCodes = new HashSet<>();
-        for (String requiredRoleCode : emptyRequiredRolesCodes) {
-            if (requiredRoleCode.contains("|"))
-                requiredRolesChoiceCodes.add(requiredRoleCode);
-        }
-
-        for (final CardRole cardRole : cardRoles) {
-            if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
-                    !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
-                emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
-            }
-
-            if (!requiredRolesChoiceCodes.isEmpty()) {
-                String choiceRole = (String) CollectionUtils.find(requiredRolesChoiceCodes, new Predicate() {
-                    @Override
-                    public boolean evaluate(Object object) {
-                        return Arrays.asList(((String) object).split("\\|")).contains(cardRole.getCode());
-                    }
-                });
-
-                if (choiceRole != null) {
-                    requiredRolesChoiceCodes.remove(choiceRole);
-                    emptyRequiredRolesCodes.remove(choiceRole);
-                }
-            }
-
-            emptyRequiredRolesCodes.remove(cardRole.getCode());
-        }
-
-        for (String roleCode : emptyRequiredRolesCodes) {
-            if (roleCode.contains("|")) {
-                String formattingCode = "";
-                String orStr = " " + AppBeans.get(Messages.class).getMessage(CardRolesFrameHelper.class, "actorNotDefined.or") + " ";
-                String[] roles = roleCode.split("\\|");
-                for (String role : roles) {
-                    formattingCode += procRolesNames.get(role) + orStr;
-                }
-
-                if (formattingCode.endsWith(orStr))
-                    formattingCode = formattingCode.substring(0, formattingCode.lastIndexOf(orStr));
-
-                emptyRolesNames.add(formattingCode);
-            } else {
-                emptyRolesNames.add(procRolesNames.get(roleCode));
-            }
-        }
-
-        return emptyRolesNames;
+        return AppBeans.get(CardRolesFrameWorker.class).getEmptyRolesNames(card, cardRoles, requiredRolesCodesStr,
+                deletedEmptyRoleCodes);
     }
 }

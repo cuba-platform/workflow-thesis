@@ -21,10 +21,10 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.workflow.core.app.WfService;
+import com.haulmont.workflow.core.app.cardroles.CardRolesFrameWorker;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.TimeUnit;
 import com.haulmont.workflow.gui.app.usergroup.UserGroupAdd;
-import com.haulmont.workflow.gui.base.action.CardRolesFrameHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -92,6 +92,9 @@ public class CardRolesFrame extends AbstractFrame {
 
     @Inject
     protected ComponentsFactory componentsFactory;
+    
+    @Inject
+    protected CardRolesFrameWorker cardRolesFrameWorker;
 
     protected Companion companion;
 
@@ -761,53 +764,6 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    protected void assignNextSortOrder(CardRole cr) {
-        if (cr.getSortOrder() != null)
-            return;
-        List<CardRole> cardRoles = getAllCardRolesWithProcRole(cr.getProcRole());
-        if (cardRoles.size() == 0) {
-            cr.setSortOrder(1);
-        } else if (cr.getProcRole().getMultiUser()) {
-            int max = getMaxSortOrderInCardRoles(cardRoles);
-            if (cr.getProcRole().getOrderFillingType() == OrderFillingType.PARALLEL) {
-                cr.setSortOrder(max);
-            }
-            if (cr.getProcRole().getOrderFillingType() == OrderFillingType.SEQUENTIAL) {
-                cr.setSortOrder(max + 1);
-            }
-        }
-    }
-
-    protected void normalizeSortOrders() {
-        if (currentProcess == null || !(currentProcess.getCombinedStagesEnabled() || combinedStagesEnabled))
-            return;
-
-        for (UUID uuid : procRolesDs.getItemIds()) {
-            ProcRole pr = procRolesDs.getItem(uuid);
-            if (pr != null && pr.getMultiUser()) {
-                List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
-                int index = 1;
-                Map<Integer, List<CardRole>> cardRolesBySortOrder = new HashMap<>();
-
-                for (CardRole cr : cardRoles) {
-                    List<CardRole> cardRolesList = cardRolesBySortOrder.get(cr.getSortOrder());
-                    if (cardRolesList == null) {
-                        cardRolesList = new ArrayList<>();
-                        cardRolesBySortOrder.put(cr.getSortOrder(), cardRolesList);
-                    }
-                    cardRolesList.add(cr);
-                }
-
-                for (Map.Entry<Integer, List<CardRole>> entry : cardRolesBySortOrder.entrySet()) {
-                    for (CardRole cardRole : entry.getValue())
-                        cardRole.setSortOrder(index);
-                    index++;
-                }
-            }
-        }
-    }
-
-
     protected void assignDurationAndTimeUnit(CardRole cardRole) {
         for (UUID uuid : tmpCardRolesDs.getItemIds()) {
             CardRole cr = tmpCardRolesDs.getItem(uuid);
@@ -822,40 +778,19 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    protected List<CardRole> getAllCardRolesWithProcRole(ProcRole pr) {
-        List<CardRole> cardRoles = new ArrayList<>();
-        CollectionDatasource<CardRole, UUID> datasource = tmpCardRolesDs.fill ? tmpCardRolesDs.activeDs : tmpCardRolesDs;
-        for (UUID id : datasource.getItemIds()) {
-            CardRole cr = datasource.getItem(id);
-            if (cr.getProcRole().equals(pr)) {
-                cardRoles.add(cr);
-            }
-        }
-        return cardRoles;
-    }
-
     protected List<Integer> getAllowRangeForProcRole(ProcRole pr) {
         List<Integer> range = new ArrayList<>();
-        List<CardRole> cardRoles = getAllCardRolesWithProcRole(pr);
+        List<CardRole> cardRoles = cardRolesFrameWorker.getAllCardRolesWithProcRole(pr, getTmpCardRoles());
         if (cardRoles.size() == 1) {
             range.add(cardRoles.get(0).getSortOrder());
         } else {
             int min = getMinSortOrderInCardRoles(cardRoles);
-            int max = getMaxSortOrderInCardRoles(cardRoles);
+            int max = cardRolesFrameWorker.getMaxSortOrderInCardRoles(cardRoles);
             for (int i = min - 1; i <= (max == cardRoles.size() ? max : max + 1); i++) {
                 if (i > 0) range.add(i);
             }
         }
         return range;
-    }
-
-    protected int getMaxSortOrderInCardRoles(List<CardRole> roles) {
-        int max = 0;
-        for (CardRole role : roles) {
-            if (role.getSortOrder() != null && role.getSortOrder() > max)
-                max = role.getSortOrder();
-        }
-        return max > roles.size() ? roles.size() : max;
     }
 
     protected int getMinSortOrderInCardRoles(List<CardRole> roles) {
@@ -1122,7 +1057,7 @@ public class CardRolesFrame extends AbstractFrame {
         for (UUID uuid : cardRolesDs.getItemIds()) {
             cardRoles.add(cardRolesDs.getItem(uuid));
         }
-        return CardRolesFrameHelper.getEmptyRolesNames(card, cardRoles, requiredRolesCodesStr, deletedEmptyRoleCodes);
+        return cardRolesFrameWorker.getEmptyRolesNames(card, cardRoles, requiredRolesCodesStr, deletedEmptyRoleCodes);
     }
 
     public void setDeletedEmptyRoleCodes(List deletedEmptyRoleCodes) {
@@ -1430,5 +1365,30 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void setInactiveRoleVisible(boolean isInactiveRoleVisible) {
         this.isInactiveRoleVisible = isInactiveRoleVisible;
+    }
+
+    protected Collection<CardRole> getTmpCardRoles() {
+        return new ArrayList<>(tmpCardRolesDs.fill ? tmpCardRolesDs.activeDs.getItems() : tmpCardRolesDs.getItems());
+    }
+
+    /**
+     * This is obsolete method.<br/>
+     * Use injected {@link CardRolesFrameWorker} interface.
+     *
+     */
+    @Deprecated
+    protected void assignNextSortOrder(CardRole cr) {
+        cardRolesFrameWorker.assignNextSortOrder(cr, getTmpCardRoles());
+    }
+
+    /**
+     * This is obsolete method.<br/>
+     * Use injected {@link CardRolesFrameWorker} interface.
+     *
+     */
+    @Deprecated
+    protected void normalizeSortOrders() {
+        cardRolesFrameWorker.normalizeSortOrders(currentProcess, combinedStagesEnabled,
+                procRolesDs.getItems(), getTmpCardRoles());
     }
 }

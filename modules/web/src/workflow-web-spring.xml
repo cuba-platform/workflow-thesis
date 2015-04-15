@@ -13,6 +13,7 @@
     <context:component-scan base-package="com.haulmont.workflow"/>
 
     <bean id="cuba_Messages" class="com.haulmont.workflow.gui.sys.WfMessagesClientImpl"/>
+    <bean id="workflow_CardRolesFrameWorker" class="com.haulmont.workflow.core.app.cardroles.CardRolesFrameWorkerBean"/>
 
     <!-- Remote stubs -->
 
