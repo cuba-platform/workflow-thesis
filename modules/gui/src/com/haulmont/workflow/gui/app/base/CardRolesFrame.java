@@ -624,7 +624,11 @@ public class CardRolesFrame extends AbstractFrame {
         final LookupField timeUnitField = componentsFactory.createComponent(LookupField.NAME);
         timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
         timeUnitField.setWidth("60");
-        timeUnitField.setNullOption(TimeUnit.HOUR);
+        if (companion != null) {
+            companion.setLookupNullSelectionAllowed(timeUnitField, false);
+        } else {
+            timeUnitField.setRequired(true);
+        }
         if (cardRole != null && cardRole.getTimeUnit() != null) {
             timeUnitField.setValue(cardRole.getTimeUnit());
         }
