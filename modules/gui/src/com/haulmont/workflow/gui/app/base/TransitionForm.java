@@ -204,6 +204,9 @@ public class TransitionForm extends AbstractForm {
 
         if (dueDate != null || refusedOnly != null) {
             varsDs.refresh();
+            if (!isDueDateVisible()) {
+                dueDate.setValue(null);
+            }
         }
     }
 
