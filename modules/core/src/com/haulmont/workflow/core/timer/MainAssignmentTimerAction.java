@@ -68,7 +68,7 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
     @Override
     protected void execute(TimerActionContext context, User user) {
         if (!makesSense(context)) return;
-        String script = context.getCard().getProc().getMessagesPack().replaceAll("\\.", "/") + "/OverdueAssignmentNotification.groovy";
+        String script = context.getCard().getProc().getProcessPath() + "/OverdueAssignmentNotification.groovy";
 
         String subject;
         String body;

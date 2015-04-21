@@ -94,6 +94,10 @@ public class Proc extends StandardEntity {
         return messagesPack;
     }
 
+    public String getProcessPath() {
+        return messagesPack.replace('.', '/');
+    }
+
     public void setMessagesPack(String messagesPack) {
         this.messagesPack = messagesPack;
     }
