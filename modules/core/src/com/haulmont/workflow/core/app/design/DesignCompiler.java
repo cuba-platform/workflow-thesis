@@ -441,7 +441,7 @@ public class DesignCompiler {
                     return true;
                 }
                 if (classAttr != null) {
-                    Class assignerClass = AppBeans.get(Scripting.class).loadClass("com.haulmont.workflow.core.activity.Assigner");
+                    Class assignerClass = AppBeans.get(Scripting.class).loadClass("com.haulmont.workflow.core.activity.CardActivity");
                     Class currentClass = AppBeans.get(Scripting.class).loadClass(classAttr.getValue());
                     if (assignerClass.isAssignableFrom(currentClass))
                         return true;
