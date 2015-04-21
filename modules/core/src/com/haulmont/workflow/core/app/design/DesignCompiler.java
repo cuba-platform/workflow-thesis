@@ -378,6 +378,7 @@ public class DesignCompiler {
 
     protected Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
         Map<String, String> states = new LinkedHashMap<>();
+        Set<String> alreadyUsedNames = new HashSet<>();
         List<Element> elements = document.getRootElement().elements();
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
@@ -390,8 +391,14 @@ public class DesignCompiler {
                     if (nextStates != null) {
                         String[] statesKeys = StringUtils.split(nextStates, ",");
                         for (String nextStateKey : statesKeys) {
-                            String stateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
-                            states.put(nextStateKey + ", " + elementKey + '.' + nextStateKey, stateName);
+                            String transitionId = elementKey + '.' + nextStateKey;
+                            String propertyStateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
+                            if (!alreadyUsedNames.contains(propertyStateName)) {
+                                alreadyUsedNames.add(propertyStateName);
+                            } else {
+                                propertyStateName += '(' + transitionId + ')';
+                            }
+                            states.put(nextStateKey + ", " + transitionId, propertyStateName);
                         }
                     }
                 }
