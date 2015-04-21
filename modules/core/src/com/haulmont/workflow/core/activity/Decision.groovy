@@ -31,8 +31,8 @@ class Decision extends ProcessVariableActivity {
 
         String fileName
         if (scriptName != null) {
-            String processKey = card.getProc().getJbpmProcessKey()
-            fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName
+            String processKey = card.getProc().getProcessPath()
+            fileName = processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + scriptName
         } else {
             fileName = scriptPath
         }

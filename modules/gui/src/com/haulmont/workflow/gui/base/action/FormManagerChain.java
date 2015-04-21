@@ -50,7 +50,7 @@ public class FormManagerChain {
         if (card.getProc() == null)
             return nullObject;
 
-        String resourceName = card.getProc().getMessagesPack().replace(".", "/") + "/forms.xml";
+        String resourceName = card.getProc().getProcessPath() + "/forms.xml";
 
         String cacheKey = resourceName + "/" + actionName;
         FormManagerChain cached = cache.get(cacheKey);
