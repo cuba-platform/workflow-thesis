@@ -6,6 +6,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 @Entity(name = "wf$UserGroup")
 @NamePattern("%s|name")
 @SystemLevel
+@EnableRestore
 public class UserGroup extends StandardEntity {
 
     @Column(name = "NAME")
