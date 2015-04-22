@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.gui.app.base;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.entity.Entity;
@@ -131,16 +130,13 @@ public class TransitionForm extends AbstractForm {
         } catch (NumberFormatException ignored) {
         }
 
+        getDialogParams().setHeight(formHeight);
         if (Boolean.valueOf((String) params.get("cardRolesVisible")) || StringUtils.isNotBlank(formHeightStr)) {
-            getDialogParams().setHeight(formHeight);
             if (cardRolesFrame != null) {
                 initCardRolesFrame(params);
             }
         } else {
-            getDialogParams().setHeight(noCardRolesHeight);
-            if (commentTextPane != null) {
-                mainPane.expand(commentTextPane);
-            }
+            collapseFormWithoutRoles();
         }
 
         LoadContext ctx = new LoadContext(Assignment.class);
@@ -174,6 +170,13 @@ public class TransitionForm extends AbstractForm {
         initAttachments(params);
 
         cardAssignmentInfoMap = getContext().getParamValue("cardAssignmentInfoMap");
+    }
+
+    protected void collapseFormWithoutRoles() {
+        getDialogParams().setHeight(noCardRolesHeight);
+        if (commentTextPane != null) {
+            mainPane.expand(commentTextPane);
+        }
     }
 
     protected void setCommentTextAssignmentDatasource() {
