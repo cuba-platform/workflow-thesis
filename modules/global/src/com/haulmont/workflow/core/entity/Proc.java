@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.Role;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Entity(name = "wf$Proc")
 @Table(name = "WF_PROC")
 @NamePattern("%s|name,messagesPack")
+@EnableRestore
 public class Proc extends StandardEntity {
 
     private static final long serialVersionUID = 7588775221603325166L;
