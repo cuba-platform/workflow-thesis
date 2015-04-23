@@ -24,7 +24,8 @@ public interface NotificationMatrixAPI {
         SIMPLE,  //grey
         ACTION,  //green
         WARNING, //red
-        REASSIGN;
+        REASSIGN,
+        OVERDUE;
 
         public static NotificationType fromId(String id) {
             if (id == null) {

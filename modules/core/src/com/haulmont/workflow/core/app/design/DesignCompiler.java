@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerInfo;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.app.CompilationMessage;
+import com.haulmont.workflow.core.app.NotificationMatrix;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.modules.StartModule;
 import com.haulmont.workflow.core.app.design.modules.SubDesignModule;
@@ -406,6 +407,7 @@ public class DesignCompiler {
         }
         states.put("Canceled", properties.getProperty("Canceled"));
         states.put("Reassign", properties.getProperty("Reassign"));
+        states.put(NotificationMatrix.OVERDUE_CARD_STATE, properties.getProperty(NotificationMatrix.OVERDUE_CARD_STATE));
         postProcessor.processStates(states, document, properties);
         return states;
     }
@@ -902,6 +904,7 @@ public class DesignCompiler {
         compileMessage(properties, locale, "REASSIGN_ACTION", mp);
         compileMessage(properties, locale, "Canceled", mp);
         compileMessage(properties, locale, "Reassign", mp);
+        compileMessage(properties, locale, "Overdue", mp);
 
         for (Module module : modules) {
             module.writeMessages(properties, lang);
