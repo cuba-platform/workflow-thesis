@@ -667,7 +667,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             return CardInfo.TYPE_SIMPLE;
         } else if (type.equals(NotificationType.ACTION.toString()) || type.equals(NotificationType.REASSIGN.toString())) {
             return CardInfo.TYPE_NOTIFICATION;
-        } else if (type.endsWith(NotificationType.WARNING.toString())) {
+        } else if (type.endsWith(NotificationType.WARNING.toString()) || type.equals(NotificationType.OVERDUE.toString())) {
             return CardInfo.TYPE_OVERDUE;
         }
         return CardInfo.TYPE_SIMPLE;
