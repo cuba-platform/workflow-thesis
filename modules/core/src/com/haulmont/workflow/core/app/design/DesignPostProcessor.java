@@ -11,7 +11,6 @@ import org.dom4j.Element;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -58,7 +57,7 @@ public class DesignPostProcessor {
         }
     }
 
-    public void processStates(Map<String, String> states, Document document, Properties properties) {
+    public void processStates(List<DesignCompiler.DesignProcState> states, Document document, Properties properties) {
         if (processors == null) {
             return;
         }
