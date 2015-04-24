@@ -27,6 +27,7 @@ import com.haulmont.workflow.core.error.ModuleError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
+import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -377,10 +378,30 @@ public class DesignCompiler {
         return rolesList;
     }
 
-    protected Map<String, String> parseStates(Document document, Properties properties) throws UnsupportedEncodingException, TemplateGenerationException {
-        Map<String, String> states = new LinkedHashMap<>();
+    protected List<DesignProcState> parseStates(Document document, Properties properties)
+            throws UnsupportedEncodingException, TemplateGenerationException {
+
+        LinkedList<DesignProcState> states = new LinkedList<>();
         Set<String> alreadyUsedNames = new HashSet<>();
         List<Element> elements = document.getRootElement().elements();
+
+        Map<String, String> stateToRoleMap = new HashMap<>();
+        for (Element element : elements) {
+            String elementKey = element.attributeValue("name");
+            if (elementKey != null) {
+                List<Element> elementsList = element.elements();
+                for (Element el : elementsList) {
+                    if (el.getName().equals("property")) {
+                        String roleElementKey = el.attributeValue("name");
+                        if (roleElementKey != null && roleElementKey.equals("role")) {
+                            String role = ((Element) el.elementIterator().next()).attributeValue("value");
+                            stateToRoleMap.put(elementKey, role);
+                        }
+                    }
+                }
+            }
+        }
+
         for (Element element : elements) {
             String elementKey = element.attributeValue("name");
             if (elementKey != null && (element.getName().equals("start")
@@ -399,15 +420,23 @@ public class DesignCompiler {
                             } else {
                                 propertyStateName += '(' + transitionId + ')';
                             }
-                            states.put(nextStateKey + ", " + transitionId, propertyStateName);
+
+                            String key = nextStateKey + ", " + transitionId;
+                            String assignedRole = stateToRoleMap.get(nextStateKey);
+                            String notificationAction = StringUtils.isNotBlank(assignedRole) ? "ACTION" : null;
+                            states.add(new DesignProcState(key, propertyStateName, assignedRole, notificationAction));
                         }
                     }
                 }
             }
         }
-        states.put("Canceled", properties.getProperty("Canceled"));
-        states.put("Reassign", properties.getProperty("Reassign"));
-        states.put(NotificationMatrix.OVERDUE_CARD_STATE, properties.getProperty(NotificationMatrix.OVERDUE_CARD_STATE));
+        states.add(new DesignProcState(WfConstants.CARD_STATE_CANCELED,
+                properties.getProperty(WfConstants.CARD_STATE_CANCELED), null, null));
+        states.add(new DesignProcState(WfConstants.CARD_STATE_REASSIGN,
+                properties.getProperty(WfConstants.CARD_STATE_REASSIGN), null, "ACTION"));
+        states.add(new DesignProcState(NotificationMatrix.OVERDUE_CARD_STATE,
+                properties.getProperty(NotificationMatrix.OVERDUE_CARD_STATE), null, "OVERDUE"));
+
         postProcessor.processStates(states, document, properties);
         return states;
     }
@@ -475,18 +504,17 @@ public class DesignCompiler {
     }
 
 
-    protected void createStatesSheet(Workbook book, Map<String, String> statesMap) {
+    protected void createStatesSheet(Workbook book, List<DesignProcState> states) {
         Sheet statesSheet = book.getSheet("States");
 
-        Set<Map.Entry<String, String>> set = statesMap.entrySet();
         Iterator<Row> rowIt = statesSheet.rowIterator();
-        Iterator<Map.Entry<String, String>> stateIt = set.iterator();
-        Map.Entry<String, String> stateEntry;
+        Iterator<DesignProcState> stateIt = states.iterator();
+        DesignProcState stateEntry;
         while (rowIt.hasNext()) {
             Row row = rowIt.next();
             if (stateIt.hasNext()) {
                 stateEntry = stateIt.next();
-                row.getCell(0).setCellValue(stateEntry.getValue());
+                row.getCell(0).setCellValue(stateEntry.getLocName());
                 row.getCell(1).setCellValue(stateEntry.getKey());
             } else {
                 row.removeCell(row.getCell(0));
@@ -516,17 +544,30 @@ public class DesignCompiler {
 
     }
 
-    protected void createNotificationSheet(Workbook book, List<String> rolesList, Collection<String> states, String sheetName) {
+    protected void createNotificationSheet(Workbook book, List<String> rolesList, Collection<DesignProcState> states, String sheetName) {
+        createNotificationSheet(book, rolesList, states, sheetName, null, true);
+    }
+
+    protected void createNotificationSheet(Workbook book, List<String> rolesList, Collection<DesignProcState> states,
+                                           String sheetName, String forceActionName, Boolean setActionToNoRole) {
         Sheet mail = book.getSheet(sheetName);
+
+        Map<String, Integer> locNameToColumnIndexMap = new HashMap<>();
+        Map<String, Integer> cardRoleToRowIndexMap = new HashMap<>();
+
         if (mail != null) {
             Row statesRow = mail.getRow(1);
             Iterator<Cell> cellIt = statesRow.cellIterator();
             cellIt.next();
-            Iterator<String> statesIt = states.iterator();
+            Iterator<DesignProcState> statesIt = states.iterator();
+            int locNameColumnIndex = 1;
             while (cellIt.hasNext()) {
                 Cell cell = cellIt.next();
                 if (statesIt.hasNext()) {
-                    cell.setCellValue(statesIt.next());
+                    DesignProcState nextState = statesIt.next();
+                    cell.setCellValue(nextState.getLocName());
+                    locNameToColumnIndexMap.put(nextState.getLocName(), locNameColumnIndex);
+                    locNameColumnIndex++;
                 } else {
                     statesRow.removeCell(cell);
                 }
@@ -534,11 +575,16 @@ public class DesignCompiler {
             Iterator<Row> rowIt = mail.rowIterator();
             rowIt.next();
             rowIt.next();
+
+            int roleRowIndex = 2;
             Iterator<String> roleIt = rolesList.iterator();
             while (rowIt.hasNext()) {
                 Row row = rowIt.next();
                 if (roleIt.hasNext()) {
-                    row.getCell(0).setCellValue(roleIt.next());
+                    String nextRole = roleIt.next();
+                    row.getCell(0).setCellValue(nextRole);
+                    cardRoleToRowIndexMap.put(nextRole, roleRowIndex);
+                    roleRowIndex++;
                     Iterator<Cell> cellIterator = row.cellIterator();
                     cellIterator.next();
                     while (cellIterator.hasNext()) {
@@ -554,6 +600,28 @@ public class DesignCompiler {
             }
         }
 
+        for (DesignProcState state : states) {
+            String action = StringUtils.isNotBlank(forceActionName) ? forceActionName : state.getNotificationAction();
+            int columnIndex = locNameToColumnIndexMap.get(state.getLocName());
+
+            if (state.getAssignedRole() != null) {
+                Row row = mail.getRow(cardRoleToRowIndexMap.get(state.getAssignedRole()));
+                Cell cell = row.getCell(columnIndex);
+                if (cell == null) {
+                    cell = row.createCell(columnIndex);
+                }
+                cell.setCellValue(action);
+            } else if (BooleanUtils.isTrue(setActionToNoRole)) {
+                for (Integer rowIndex : cardRoleToRowIndexMap.values()) {
+                    Row row = mail.getRow(rowIndex);
+                    Cell cell = row.getCell(columnIndex);
+                    if (cell == null) {
+                        cell = row.createCell(columnIndex);
+                    }
+                    cell.setCellValue(action);
+                }
+            }
+        }
     }
 
 
@@ -597,7 +665,7 @@ public class DesignCompiler {
 
             Document document = DocumentHelper.parseText(jpdl);
             List<String> rolesList = parseRoles(document);
-            Map<String, String> states = parseStates(document, properties);
+            List<DesignProcState> states = parseStates(document, properties);
 
             String templatePath = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getNotificationTemplatePath();
             InputStream stream = AppBeans.get(Resources.class).getResourceAsStream(templatePath);
@@ -606,9 +674,9 @@ public class DesignCompiler {
                 wb = new HSSFWorkbook(stream);
                 createRolesSheet(wb, rolesList);
                 createStatesSheet(wb, states);
-                createNotificationSheet(wb, rolesList, states.values(), "Mail");
-                createNotificationSheet(wb, rolesList, states.values(), "Tray");
-                createNotificationSheet(wb, rolesList, states.values(), "Sms");
+                createNotificationSheet(wb, rolesList, states, "Mail");
+                createNotificationSheet(wb, rolesList, states, "Tray");
+                createNotificationSheet(wb, rolesList, states, "Sms", "SMS", false);
             } finally {
                 IOUtils.closeQuietly(stream);
             }
@@ -1015,6 +1083,68 @@ public class DesignCompiler {
                 }
             }
             return null;
+        }
+    }
+
+    public class DesignProcState {
+
+        protected String key;
+        protected String locName;
+        protected String assignedRole;
+        protected String notificationAction;
+
+        public DesignProcState(String key, String locName, String assignedRole, String notificationAction) {
+            this.key = key;
+            this.locName = locName;
+            this.assignedRole = assignedRole;
+            this.notificationAction = notificationAction;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof DesignProcState)) return false;
+
+            DesignProcState state = (DesignProcState) o;
+
+            return key.equals(state.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getLocName() {
+            return locName;
+        }
+
+        public void setLocName(String locName) {
+            this.locName = locName;
+        }
+
+        public String getAssignedRole() {
+            return assignedRole;
+        }
+
+        public void setAssignedRole(String assignedRole) {
+            this.assignedRole = assignedRole;
+        }
+
+        public String getNotificationAction() {
+            return notificationAction;
+        }
+
+        public void setNotificationAction(String notificationAction) {
+            this.notificationAction = notificationAction;
         }
     }
 }
