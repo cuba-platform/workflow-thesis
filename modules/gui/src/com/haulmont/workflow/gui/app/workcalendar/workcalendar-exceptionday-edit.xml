@@ -28,7 +28,7 @@
                 <row>
                     <label value="msg://WorkCalendar.day"/>
                     <dateField id="day" datasource="calendarDs" property="day"
-                               resolution="DAY" dateFormat="msg://dateFormat" required="true"
+                               resolution="DAY" required="true"
                                requiredMessage="msg://dayMsg" width="${width}"/>
                 </row>
                 <row>
