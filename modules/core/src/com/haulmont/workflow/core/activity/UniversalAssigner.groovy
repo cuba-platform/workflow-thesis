@@ -155,7 +155,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected boolean isNeededToUseThisSiblingOutcome(Assignment sibling) {
-        return sibling.getOutcome() != null && !successTransitions.contains(sibling.getOutcome());
+        return sibling.getOutcome() != null && !sibling.getOutcome().equals("REASSIGN_ACTION") && !successTransitions.contains(sibling.getOutcome());
     }
 
     protected void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
