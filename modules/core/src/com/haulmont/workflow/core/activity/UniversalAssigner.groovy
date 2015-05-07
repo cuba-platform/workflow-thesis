@@ -17,6 +17,7 @@ import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.WorkflowException
+import com.haulmont.workflow.core.global.WfConstants
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -155,7 +156,7 @@ public class UniversalAssigner extends MultiAssigner {
     }
 
     protected boolean isNeededToUseThisSiblingOutcome(Assignment sibling) {
-        return sibling.getOutcome() != null && !sibling.getOutcome().equals("REASSIGN_ACTION") && !successTransitions.contains(sibling.getOutcome());
+        return sibling.getOutcome() != null && !sibling.getOutcome().equals(WfConstants.ACTION_REASSIGN) && !successTransitions.contains(sibling.getOutcome());
     }
 
     protected void processSignal(Assignment assignment, String resultTransition, ActivityExecution execution, String signalName, Map<String, ? extends Object> parameters) {
