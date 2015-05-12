@@ -244,6 +244,10 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     }
 
     protected void saveFile() {
+        if (!validateAll()) {
+            throw new SilentException();
+        }
+
         try {
             fileUploading.putFileIntoStorage(fileId, fileDs.getItem());
         } catch (FileStorageException e) {

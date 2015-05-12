@@ -16,7 +16,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    
+
     <layout>
         <upload id="uploadField"/>
         <grid id="attachGrid" spacing="true">
@@ -28,7 +28,7 @@
                 <row>
                     <label value="msg://fileName"/>
                     <textField id="fileName" datasource="fileDs" property="name"
-                               width="200px"/>
+                               width="200px" required="true"/>
                 </row>
                 <row id="rowName">
                     <label value="msg://name"/>
