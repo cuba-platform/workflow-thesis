@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.workflow.gui.app.base.ReassignForm"
         messagesPack="com.haulmont.workflow.gui.app.base"
         caption="msg://reassign.caption">
@@ -37,6 +36,3 @@
         </vbox>
     </layout>
 </window>
-
-
-
