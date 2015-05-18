@@ -40,7 +40,7 @@ public class AttachmentColumnGeneratorHelper {
             @Override
             public Component generateCell(Attachment attachment) {
                 if (attachment != null) {
-                    String formattedSize = FileDownloadHelper.formatFileSize(attachment.getFile().getSize());
+                    String formattedSize = attachment.getFile() != null ? FileDownloadHelper.formatFileSize(attachment.getFile().getSize()) : "";
                     ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
                     Label label = componentsFactory.createComponent(Label.NAME);
                     label.setValue(formattedSize);
