@@ -186,13 +186,13 @@ public class WfEngine implements WfEngineAPI {
                             states.add(state);
                     }
 
-                    if("foreach".equals(stateElem.getName())) {
+                    if ("foreach".equals(stateElem.getName())) {
                         String inAttributeValue = stateElem.attributeValue("in");
-                        if(StringUtils.isNotBlank(inAttributeValue)) {
+                        if (StringUtils.isNotBlank(inAttributeValue)) {
                             Pattern rolePattern =
                                     Pattern.compile("(#\\{wf:getUsersByProcRole\\(execution, \")(\\w+)(\"\\)\\})");
                             Matcher matcher = rolePattern.matcher(inAttributeValue);
-                            if(matcher.matches())
+                            if (matcher.matches())
                                 roles.add(matcher.group(2));
                         }
                     }
@@ -423,6 +423,9 @@ public class WfEngine implements WfEngineAPI {
                     }
                 }
                 assignment.getCard().setJbpmProcessId(null);
+
+                tx.commitRetaining();
+                em = persistence.getEntityManager();
 
                 Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null and a.id <> ?2",
                         metadata.getExtendedEntities().getEffectiveClass(Assignment.class));
