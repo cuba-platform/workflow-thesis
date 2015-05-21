@@ -98,6 +98,7 @@ public class WfWorkerBean implements WfWorkerAPI {
             ProcessDefinition pd = pdList.get(pdList.size() - 1);
             Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
             addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
+            tx.commit();
             return info;
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));
