@@ -44,6 +44,8 @@ public class WfWorkerBean implements WfWorkerAPI {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    private Log log = LogFactory.getLog(WfWorkerBean.class);
+
     @Override
     public AssignmentInfo getAssignmentInfo(Card card) {
         AssignmentInfo info = null;
@@ -73,28 +75,36 @@ public class WfWorkerBean implements WfWorkerAPI {
     }
 
     public AssignmentInfo getAssignmentInfo(Assignment assignment, String processId, Card card) {
-        AssignmentInfo info = new AssignmentInfo(assignment);
-        String activityName = assignment.getName();
-        ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
-        ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
-        // Getting List instead of uniqueResult because of rare bug in process deployment which leads
-        // to creation of 2 PD with the same ID
-        List<ProcessDefinition> pdList = query.processDefinitionId(pi.getProcessDefinitionId()).list();
-        if (pdList.isEmpty())
-            throw new RuntimeException("ProcessDefinition not found: " + pi.getProcessDefinitionId());
-        Collections.sort(
-                pdList,
-                new Comparator<ProcessDefinition>() {
-                    public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
-                        return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
+        Transaction tx = persistence.getTransaction();
+        try {
+            AssignmentInfo info = new AssignmentInfo(assignment);
+            String activityName = assignment.getName();
+            ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
+            ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
+            // Getting List instead of uniqueResult because of rare bug in process deployment which leads
+            // to creation of 2 PD with the same ID
+            List<ProcessDefinition> pdList = query.processDefinitionId(pi.getProcessDefinitionId()).list();
+            if (pdList.isEmpty())
+                throw new RuntimeException("ProcessDefinition not found: " + pi.getProcessDefinitionId());
+            Collections.sort(
+                    pdList,
+                    new Comparator<ProcessDefinition>() {
+                        public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
+                            return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
+                        }
                     }
-                }
-        );
-        ProcessDefinition pd = pdList.get(pdList.size() - 1);
+            );
 
-        Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
-        addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
-        return info;
+            ProcessDefinition pd = pdList.get(pdList.size() - 1);
+            Activity activity = ((ClientProcessDefinition) pd).findActivity(activityName);
+            addActionsToAssignmentInfo(info, activityName, activity, card, assignment);
+            return info;
+        } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            return null;
+        } finally {
+            tx.end();
+        }
     }
 
     @SuppressWarnings("unused")
