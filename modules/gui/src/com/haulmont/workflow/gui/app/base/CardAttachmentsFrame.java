@@ -67,7 +67,15 @@ public class CardAttachmentsFrame extends AbstractFrame {
         attachmentsTable = getComponent("attachmentsTable");
         assignmentId = (UUID) params.get("assignmentId");
 
-        attachmentCreator = new AttachmentCreator.CardAttachmentCreator() {
+        attachmentCreator = createAttachmentsCreator();
+        initAttachmentActions(params);
+        initAttachmentsTableStyleProvider();
+        initAttachmentsDs();
+        initFastUpload(params);
+    }
+
+    protected AttachmentCreator.CardAttachmentCreator createAttachmentsCreator() {
+        return new AttachmentCreator.CardAttachmentCreator() {
             public Attachment createObject() {
                 CardAttachment attachment = metadata.create(CardAttachment.class);
                 Card card = cardDs.getItem();
@@ -88,13 +96,34 @@ public class CardAttachmentsFrame extends AbstractFrame {
                 return cardDs.getItem();
             }
         };
+    }
 
+    protected void initAttachmentsTableStyleProvider() {
+        attachmentsTable.setStyleProvider(new Table.StyleProvider<Attachment>() {
+            public String getStyleName(Attachment entity, String property) {
+                return entity.getVersionOf() != null ? "grey" : null;
+            }
+        });
+    }
+
+    protected void initAttachmentActions(Map<String, Object> params) {
+        initMultiUploadAction(params);
+        initNewVersionAction(params);
+        initEditAction(params);
+        initRemoveAction(params);
+        initCopyPasteActions(params);
+        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
+    }
+
+    protected void initMultiUploadAction(Map<String, Object> params) {
         Action multiUploadAction = AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this,
                 attachmentCreator, WindowManager.OpenType.DIALOG, params);
 
         createAttachBtn.addAction(multiUploadAction);
 //        createPopup.addAction(new CommitCardAction("actions.MultiUpload", multiUploadAction));
+    }
 
+    protected void initNewVersionAction(Map<String, Object> params) {
         NewVersionAction newVersionAction = new NewVersionAction(attachmentsTable, WindowManager.OpenType.DIALOG) {
             @Override
             public Map<String, Object> getInitialValues() {
@@ -107,8 +136,10 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         newVersionAction.setWindowParams(params);
         createAttachBtn.addAction(newVersionAction);
-
         attachmentsTable.addAction(newVersionAction);
+    }
+
+    protected void initEditAction(Map<String, Object> params) {
         EditAction editAction = new EditAction(attachmentsTable, WindowManager.OpenType.DIALOG, "edit") {
             @Override
             public void setEnabled(boolean enabled) {
@@ -119,18 +150,23 @@ public class CardAttachmentsFrame extends AbstractFrame {
         map.put("edit", true);
         editAction.setWindowParams(map);
         attachmentsTable.addAction(editAction);
+    }
+
+    protected void initRemoveAction(Map<String, Object> params) {
         attachmentsTable.addAction(new RemoveAttachmentAction(attachmentsTable, new AttachmentCreator.CardGetter() {
             @Override
             public Card getCard() {
                 return cardDs.getItem();
             }
         }, "remove"));
+    }
 
-        Button copyAttachBtn = getComponent("copyAttach");
+    protected void initCopyPasteActions(Map<String, Object> params) {
+        Button copyAttachBtn = getComponentNN("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
 
-        Button pasteAttachBtn = getComponent("pasteAttach");
+        Button pasteAttachBtn = getComponentNN("pasteAttach");
         Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator, params);
         pasteAttachBtn.setAction(pasteAction);
 //        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
@@ -138,38 +174,9 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
-        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
-
-        CollectionDatasource attachmentDs = attachmentsTable.getDatasource();
-        attachmentDs.addListener(new DsListenerAdapter() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (!generatedColumnInited && state == Datasource.State.VALID) {
-                    FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
-                    AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
-                    generatedColumnInited = true;
-                }
-            }
-        });
-
-        attachmentsTable.setStyleProvider(new Table.StyleProvider<Attachment>() {
-            public String getStyleName(Attachment entity, String property) {
-                return entity.getVersionOf() != null ? "grey" : null;
-            }
-        });
-
-        CollectionDatasource.Sortable.SortInfo sortInfo = new CollectionDatasource.Sortable.SortInfo();
-        sortInfo.setOrder(CollectionDatasource.Sortable.Order.DESC);
-        sortInfo.setPropertyPath(attachmentDs.getMetaClass().getPropertyPath("createTs"));
-        ((CollectionDatasourceImpl) attachmentDs).sort(new CollectionDatasource.Sortable.SortInfo[]{sortInfo});
-
-        attachmentDs.refresh();
-
-        initFastUpload(params);
-
     }
 
-    private void initFastUpload(Map<String, Object> excludedAttachTypes) {
+    protected void initFastUpload(Map<String, Object> excludedAttachTypes) {
         Label fastUpload = getComponent("fastUpload");
         BoxLayout fastUploadBox = getComponent("fastUploadBox");
 
@@ -184,10 +191,29 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     }
 
+    protected void initAttachmentsDs() {
+        CollectionDatasource attachmentDs = attachmentsTable.getDatasource();
+        attachmentDs.addListener(new DsListenerAdapter() {
+            @Override
+            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                if (!generatedColumnInited && state == Datasource.State.VALID) {
+                    FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+                    AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+                    generatedColumnInited = true;
+                }
+            }
+        });
+
+        CollectionDatasource.Sortable.SortInfo sortInfo = new CollectionDatasource.Sortable.SortInfo();
+        sortInfo.setOrder(CollectionDatasource.Sortable.Order.DESC);
+        sortInfo.setPropertyPath(attachmentDs.getMetaClass().getPropertyPath("createTs"));
+        ((CollectionDatasourceImpl) attachmentDs).sort(new CollectionDatasource.Sortable.SortInfo[]{sortInfo});
+        attachmentDs.refresh();
+    }
+
     public FileUploadField getFastUploadButton() {
         return fastUploadButton;
     }
-
 
     public AttachmentCreator getAttachmentCreator() {
         return this.attachmentCreator;

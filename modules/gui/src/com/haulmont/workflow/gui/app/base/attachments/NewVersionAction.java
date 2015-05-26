@@ -93,6 +93,11 @@ public class NewVersionAction extends CreateAction {
         }
 
         attachmentsDs.updateItem(newVersion);
+        commitNewVersion(newVersion);
+    }
+
+    protected void commitNewVersion(Attachment version) {
+        CollectionDatasource attachmentsDs = target.getDatasource();
         Map<String, Object> initialValues = getInitialValues();
         if (initialValues != null && initialValues.containsKey("card")) {
             Card card = (Card) initialValues.get("card");
