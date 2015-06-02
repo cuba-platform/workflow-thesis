@@ -89,24 +89,27 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             HSSFCell cell = row.getCell(0);
             HSSFCell cellCode = row.getCell(1);
 
-            String role = null;
-            String code = null;
+            if (cell != null && cellCode != null) {
 
-            if (HSSFCell.CELL_TYPE_STRING == cell.getCellType()) {
-                code = cell.getRichStringCellValue().getString();
-            }
+                String role = null;
+                String code = null;
 
-            if (HSSFCell.CELL_TYPE_STRING == cellCode.getCellType()) {
-                role = cellCode.getRichStringCellValue().getString();
-            }
+                if (HSSFCell.CELL_TYPE_STRING == cell.getCellType()) {
+                    code = cell.getRichStringCellValue().getString();
+                }
 
-            code = StringUtils.trimToEmpty(code);
-            role = StringUtils.trimToEmpty(role);
+                if (HSSFCell.CELL_TYPE_STRING == cellCode.getCellType()) {
+                    role = cellCode.getRichStringCellValue().getString();
+                }
 
-            if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(role)) {
-                rolesMap.put(code, role);
-            } else {
-                log.error(String.format("code %s or role %s must not be empty", code, role));
+                code = StringUtils.trimToEmpty(code);
+                role = StringUtils.trimToEmpty(role);
+
+                if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(role)) {
+                    rolesMap.put(code, role);
+                } else {
+                    log.error(String.format("code %s or role %s must not be empty", code, role));
+                }
             }
 
         }
