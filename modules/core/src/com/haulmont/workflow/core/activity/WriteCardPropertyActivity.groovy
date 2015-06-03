@@ -5,18 +5,12 @@
 
 package com.haulmont.workflow.core.activity
 
-import com.haulmont.arthur.core.app.buisness.note.NoteManagerAPI
-import com.haulmont.arthur.core.app.helper.EntityHelper
-import com.haulmont.arthur.core.entity.casesworkflow.EventCard
-import com.haulmont.arthur.core.enums.NodeType
-import com.haulmont.arthur.core.enums.NoteTypeTag
 import com.haulmont.chile.core.model.utils.InstanceUtils
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.entity.Card
-import org.apache.commons.lang.BooleanUtils
 import org.jbpm.api.activity.ActivityExecution
 
 /**
