@@ -119,5 +119,14 @@ var i18nDict = {
     "DuplicateName" : "Duplicate module name",
     "EmptyName" : "Empty module name",
     "NotSupportedBrowser" : "Sorry, your browser is not supported.Please use Google Chrome or Mozilla Firefox",
-    "moduleWithoutTransition" : "Saved\<br\/\>\<br\/\>Warning! Design contain module without transition"
+    "moduleWithoutTransition" : "Saved\<br\/\>\<br\/\>Warning! Design contain module without transition",
+    useExpresssion:"Is expression",
+    expresssion:"Expression",
+    expressionTest:"Expression test",
+    value : "Value",
+    operationType: "Operation",
+    ReadCardProperty:"Check card property",
+    WriteCardProperty:"Write card property",
+    propertyPath:"Property path",
+    cardInheritorSelect:"Entity"
 };

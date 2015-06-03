@@ -132,3 +132,35 @@ div.Wf-Container-change {
     margin-left:3px;
     margin-right:0;
 }
+
+
+.yui-skin-sam .yui-ac-input{
+    width: 140px;
+}
+
+div.inputEx-PickerField .yui-overlay{
+    width: 176px;
+    z-index: 10;
+}
+
+.Wf-DateTimeField .inputEx-CombineField .inputEx-Field select{
+    width: 40px;
+}
+
+.Wf-DateTimeField .inputEx-DatePickerField .inputEx-StringField-wrapper input{
+    width: 116px;
+}
+
+.Wf-DateTimeField .inputEx-CombineField{
+    padding-left: 80px;
+}
+
+div.inputEx-Group div select{
+    width: 144px;
+}
+
+.yui-skin-sam .yui-ac-content{
+   max-height: 300px;
+   overflow-y: auto;
+}
+

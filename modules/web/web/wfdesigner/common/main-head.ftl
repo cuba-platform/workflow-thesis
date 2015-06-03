@@ -24,6 +24,10 @@
 <script type="text/javascript" src="../lib/yui/button/button-min.js"></script>
 <script type="text/javascript" src="../lib/yui/tabview/tabview-min.js"></script>
 <script type="text/javascript" src="../lib/excanvas.js"></script>
+<script type="text/javascript" src="../lib/yui/connection/connection.js"></script>
+<script type="text/javascript" src="../lib/yui/datasource/datasource.js"></script>
+<script type="text/javascript" src="../lib/yui/autocomplete/autocomplete.js"></script>
+<script type="text/javascript" src="../lib/yui/calendar/calendar.js"></script>
 
 <script type='text/javascript' src="../lib/wireit/plugins/editor/lib/accordionview/accordionview.js"></script>
 
@@ -71,6 +75,12 @@
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/InPlaceEdit.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/CombineField.js"></script>
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/IntegerField.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/AutoComplete.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/DateField.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/DatePickerField.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/TimeField.js"></script>
+<script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/fields/DateTimeField.js"></script>
+
 <script type="text/javascript" src="../lib/wireit/plugins/inputex/js/fields.js"></script>
 <#if locale == "ru"><script type="text/javascript" src="../lib/wireit/plugins/inputex/lib/inputex/js/locals/ru.js"></script></#if>
 
@@ -98,6 +108,12 @@
 <script type="text/javascript" src="../common/layer.js"></script>
 <script type="text/javascript" src="../common/design-container.js"></script>
 <script type="text/javascript" src="../common/design-select.js"></script>
+<script type="text/javascript" src="../common/operation-type-select.js"></script>
+<script type="text/javascript" src="../common/wf-date-time-field.js"></script>
+<script type="text/javascript" src="../common/card-property-field.js"></script>
+<script type="text/javascript" src="../common/card-property-container.js"></script>
+<script type="text/javascript" src="../common/card-inheritor-select.js"></script>
+
 
 <!--confirm-to-leave-page-->
 <script type="text/javascript"> window.onbeforeunload = (function() {

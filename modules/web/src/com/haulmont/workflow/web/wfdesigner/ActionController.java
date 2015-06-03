@@ -4,19 +4,23 @@
  */
 package com.haulmont.workflow.web.wfdesigner;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.haulmont.workflow.core.entity.Design;
-import com.haulmont.workflow.core.entity.DesignScript;
-import com.haulmont.workflow.core.entity.DesignType;
-import com.haulmont.workflow.core.entity.Proc;
+import com.haulmont.workflow.core.app.CardPropertyHandlerLoaderService;
+import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.enums.AttributeType;
+import com.haulmont.workflow.core.enums.OperationsType;
+import com.haulmont.workflow.core.global.CardPropertyUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -33,9 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorodnov
@@ -49,6 +51,9 @@ public class ActionController {
 
     @Inject
     protected DataService dataService;
+
+    @Inject
+    protected Messages messages;
 
     @RequestMapping(method = RequestMethod.POST)
     public String handlePostRequest(
@@ -82,6 +87,154 @@ public class ActionController {
         } catch (Throwable t) {
             log.error("Error processing POST", t);
             throw new RuntimeException(t);
+        }
+    }
+
+    @RequestMapping(value = "/wfdesigner/*/action/checkExpression.json", method = RequestMethod.GET)
+    public String checkExpression(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "value") String value,
+            @RequestParam(value = "type") String type
+    ) {
+        try {
+            if (auth(request, response)) {
+                try {
+                    CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
+
+                    AttributeType attributeType = AttributeType.fromId(type);
+                    String data = "";
+                    if (attributeType != null) {
+                        Class clazz = CardPropertyUtils.getSimpleClassFromAttributeType(attributeType);
+                        if (clazz != null) {
+                            String result = workflowSettingsService.getLocalizedValue(clazz, true, value);
+                            if (result != null) {
+                                data = result;
+                            }
+                        }
+                    }
+                    setHeaders(response);
+                    PrintWriter out = response.getWriter();
+                    out.println(data);
+                    out.close();
+                    return null;
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+            }
+            return null;
+        } catch (Throwable t) {
+            log.error("Error processing GET", t);
+            throw new RuntimeException("Error processing GET", t);
+        }
+    }
+
+    @RequestMapping(value = "/wfdesigner/*/action/propertyPath.json", method = RequestMethod.GET)
+    public String handleLoadPropertyPathsGetRequest(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "query") String query,
+            @RequestParam(value = "class") String className
+
+    ) {
+        try {
+            if (auth(request, response)) {
+                try {
+                        String start = StringUtils.substringAfterLast(query, ".");
+                        String propertyPath = StringUtils.substringBeforeLast(query, ".");
+                        if (!query.contains(".")) {
+                            start = propertyPath;
+                            propertyPath = "";
+                        }
+                        Metadata metadata = AppBeans.get(Metadata.NAME);
+                        MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
+                        List<String> propertyPaths = getPropertyPaths(metaClass,propertyPath, start);
+                        StringBuilder sb = new StringBuilder("[");
+                        int i = 0;
+                        for (String path : propertyPaths) {
+                            if (i > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append("\"");
+                            sb.append(propertyPath);
+                            if (StringUtils.isNotBlank(propertyPath)) {
+                                sb.append(".");
+                            }
+                            sb.append(path);
+                            sb.append("\"");
+                            i++;
+                        }
+                        sb.append("]");
+                        setHeaders(response);
+                        PrintWriter out = response.getWriter();
+                        out.println(sb.toString());
+                        out.close();
+                        return null;
+
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+            }
+            return null;
+        } catch (Throwable t) {
+            log.error("Error on load property paths GET", t);
+            throw new RuntimeException("Error on load property paths GET", t);
+        }
+    }
+
+    private List<String> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        Class clazz = StringUtils.isBlank(propertyPath) ? Card.class : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+        List<String> paths = new ArrayList<>();
+        if (clazz == null) {
+            return paths;
+        }
+        metaClass = metadata.getSession().getClass(clazz);
+        for (MetaProperty property : metaClass.getProperties()) {
+            String propertyName = property.getName();
+            if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
+                if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(propertyName, start)) {
+                    paths.add(propertyName);
+                }
+            }
+        }
+        Collections.sort(paths);
+        return paths;
+    }
+
+    @RequestMapping(value = "/wfdesigner/*/action/loadAttributeType.json", method = RequestMethod.GET)
+    public String handleLoadAttributeGetRequest(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "path") String propertyPath,
+            @RequestParam(value = "class") String className
+    ) {
+        try {
+            if (auth(request, response)) {
+                try {
+                    if (StringUtils.isNotBlank(propertyPath) && StringUtils.isNotBlank(className)) {
+                        Metadata metadata = AppBeans.get(Metadata.NAME);
+                        MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
+                        Class clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+                        if (clazz == null) {
+                            response.sendError(HttpServletResponse.SC_NO_CONTENT, "Unreachable property path");
+                            return null;
+                        }
+                        String data = loadAttributeType(clazz);
+                        setHeaders(response);
+                        PrintWriter out = response.getWriter();
+                        out.println(data);
+                        out.close();
+                        return null;
+                    }
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+            }
+            return null;
+        } catch (Throwable t) {
+            log.error("Error on load entity attributes GET", t);
+            throw new RuntimeException("Error on load entity attributes GET", t);
         }
     }
 
@@ -139,6 +292,23 @@ public class ActionController {
                         }
                         json.endArray();
                         printJson(response, json.toString());
+                    } else if (request.getPathInfo().endsWith("/loadOperationTypes.json")) {
+                        String data = loadOperationTypes();
+                        setHeaders(response);
+                        PrintWriter out = response.getWriter();
+                        out.println(data);
+                        out.close();
+                    } else if (request.getPathInfo().endsWith("/loadCardInheritors.json")) {
+                        JSONWriter json = new JSONStringer().array();
+                        for (MetaClass cl : findClasses()) {
+                            String name = messages.getMessage(cl.getJavaClass().getPackage().getName(), cl.getJavaClass().getSimpleName());
+                            json.object()
+                                    .key("key").value(cl.getJavaClass().getName())
+                                    .key("name").value(name)
+                                    .endObject();
+                        }
+                        json.endArray();
+                        printJson(response, json.toString());
                     } else {
                         log.warn("Illegal request path info: " + request.getPathInfo());
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -152,6 +322,20 @@ public class ActionController {
             log.error("Error processing GET", t);
             throw new RuntimeException(t);
         }
+    }
+
+    private Collection<MetaClass> findClasses() {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        Collection<MetaClass> allPersistentMetaClasses = metadataTools.getAllPersistentMetaClasses();
+        List<MetaClass> cardInheritors = new ArrayList<>();
+        final MetaClass cardMetaClass = metadata.getClass(Card.class);
+        for (MetaClass metaClass : allPersistentMetaClasses) {
+            if (metaClass.getAncestors().contains(cardMetaClass) || metaClass.equals(cardMetaClass)) {
+                cardInheritors.add(metaClass);
+            }
+        }
+        return cardInheritors;
     }
 
     protected void setHeaders(HttpServletResponse resp) {
@@ -173,6 +357,27 @@ public class ActionController {
         ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").setParameter("type", DesignType.SUBDESIGN.getId());
         return dataService.loadList(ctx);
 
+    }
+
+    private String loadOperationTypes() {
+        StringBuilder sb = new StringBuilder();
+        Messages messages = AppBeans.get(Messages.NAME);
+        sb.append("[");
+        List<OperationsType> operationsTypes = Arrays.asList(OperationsType.values());
+        int size = operationsTypes.size();
+        for (OperationsType operationsType : operationsTypes) {
+            sb.append("{");
+            sb.append("\"value\" : ");
+            sb.append("\"").append(operationsType.getId()).append("\",");
+            sb.append("\"label\" : ");
+            sb.append("\"").append(messages.getMessage(operationsType)).append("\"");
+            sb.append("}");
+            size--;
+            if (size > 0)
+                sb.append(",");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     protected Design findDesign(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
@@ -224,5 +429,47 @@ public class ActionController {
         LoadContext ctx = new LoadContext(DesignScript.class).setView("_minimal");
         ctx.setQueryString("select s from wf$DesignScript s where s.design.id = :designId").setParameter("designId", designId);
         return dataService.loadList(ctx);
+    }
+
+    private String loadAttributeType(Class clazz) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
+        AttributeType attributeType = workflowSettingsService.getAttributeType(clazz, false);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append("{\"attributeType\":\"").append(attributeType.getId()).append("\", ");
+        EnumSet<OperationsType> operationsTypes = OperationsType.availableOps(attributeType);
+        sb.append("\"ops\":");
+        sb.append("[");
+        int size = operationsTypes.size();
+        for (OperationsType operationsType : operationsTypes) {
+            sb.append("{");
+            sb.append("\"value\" : ");
+            sb.append("\"").append(operationsType.getId()).append("\",");
+            sb.append("\"label\" : ");
+            sb.append("\"").append(messages.getMessage(operationsType)).append("\"");
+            sb.append("}");
+            size--;
+            if (size > 0)
+                sb.append(",");
+        }
+        sb.append("],");
+        sb.append("\"values\":");
+        sb.append("[");
+        Map<String, Object> map = workflowSettingsService.loadObjects(clazz, false);
+        size = map.size();
+        for (String key : map.keySet()) {
+            sb.append("{");
+            sb.append("\"value\" : ");
+            sb.append("\"").append(key).append("\",");
+            sb.append("\"label\" : ");
+            sb.append("\"").append(StringEscapeUtils.escapeJavaScript(map.get(key).toString())).append("\"");
+            sb.append("}");
+            size--;
+            if (size > 0)
+                sb.append(",");
+        }
+        sb.append("]}]");
+        return sb.toString();
     }
 }

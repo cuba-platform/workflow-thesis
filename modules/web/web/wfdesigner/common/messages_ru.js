@@ -125,5 +125,14 @@ var i18nDict = {
     "TurnTheChromeFrame" : "Пожалуйста, включите дополнение ChromeFrame \nи перезапустите браузер",
     "DuplicateName" : "Неуникальное имя модуля",
     "EmptyName" : "Имя модуля не может быть пустым",
-    "moduleWithoutTransition" : "Сохранено\<br\/\>\<br\/\>Внимание! Дизайн содержит модуль без перехода"
+    "moduleWithoutTransition" : "Сохранено\<br\/\>\<br\/\>Внимание! Дизайн содержит модуль без перехода",
+    useExpresssion:"Выражение",
+    expresssion:"Выражение",
+    expressionTest:"Тест выражения",
+    value : "Значение",
+    operationType: "Операция",
+    ReadCardProperty:"Проверить значение карточки",
+    WriteCardProperty:"Записать значение карточки",
+    propertyPath:"Путь",
+    cardInheritorSelect:"Сущность"
     };

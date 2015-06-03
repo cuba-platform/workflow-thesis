@@ -29,6 +29,7 @@
                 <entry key="workflow_SmsService" value="com.haulmont.workflow.core.app.SmsService"/>
                 <entry key="workflow_ProcessVariableService" value="com.haulmont.workflow.core.app.ProcessVariableService"/>                
                 <entry key="workflow_WfAssignmentService" value="com.haulmont.workflow.core.app.WfAssignmentService"/>
+                <entry key="workflow_CardPropertyHandlerLoaderService" value="com.haulmont.workflow.core.app.CardPropertyHandlerLoaderService"/>
             </map>
         </property>
     </bean>
