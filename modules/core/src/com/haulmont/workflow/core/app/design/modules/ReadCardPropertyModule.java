@@ -27,7 +27,7 @@ public class ReadCardPropertyModule extends CardPropertyModule {
     protected String operationType;
 
     public ReadCardPropertyModule() {
-        activityClassName = "arthur.activity.ReadCardPropertyActivity";
+        activityClassName = "com.haulmont.workflow.core.activity.ReadCardPropertyActivity";
         setTransitionNames("Yes", "No");
     }
 
