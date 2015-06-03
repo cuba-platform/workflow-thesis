@@ -134,6 +134,7 @@ configure(coreModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
         compile(json)
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
+		compile(group: 'org.ocpsoft.prettytime', name: 'prettytime-nlp', version: '3.2.5.Final')
         compile(hibernate)
         runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.5.2')
         runtime(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.5.2')
