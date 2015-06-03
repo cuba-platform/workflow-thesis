@@ -14,9 +14,9 @@ import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.View
 import com.haulmont.workflow.core.app.CardPropertyHandlerLoader
 import com.haulmont.workflow.core.app.WfEntityDescriptorTools
+import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.global.CardPropertyUtils
-import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.activity.ActivityExecution

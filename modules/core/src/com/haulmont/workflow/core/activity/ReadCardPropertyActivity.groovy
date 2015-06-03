@@ -8,13 +8,11 @@ package com.haulmont.workflow.core.activity
 import com.haulmont.chile.core.model.utils.InstanceUtils
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.app.CardPropertyHandlerLoader
+import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.enums.AttributeType
 import com.haulmont.workflow.core.enums.OperationsType
 import com.haulmont.workflow.core.global.CardPropertyUtils
-import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.jbpm.api.activity.ActivityExecution
 
 /**
