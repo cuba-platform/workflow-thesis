@@ -16,7 +16,7 @@ import org.dom4j.Element;
 public class WriteCardPropertyModule extends CardPropertyModule {
 
     public WriteCardPropertyModule() {
-        activityClassName = "arthur.activity.WriteCardPropertyActivity";
+        activityClassName = "com.haulmont.workflow.core.activity.WriteCardPropertyActivity";
         setTransitionNames("out");
     }
 
