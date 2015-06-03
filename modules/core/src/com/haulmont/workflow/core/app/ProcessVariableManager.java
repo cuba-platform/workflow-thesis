@@ -5,23 +5,14 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.*;
-import com.haulmont.workflow.core.enums.AttributeType;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
-import java.math.BigDecimal;
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -32,130 +23,20 @@ import java.util.*;
 @ManagedBean(ProcessVariableAPI.NAME)
 public class ProcessVariableManager implements ProcessVariableAPI {
 
-    private Log log = LogFactory.getLog(getClass());
+    @Inject
+    private WfEntityDescriptorTools wfEntityDescriptorTools;
 
     public String getStringValue(Object value) {
-        String stringValue = null;
-        if (value != null)
-            if (value instanceof Integer)
-                stringValue = Datatypes.get(Integer.class).format((Integer) value);
-            else if (value instanceof BigDecimal)
-                stringValue = Datatypes.get(BigDecimal.class).format((BigDecimal) value);
-            else if (value instanceof Double)
-                stringValue = Datatypes.get(Double.class).format((Double) value);
-            else if (value instanceof Date)
-                stringValue = Long.valueOf(((Date) value).getTime()).toString();
-            else if (value instanceof Entity)
-                stringValue = ((Entity) value).getId().toString();
-            else if (value instanceof UUID)
-                stringValue = value.toString();
-            else if (value instanceof Enum)
-                stringValue = ((EnumClass) value).getId().toString();
-            else stringValue = value.toString();
-        return stringValue;
+        return wfEntityDescriptorTools.getStringValue(value);
     }
 
     public Object getValue(AbstractProcessVariable designProcessVariable) {
-
-        Object value = null;
-        String stringValue = designProcessVariable.getValue();
-        if (designProcessVariable.getAttributeType() == null) return stringValue;
-        if (StringUtils.isBlank(stringValue)) {
-            if (AttributeType.STRING == designProcessVariable.getAttributeType()) {
-                return stringValue;
-            } else {
-                return null;
-            }
-        }
-        try {
-            switch (designProcessVariable.getAttributeType()) {
-                case INTEGER:
-                    value = Datatypes.get(Integer.class).parse(stringValue);
-                    break;
-
-                case DOUBLE:
-                    value = Datatypes.get(Double.class).parse(stringValue);
-                    break;
-
-                case STRING:
-                    value = stringValue;
-                    break;
-
-                case DATE:
-                    value = new Date(Long.parseLong(stringValue));
-                    break;
-
-                case DATE_TIME:
-                    value = new Date(Long.parseLong(stringValue));
-                    break;
-
-                case BOOLEAN:
-                    value = Datatypes.get(Boolean.class).parse(stringValue);
-                    break;
-
-                case ENTITY:
-                    Class entityClass = AppBeans.get(Metadata.class).getSession()
-                            .getClass(designProcessVariable.getMetaClassName()).getJavaClass();
-                    EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-                    Entity entity = em.find(entityClass, UUID.fromString(stringValue));
-                    if (entity != null) {
-                        InstanceUtils.getInstanceName(entity);
-                        value = entity;
-                    }
-                    break;
-
-                case ENUM:
-                    Class enumClass = Class.forName(designProcessVariable.getMetaClassName());
-                    try {
-                        value = enumClass.getMethod("fromId", String.class).invoke(null, stringValue);
-                    } catch (NoSuchMethodException ex) {
-                        try {
-                            value = enumClass.getMethod("fromId", Integer.class).invoke(null, Integer.parseInt(stringValue));
-                        } catch (NoSuchMethodException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    }
-                    break;
-
-                default:
-
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        return value;
+        return wfEntityDescriptorTools.getValue(designProcessVariable);
     }
 
     @Override
     public String getLocalizedValue(AbstractProcessVariable designProcessVariable) {
-        String value = designProcessVariable.getValue();
-        if (designProcessVariable.getAttributeType() != null && StringUtils.isNotBlank(designProcessVariable.getValue())) {
-            Object object = getValue(designProcessVariable);
-            if (object != null) {
-                switch (designProcessVariable.getAttributeType()) {
-                    case DATE:
-                    case DATE_TIME:
-                        value = Datatypes.get(Date.class).format((Date) object);
-                        break;
-
-                    case BOOLEAN:
-                        value = getMessage(value);
-                        break;
-
-                    case ENTITY:
-                        if (!PersistenceHelper.isNew(object)) value = InstanceUtils.getInstanceName((Instance) object);
-                        break;
-
-                    case ENUM:
-                        value = AppBeans.get(Messages.class).getMessage((Enum) object);
-                        break;
-
-                    default:
-                }
-            }
-        }
-
-        return value;
+        return wfEntityDescriptorTools.getLocalizedValue(designProcessVariable);
     }
 
     @Override
@@ -234,9 +115,5 @@ public class ProcessVariableManager implements ProcessVariableAPI {
             processVariableMap.put(procVariable.getAlias(), procVariable);
         }
         return processVariableMap;
-    }
-
-    private String getMessage(String id) {
-        return AppBeans.get(Messages.class).getMessage(ProcessVariableServiceBean.class, id);
     }
 }

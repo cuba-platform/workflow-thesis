@@ -96,7 +96,13 @@ WireIt.WiringEditor.adapters.WfAdapter = {
                         }, null);
                         Wf.loadSubDesigns(function(val) {
                             Wf.subdesignCache = val;
-                         }, null);
+                        }, null);
+                        Wf.loadOperationTypes(function(val) {
+                            Wf.operationTypesCache = val;
+                        }, null);
+                        Wf.loadCardInheritors(function(val) {
+                            Wf.cardInheritorsCache = val;
+                        }, null);
                     },
                     failure: function(o) {
                         var error = o.status + " " + o.statusText;

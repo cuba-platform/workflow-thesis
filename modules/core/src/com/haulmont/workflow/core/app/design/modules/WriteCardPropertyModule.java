@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+package com.haulmont.workflow.core.app.design.modules;
+
+import com.haulmont.workflow.core.app.design.Module;
+import com.haulmont.workflow.core.exception.DesignCompilationException;
+import org.dom4j.Element;
+
+/**
+ * @author zaharchenko
+ * @version $Id$
+ */
+public class WriteCardPropertyModule extends CardPropertyModule {
+
+    public WriteCardPropertyModule() {
+        activityClassName = "arthur.activity.WriteCardPropertyActivity";
+        setTransitionNames("out");
+    }
+
+    @Override
+    public void init(Module.Context context) throws DesignCompilationException {
+        super.init(context);
+    }
+
+    @Override
+    public Element writeJpdlXml(Element parentEl) throws DesignCompilationException {
+        Element element = super.writeJpdlXml(parentEl);
+        return element;
+    }
+}

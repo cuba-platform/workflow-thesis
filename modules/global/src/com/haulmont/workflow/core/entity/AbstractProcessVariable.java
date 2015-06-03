@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.workflow.core.enums.AttributeType;
+import com.haulmont.workflow.core.global.WfEntityDescriptor;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
  * @author Zaharchenko
  */
 @MappedSuperclass
-public abstract class AbstractProcessVariable extends StandardEntity {
+public abstract class AbstractProcessVariable extends StandardEntity implements WfEntityDescriptor {
     private static final long serialVersionUID = -8393724105946755178L;
 
     public static final String VARIABLE_TAG_PATTERN = "<([a-zA-Z0-9]*)>";

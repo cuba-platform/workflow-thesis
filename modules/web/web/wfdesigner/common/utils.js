@@ -114,6 +114,14 @@ Wf = {
         this.loadJson('action/loadSubDesigns.json', callback, scope);
     },
 
+    loadOperationTypes: function(callback, scope) {
+        this.loadJson('action/loadOperationTypes.json', callback, scope);
+    },
+
+    loadCardInheritors: function(callback, scope) {
+        this.loadJson('action/loadCardInheritors.json', callback, scope);
+    },
+
     initTerminalLabels: function(container, terminalConfigs) {
         for (var i = 0; i < terminalConfigs.length; i++) {
             var tc = terminalConfigs[i];

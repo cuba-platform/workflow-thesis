@@ -585,6 +585,263 @@ var wfLanguage = {
              }
         },
         {
+            "name": "ReadCardProperty",
+            "label":"msg://ReadCardProperty",
+            "category":"eventProcess",
+            "container": {
+                "xtype":"Wf.CardPropertyContainer",
+                "icon":"../common/res/icons/card_state_icon.png",
+                "width":250,
+                "optFields": [
+                    {
+                        "type":"string",
+                        "label":"msg://name",
+                        "name":"name",
+                        "required":false,
+                        "value":"msg://ReadCardProperty",
+                        "disabled":"true"
+                    },
+                    {
+                        "type":"cardInheritorSelect",
+                        "label":"msg://cardInheritorSelect",
+                        "name":"cardClass",
+                        "required":false,
+                        "disabled": true
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://propertyPath",
+                        "name":"propertyPath",
+                        "required":false,
+                        "disabled": true,
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"operationTypeSelect",
+                        "label":"msg://operationType",
+                        "name":"operationType",
+                        "required":false,
+                        "disabled": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "useExpresssion",
+                        "label": "msg://useExpresssion",
+                        "required": false,
+                        "disabled": true,
+                        "value": false,
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://value",
+                        "name":"value",
+                        "required":false,
+                        "value":"",
+                        "disabled": true
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://expressionTest",
+                        "name":"expressionTest",
+                        "required":false,
+                        "disabled": true,
+                        "value":"",
+                        "allowParameter": false
+                    }
+
+                ],
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "label": "msg://name",
+                        "required": false
+                    },
+                    {
+                        "type":"cardInheritorSelect",
+                        "label":"msg://cardInheritorSelect",
+                        "name":"cardClass",
+                        "required":true,
+                    },
+                    {
+                        "type":"cardPropertyField",
+                        "label":"msg://propertyPath",
+                        "name":"propertyPath",
+                        "required":false
+                    },
+                    {
+                        "type":"operationTypeSelect",
+                        "label":"msg://operationType",
+                        "name":"operationType",
+                        "required":false
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "useExpresssion",
+                        "label": "msg://useExpresssion",
+                        "required": false,
+                        "value": false,
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://expressionTest",
+                        "name":"expressionTest",
+                        "required":false,
+                        "disabled": true,
+                        "value":"",
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://value",
+                        "name":"value",
+                        "required":false,
+                        "value":""
+                    }
+                ],
+
+                "terminals": [
+                    {
+                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    },
+                    {
+                        "name": "Yes", "direction": [0,1], "offsetPosition": {"left": 50, "bottom": -15},
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true,
+                        "label": "msg://Decision.yes", "labelPosition": {"left": 30, "bottom": -20},
+                        "nMaxWires" : 1
+                    },
+                    {
+                        "name": "No", "direction": [0,1], "offsetPosition": {"left": 170, "bottom": -15},
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true,
+                        "label": "msg://Decision.no", "labelPosition": {"left": 190, "bottom": -20},
+                        "nMaxWires" : 1
+                    }
+                ]
+            }
+        },
+        {
+            "name": "WriteCardProperty",
+            "label":"msg://WriteCardProperty",
+            "category":"eventProcess",
+            "container": {
+                "xtype":"Wf.CardPropertyContainer",
+                "icon":"../common/res/icons/card_state_icon.png",
+                "width":250,
+                "optFields": [
+                    {
+                        "type":"string",
+                        "label":"msg://name",
+                        "name":"name",
+                        "required":false,
+                        "value":"msg://WriteCardProperty",
+                        "disabled":"true"
+                    },
+                    {
+                        "type":"cardInheritorSelect",
+                        "label":"msg://cardInheritorSelect",
+                        "name":"cardClass",
+                        "required":false,
+                        "disabled": true
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://propertyPath",
+                        "name":"propertyPath",
+                        "required":false,
+                        "disabled": true,
+                        "allowParameter": false
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "useExpresssion",
+                        "label": "msg://useExpresssion",
+                        "required": false,
+                        "disabled": true,
+                        "value": false,
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://value",
+                        "name":"value",
+                        "required":false,
+                        "value":"",
+                        "disabled": true
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://expressionTest",
+                        "name":"expressionTest",
+                        "required":false,
+                        "disabled": true,
+                        "value":"",
+                        "allowParameter": false
+                    }
+
+                ],
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "label": "msg://name",
+                        "required": false
+                    },
+                    {
+                        "type":"cardInheritorSelect",
+                        "label":"msg://cardInheritorSelect",
+                        "name":"cardClass",
+                        "required":true,
+                    },
+                    {
+                        "type":"cardPropertyField",
+                        "label":"msg://propertyPath",
+                        "name":"propertyPath",
+                        "required":false
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "useExpresssion",
+                        "label": "msg://useExpresssion",
+                        "required": false,
+                        "value": false,
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://expressionTest",
+                        "name":"expressionTest",
+                        "required":false,
+                        "disabled": true,
+                        "value":"",
+                        "allowParameter": false
+                    },
+                    {
+                        "type":"string",
+                        "label":"msg://value",
+                        "name":"value",
+                        "required":false,
+                        "value":""
+                    }
+
+                ],
+
+                "terminals": [
+                    {
+                        "name": "in", "direction": [0,-1], "offsetPosition": {"left": 112, "top": -15},
+                        "ddConfig": {"type": "in","allowedTypes": ["out"]}
+                    },
+                    {
+                        "name": "out", "direction": [0,1], "offsetPosition": {"left": 112, "bottom": -15},
+                        "ddConfig": {"type": "out","allowedTypes": ["in"]}, "alwaysSrc": true,
+                        "nMaxWires" : 1
+                    }
+                ]
+            }
+        },
+        {
             "name": "EmptyModule",
             "label": "msg://EmptyModule",
             "category": "common",

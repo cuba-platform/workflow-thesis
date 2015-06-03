@@ -40,6 +40,8 @@
                 <entry key="SubProc" value="com.haulmont.workflow.core.app.design.modules.SubProcModule"/>
                 <entry key="EmptyModule" value="com.haulmont.workflow.core.app.design.modules.EmptyModule"/>
                 <entry key="SubDesign" value="com.haulmont.workflow.core.app.design.modules.SubDesignModule"/>
+                <entry key="ReadCardProperty" value="com.haulmont.workflow.core.app.design.modules.ReadCardPropertyModule"/>
+                <entry key="WriteCardProperty" value="com.haulmont.workflow.core.app.design.modules.WriteCardPropertyModule"/>
             </map>
         </property>
         <property name="formCompiler" ref="workflow_FormCompiler"/>
