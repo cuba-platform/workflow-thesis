@@ -23,10 +23,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONStringer;
-import org.json.JSONWriter;
+import org.json.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -400,7 +397,7 @@ public class ActionController {
         return dataService.loadList(ctx);
     }
 
-    private String loadAttributeType(Class clazz) {
+    private String loadAttributeType(Class clazz) throws JSONException {
         Messages messages = AppBeans.get(Messages.NAME);
         CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
         AttributeType attributeType = workflowSettingsService.getAttributeType(clazz, false);
