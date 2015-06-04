@@ -140,36 +140,26 @@ public class ActionController {
         try {
             if (auth(request, response)) {
                 try {
-                        String start = StringUtils.substringAfterLast(query, ".");
-                        String propertyPath = StringUtils.substringBeforeLast(query, ".");
-                        if (!query.contains(".")) {
-                            start = propertyPath;
-                            propertyPath = "";
+                    String start = StringUtils.substringAfterLast(query, ".");
+                    String propertyPath = StringUtils.substringBeforeLast(query, ".");
+                    if (!query.contains(".")) {
+                        start = propertyPath;
+                        propertyPath = "";
+                    }
+                    Metadata metadata = AppBeans.get(Metadata.NAME);
+                    MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
+                    List<String> propertyPaths = getPropertyPaths(metaClass, propertyPath, start);
+                    JSONWriter json = new JSONStringer().array();
+                    for (String path : propertyPaths) {
+                        String value = propertyPath;
+                        if (StringUtils.isNotBlank(propertyPath)) {
+                            value = value + ".";
                         }
-                        Metadata metadata = AppBeans.get(Metadata.NAME);
-                        MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
-                        List<String> propertyPaths = getPropertyPaths(metaClass,propertyPath, start);
-                        StringBuilder sb = new StringBuilder("[");
-                        int i = 0;
-                        for (String path : propertyPaths) {
-                            if (i > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append("\"");
-                            sb.append(propertyPath);
-                            if (StringUtils.isNotBlank(propertyPath)) {
-                                sb.append(".");
-                            }
-                            sb.append(path);
-                            sb.append("\"");
-                            i++;
-                        }
-                        sb.append("]");
-                        setHeaders(response);
-                        PrintWriter out = response.getWriter();
-                        out.println(sb.toString());
-                        out.close();
-                        return null;
+                        value = value + path;
+                        json.value(value);
+                    }
+                    json.endArray();
+                    printJson(response,json.toString());
 
                 } finally {
                     AppContext.setSecurityContext(null);
@@ -221,11 +211,7 @@ public class ActionController {
                             return null;
                         }
                         String data = loadAttributeType(clazz);
-                        setHeaders(response);
-                        PrintWriter out = response.getWriter();
-                        out.println(data);
-                        out.close();
-                        return null;
+                        printJson(response, data);
                     }
                 } finally {
                     AppContext.setSecurityContext(null);
@@ -293,11 +279,16 @@ public class ActionController {
                         json.endArray();
                         printJson(response, json.toString());
                     } else if (request.getPathInfo().endsWith("/loadOperationTypes.json")) {
-                        String data = loadOperationTypes();
-                        setHeaders(response);
-                        PrintWriter out = response.getWriter();
-                        out.println(data);
-                        out.close();
+                        Messages messages = AppBeans.get(Messages.NAME);
+                        JSONWriter json = new JSONStringer().array();
+                        for (OperationsType operationsType : Arrays.asList(OperationsType.values())) {
+                            json.object()
+                                    .key("value").value(operationsType.getId())
+                                    .key("label").value(messages.getMessage(operationsType))
+                                    .endObject();
+                        }
+                        json.endArray();
+                        printJson(response, json.toString());
                     } else if (request.getPathInfo().endsWith("/loadCardInheritors.json")) {
                         JSONWriter json = new JSONStringer().array();
                         for (MetaClass cl : findClasses()) {
@@ -327,10 +318,9 @@ public class ActionController {
     private Collection<MetaClass> findClasses() {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         Metadata metadata = AppBeans.get(Metadata.NAME);
-        Collection<MetaClass> allPersistentMetaClasses = metadataTools.getAllPersistentMetaClasses();
         List<MetaClass> cardInheritors = new ArrayList<>();
         final MetaClass cardMetaClass = metadata.getClass(Card.class);
-        for (MetaClass metaClass : allPersistentMetaClasses) {
+        for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (metaClass.getAncestors().contains(cardMetaClass) || metaClass.equals(cardMetaClass)) {
                 cardInheritors.add(metaClass);
             }
@@ -357,27 +347,6 @@ public class ActionController {
         ctx.setQueryString("select d from wf$Design d where d.type=:type and d.compileTs is not null order by d.name").setParameter("type", DesignType.SUBDESIGN.getId());
         return dataService.loadList(ctx);
 
-    }
-
-    private String loadOperationTypes() {
-        StringBuilder sb = new StringBuilder();
-        Messages messages = AppBeans.get(Messages.NAME);
-        sb.append("[");
-        List<OperationsType> operationsTypes = Arrays.asList(OperationsType.values());
-        int size = operationsTypes.size();
-        for (OperationsType operationsType : operationsTypes) {
-            sb.append("{");
-            sb.append("\"value\" : ");
-            sb.append("\"").append(operationsType.getId()).append("\",");
-            sb.append("\"label\" : ");
-            sb.append("\"").append(messages.getMessage(operationsType)).append("\"");
-            sb.append("}");
-            size--;
-            if (size > 0)
-                sb.append(",");
-        }
-        sb.append("]");
-        return sb.toString();
     }
 
     protected Design findDesign(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
@@ -435,41 +404,30 @@ public class ActionController {
         Messages messages = AppBeans.get(Messages.NAME);
         CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
         AttributeType attributeType = workflowSettingsService.getAttributeType(clazz, false);
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append("{\"attributeType\":\"").append(attributeType.getId()).append("\", ");
-        EnumSet<OperationsType> operationsTypes = OperationsType.availableOps(attributeType);
-        sb.append("\"ops\":");
-        sb.append("[");
-        int size = operationsTypes.size();
-        for (OperationsType operationsType : operationsTypes) {
-            sb.append("{");
-            sb.append("\"value\" : ");
-            sb.append("\"").append(operationsType.getId()).append("\",");
-            sb.append("\"label\" : ");
-            sb.append("\"").append(messages.getMessage(operationsType)).append("\"");
-            sb.append("}");
-            size--;
-            if (size > 0)
-                sb.append(",");
+
+        JSONWriter json = new JSONStringer().array();
+        json.object()
+                .key("attributeType").value(attributeType.getId())
+                .key("ops").array();
+        for (OperationsType operationsType :  OperationsType.availableOps(attributeType)) {
+            json.object()
+                    .key("value").value(operationsType.getId())
+                    .key("label").value(messages.getMessage(operationsType))
+                    .endObject();
         }
-        sb.append("],");
-        sb.append("\"values\":");
-        sb.append("[");
+        json.endArray();
+        json.key("values").array();
+
         Map<String, Object> map = workflowSettingsService.loadObjects(clazz, false);
-        size = map.size();
         for (String key : map.keySet()) {
-            sb.append("{");
-            sb.append("\"value\" : ");
-            sb.append("\"").append(key).append("\",");
-            sb.append("\"label\" : ");
-            sb.append("\"").append(StringEscapeUtils.escapeJavaScript(map.get(key).toString())).append("\"");
-            sb.append("}");
-            size--;
-            if (size > 0)
-                sb.append(",");
+            json.object()
+                    .key("value").value(key)
+                    .key("label").value(StringEscapeUtils.escapeJavaScript(map.get(key).toString()))
+                    .endObject();
         }
-        sb.append("]}]");
-        return sb.toString();
+        json.endArray();
+        json.endObject();
+        json.endArray();
+        return json.toString();
     }
 }
