@@ -88,20 +88,37 @@ WireIt.WiringEditor.adapters.WfAdapter = {
                 u,
                 {
                     success: function(o) {
+                    var loadedData = 4;
                         var s = o.responseText, r = YAHOO.lang.JSON.parse(s);
                         Wf.processWiringOnLoad(r);
-                        callbacks.success.call(callbacks.scope, r);
+//                        callbacks.success.call(callbacks.scope, r);
                         Wf.loadScripts(function(val) {
                             Wf.scriptsCache = val;
+                            loadedData--;
+                            if(loadedData==0){
+                                 callbacks.success.call(callbacks.scope, r);
+                            }
                         }, null);
                         Wf.loadSubDesigns(function(val) {
                             Wf.subdesignCache = val;
+                            loadedData--;
+                            if(loadedData==0){
+                                 callbacks.success.call(callbacks.scope, r);
+                            }
                         }, null);
                         Wf.loadOperationTypes(function(val) {
                             Wf.operationTypesCache = val;
+                            loadedData--;
+                            if(loadedData==0){
+                                 callbacks.success.call(callbacks.scope, r);
+                            }
                         }, null);
                         Wf.loadCardInheritors(function(val) {
                             Wf.cardInheritorsCache = val;
+                            loadedData--;
+                            if(loadedData==0){
+                                 callbacks.success.call(callbacks.scope, r);
+                            }
                         }, null);
                     },
                     failure: function(o) {

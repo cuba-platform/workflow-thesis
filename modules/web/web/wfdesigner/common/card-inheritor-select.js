@@ -50,7 +50,7 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
                 if (this.getChoicePosition(v) == -1)
                     this.addChoice(v);
             }
-            if(cardInheritors.length>0){
+            if(Wf.cardInheritorsCache.length>0){
                 this.setDefaultClassForPropertyPathField(Wf.cardInheritorsCache[0].key);
             }
         } else {
