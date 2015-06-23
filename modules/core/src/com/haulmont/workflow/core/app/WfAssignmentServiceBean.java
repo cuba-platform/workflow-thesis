@@ -103,36 +103,53 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     public void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment) {
         Preconditions.checkNotNull(card, "Card is null");
         Preconditions.checkState(newRoles != null && newRoles.size() > 0, "Roles list is empty");
-        Set<User> usersSet = new LinkedHashSet<User>();
         EntityManager em = persistence.getEntityManager();
         card = em.find(card.getClass(), card.getId());
+        Multimap<User, Assignment> assignmentsMap = getAssignmentsMap(card, state);
+        for (CardRole cr : newRoles)
+            createAssignmentForNewCardRole(card, cr, state, assignmentsMap, oldRoles);
+
+        closeCurrentAssignments(newRoles, assignmentsMap, comment);
+    }
+
+    protected Multimap<User, Assignment> getAssignmentsMap(Card card, String state) {
+        Multimap<User, Assignment> assignmentsMap = ArrayListMultimap.create();
+        for (Assignment assignment : getAssignmentsByState(card, state))
+            assignmentsMap.put(assignment.getUser(), assignment);
+
+        return assignmentsMap;
+    }
+
+    protected void createAssignmentForNewCardRole(Card card, CardRole cr, String state, Multimap<User, Assignment> assignmentsMap,
+                                                  List<CardRole> oldRoles) {
+        EntityManager em = persistence.getEntityManager();
+        if (assignmentsMap.containsKey(cr.getUser())) {
+            if (needCreateAssignmentForCardRole(cr, assignmentsMap, oldRoles))
+                createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+        } else if(cr.getUser() != null) {
+            createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+        }
+    }
+
+    protected boolean needCreateAssignmentForCardRole(CardRole cr, Multimap<User, Assignment> assignmentsMap, List<CardRole> oldRoles) {
+        final Assignment lastAssignment = Collections.max(assignmentsMap.get(cr.getUser()), BY_CREATE_TS_COMPARATOR);
+        Predicate<CardRole> predicate = new Predicate<CardRole>() {
+            @Override
+            public boolean apply(@Nullable CardRole input) {
+                return input != null && ObjectUtils.equals(lastAssignment.getUser(), input.getUser());
+            }
+        };
+
+        return lastAssignment.getFinished() != null && !Iterables.any(oldRoles, predicate);
+    }
+
+    protected void closeCurrentAssignments(List<CardRole> newRoles, Multimap<User, Assignment> assignmentsMap, String comment) {
+        Set<User> usersSet = new LinkedHashSet<>();
         for (CardRole cr : newRoles)
             usersSet.add(cr.getUser());
-        Multimap<User, Assignment> assignmentsMap = ArrayListMultimap.create();
-        for (Assignment assignment : getAssignmentsByState(card, state)) {
-            assignmentsMap.put(assignment.getUser(), assignment);
-        }
-        for (CardRole cr : newRoles) {
-            if (assignmentsMap.containsKey(cr.getUser())) {
-                final Assignment lastAssignment = Collections.max(assignmentsMap.get(cr.getUser()), BY_CREATE_TS_COMPARATOR);
-                Predicate<CardRole> predicate = new Predicate<CardRole>() {
-                    @Override
-                    public boolean apply(@Nullable CardRole input) {
-                        return input != null && ObjectUtils.equals(lastAssignment.getUser(), input.getUser());
-                    }
-                };
-                if (lastAssignment.getFinished() != null && !Iterables.any(oldRoles, predicate)) {
-                    createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
-                }
-            } else {
-                createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
-            }
-        }
-        for (Assignment assignment : assignmentsMap.values()) {
-            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null) {
+        for (Assignment assignment : assignmentsMap.values())
+            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null)
                 closeAssignment(assignment, createDummyCardRole(assignment, newRoles.get(0).getCode()), comment);
-            }
-        }
     }
 
     protected void closeAssignment(Assignment assignment, CardRole cr, String comment) {

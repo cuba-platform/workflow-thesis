@@ -11,6 +11,7 @@ import org.jbpm.api.ProcessEngine;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface WfEngineAPI {
@@ -40,6 +41,8 @@ public interface WfEngineAPI {
     void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard);
 
     void signalExecution(String jbpmExecutionId, String transition, Card card);
+
+    void signalExecution(String jbpmExecutionId, String transition, Card card, Map<String, ?> params);
 
     Card startProcess(Card card);
 

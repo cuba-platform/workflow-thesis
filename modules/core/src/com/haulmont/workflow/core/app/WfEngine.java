@@ -4,6 +4,7 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.google.common.collect.Maps;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -449,8 +450,13 @@ public class WfEngine implements WfEngineAPI {
     }
 
     public void signalExecution(String jbpmExecutionId, String transition, Card card) {
+        signalExecution(jbpmExecutionId, transition, card, null);
+    }
+
+    @Override
+    public void signalExecution(String jbpmExecutionId, String transition, Card card, Map<String, ?> params) {
         ExecutionService es = getProcessEngine().getExecutionService();
-        ProcessInstance pi = es.signalExecutionById(jbpmExecutionId, transition);
+        ProcessInstance pi = es.signalExecutionById(jbpmExecutionId, transition, params);
 
         if (Execution.STATE_ENDED.equals(pi.getState())) {
             Proc proc = card.getProc();
