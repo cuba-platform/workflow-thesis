@@ -4,11 +4,11 @@
  */
 package com.haulmont.workflow.gui.app.base;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -21,14 +21,16 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.app.attachment.ProcessAttachmentsManager;
-import com.haulmont.workflow.gui.base.action.AbstractForm;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentCreator;
+import com.haulmont.workflow.gui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -59,6 +61,10 @@ public class ResolutionForm extends AbstractForm {
     @Inject
     protected ProcessAttachmentsManager processAttachments;
 
+    @WindowParam
+    protected String initHeight;
+    protected int defaultInitHeight = 400;
+
     protected Assignment assignment;
 
     protected AttachmentType attachmentType;
@@ -66,6 +72,8 @@ public class ResolutionForm extends AbstractForm {
     @Override
     public void init(final Map<String, Object> params) {
         super.init(params);
+
+        initDialogParams(params);
 
         final Card card = (Card) params.get("card");
         Card procContextCard = (Card) params.get("procContextCard");
@@ -156,6 +164,11 @@ public class ResolutionForm extends AbstractForm {
         AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+    }
+
+    protected void initDialogParams(Map<String, Object> params) {
+        if (initHeight != null) getDialogParams().setHeight(Integer.parseInt(initHeight));
+        else getDialogParams().setHeight(defaultInitHeight);
     }
 
     @Override
