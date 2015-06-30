@@ -228,5 +228,6 @@ public class ResolutionForm extends AbstractForm {
         CommitContext commitContext = new CommitContext();
         commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
         getDsContext().getDataSupplier().commit(commitContext);
+        getDsContext().commit();
     }
 }
