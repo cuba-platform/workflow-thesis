@@ -236,8 +236,7 @@ public class SubDesignModule extends Module {
 
     private void checkDesignExist(String id) throws DesignCompilationException {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-        em.setView(AppBeans.get(Metadata.class).getViewRepository().getView(Design.class, "for-subdesign-module"));
-        design = em.find(Design.class, UUID.fromString(id));
+        design = em.find(Design.class, UUID.fromString(id), "for-subdesign-module");
         if (design == null) {
             throw new DesignCompilationException("Module : " + caption + ". Subdesign not found");
         }

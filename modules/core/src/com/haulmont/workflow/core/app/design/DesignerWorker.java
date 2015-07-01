@@ -138,8 +138,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
     @Override
     public byte[] exportDesign(Design design) throws IOException, FileStorageException {
         EntityManager em = persistence.getEntityManager();
-        em.setView(viewRepository.getView(design.getClass(), "export"));
-        design = em.find(design.getClass(), design.getId());
+        design = em.find(design.getClass(), design.getId(), "export");
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -266,9 +265,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
         EntityManager em = persistence.getEntityManager();
         Boolean softDeleteion = em.isSoftDeletion();
         em.setSoftDeletion(false);
-        em.setView(viewRepository.getView(Design.class, "remove"));
-        Design existsDesign = em.find(design.getClass(), design.getId());
-        em.setView(null);
+        Design existsDesign = em.find(design.getClass(), design.getId(), "remove");
         em.setSoftDeletion(softDeleteion);
         return existsDesign;
     }

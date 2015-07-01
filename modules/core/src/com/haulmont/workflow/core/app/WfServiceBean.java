@@ -115,8 +115,7 @@ public class WfServiceBean implements WfService {
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-                em.setView(metadata.getViewRepository().getView(Card.class, "with-roles"));
-                card = em.find(Card.class, card.getId());
+                card = em.find(Card.class, card.getId(), "with-roles");
                 tx.commit();
             } finally {
                 tx.end();

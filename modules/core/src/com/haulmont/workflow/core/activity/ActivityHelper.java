@@ -54,8 +54,7 @@ public class ActivityHelper {
             throw new RuntimeException("Unable to get cardId", e);
         }
         EntityManager em = PersistenceProvider.getEntityManager();
-        em.addView(new View(Card.class, "with-processFamily"));
-        Card card = em.find(Card.class, cardId);
+        Card card = em.find(Card.class, cardId, "with-processFamily");
         if (card == null)
             throw new RuntimeException("Card not found: " + cardId);
         return card;
