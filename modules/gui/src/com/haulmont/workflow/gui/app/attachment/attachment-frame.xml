@@ -27,13 +27,13 @@
             <rows>
                 <row>
                     <label value="msg://fileName"/>
-                    <textField id="fileName" datasource="fileDs" property="name"
+                    <textField id="fileName" datasource="fileDs" property="name" editable="false"
                                width="200px" required="true" requiredMessage="msg://fileName.required"/>
                 </row>
                 <row id="rowName">
                     <label value="msg://name"/>
                     <hbox id="nameBox" spacing="false">
-                        <textField id="name" datasource="attachmentDs" property="name" width="200px"/>
+                        <textField id="name" datasource="attachmentDs" property="name" required="true" width="200px"/>
                     </hbox>
                 </row>
                 <row>

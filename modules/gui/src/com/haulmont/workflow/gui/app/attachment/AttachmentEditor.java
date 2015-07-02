@@ -178,7 +178,6 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             }
         } else {
             uploadField.setEnabled(false);
-            fileNameText.setEditable(false);
         }
         if (item != null) {
             Attachment attachment = (Attachment) item;
