@@ -169,19 +169,24 @@ public class CardRolesFrame extends AbstractFrame {
                     return value;
 
                 final ProcRole procRole = (ProcRole) value;
-                CardRole cardRole = metadata.create(CardRole.class);
-                cardRole.setProcRole(procRole);
-                cardRole.setCode(procRole.getCode());
-                cardRole.setNotifyByEmail(true);
-                cardRole.setNotifyByCardInfo(true);
-                cardRole.setCard(card);
-                assignNextSortOrder(cardRole);
-                assignDurationAndTimeUnit(cardRole);
-                tmpCardRolesDs.addItem(cardRole);
-
+                tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
                 return null;
             }
         });
+    }
+
+
+    protected CardRole createCardRole(ProcRole procRole, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
+        CardRole cardRole = metadata.create(CardRole.class);
+        cardRole.setProcRole(procRole);
+        cardRole.setCode(procRole.getCode());
+        cardRole.setNotifyByEmail(notifyByEmail);
+        cardRole.setNotifyByCardInfo(notifyByCardInfo);
+        cardRole.setCard(card);
+        cardRole.setUser(user);
+        assignNextSortOrder(cardRole);
+        assignDurationAndTimeUnit(cardRole);
+        return cardRole;
     }
 
     protected CardRole getCardRoleDependsOnSortOrder(CardRole curCr, boolean forward) {
@@ -439,27 +444,9 @@ public class CardRolesFrame extends AbstractFrame {
     protected List<CardRole> createCardRoles(Set<User> users, ProcRole procRole, String code) {
         List<CardRole> cardRoles = new ArrayList<>();
         for (User user : users) {
-//            boolean isUserInList = false;
-//            //check for user in list
-//            for (UUID itemId : tmpCardRolesDs.getItemIds()) {
-//                if (user.equals(tmpCardRolesDs.getItem(itemId).getUser())) {
-//                    isUserInList = true;
-//                    break;
-//                }
-//            }
-//            if (!isUserInList) {
-            CardRole cr = metadata.create(CardRole.class);
-            cr.setUser(user);
-            cr.setProcRole(procRole);
-            cr.setCode(code);
-            cr.setNotifyByEmail(true);
-            cr.setNotifyByCardInfo(true);
-            cr.setCard(card);
+            CardRole cr = createCardRole(procRole, user, true, true);
             cardRoles.add(cr);
-            assignNextSortOrder(cr);
-            assignDurationAndTimeUnit(cr);
             tmpCardRolesDs.addItem(cr);
-//            }
         }
         return cardRoles;
     }
@@ -823,16 +810,7 @@ public class CardRolesFrame extends AbstractFrame {
 
         //If card role with given code doesn't exist we'll create a new one
         if (cardRole == null) {
-            cardRole = metadata.create(CardRole.class);
-
-            cardRole.setProcRole(procRole);
-            cardRole.setCode(procRole.getCode());
-            cardRole.setCard(card);
-            cardRole.setNotifyByEmail(notifyByEmail);
-            cardRole.setNotifyByCardInfo(notifyByCardInfo);
-            assignNextSortOrder(cardRole);
-            assignDurationAndTimeUnit(cardRole);
-            cardRole.setUser(user);
+            cardRole = createCardRole(procRole, user, notifyByEmail, notifyByCardInfo);
             tmpCardRolesDs.addItem(cardRole);
         } else {
             cardRole.setUser(user);
@@ -866,17 +844,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (procActorExists(procRole, user))
             removeProcActor(procRole.getCode(), user);
         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
-            CardRole cardRole = metadata.create(CardRole.class);
-            cardRole.setProcRole(procRole);
-            cardRole.setCode(roleCode);
-            cardRole.setCard(card);
-            cardRole.setNotifyByEmail(notifyByEmail);
-            cardRole.setNotifyByCardInfo(notifyByCardInfo);
-            cardRole.setUser(user);
-            cardRole.setSortOrder(sortOrder);
-            assignNextSortOrder(cardRole);
-            assignDurationAndTimeUnit(cardRole);
-            tmpCardRolesDs.addItem(cardRole);
+            tmpCardRolesDs.addItem(createCardRole(procRole, user, notifyByEmail, notifyByCardInfo));
         } else {
             setProcActor(proc, procRole, user, notifyByEmail, notifyByCardInfo);
         }
@@ -1303,15 +1271,7 @@ public class CardRolesFrame extends AbstractFrame {
                 if (!validUsers.isEmpty()) {
                     if (oldUser == null) {
                         oldUser = validUsers.iterator().next();
-                        CardRole cr = metadata.create(CardRole.class);
-                        cr.setUser(oldUser);
-                        cr.setProcRole(cardRole.getProcRole());
-                        cr.setCode(cardRole.getCode());
-                        cr.setNotifyByEmail(true);
-                        cr.setNotifyByCardInfo(true);
-                        cr.setCard(card);
-                        assignNextSortOrder(cr);
-                        tmpCardRolesDs.addItem(cr);
+                        tmpCardRolesDs.addItem(createCardRole(procRole, oldUser, true, true));
                         validUsers.remove(oldUser);
                     } else {
                         if (validUsers.contains(oldUser)) {
@@ -1323,15 +1283,7 @@ public class CardRolesFrame extends AbstractFrame {
                     }
                 } else {
                     if (isNeedCreateEmptyCardRole()) {
-                        CardRole cr = metadata.create(CardRole.class);
-                        cr.setUser(null);
-                        cr.setProcRole(cardRole.getProcRole());
-                        cr.setCode(cardRole.getCode());
-                        cr.setNotifyByEmail(true);
-                        cr.setNotifyByCardInfo(true);
-                        cr.setCard(card);
-                        assignNextSortOrder(cr);
-                        tmpCardRolesDs.addItem(cr);
+                        tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
                     }
                 }
                 List<CardRole> cardRolesToAdd = createCardRoles(validUsers, procRole, code);

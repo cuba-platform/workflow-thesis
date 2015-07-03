@@ -27,9 +27,9 @@
 
     <layout expand="cardRolesFrame" spacing="true">
         <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
-        <hbox id="commentTextPane">
+        <hbox id="commentTextPane" width="100%" expand="commentText">
             <label value="msg://comment" width="${labelWidth}"/>
-            <textArea id="commentText" width="${width}" rows="4" maxLength="4000"/>
+            <textArea id="commentText"  rows="4" maxLength="4000"/>
         </hbox>
         <vbox margin="true">
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

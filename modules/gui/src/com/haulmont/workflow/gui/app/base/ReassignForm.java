@@ -69,7 +69,6 @@ public class ReassignForm extends AbstractWindow {
         getDialogParams().setHeight(DEFAULT_FORM_HEIGHT);
         initCardRolesFrame();
         initFormActions();
-        setCaption(getMessage("reassign.caption"));
     }
 
     protected void initCardRolesFrame() {
