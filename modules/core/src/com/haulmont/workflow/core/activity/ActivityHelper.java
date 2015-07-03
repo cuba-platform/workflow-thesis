@@ -7,7 +7,6 @@ package com.haulmont.workflow.core.activity;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.StringUtils;
 import org.jbpm.api.Execution;
@@ -54,8 +53,7 @@ public class ActivityHelper {
             throw new RuntimeException("Unable to get cardId", e);
         }
         EntityManager em = PersistenceProvider.getEntityManager();
-        em.addView(new View(Card.class, "with-processFamily"));
-        Card card = em.find(Card.class, cardId);
+        Card card = em.find(Card.class, cardId, "with-processFamily");
         if (card == null)
             throw new RuntimeException("Card not found: " + cardId);
         return card;
