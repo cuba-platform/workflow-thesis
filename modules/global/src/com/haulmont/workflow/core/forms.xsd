@@ -4,9 +4,9 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<xs:schema targetNamespace="http://schemas.haulmont.com/workflow/5.5/forms.xsd"
+<xs:schema targetNamespace="http://schemas.haulmont.com/workflow/forms.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/workflow/5.5/forms.xsd"
+        xmlns="http://schemas.haulmont.com/workflow/forms.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified">
 
