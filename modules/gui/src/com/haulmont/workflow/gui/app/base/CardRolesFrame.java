@@ -527,7 +527,7 @@ public class CardRolesFrame extends AbstractFrame {
                 visibleColumns = ArrayUtils.removeElement(visibleColumns, sortOrderMpp);
             }
 
-            if (BooleanUtils.isTrue(proc.getDurationEnabled())) {
+            if (isProcessDurationEnabled(proc)) {
                 if (!ArrayUtils.contains(visibleColumns, durationMpp)) {
                     visibleColumns = ArrayUtils.add(visibleColumns, durationMpp);
                     if (companion != null)
@@ -558,6 +558,10 @@ public class CardRolesFrame extends AbstractFrame {
             if (companion != null)
                 companion.setTableVisibleColumns(rolesTable, visibleColumns);
         }
+    }
+
+    protected boolean isProcessDurationEnabled(Proc proc) {
+        return proc != null && BooleanUtils.isTrue(proc.getDurationEnabled());
     }
 
     protected TextField generateDurationComponent(final CardRole cardRole) {
