@@ -561,7 +561,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected boolean isProcessDurationEnabled(Proc proc) {
-        return proc != null && BooleanUtils.isTrue(proc.getDurationEnabled());
+        return BooleanUtils.isTrue(proc.getDurationEnabled());
     }
 
     protected TextField generateDurationComponent(final CardRole cardRole) {
