@@ -186,8 +186,7 @@ public class TransitionForm extends AbstractForm {
 
     protected void initDueDate(Map<String, Object> params, String messagesPack) {
         if (dueDate != null) {
-            String dueDateRequired = (String) params.get("dueDateRequired");
-            dueDate.setRequired(dueDateRequired != null && Boolean.valueOf(dueDateRequired).equals(Boolean.TRUE));
+            dueDate.setRequired(isDueDateRequired(params));
 
             String dueDateLabelParam = (String) params.get("dueDateLabel");
             if (StringUtils.isNotBlank(dueDateLabelParam)) {
@@ -211,6 +210,11 @@ public class TransitionForm extends AbstractForm {
                 dueDate.setValue(null);
             }
         }
+    }
+
+    protected boolean isDueDateRequired(Map<String, Object> params) {
+        String dueDateRequired = (String) params.get("dueDateRequired");
+        return dueDateRequired != null && Boolean.valueOf(dueDateRequired).equals(Boolean.TRUE);
     }
 
     protected void initAttachments(Map<String, Object> params) {
