@@ -261,6 +261,10 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
                 return i18nDict.moduleWithoutTransition;
             }
 
+            if (!this.checkRequiredFields(module)) {
+                return i18nDict.moduleWithEmptyRequiredFields;
+            }
+
         }
 
         return null;
@@ -282,6 +286,37 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
         }
 
         return inputWires.length >= inputs.length && outputWires.length == outputs.length;
+    },
+
+    //check that fields marked as required (lang.js) are filled in a module
+    checkRequiredFields: function(module) {
+        var moduleDescription = this.findModuleDef(module, this.modules);
+        var fields = moduleDescription.container.fields;
+        if (fields != undefined) {
+            for (var i = 0; i < fields.length; i++) {
+                if (fields[i].required == true) {
+                    var fieldValue = module.value[fields[i].name];
+                    if (fieldValue === null || fieldValue == "") {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        var optFields = moduleDescription.container.optFields;
+        if (optFields != undefined) {
+            for (var i = 0; i < optFields.length; i++) {
+                if (optFields[i].required == true) {
+                    var optFieldValue = module.value.options[optFields[i].name];
+                    if (optFieldValue === null || optFieldValue == "") {
+                        return false;
+                    }
+                }
+            }
+
+        }
+
+        return true;
     },
 
     findModuleDef : function(module, moduleDefinitions) {
