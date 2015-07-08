@@ -126,6 +126,7 @@ var i18nDict = {
     "DuplicateName" : "Неуникальное имя модуля",
     "EmptyName" : "Имя модуля не может быть пустым",
     "moduleWithoutTransition" : "Сохранено\<br\/\>\<br\/\>Внимание! Дизайн содержит модуль без перехода",
+    "moduleWithEmptyRequiredFields" : "Сохранено\<br\/\>\<br\/\>Внимание! Дизайн содержит модуль с незаполненными обязательными полями",
     useExpresssion:"Выражение",
     expresssion:"Выражение",
     expressionTest:"Тест выражения",
