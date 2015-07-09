@@ -117,6 +117,9 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     @Column(name = "HAS_ATTRIBUTES")
     protected Boolean hasAttributes = false;
 
+    @Column(name = "PARENT_CARD_ACCESS")
+    protected Boolean parentCardAccess = false;
+
     @Embedded
     protected ProcFamily procFamily;
 
@@ -333,5 +336,13 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
 
     public void setCardVariables(List<CardVariable> cardVariables) {
         this.cardVariables = cardVariables;
+    }
+
+    public Boolean getParentCardAccess() {
+        return parentCardAccess;
+    }
+
+    public void setParentCardAccess(Boolean parentCardAccess) {
+        this.parentCardAccess = parentCardAccess;
     }
 }

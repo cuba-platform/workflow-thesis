@@ -105,6 +105,7 @@ create table WF_CARD (
     CATEGORY_ID varchar(36),
     FAMILY_CARD_ID varchar(36),
     FAMILY_JBPM_PROCESS_ID varchar(255),
+    PARENT_CARD_ACCESS boolean,
     primary key (ID)
 )^
 
