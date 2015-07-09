@@ -110,6 +110,7 @@ create table WF_CARD (
     CATEGORY_ID uniqueidentifier,
     FAMILY_CARD_ID uniqueidentifier,
     FAMILY_JBPM_PROCESS_ID varchar(255),
+    PARENT_CARD_ACCESS tinyint,
     primary key nonclustered (ID)
 )^
 

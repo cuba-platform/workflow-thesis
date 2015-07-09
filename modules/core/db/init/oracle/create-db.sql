@@ -109,6 +109,7 @@ create table WF_CARD (
     CATEGORY_ID varchar2(32),
     FAMILY_CARD_ID varchar2(32),
     FAMILY_JBPM_PROCESS_ID varchar2(255),
+    PARENT_CARD_ACCESS char(1),
     primary key(ID)
 )^
 create index IDX_WF_CARD_FAMILY_CARD on WF_CARD(FAMILY_CARD_ID)^
