@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.CardAttachment;
 
@@ -50,10 +49,8 @@ public class ProcessAttachmentsManager implements ProcessAttachmentsAPI {
                         copyAttachmentList.add(cardAttachment);
                         commitList.add(cardAttachment);
                     }
-                    if (!copyAttachmentList.isEmpty()) {
+                    if (!copyAttachmentList.isEmpty())
                         item.setAttachments(copyAttachmentList);
-                        AppBeans.get(WfService.class).setHasAttachmentsInCard(item.getCard(), true);
-                    }
                 }
             }
         }
