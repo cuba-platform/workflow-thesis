@@ -92,7 +92,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     @Inject
     protected ComponentsFactory componentsFactory;
-    
+
     @Inject
     protected CardRolesFrameWorker cardRolesFrameWorker;
 
@@ -161,16 +161,14 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        createRoleLookup.setValueChangingListener(new ValueChangingListener() {
-            @Nullable
+        createRoleLookup.addListener(new ValueListener() {
             @Override
-            public Object valueChanging(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 if ((value == null) || createRoleCaption.equals(value))
-                    return value;
+                    return;
 
                 final ProcRole procRole = (ProcRole) value;
                 tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
-                return null;
             }
         });
     }
@@ -599,7 +597,7 @@ public class CardRolesFrame extends AbstractFrame {
             }
         }
 
-        protected void setValue(@Nullable Object value) throws NumberFormatException{
+        protected void setValue(@Nullable Object value) throws NumberFormatException {
             if (value != null) {
                 Integer duration = Integer.parseInt((String) value);
                 if (cardRole != null)
@@ -886,6 +884,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     protected void initCreateRoleLookup() {
         // add ProcRole if it has multiUser == true or hasn't been added yet
+        createRoleLookup.setValue(createRoleCaption);
         List options = new ArrayList();
         for (ProcRole pr : getDsItems(procRolesDs)) {
             if (isNeedRole(pr)) {
