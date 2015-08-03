@@ -27,7 +27,7 @@ import javax.inject.Named;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -211,10 +211,15 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
         Attachment attachment = attachmentDs.getItem();
         if (attachment != null && attachment.getVersionNum() == null)
             attachment.setVersionNum(1);
+        internalCommitAndClose(attachment);
+    }
+
+    protected void internalCommitAndClose(Attachment attachment) {
         if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null
                 && attachmentDs.getCommitMode().equals(Datasource.CommitMode.DATASTORE)) {
             if (needSave) {
-                Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(Arrays.asList(fileDs.getItem())));
+                Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(
+                        Collections.singletonList(fileDs.getItem())));
                 getItem().setFile((FileDescriptor) committedEntities.iterator().next());
             }
             super.close(COMMIT_ACTION_ID, true);
