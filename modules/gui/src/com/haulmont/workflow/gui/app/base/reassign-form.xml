@@ -22,8 +22,8 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width=400>
-    <#assign labelWidth=90>
+    <assign name="width" value="400px"/>
+    <assign name="labelWidth" value="90px"/>
 
     <layout expand="cardRolesFrame" spacing="true">
         <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
