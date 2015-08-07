@@ -133,7 +133,7 @@ public class ReassignForm extends AbstractWindow {
         addAction(new AbstractAction(Editor.WINDOW_CLOSE, clientConfig.getCloseShortcut()) {
             @Override
             public void actionPerform(Component component) {
-                close("cancel");
+                close("cancel", true);
             }
 
             @Override
@@ -163,7 +163,7 @@ public class ReassignForm extends AbstractWindow {
 
     protected void doReassign(Card reloadedCard) {
         List<CardRole> rolesToReassign = getCardRoles();
-        if(CollectionUtils.isNotEmpty(rolesToReassign))
+        if (CollectionUtils.isNotEmpty(rolesToReassign))
             assignmentEngine.reassign(card, reassignmentInfo.getState(), rolesToReassign, reloadedCard.getRoles(), getComment());
     }
 
