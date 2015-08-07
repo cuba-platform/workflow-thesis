@@ -133,7 +133,7 @@ public class ReassignForm extends AbstractWindow {
         addAction(new AbstractAction(Editor.WINDOW_CLOSE, clientConfig.getCloseShortcut()) {
             @Override
             public void actionPerform(Component component) {
-                close("cancel");
+                close("cancel", true);
             }
 
             @Override
