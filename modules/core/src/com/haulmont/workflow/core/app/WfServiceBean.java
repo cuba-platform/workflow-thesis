@@ -22,7 +22,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service(WfService.NAME)
 public class WfServiceBean implements WfService {
@@ -230,13 +233,13 @@ public class WfServiceBean implements WfService {
         try {
             EntityManager em = persistence.getEntityManager();
             Card familyTop = parentCard.getFamilyTop();
-            Card card = new Card();
+            Card card = metadata.create(Card.class);
             card.setProc(getProc(procCode));
-            ProcFamily procFamily = new ProcFamily();
+            ProcFamily procFamily = metadata.create(ProcFamily.class);
             procFamily.setCard(familyTop);
             procFamily.setJbpmProcessId(familyTop.getJbpmProcessId());
             card.setProcFamily(procFamily);
-            CardProc cardProc = new CardProc();
+            CardProc cardProc = metadata.create(CardProc.class);
             cardProc.setCard(card);
             cardProc.setActive(true);
             cardProc.setStartCount(1);

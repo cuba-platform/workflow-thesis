@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.google.common.collect.Maps;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -128,7 +127,7 @@ public class WfEngine implements WfEngineAPI {
             q.setParameter(1, pd.getKey());
             List<Proc> processes = q.getResultList();
             if (processes.isEmpty()) {
-                proc = new Proc();
+                proc = metadata.create(Proc.class);
                 proc.setName(pd.getName());
                 proc.setJbpmProcessKey(pd.getKey());
                 proc.setCode(pd.getKey());
@@ -240,7 +239,7 @@ public class WfEngine implements WfEngineAPI {
                     }
                 }
                 if (!exists) {
-                    ProcRole procRole = new ProcRole();
+                    ProcRole procRole = metadata.create(ProcRole.class);
                     procRole.setProc(proc);
                     procRole.setCode(role);
                     procRole.setName(role);
