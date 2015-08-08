@@ -33,10 +33,7 @@ import com.haulmont.workflow.core.global.WfConfig;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -63,6 +60,9 @@ public class DesignBrowser extends AbstractWindow {
     @Inject
     protected Configuration configuration;
 
+    @Inject
+    protected DataSupplier dataSupplier;
+
     @Override
     public void init(Map<String, Object> params) {
         ds = getDsContext().get("designDs");
@@ -85,7 +85,29 @@ public class DesignBrowser extends AbstractWindow {
         table.addAction(new ImportAction());
         table.addAction(new ExportAction());
         table.addAction(new EditAction(table, WindowManager.OpenType.DIALOG));
-        table.addAction(new RemoveAction(table));
+        table.addAction(new RemoveAction(table) {
+            @Override
+            protected void doRemove(Set selected, boolean autocommit) {
+                CollectionDatasource datasource = target.getDatasource();
+                Set<Entity> reloadedDesigns = new HashSet<>();
+                for (Object obj : selected) {
+                    Entity reloadedDesign = dataSupplier.reload((Entity) obj, View.LOCAL);
+                    reloadedDesigns.add(reloadedDesign);
+                }
+                for (Object item : reloadedDesigns) {
+                    datasource.removeItem((Entity) item);
+                }
+
+                if (autocommit && (datasource.getCommitMode() != Datasource.CommitMode.PARENT)) {
+                    try {
+                        datasource.commit();
+                    } catch (RuntimeException e) {
+                        datasource.refresh();
+                        throw e;
+                    }
+                }
+            }
+        });
 
         Action designAction = new AbstractAction("design") {
             @Override
