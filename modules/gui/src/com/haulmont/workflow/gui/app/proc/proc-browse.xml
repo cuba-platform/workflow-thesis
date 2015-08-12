@@ -21,13 +21,13 @@
     </dsContext>
 
     <layout expand="procTable" spacing="true">
-        <hbox spacing="true">
-            <button action="procTable.refresh" icon="icons/refresh.png"/>
-            <button action="procTable.edit" icon="icons/edit.png"/>
-            <button action="procTable.remove" icon="icons/remove.png" />
-            <button action="procTable.editProcessVariables" icon="icons/edit.png"/>
-        </hbox>
         <groupTable id="procTable" editable="false" width="100%">
+            <buttonsPanel>
+                <button action="procTable.refresh" icon="icons/refresh.png"/>
+                <button action="procTable.edit" icon="icons/edit.png"/>
+                <button action="procTable.remove" icon="icons/remove.png" />
+                <button action="procTable.editProcessVariables" icon="icons/edit.png"/>
+            </buttonsPanel>
             <actions>
                 <action id="edit"/>
                 <action id="remove"/>

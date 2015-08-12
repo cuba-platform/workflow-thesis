@@ -41,14 +41,14 @@
         </grid>
         <vbox id="attachmentsPane" expand="attachmentsTable" width="100%">
             <label value="msg://attachments"/>
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
-                <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
-                <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
-                <button id="copyAttach" icon="icons/copy.png"/>
-                <button id="pasteAttach" icon="icons/paste.png"/>
-            </hbox>
             <table id="attachmentsTable" editable="false" sortable="true" multiselect="true" width="100%">
+                <buttonsPanel align="MIDDLE_LEFT">
+                    <popupButton id="createAttachBtn" caption="msg://addAttachment"/>
+                    <button id="editAttach" action="attachmentsTable.edit" icon="icons/edit.png"/>
+                    <button id="removeAttach" action="attachmentsTable.remove" icon="icons/remove.png"/>
+                    <button id="copyAttach" icon="icons/copy.png"/>
+                    <button id="pasteAttach" icon="icons/paste.png"/>
+                </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://attachName"/>
                     <column id="file.name" caption="msg://fileName"/>
