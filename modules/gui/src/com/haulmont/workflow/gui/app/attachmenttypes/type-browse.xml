@@ -21,12 +21,12 @@
     <layout>
         <vbox expand="table-panel" height="100%">
             <vbox id="table-panel" expand="table" spacing="true" height="100%">
-                <hbox align="MIDDLE_LEFT" spacing="true">
-                    <button action="table.create" icon="icons/create.png"/>
-                    <button action="table.edit" icon="icons/edit.png"/>
-                    <button action="table.remove" icon="icons/remove.png"/>
-                </hbox>
                 <table id="table" editable="false" height="100%" width="100%">
+                    <buttonsPanel align="MIDDLE_LEFT">
+                        <button action="table.create" icon="icons/create.png"/>
+                        <button action="table.edit" icon="icons/edit.png"/>
+                        <button action="table.remove" icon="icons/remove.png"/>
+                    </buttonsPanel>
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
