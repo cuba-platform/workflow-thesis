@@ -525,13 +525,13 @@ alter table WF_PROC_STATE add constraint FK_WF_PROC_STATE_PROC foreign key (PROC
 
 create table WF_PROC_APP_FOLDER
 (
-    ID uuid not null,
+    FOLDER_ID uuid not null,
     PROC_CONDITIONS_XML text,
 
-    primary key (ID)
+    primary key (FOLDER_ID)
 )^
 
-alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOL foreign key (ID) references SYS_APP_FOLDER (ID)^
+alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOL foreign key (FOLDER_ID) references SYS_APP_FOLDER (FOLDER_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

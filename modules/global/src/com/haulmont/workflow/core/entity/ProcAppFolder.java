@@ -18,6 +18,7 @@ import javax.persistence.*;
  */
 @Entity(name = "wf$ProcAppFolder")
 @Table(name = "WF_PROC_APP_FOLDER")
+@PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("P")
 @Extends(AppFolder.class)
 public class ProcAppFolder extends AppFolder {
