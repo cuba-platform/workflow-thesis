@@ -16,6 +16,7 @@ import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
+import com.haulmont.workflow.core.exception.ParallelAssignmentIsNotFinishedException
 import com.haulmont.workflow.core.exception.WorkflowException
 import com.haulmont.workflow.core.global.WfConstants
 import org.apache.commons.lang.StringUtils
@@ -40,9 +41,6 @@ public class UniversalAssigner extends MultiAssigner {
 
     @Override
     protected boolean createAssignment(ActivityExecution execution) {
-
-        EntityManager em = persistence.getEntityManager()
-
         Card card = findCard(execution)
 
         List<CardRole> srcCardRoles = getCardRoles(execution, card)
@@ -65,15 +63,22 @@ public class UniversalAssigner extends MultiAssigner {
 
         Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
+        Assignment master = getMasterAssignment(execution, card)
+        createUserAssignments(execution, card, master, cardRoles)
+
+        return true
+    }
+
+    protected Assignment getMasterAssignment(ActivityExecution execution, Card card) {
+        EntityManager em = persistence.getEntityManager()
+
         Assignment master = metadata.create(Assignment.class)
         master.setName(execution.getActivityName())
         master.setJbpmProcessId(execution.getProcessInstance().getId())
         master.setCard(card)
         em.persist(master)
 
-        createUserAssignments(execution, card, master, cardRoles)
-
-        return true
+        return master
     }
 
     @Override
@@ -138,21 +143,34 @@ public class UniversalAssigner extends MultiAssigner {
                 if (statusesForFinish.size() == 0 || statusesForFinish.contains(signalName))
                     finishSiblings(assignment, siblings)
 
-            String resultTransition = signalName
-            for (Assignment sibling : siblings) {
-                if (!sibling.finished) {
-                    log.debug("Parallel assignment is not finished: assignment.id=${sibling.id}")
-                    execution.waitForSignal()
-                    removeTimers(execution, assignment)
-                    return
-                }
-
-                if (isNeededToUseThisSiblingOutcome(sibling))
-                    resultTransition = sibling.getOutcome()
+            String resultTransition
+            try {
+                resultTransition = getResultTransition(signalName, siblings)
+            } catch (ParallelAssignmentIsNotFinishedException e) {
+                log.debug("Parallel assignment is not finished: assignment.id=${e.assignmentId}")
+                execution.waitForSignal()
+                removeTimers(execution, assignment)
+                return
             }
+
             processSignal(assignment, resultTransition, execution, signalName, parameters)
             removeTimers(execution, assignment)
         }
+    }
+
+    protected String getResultTransition(String signalName, List<Assignment> siblings)
+            throws ParallelAssignmentIsNotFinishedException {
+
+        String resultTransition = signalName
+        for (Assignment sibling : siblings) {
+            if (!sibling.finished) {
+                throw new ParallelAssignmentIsNotFinishedException(sibling.id)
+            }
+
+            if (isNeededToUseThisSiblingOutcome(sibling))
+                resultTransition = sibling.getOutcome()
+        }
+        return resultTransition
     }
 
     protected boolean isNeededToUseThisSiblingOutcome(Assignment sibling) {
@@ -333,5 +351,4 @@ public class UniversalAssigner extends MultiAssigner {
             statusesForFinish.addAll(parts)
         }
     }
-
 }
