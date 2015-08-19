@@ -29,7 +29,7 @@ public class NotificationMatrixWindow extends AbstractEditor {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        uploadField = getComponent("uploadField");
+        uploadField = (FileUploadField) getComponent("uploadField");
         uploadField.addListener(
                 new FileUploadField.Listener() {
                     public void uploadStarted(Event event) {

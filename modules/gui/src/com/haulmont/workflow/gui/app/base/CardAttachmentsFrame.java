@@ -64,7 +64,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     public void init(@Nullable Map<String, Object> params) {
         cardDs = getDsContext().get("cardDs");
-        attachmentsTable = getComponent("attachmentsTable");
+        attachmentsTable = (Table) getComponent("attachmentsTable");
         assignmentId = (UUID) params.get("assignmentId");
 
         attachmentCreator = createAttachmentsCreator();
@@ -162,11 +162,11 @@ public class CardAttachmentsFrame extends AbstractFrame {
     }
 
     protected void initCopyPasteActions(Map<String, Object> params) {
-        Button copyAttachBtn = getComponentNN("copyAttach");
+        Button copyAttachBtn = (Button) getComponentNN("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
 
-        Button pasteAttachBtn = getComponentNN("pasteAttach");
+        Button pasteAttachBtn = (Button) getComponentNN("pasteAttach");
         Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator, params);
         pasteAttachBtn.setAction(pasteAction);
 //        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
@@ -177,8 +177,8 @@ public class CardAttachmentsFrame extends AbstractFrame {
     }
 
     protected void initFastUpload(Map<String, Object> excludedAttachTypes) {
-        Label fastUpload = getComponent("fastUpload");
-        BoxLayout fastUploadBox = getComponent("fastUploadBox");
+        Label fastUpload = (Label) getComponent("fastUpload");
+        BoxLayout fastUploadBox = (BoxLayout) getComponent("fastUploadBox");
 
         fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
                 attachmentCreator, "wf$CardAttachment.edit", excludedAttachTypes, WindowManager.OpenType.DIALOG);

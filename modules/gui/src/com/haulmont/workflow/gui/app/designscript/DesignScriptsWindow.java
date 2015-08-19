@@ -41,7 +41,7 @@ public class DesignScriptsWindow extends AbstractWindow {
 
         ds = getDsContext().get("scriptsDs");
 
-        table = getComponent("table");
+        table = (Table) getComponent("table");
         table.addAction(new RemoveAction(table));
         table.addAction(new NewAction());
         table.addAction(new ModifyAction());

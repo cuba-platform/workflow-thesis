@@ -85,21 +85,21 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         attachDs = getDsContext().get("attachDs");
         attachDs.valid();
 
-        uploadsTable = getComponent("uploadsTable");
+        uploadsTable = (Table) getComponent("uploadsTable");
         if (uploadsTable != null) {
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(uploadsTable);
         }
-        attachTypeCombo = getComponent("attachTypeCombo");
+        attachTypeCombo = (LookupField) getComponent("attachTypeCombo");
 
         attachTypesDs = getDsContext().get("attachTypesDs");
         attachTypesDs.refresh();
 
         filesDs = getDsContext().get("filesDs");
 
-        okBtn = getComponent("windowActions.windowCommit");
-        cancelBtn = getComponent("windowActions.windowClose");
+        okBtn = (Button) getComponent("windowActions.windowCommit");
+        cancelBtn = (Button) getComponent("windowActions.windowClose");
 
-        delBtn = getComponent("removeAttachBtn");
+        delBtn = (Button) getComponent("removeAttachBtn");
         delBtn.setAction(new AbstractAction("actions.Remove") {
             public void actionPerform(Component component) {
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -120,7 +120,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             }
         });
 
-        uploadField = getComponent("multiUpload");
+        uploadField = (FileMultiUploadField) getComponent("multiUpload");
         uploadField.setCaption(getMessage("upload"));
 
         Map<String, Object> attachmentTypesMap = new HashMap<>();

@@ -27,7 +27,7 @@ public class ProcBrowser extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        Table table = getComponentNN("procTable");
+        Table table = (Table) getComponentNN("procTable");
 
         table.addAction(new RefreshAction(table));
         table.addAction(new EditAction(table));

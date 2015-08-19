@@ -66,7 +66,7 @@ public class DesignBrowser extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         ds = getDsContext().get("designDs");
-        table = getComponent("designTable");
+        table = (Table) getComponent("designTable");
         service = AppBeans.get(DesignerService.NAME);
 
         initActions();
@@ -183,7 +183,7 @@ public class DesignBrowser extends AbstractWindow {
             }
         });
 
-        PopupButton notificationMatrixBtn = getComponentNN("notificationMatrix");
+        PopupButton notificationMatrixBtn = (PopupButton) getComponentNN("notificationMatrix");
 
         notificationMatrixBtn.addAction(new UploadNotificationMatrixAction());
         notificationMatrixBtn.addAction(new ClearNotificationMatrixAction());

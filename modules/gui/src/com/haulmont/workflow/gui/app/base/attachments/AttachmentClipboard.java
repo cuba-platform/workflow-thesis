@@ -23,8 +23,8 @@ public class AttachmentClipboard extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        Button removeAttachBtn = getComponent("removeAttach");
-        final Table attachmentsTable = getComponent("attachmentsTable");
+        Button removeAttachBtn = (Button) getComponent("removeAttach");
+        final Table attachmentsTable = (Table) getComponent("attachmentsTable");
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
         removeAttachBtn.setAction(new AbstractAction("removeAttach") {
@@ -42,7 +42,7 @@ public class AttachmentClipboard extends AbstractEditor {
         });
         removeAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Remove"));
 
-        Button clearAttachBtn = getComponent("clearAttach");
+        Button clearAttachBtn = (Button) getComponent("clearAttach");
         clearAttachBtn.setAction(new AbstractAction("clearAttach") {
             public void actionPerform(Component component) {
                 Set selected = attachmentsTable.getSelected();
@@ -54,7 +54,7 @@ public class AttachmentClipboard extends AbstractEditor {
         });
         clearAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Clear"));
 
-        Button refreshAttachBtn = getComponent("refreshAttach");
+        Button refreshAttachBtn = (Button) getComponent("refreshAttach");
         refreshAttachBtn.setAction(new AbstractAction("refreshAttach") {
             public void actionPerform(Component component) {
                 attachmentsTable.refresh();

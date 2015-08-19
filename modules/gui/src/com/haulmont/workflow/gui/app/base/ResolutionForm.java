@@ -83,7 +83,7 @@ public class ResolutionForm extends AbstractForm {
         String activity = (String) params.get("activity");
         String transition = (String) params.get("transition");
 
-        TextField outcomeText = getComponent("outcomeText");
+        TextField outcomeText = (TextField) getComponent("outcomeText");
         outcomeText.setValue(messages.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
         outcomeText.setEditable(false);
 
@@ -118,11 +118,11 @@ public class ResolutionForm extends AbstractForm {
         applyToCards();
 
         // Add attachments handler
-        Button copyAttachBtn = getComponent("copyAttach");
+        Button copyAttachBtn = (Button) getComponent("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Copy"));
 
-        Button pasteAttachBtn = getComponent("pasteAttach");
+        Button pasteAttachBtn = (Button) getComponent("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
             public Attachment createObject() {
                 CardAttachment attachment = metadata.create(CardAttachment.class);
@@ -135,7 +135,7 @@ public class ResolutionForm extends AbstractForm {
                 AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
-        PopupButton createPopup = getComponent("createAttachBtn");
+        PopupButton createPopup = (PopupButton) getComponent("createAttachBtn");
         WfConfig wfConfig = AppBeans.get(Configuration.class).getConfig(WfConfig.class);
         if (wfConfig.getOneAttachmentUploaderEnabled()) {
             createPopup.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG, "actions.New") {

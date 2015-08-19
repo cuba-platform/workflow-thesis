@@ -190,7 +190,7 @@ public class TransitionForm extends AbstractForm {
 
             String dueDateLabelParam = (String) params.get("dueDateLabel");
             if (StringUtils.isNotBlank(dueDateLabelParam)) {
-                Label dueDateLabel = getComponent("dueDateLabel");
+                Label dueDateLabel = (Label) getComponent("dueDateLabel");
                 if (dueDateLabel != null)
                     dueDateLabel.setValue(messages.getMessage(messagesPack, dueDateLabelParam));
             }
@@ -327,7 +327,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected void updateRequiredAttachmentsPane() {
-        BoxLayout requiredAttachmentsPane = getComponent("requiredAttachmentsPane");
+        BoxLayout requiredAttachmentsPane = (BoxLayout) getComponent("requiredAttachmentsPane");
         for (Component component : requiredAttachmentsPane.getComponents()) {
             requiredAttachmentsPane.remove(component);
         }

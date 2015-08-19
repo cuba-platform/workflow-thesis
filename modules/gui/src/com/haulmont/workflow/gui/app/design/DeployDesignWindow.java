@@ -41,14 +41,14 @@ public class DeployDesignWindow extends AbstractWindow {
         design = (Design) params.get("design");
         procDs.refresh();
 
-        Label designNameLab = getComponentNN("designNameLab");
+        Label designNameLab = (Label) getComponentNN("designNameLab");
         designNameLab.setValue(design.getName());
 
-        procField = getComponent("procField");
+        procField = (LookupField) getComponent("procField");
 
-        roleField = getComponent("roleField");
+        roleField = (LookupField) getComponent("roleField");
 
-        newProcField = getComponentNN("newProcField");
+        newProcField = (CheckBox) getComponentNN("newProcField");
         newProcField.setValue(true);
         newProcField.addListener(
                 new ValueListener() {
@@ -72,7 +72,7 @@ public class DeployDesignWindow extends AbstractWindow {
             procField.setValue(designProc);
         }
 
-        Button deployBtn = getComponentNN("deployBtn");
+        Button deployBtn = (Button) getComponentNN("deployBtn");
         deployBtn.setAction(
                 new AbstractAction("deployBtn") {
                     public void actionPerform(Component component) {
@@ -100,7 +100,7 @@ public class DeployDesignWindow extends AbstractWindow {
                 }
         );
 
-        Button cancelBtn = getComponentNN("cancelBtn");
+        Button cancelBtn = (Button) getComponentNN("cancelBtn");
         cancelBtn.setAction(
                 new AbstractAction("cancelBtn") {
                     public void actionPerform(Component component) {

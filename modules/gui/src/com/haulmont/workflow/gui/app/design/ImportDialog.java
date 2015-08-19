@@ -32,7 +32,7 @@ public class ImportDialog extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        final FileUploadField fileUploadField = getComponent("fileUpload");
+        final FileUploadField fileUploadField = (FileUploadField) getComponent("fileUpload");
         fileUploadField.addListener(new FileUploadField.Listener() {
             public void uploadStarted(Event event) {
             }

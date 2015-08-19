@@ -22,7 +22,7 @@ public class RemoveAttachmentConfirmDialog extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        final OptionsGroup options = getComponent("options");
+        final OptionsGroup options = (OptionsGroup) getComponent("options");
 
         ArrayList optionList = new ArrayList();
         optionList.add(getMessage(OPTION_LAST_VERSION));
