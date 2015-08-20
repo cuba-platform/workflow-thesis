@@ -293,7 +293,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            final ImportDialog importDialog = openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
+            final ImportDialog importDialog = (ImportDialog) openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
             importDialog.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
@@ -414,7 +414,7 @@ public class DesignBrowser extends AbstractWindow {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
                     getDialogParams().setWidth(500);
-                    final DeployDesignWindow window = openWindow("wf$Design.deploy",
+                    final DeployDesignWindow window = (DeployDesignWindow) openWindow("wf$Design.deploy",
                             WindowManager.OpenType.DIALOG,
                             Collections.<String, Object>singletonMap("design", design));
                     window.addListener(
@@ -519,7 +519,7 @@ public class DesignBrowser extends AbstractWindow {
             if (!selected.isEmpty()) {
                 Design selectedDesign = selected.iterator().next();
                 final Design design = ds.getDataSupplier().reload(selectedDesign, "_local");
-                final NotificationMatrixWindow window = openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
+                final NotificationMatrixWindow window = (NotificationMatrixWindow) openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
                         new CloseListener() {
                             public void windowClosed(String actionId) {
