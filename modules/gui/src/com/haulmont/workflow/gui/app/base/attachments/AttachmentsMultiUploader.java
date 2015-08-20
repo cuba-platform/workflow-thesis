@@ -17,6 +17,7 @@ import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -37,7 +38,12 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
     private boolean isUploading = false;
 
-    private CollectionDatasourceImpl attachDs, attachTypesDs, filesDs;
+    @Inject
+    private CollectionDatasourceImpl attachDs;
+    @Inject
+    private CollectionDatasourceImpl attachTypesDs;
+    @Inject
+    private CollectionDatasourceImpl filesDs;
     private AttachmentType defaultAttachType;
 
     @Override
@@ -82,7 +88,6 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
         creator = (AttachmentCreator) params.get("creator");
 
-        attachDs = getDsContext().get("attachDs");
         attachDs.valid();
 
         uploadsTable = (Table) getComponent("uploadsTable");
@@ -91,10 +96,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         }
         attachTypeCombo = (LookupField) getComponent("attachTypeCombo");
 
-        attachTypesDs = getDsContext().get("attachTypesDs");
         attachTypesDs.refresh();
-
-        filesDs = getDsContext().get("filesDs");
 
         okBtn = (Button) getComponent("windowActions.windowCommit");
         cancelBtn = (Button) getComponent("windowActions.windowClose");

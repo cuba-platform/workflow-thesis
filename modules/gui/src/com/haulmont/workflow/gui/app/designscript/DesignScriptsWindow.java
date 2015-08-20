@@ -39,7 +39,7 @@ public class DesignScriptsWindow extends AbstractWindow {
         if (design == null)
             throw new IllegalArgumentException("Design instance must be passed in params");
 
-        ds = getDsContext().get("scriptsDs");
+        ds = (CollectionDatasource<DesignScript, UUID>) getDsContext().get("scriptsDs");
 
         table = (Table) getComponent("table");
         table.addAction(new RemoveAction(table));

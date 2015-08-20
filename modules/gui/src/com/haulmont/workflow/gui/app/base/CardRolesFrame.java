@@ -1062,7 +1062,7 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void setup(DsContext dsContext, DataSupplier dataSupplier, String id, MetaClass metaClass, @Nullable View view) {
             super.setup(dsContext, dataSupplier, id, metaClass, view);
-            cardRolesDs = dsContext.get("cardRolesDs");
+            cardRolesDs = (CollectionDatasource<CardRole, UUID>) dsContext.get("cardRolesDs");
             this.activeDs = this.cardRolesDs;
         }
 

@@ -145,7 +145,7 @@ public class ReassignForm extends AbstractWindow {
 
     protected void initStandardComponents() {
         commentText = (TextArea) getComponent("commentText");
-        tmpCardRolesDs = cardRolesFrame.getDsContext().get("tmpCardRolesDs");
+        tmpCardRolesDs = (CardRolesFrame.CardProcRolesDatasource) cardRolesFrame.getDsContext().get("tmpCardRolesDs");
     }
 
     protected boolean commit() {

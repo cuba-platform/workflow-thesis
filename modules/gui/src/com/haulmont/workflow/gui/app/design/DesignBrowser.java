@@ -41,8 +41,13 @@ import java.util.*;
  */
 public class DesignBrowser extends AbstractWindow {
 
-    protected CollectionDatasource<Design, UUID> ds;
-    protected Table table;
+    @Inject
+    protected CollectionDatasource<Design, UUID> designDs;
+
+    @Inject
+    protected Table designTable;
+
+    @Inject
     protected DesignerService service;
 
     @Inject
@@ -65,27 +70,23 @@ public class DesignBrowser extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        ds = getDsContext().get("designDs");
-        table = (Table) getComponent("designTable");
-        service = AppBeans.get(DesignerService.NAME);
-
         initActions();
         initColumns();
     }
 
     protected void initActions() {
-        table.addAction(new CreateAction(table, WindowManager.OpenType.DIALOG) {
+        designTable.addAction(new CreateAction(designTable, WindowManager.OpenType.DIALOG) {
             @Override
             protected void afterCommit(Entity entity) {
                 openDesigner(entity.getId().toString());
             }
         });
 
-        table.addAction(new CopyAction());
-        table.addAction(new ImportAction());
-        table.addAction(new ExportAction());
-        table.addAction(new EditAction(table, WindowManager.OpenType.DIALOG));
-        table.addAction(new RemoveAction(table) {
+        designTable.addAction(new CopyAction());
+        designTable.addAction(new ImportAction());
+        designTable.addAction(new ExportAction());
+        designTable.addAction(new EditAction(designTable, WindowManager.OpenType.DIALOG));
+        designTable.addAction(new RemoveAction(designTable) {
             @Override
             protected void doRemove(Set selected, boolean autocommit) {
                 CollectionDatasource datasource = target.getDatasource();
@@ -112,22 +113,22 @@ public class DesignBrowser extends AbstractWindow {
         Action designAction = new AbstractAction("design") {
             @Override
             public void actionPerform(Component component) {
-                Set<Design> selected = table.getSelected();
+                Set<Design> selected = designTable.getSelected();
                 if (!selected.isEmpty()) {
                     String id = selected.iterator().next().getId().toString();
                     openDesigner(id);
                 }
             }
         };
-        table.addAction(designAction);
-        table.setItemClickAction(designAction);
+        designTable.addAction(designAction);
+        designTable.setItemClickAction(designAction);
 
-        table.addAction(new ScriptsAction());
-        table.addAction(new LocalizeAction());
-        table.addAction(new CompileAction(table));
-        table.addAction(new DeployAction());
+        designTable.addAction(new ScriptsAction());
+        designTable.addAction(new LocalizeAction());
+        designTable.addAction(new CompileAction(designTable));
+        designTable.addAction(new DeployAction());
 
-        table.addAction(new AbstractEntityAction<Design>("showAffectedDesigns", table) {
+        designTable.addAction(new AbstractEntityAction<Design>("showAffectedDesigns", designTable) {
 
             @Override
             protected Boolean isShowAfterActionNotification() {
@@ -154,7 +155,7 @@ public class DesignBrowser extends AbstractWindow {
             }
         });
 
-        table.addAction(new AbstractEntityAction<Design>("editProcessVariables", table) {
+        designTable.addAction(new AbstractEntityAction<Design>("editProcessVariables", designTable) {
             @Override
             protected Boolean isShowAfterActionNotification() {
                 return false;
@@ -176,7 +177,7 @@ public class DesignBrowser extends AbstractWindow {
                 window.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
-                        ds.refresh();
+                        designDs.refresh();
                         table.requestFocus();
                     }
                 });
@@ -191,7 +192,7 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     protected void initColumns() {
-        table.addGeneratedColumn("notificationMatrix", new Table.ColumnGenerator<Design>() {
+        designTable.addGeneratedColumn("notificationMatrix", new Table.ColumnGenerator<Design>() {
             @Override
             public Component generateCell(final Design entity) {
                 if (BooleanUtils.isTrue(entity.getNotificationMatrixUploaded())) {
@@ -251,13 +252,13 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 final Design design = selected.iterator().next();
                 UUID newId = service.copyDesign(design.getId());
                 openDesigner(newId.toString());
 
-                ds.refresh();
+                designDs.refresh();
             }
         }
     }
@@ -269,7 +270,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 try {
                     exportDisplay.show(new ByteArrayDataProvider(service.exportDesigns(selected)), "Designs", ExportFormat.ZIP);
@@ -310,7 +311,7 @@ public class DesignBrowser extends AbstractWindow {
                             );
                             throw new RuntimeException(ex);
                         }
-                        table.getDatasource().refresh();
+                        designTable.getDatasource().refresh();
                     }
                 }
             });
@@ -366,7 +367,7 @@ public class DesignBrowser extends AbstractWindow {
             DesignerService service = AppBeans.get(DesignerService.NAME);
             try {
                 CompilationMessage message = service.compileDesign(design.getId());
-                ds.refresh();
+                designDs.refresh();
                 if (message.getErrors().size() == 0 && message.getWarnings().size() == 0) {
                     return new Pair<>(getMessage("notification.compileSuccess"), prepareCompilationMessage(message));
                 } else if (message.getErrors().size() == 0 && message.getWarnings().size() > 0)
@@ -407,7 +408,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 final Design design = selected.iterator().next();
                 if (design.getCompileTs() == null) {
@@ -423,7 +424,7 @@ public class DesignBrowser extends AbstractWindow {
                                     if ("close".equals(actionId) || "cancel".equals(actionId))
                                         return;
                                     if ("ok".equals(actionId)) {
-                                        ds.refresh();
+                                        designDs.refresh();
                                         showNotification(getMessage("notification.deploySuccess"), NotificationType.HUMANIZED);
                                     } else {
                                         showNotification(
@@ -447,7 +448,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 final Design design = selected.iterator().next();
                 Window window = openWindow(
@@ -458,7 +459,7 @@ public class DesignBrowser extends AbstractWindow {
                 window.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
-                        table.requestFocus();
+                        designTable.requestFocus();
                     }
                 });
             }
@@ -472,7 +473,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 final Design design = selected.iterator().next();
                 if (design.getCompileTs() == null) {
@@ -483,9 +484,9 @@ public class DesignBrowser extends AbstractWindow {
                         @Override
                         public void windowClosed(String actionId) {
                             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                ds.refresh();
+                                designDs.refresh();
                             }
-                            table.requestFocus();
+                            designTable.requestFocus();
                         }
                     });
                 }
@@ -502,7 +503,7 @@ public class DesignBrowser extends AbstractWindow {
         window.addListener(
                 new CloseListener() {
                     public void windowClosed(String actionId) {
-                        ds.refresh();
+                        designDs.refresh();
                     }
                 }
         );
@@ -515,10 +516,10 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 Design selectedDesign = selected.iterator().next();
-                final Design design = ds.getDataSupplier().reload(selectedDesign, "_local");
+                final Design design = designDs.getDataSupplier().reload(selectedDesign, "_local");
                 final NotificationMatrixWindow window = (NotificationMatrixWindow) openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
                 window.addListener(
                         new CloseListener() {
@@ -526,10 +527,10 @@ public class DesignBrowser extends AbstractWindow {
                                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                                     design.setNotificationMatrix(window.getBytes());
                                     design.setNotificationMatrixUploaded(true);
-                                    ds.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
+                                    designDs.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
                                     DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
                                     service.saveNotificationMatrixFile(design);
-                                    ds.refresh();
+                                    designDs.refresh();
                                 }
                             }
                         }
@@ -545,7 +546,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Design> selected = table.getSelected();
+            Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 final DataSupplier dataSupplier = getDsContext().getDataSupplier();
                 final Design design = dataSupplier.reload(selected.iterator().next(), "_local");
@@ -560,15 +561,15 @@ public class DesignBrowser extends AbstractWindow {
                                         design.setNotificationMatrix(null);
                                         design.setNotificationMatrixUploaded(false);
                                         dataSupplier.commit(new CommitContext(Collections.singleton(design)));
-                                        ds.refresh();
+                                        designDs.refresh();
 
-                                        table.requestFocus();
+                                        designTable.requestFocus();
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.NO) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        table.requestFocus();
+                                        designTable.requestFocus();
                                     }
                                 }
                         }
@@ -584,7 +585,7 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
+            Set selected = designTable.getSelected();
             try {
                 if (!selected.isEmpty()) {
                     final Design design = (Design) selected.iterator().next();

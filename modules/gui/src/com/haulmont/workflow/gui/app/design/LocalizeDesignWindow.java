@@ -27,6 +27,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -38,9 +39,13 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private Properties properties;
     private Map<String, Properties> langToMessages;
 
+    @Inject
     private Datasource<Design> designDs;
+    @Inject
     private CollectionDatasource<DesignLocKey, UUID> keysDs;
+    @Inject
     private CollectionDatasource<DesignLocValue, UUID> valuesDs;
+
     private Document document;
     private Element rootEl;
     private BiMap<Element, DesignLocKey> keysMap;
@@ -72,10 +77,6 @@ public class LocalizeDesignWindow extends AbstractEditor {
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
-
-        designDs = getDsContext().get("designDs");
-        keysDs = getDsContext().get("keysDs");
-        valuesDs = getDsContext().get("valuesDs");
 
         Map<String,Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
         List<String> languages = new ArrayList<String>(locales.size());
