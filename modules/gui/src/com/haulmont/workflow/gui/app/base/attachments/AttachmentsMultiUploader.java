@@ -30,7 +30,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
-    private Table uploadsTable = null;
+    private Table<Attachment> uploadsTable = null;
     private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
     private AttachmentCreator creator;
     private LookupField attachTypeCombo;
@@ -103,7 +103,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         delBtn.setAction(new AbstractAction("actions.Remove") {
             public void actionPerform(Component component) {
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                for (Attachment item : uploadsTable.<Attachment>getSelected()) {
+                for (Attachment item : uploadsTable.getSelected()) {
                     attachDs.excludeItem(item);
 
                     FileDescriptor fDesc = item.getFile();

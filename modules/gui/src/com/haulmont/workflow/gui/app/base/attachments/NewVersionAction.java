@@ -45,7 +45,7 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public void actionPerform(Component component) {
-        prevVersion = target.getSingleSelected();
+        prevVersion = (Attachment) target.getSingleSelected();
         Collection<Attachment> attachments = target.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
             target.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "selectAttachmentForVersion"),

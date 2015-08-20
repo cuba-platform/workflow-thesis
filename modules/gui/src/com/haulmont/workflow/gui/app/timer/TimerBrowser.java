@@ -17,7 +17,7 @@ import java.util.Map;
 public class TimerBrowser extends AbstractLookup {
 
     @Inject
-    private Table table;
+    private Table<TimerEntity> table;
 
     @Inject
     private  WfService service;
