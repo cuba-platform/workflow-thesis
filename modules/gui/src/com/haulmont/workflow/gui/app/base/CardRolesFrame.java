@@ -563,7 +563,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected TextField generateDurationComponent(final CardRole cardRole) {
-        final TextField durationTF = componentsFactory.createComponent(TextField.NAME);
+        final TextField durationTF = componentsFactory.createComponent(TextField.class);
         durationTF.setWidth("60px");
         if (cardRole != null && cardRole.getDuration() != null)
             durationTF.setValue(cardRole.getDuration().toString());
@@ -610,7 +610,7 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected LookupField generateTimeUnitComponent(final CardRole cardRole, MetaPropertyPath timeUnitMpp) {
-        final LookupField timeUnitField = componentsFactory.createComponent(LookupField.NAME);
+        final LookupField timeUnitField = componentsFactory.createComponent(LookupField.class);
         timeUnitField.setOptionsList(timeUnitMpp.getRange().asEnumeration().getValues());
         timeUnitField.setWidth("60");
         if (companion != null) {
@@ -647,7 +647,7 @@ public class CardRolesFrame extends AbstractFrame {
     protected Component getSortOrderGeneratedComponent(final CardRole cardRole) {
         if (cardRole != null && cardRole.getProcRole().getMultiUser()) {
             if (editable) {
-                LookupField orderLookup = componentsFactory.createComponent(LookupField.NAME);
+                LookupField orderLookup = componentsFactory.createComponent(LookupField.class);
                 orderLookup.setOptionsList(getAllowRangeForProcRole(cardRole.getProcRole()));
                 orderLookup.setValue(cardRole.getSortOrder());
                 orderLookup.setWidth("100%");
@@ -660,7 +660,7 @@ public class CardRolesFrame extends AbstractFrame {
                 orderLookup.addListener(getSortOrderValueListener(cardRole));
                 return orderLookup;
             } else {
-                Label label = componentsFactory.createComponent(Label.NAME);
+                Label label = componentsFactory.createComponent(Label.class);
                 label.setValue(cardRole.getSortOrder() != null ? cardRole.getSortOrder().toString() : "");
                 return label;
             }
@@ -1181,7 +1181,7 @@ public class CardRolesFrame extends AbstractFrame {
                 usersDs.excludeItem(value);
             }
         }
-        LookupPickerField pickerField = componentsFactory.createComponent(LookupPickerField.NAME);
+        LookupPickerField pickerField = componentsFactory.createComponent(LookupPickerField.class);
         pickerField.setOptionsDatasource(usersDs);
         pickerField.setValue(value);
         pickerField.setWidth("100%");

@@ -336,7 +336,7 @@ public class TransitionForm extends AbstractForm {
 
     protected GridLayout createRequiredAttachmentsLayout() {
         final int columnHeight = 3;
-        final GridLayout grid = AppConfig.getFactory().createComponent(GridLayout.NAME);
+        final GridLayout grid = AppConfig.getFactory().createComponent(GridLayout.class);
         grid.setColumns(1);
         grid.setRows(columnHeight);
         int row = 0;
@@ -348,7 +348,7 @@ public class TransitionForm extends AbstractForm {
                 grid.setColumns(column + 2);
                 column++;
             }
-            Label label = AppConfig.getFactory().createComponent(Label.NAME);
+            Label label = AppConfig.getFactory().createComponent(Label.class);
             label.setValue(getAttachmentTypeLabelValue(attachmentTypeCode));
             grid.add(label, column, row++);
 

@@ -5,7 +5,7 @@
 
 /**
  *
- * <p>$Id: AbstractProcVariableEditor.java 11029 2013-04-03 08:15:19Z zaharchenko $</p>
+ * <p>$Id$</p>
  *
  * @author Zaharchenko
  */
@@ -177,7 +177,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createMetaclassNameField() {
         designProcessFields.addCustomField("metaClassName", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                metaClassNameField = componentsFactory.createComponent(LookupField.NAME);
+                metaClassNameField = componentsFactory.createComponent(LookupField.class);
                 return metaClassNameField;
             }
         });
@@ -187,7 +187,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createUseLookupButton() {
         designProcessFields.addCustomField("useLookup", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                useLookupCheckBox = componentsFactory.createComponent(CheckBox.NAME);
+                useLookupCheckBox = componentsFactory.createComponent(CheckBox.class);
                 useLookupCheckBox.setValue(useLookup);
                 useLookupCheckBox.addListener(new ValueListener() {
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -211,7 +211,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createActionsField() {
         designProcessFields.addCustomField("actionsFieldValue", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                actionsFieldValueField = componentsFactory.createComponent(PickerField.NAME);
+                actionsFieldValueField = componentsFactory.createComponent(PickerField.class);
                 return actionsFieldValueField;
             }
         });
@@ -220,7 +220,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createLookupField() {
         designProcessFields.addCustomField("lookupValue", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                lookupValueField = componentsFactory.createComponent(LookupField.NAME);
+                lookupValueField = componentsFactory.createComponent(LookupField.class);
                 return lookupValueField;
             }
         });
@@ -229,7 +229,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createBooleanField() {
         designProcessFields.addCustomField("booleanValue", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                booleanValueField = componentsFactory.createComponent(CheckBox.NAME);
+                booleanValueField = componentsFactory.createComponent(CheckBox.class);
                 return booleanValueField;
             }
         });
@@ -238,7 +238,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createDateField() {
         designProcessFields.addCustomField("dateValue", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                dateValueField = componentsFactory.createComponent(DateField.NAME);
+                dateValueField = componentsFactory.createComponent(DateField.class);
                 dateValueField.setResolution(DateField.Resolution.DAY);
                 return dateValueField;
             }
@@ -248,7 +248,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     private void createStringField() {
         designProcessFields.addCustomField("stringValue", new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
-                stringValueField = componentsFactory.createComponent(TextField.NAME);
+                stringValueField = componentsFactory.createComponent(TextField.class);
                 return stringValueField;
             }
         });

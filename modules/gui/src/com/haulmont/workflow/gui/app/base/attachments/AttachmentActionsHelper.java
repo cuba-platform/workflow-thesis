@@ -274,7 +274,7 @@ public class AttachmentActionsHelper {
         checkNotNull(creator);
 
         final IFrame frame = attachmentsTable.getFrame();
-        final FileUploadField fileUploadField = AppConfig.getFactory().createComponent(FileUploadField.NAME);
+        final FileUploadField fileUploadField = AppConfig.getFactory().createComponent(FileUploadField.class);
         fileUploadField.setFrame(frame);
         fileUploadField.addListener(new FileUploadField.Listener() {
             @Override

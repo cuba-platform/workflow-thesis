@@ -42,7 +42,7 @@ public class AttachmentColumnGeneratorHelper {
                 if (attachment != null) {
                     String formattedSize = attachment.getFile() != null ? FileDownloadHelper.formatFileSize(attachment.getFile().getSize()) : "";
                     ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-                    Label label = componentsFactory.createComponent(Label.NAME);
+                    Label label = componentsFactory.createComponent(Label.class);
                     label.setValue(formattedSize);
                     return label;
                 }

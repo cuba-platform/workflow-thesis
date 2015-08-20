@@ -195,7 +195,7 @@ public class DesignBrowser extends AbstractWindow {
             @Override
             public Component generateCell(final Design entity) {
                 if (BooleanUtils.isTrue(entity.getNotificationMatrixUploaded())) {
-                    Button button = componentsFactory.createComponent(Button.NAME);
+                    Button button = componentsFactory.createComponent(Button.class);
                     button.setStyleName("link");
                     button.setAction(new AbstractAction("showNotificationMatrix") {
                         @Override
@@ -211,7 +211,7 @@ public class DesignBrowser extends AbstractWindow {
                     });
                     return button;
                 } else {
-                    Label label = componentsFactory.createComponent(Label.NAME);
+                    Label label = componentsFactory.createComponent(Label.class);
                     label.setValue(getMessage("notUploaded"));
                     return label;
                 }
@@ -222,7 +222,7 @@ public class DesignBrowser extends AbstractWindow {
             @Override
             public Component generateCell(Entity entity) {
                 final AbstractProcessVariable designProcessVariable = (AbstractProcessVariable) entity;
-                Component componentValue = componentsFactory.createComponent(Label.NAME);
+                Component componentValue = componentsFactory.createComponent(Label.class);
                 String localizedValue = processVariableService.getLocalizedValue(designProcessVariable);
                 ((com.haulmont.cuba.gui.components.Label) componentValue).setValue(localizedValue);
                 return componentValue;

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id: AbstractProcVariableBrowser.java 11002 2013-03-29 11:31:42Z zaharchenko $</p>
+ * <p>$Id$</p>
  *
  * @author Zaharchenko
  */
@@ -67,7 +67,7 @@ public abstract class AbstractProcVariableBrowser extends AbstractLookup {
             @Override
             public Component generateCell(Entity entity) {
                 final AbstractProcessVariable designProcessVariable = (AbstractProcessVariable) entity;
-                Label label = componentsFactory.createComponent(Label.NAME);
+                Label label = componentsFactory.createComponent(Label.class);
                 String localizedValue = processVariableService.getLocalizedValue(designProcessVariable);
                 label.setValue(localizedValue);
                 return label;
