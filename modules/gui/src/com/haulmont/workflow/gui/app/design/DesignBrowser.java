@@ -322,7 +322,7 @@ public class DesignBrowser extends AbstractWindow {
 
         private final static String ACTION_ID = "compile";
 
-        public CompileAction(Design entity, IFrame frame) {
+        public CompileAction(Design entity, Frame frame) {
             super(ACTION_ID, entity, frame);
         }
 
@@ -330,7 +330,7 @@ public class DesignBrowser extends AbstractWindow {
             super(ACTION_ID, table);
         }
 
-        public CompileAction(Datasource<Design> datasource, IFrame frame) {
+        public CompileAction(Datasource<Design> datasource, Frame frame) {
             super(ACTION_ID, datasource, frame);
         }
 

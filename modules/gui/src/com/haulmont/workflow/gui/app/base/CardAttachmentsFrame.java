@@ -241,7 +241,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 //                showOptionDialog(
 //                        getMessage("cardAttachmentFrame.dialogHeader"),
 //                        getMessage("cardAttachmentFrame.dialogMessage"),
-//                        IFrame.MessageType.CONFIRMATION,
+//                        Frame.MessageType.CONFIRMATION,
 //                        new Action[]{
 //                                new DialogAction(DialogAction.Type.YES) {
 //                                    @Override

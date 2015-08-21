@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -49,7 +49,7 @@ public class NewVersionAction extends CreateAction {
         Collection<Attachment> attachments = target.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
             target.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "selectAttachmentForVersion"),
-                    IFrame.NotificationType.WARNING);
+                    Frame.NotificationType.WARNING);
             return;
         }
 
@@ -61,7 +61,7 @@ public class NewVersionAction extends CreateAction {
                 prevVersion = (Attachment) target.getDatasource().getItem(prevVersion.getId());
                 if (prevVersion == null) {
                     target.getFrame().showNotification(AppBeans.get(Messages.class).getMessage(getClass(), "warning.itemWasDeleted"),
-                            IFrame.NotificationType.HUMANIZED);
+                            Frame.NotificationType.HUMANIZED);
                     target.setSelected((Entity) null);
                     return;
                 }

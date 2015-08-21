@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
@@ -112,7 +111,7 @@ public class UserGroupBrowser extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 if (userGroupsTable.getSelected().size() == 0) {
-                    showNotification(getMessage("selectUserGroup.msg"), IFrame.NotificationType.HUMANIZED);
+                    showNotification(getMessage("selectUserGroup.msg"), Frame.NotificationType.HUMANIZED);
                     return;
                 }
 

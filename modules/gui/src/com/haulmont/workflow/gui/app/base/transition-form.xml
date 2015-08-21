@@ -47,7 +47,7 @@
                         <textField id="outcomeText" width="${width}"/>
                     </hbox>
 
-                    <iframe id="cardRolesFrame" screen="cardRolesFrame"/>
+                    <frame id="cardRolesFrame" screen="cardRolesFrame"/>
 
                     <checkBox id="refusedOnly" datasource="varsDs" property="refusedOnly"
                               caption="msg://refusedOnly"/>
@@ -65,14 +65,14 @@
             </tab>
             <tab id="attachmentsTab" caption="msg://attachmentsTab" expand="attachmentsFrame" margin="true"
                  spacing="true">
-                <iframe id="attachmentsFrame"
+                <frame id="attachmentsFrame"
                         screen="cardAttachmentsFrame"/>
                 <label value="msg://requiredAttachmentsTypes" stylename="bold"/>
                 <hbox id="requiredAttachmentsPane"/>
             </tab>
         </tabSheet>
         <vbox>
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>
     </layout>
 </window>

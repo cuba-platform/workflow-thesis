@@ -6,7 +6,7 @@ package com.haulmont.workflow.gui.app.base;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManagerProvider;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -20,7 +20,7 @@ public class NotificationForm implements Callable<Boolean> {
     }
 
     public Boolean call() throws Exception {
-        AppBeans.get(WindowManagerProvider.class).get().showNotification(message, IFrame.NotificationType.HUMANIZED);
+        AppBeans.get(WindowManagerProvider.class).get().showNotification(message, Frame.NotificationType.HUMANIZED);
         return null;
     }
 }

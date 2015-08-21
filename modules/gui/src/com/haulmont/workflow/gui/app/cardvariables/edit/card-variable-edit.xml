@@ -34,6 +34,6 @@
                 <field id="actionsFieldValue" custom="true" caption="msg://value"/>
             </column>
         </fieldGroup>
-        <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

@@ -59,7 +59,7 @@ public class AttachmentActionsHelper {
                         info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.copyInfo");
                     else
                         info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.manyCopyInfo");
-                    attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
+                    attachments.getFrame().showNotification(info, Frame.NotificationType.HUMANIZED);
                 }
             }
         };
@@ -100,7 +100,7 @@ public class AttachmentActionsHelper {
                                 info.append("<li>" + type + "</li>");
                             }
                             info.append("</ul>");
-                            attachments.getFrame().showNotification(info.toString(), IFrame.NotificationType.WARNING_HTML);
+                            attachments.getFrame().showNotification(info.toString(), Frame.NotificationType.WARNING_HTML);
                             bufferIncludedTypes.clear();
                             return;
                         }
@@ -143,7 +143,7 @@ public class AttachmentActionsHelper {
                     }
                 } else {
                     String info = AppBeans.get(Messages.class).getMessage(getClass(), "messages.bufferEmptyInfo");
-                    attachments.getFrame().showNotification(info, IFrame.NotificationType.HUMANIZED);
+                    attachments.getFrame().showNotification(info, Frame.NotificationType.HUMANIZED);
                 }
             }
 
@@ -162,7 +162,7 @@ public class AttachmentActionsHelper {
      * @param attachmentsTable Table with attachments
      * @param window           Window
      */
-    public static void createLoadAction(Table attachmentsTable, IFrame window) {
+    public static void createLoadAction(Table attachmentsTable, Frame window) {
         final Table attachments = attachmentsTable;
         attachments.addAction(new AbstractAction(LOAD_ACTION_ID) {
 
@@ -185,7 +185,7 @@ public class AttachmentActionsHelper {
      * @param creator          Custom method for set object properties
      * @return Multifile upload action
      */
-    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator) {
+    public static Action createMultiUploadAction(Table attachmentsTable, Frame window, AttachmentCreator creator) {
         return createMultiUploadAction(attachmentsTable, window, creator, WindowManager.OpenType.THIS_TAB);
     }
 
@@ -199,11 +199,11 @@ public class AttachmentActionsHelper {
      * @param params           Dialog params
      * @return Multifile upload action
      */
-    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, final AttachmentCreator creator,
+    public static Action createMultiUploadAction(Table attachmentsTable, Frame window, final AttachmentCreator creator,
                                                  final WindowManager.OpenType openType, final Map<String, Object> params) {
         final Table attachments = attachmentsTable;
         final CollectionDatasource attachDs = attachmentsTable.getDatasource();
-        final IFrame frame = window;
+        final Frame frame = window;
 
         return new AbstractAction("actions.MultiUpload") {
             @Override
@@ -248,7 +248,7 @@ public class AttachmentActionsHelper {
         };
     }
 
-    public static Action createMultiUploadAction(Table attachmentsTable, IFrame window, AttachmentCreator creator,
+    public static Action createMultiUploadAction(Table attachmentsTable, Frame window, AttachmentCreator creator,
                                                  final WindowManager.OpenType openType) {
         return createMultiUploadAction(attachmentsTable, window, creator, openType, null);
     }
@@ -273,7 +273,7 @@ public class AttachmentActionsHelper {
         checkNotNull(attachmentsTable.getFrame());
         checkNotNull(creator);
 
-        final IFrame frame = attachmentsTable.getFrame();
+        final Frame frame = attachmentsTable.getFrame();
         final FileUploadField fileUploadField = AppConfig.getFactory().createComponent(FileUploadField.class);
         fileUploadField.setFrame(frame);
         fileUploadField.addListener(new FileUploadField.Listener() {

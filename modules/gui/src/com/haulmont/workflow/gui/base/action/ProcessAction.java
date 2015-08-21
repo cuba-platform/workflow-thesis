@@ -102,7 +102,7 @@ public class ProcessAction extends AbstractAction {
         if (isCardDeleted(card)) {
             wmp.get().showNotification(
                     messages.getMessage(ProcessAction.class, "cardWasDeletedByAnotherUser"),
-                    IFrame.NotificationType.WARNING
+                    Frame.NotificationType.WARNING
             );
             editor.close(Window.CLOSE_ACTION_ID, true);
             return;
@@ -260,7 +260,7 @@ public class ProcessAction extends AbstractAction {
             wmp.get().showOptionDialog(
                     messages.getMessage(getClass(), "cancelProcess.title"),
                     messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
@@ -290,7 +290,7 @@ public class ProcessAction extends AbstractAction {
             editor.showOptionDialog(
                     messages.getMessage(getClass(), "failCancelProcCaption"),
                     messages.getMessage(getClass(), "failCancelProcDescription"),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new Action[]{
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
@@ -340,7 +340,7 @@ public class ProcessAction extends AbstractAction {
     protected void handleActionStart(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
         if (isCardInProcess(card)) {
             String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
-            wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
+            wmp.get().showNotification(msg, Frame.NotificationType.ERROR);
             return;
         }
 
@@ -363,7 +363,7 @@ public class ProcessAction extends AbstractAction {
         Assignment assignment = dataService.load(lc);
         if (assignment.getFinished() != null) {
             String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
-            wmp.get().showNotification(msg, IFrame.NotificationType.ERROR);
+            wmp.get().showNotification(msg, Frame.NotificationType.ERROR);
             return;
         }
 

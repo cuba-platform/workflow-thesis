@@ -28,6 +28,6 @@
                 <field id="comment" required="false" maxLength="1000" rows="4" width="${width}"/>
             </column>
         </fieldGroup>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

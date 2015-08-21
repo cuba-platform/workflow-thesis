@@ -6,7 +6,7 @@ package com.haulmont.workflow.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.exception.AbstractExceptionHandler;
 import com.haulmont.workflow.core.exception.WorkflowException;
@@ -35,18 +35,18 @@ public class WorkflowExceptionHandler extends AbstractExceptionHandler {
                 String msg = messages.getMessage(getClass(), "WorkflowException.noExecution");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
-                app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+                app.getWindowManager().showNotification(msg, Frame.NotificationType.ERROR);
                 return;
             }
             if (e.getType().equals(WorkflowException.Type.NO_CARD_ROLE)) {
                 String msg = messages.getMessage(getClass(), "WorkflowException.noCardRole");
                 if (e.getParams().length > 0)
                     msg = String.format(msg, e.getParams());
-                app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+                app.getWindowManager().showNotification(msg, Frame.NotificationType.ERROR);
                 return;
             }
         }
         String msg = messages.getMessage(getClass(), "WorkflowException.undefined");
-        app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+        app.getWindowManager().showNotification(msg, Frame.NotificationType.ERROR);
     }
 }

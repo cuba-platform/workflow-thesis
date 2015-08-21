@@ -1299,7 +1299,7 @@ public class CardRolesFrame extends AbstractFrame {
                     else
                         invalidUsersMessage = messages.formatMessage(getClass(), "invalidUsers.message", usersList, cardRole.getProcRole().getName());
 
-                    showNotification("", invalidUsersMessage, IFrame.NotificationType.WARNING);
+                    showNotification("", invalidUsersMessage, Frame.NotificationType.WARNING);
                 }
             }
         }

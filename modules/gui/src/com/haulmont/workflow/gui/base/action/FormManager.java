@@ -301,7 +301,7 @@ public abstract class FormManager implements Serializable {
                     messages.getMessage(getClass(), "confirmationForm.title"),
                     messages.formatMessage(getClass(), "confirmationForm.msg",
                             messages.getMessage(card.getProc().getMessagesPack(), activity + "." + transition)),
-                    IFrame.MessageType.CONFIRMATION_HTML,
+                    Frame.MessageType.CONFIRMATION_HTML,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override

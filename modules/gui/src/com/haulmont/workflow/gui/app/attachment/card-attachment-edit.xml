@@ -17,7 +17,7 @@
     </dsContext>
 
     <layout spacing="true">
-        <iframe id="frame" screen="attachmentFrame"/>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="frame" screen="attachmentFrame"/>
+        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
