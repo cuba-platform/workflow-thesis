@@ -4,7 +4,10 @@
  */
 package com.haulmont.workflow.gui.data;
 
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 
 import javax.annotation.Nullable;
@@ -65,11 +68,6 @@ public class ProcessVariablesMetaClass extends MetadataObjectImpl implements Met
         if (property == null)
             throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
         return property;
-    }
-
-    @Override
-    public MetaPropertyPath getPropertyEx(String propertyPath) {
-        return new MetaPropertyPath(this, properties.get(propertyPath));
     }
 
     @Override
