@@ -29,6 +29,7 @@ import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
+import com.haulmont.workflow.gui.components.AbstractEntityAction;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;

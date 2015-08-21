@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.workflow.core.entity.Proc;
+import com.haulmont.workflow.gui.components.AbstractEntityAction;
 
 import java.util.Collections;
 import java.util.HashSet;
