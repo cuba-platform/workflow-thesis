@@ -58,7 +58,7 @@ public class DesignCompiler {
 
     protected Map<String, String> moduleClassNames;
 
-    protected volatile Map<String, Class<? extends Module>> moduleClasses;
+    protected volatile Map<String, Class<?>> moduleClasses;
 
     protected FormCompiler formCompiler;
 
@@ -75,13 +75,13 @@ public class DesignCompiler {
         this.moduleClassNames = moduleClassNames;
     }
 
-    protected Map<String, Class<? extends Module>> getModuleClasses() {
+    protected Map<String, Class<?>> getModuleClasses() {
         if (moduleClasses == null) {
             synchronized (this) {
                 moduleClasses = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : moduleClassNames.entrySet()) {
-                    moduleClasses.put(entry.getKey(), AppBeans.get(Scripting.class).<Module>loadClass(entry.getValue()));
+                    moduleClasses.put(entry.getKey(), AppBeans.get(Scripting.class).loadClass(entry.getValue()));
                 }
             }
         }
@@ -479,8 +479,8 @@ public class DesignCompiler {
                     return true;
                 }
                 if (classAttr != null) {
-                    Class assignerClass = AppBeans.get(Scripting.class).loadClass("com.haulmont.workflow.core.activity.CardActivity");
-                    Class currentClass = AppBeans.get(Scripting.class).loadClass(classAttr.getValue());
+                    Class<?> assignerClass = AppBeans.get(Scripting.class).loadClassNN("com.haulmont.workflow.core.activity.CardActivity");
+                    Class<?> currentClass = AppBeans.get(Scripting.class).loadClassNN(classAttr.getValue());
                     if (assignerClass.isAssignableFrom(currentClass))
                         return true;
                 }
@@ -708,13 +708,13 @@ public class DesignCompiler {
         for (int i = 0; i < jsModules.length(); i++) {
             JSONObject jsModule = jsModules.getJSONObject(i);
             String name = jsModule.getString("name");
-            Class<? extends Module> moduleClass = getModuleClasses().get(name);
+            Class<?> moduleClass = getModuleClasses().get(name);
             if (moduleClass == null) {
                 throw new RuntimeException("Unsupported module: " + name);
             }
             Module module;
             try {
-                module = moduleClass.newInstance();
+                module = (Module) moduleClass.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

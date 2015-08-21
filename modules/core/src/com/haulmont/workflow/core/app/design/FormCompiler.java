@@ -48,17 +48,17 @@ public class FormCompiler {
 
     private Map<String, String> builderClassNames;
 
-    private volatile Map<String, Class<? extends FormBuilder>> builderClasses;
+    private volatile Map<String, Class<?>> builderClasses;
 
     // set from spring.xml
     public void setBuilderClasses(Map<String, String> builderClassNames) {
         this.builderClassNames = builderClassNames;
     }
 
-    private Map<String, Class<? extends FormBuilder>> getBuilderClasses() {
+    private Map<String, Class<?>> getBuilderClasses() {
         if (builderClasses == null) {
             synchronized (this) {
-                builderClasses = new HashMap<String, Class<? extends FormBuilder>>();
+                builderClasses = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : builderClassNames.entrySet()) {
                     builderClasses.put(entry.getKey(), AppBeans.get(Scripting.class).loadClass(entry.getValue()));
@@ -70,13 +70,13 @@ public class FormCompiler {
 
     public void writeFormEl(Element parentEl, String formName, String transitionStyle, JSONObject jsProperties,
                             Design design) throws DesignCompilationException {
-        Class<? extends FormBuilder> cls = getBuilderClasses().get(formName);
+        Class<?> cls = getBuilderClasses().get(formName);
         if (cls == null) {
             throw new RuntimeException("Unsupported form name: " + formName);
         }
         FormBuilder builder;
         try {
-            builder = cls.newInstance();
+            builder = (FormBuilder) cls.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

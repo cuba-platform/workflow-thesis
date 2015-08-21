@@ -154,8 +154,8 @@ public class TimerManager implements TimerManagerAPI {
     public void processTimer(TimerEntity timer) {
         Transaction tx = persistence.createTransaction();
         try {
-            Class<? extends TimerAction> taskClass = scripting.loadClass(timer.getActionClass());
-            TimerAction action = taskClass.newInstance();
+            Class<?> taskClass = scripting.loadClassNN(timer.getActionClass());
+            TimerAction action = (TimerAction) taskClass.newInstance();
 
             EntityManager em = persistence.getEntityManager();
             TimerEntity t = em.find(TimerEntity.class, timer.getId());
@@ -165,9 +165,7 @@ public class TimerManager implements TimerManagerAPI {
             action.execute(context);
             em.remove(t);
             tx.commit();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         } finally {
             tx.end();
