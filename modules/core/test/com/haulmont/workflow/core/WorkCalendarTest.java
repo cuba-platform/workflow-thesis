@@ -4,7 +4,9 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
@@ -24,14 +26,14 @@ public class WorkCalendarTest extends WfTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        workCalendar = Locator.lookup(WorkCalendarAPI.NAME);
+        workCalendar = AppBeans.get(WorkCalendarAPI.NAME);
     }
 
 //    @Override
 //    protected void tearDown() throws Exception {
 //        Transaction tx = Locator.createTransaction();
 //        try {
-//            EntityManager em = PersistenceProvider.getEntityManager();
+//            EntityManager em = persistence.getEntityManager();
 //            Query q = em.createNativeQuery("delete from WF_CALENDAR");
 //            q.executeUpdate();
 //            tx.commit();
@@ -174,9 +176,9 @@ public class WorkCalendarTest extends WfTestCase {
     }
 
     private void createStandardWorkTime() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             em.persist(createWorkCalendarEntity(null, "09:00", "13:00"));
             em.persist(createWorkCalendarEntity(null, "14:00", "18:00"));

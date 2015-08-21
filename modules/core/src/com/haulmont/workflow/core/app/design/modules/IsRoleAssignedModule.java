@@ -4,7 +4,8 @@
  */
 package com.haulmont.workflow.core.app.design.modules;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
@@ -29,7 +30,7 @@ public class IsRoleAssignedModule extends Module {
             }
             this.roleKey = jsOptions.optString("roleKey");
             if (StringUtils.trimToNull(this.roleKey) == null)
-                throw new DesignCompilationException(MessageProvider.formatMessage(getClass(), "exception.noRole", caption));
+                throw new DesignCompilationException(AppBeans.get(Messages.class).formatMessage(getClass(), "exception.noRole", caption));
         }
     }
 

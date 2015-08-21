@@ -16,9 +16,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -43,8 +43,6 @@ import java.util.Map;
 
 
 public abstract class AbstractProcVariableEditor extends AbstractEditor {
-
-    private static final long serialVersionUID = -2632532733737475722L;
 
     private String elements;
 
@@ -89,6 +87,14 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     @Inject
     private ComponentsFactory componentsFactory;
 
+    @Inject
+    private Messages messages;
+
+    @Inject
+    private Metadata metadata;
+
+    @Inject
+    private MetadataTools metadataTools;
 
     public AbstractProcVariableEditor() {
         super();
@@ -300,7 +306,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     }
 
     private void setCollectionDSonDefaultValue(String metaClassName) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
+        MetaClass metaClass = metadata.getClassNN(metaClassName);
         if (!useLookup) {
             actionsFieldValueField.setEnabled(true);
             actionsFieldValueField.setMetaClass(metaClass);
@@ -332,7 +338,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             for (Enum value : (Enum[]) enumClass.getMethod("values").invoke(null)) {
-                map.put(MessageProvider.getMessage(value), value);
+                map.put(messages.getMessage(value), value);
             }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new IllegalStateException("Can't get values from enum " + enumClass.getCanonicalName(), e);
@@ -381,9 +387,9 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     public void setVisibleLookup() {
         designProcessFields.setVisible("lookupValue", true);
         designProcessFields.setVisible("metaClassName", !alreadyInitiated);
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Class enumClass : MetadataHelper.getAllEnums()) {
-            String key = MessageProvider.getMessage(enumClass.getPackage().getName(), enumClass.getSimpleName());
+        Map<String, Object> map = new HashMap<>();
+        for (Class enumClass : metadataTools.getAllEnums()) {
+            String key = messages.getMessage(enumClass.getPackage().getName(), enumClass.getSimpleName());
             map.put(key, enumClass.getName());
         }
         String className = processVariable.getMetaClassName();
@@ -395,9 +401,9 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
         designProcessFields.setVisible(useLookup ? "lookupValue" : "actionsFieldValue", true);
         designProcessFields.setVisible("metaClassName", !alreadyInitiated);
         designProcessFields.setVisible("useLookup", true);
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (MetaClass cl : MetadataHelper.getAllPersistentMetaClasses()) {
-            String key = MessageProvider.getMessage(cl.getJavaClass().getPackage().getName(), cl.getJavaClass().getSimpleName());
+        Map<String, Object> map = new HashMap<>();
+        for (MetaClass cl : metadataTools.getAllPersistentMetaClasses()) {
+            String key = messages.getMessage(cl.getJavaClass().getPackage().getName(), cl.getJavaClass().getSimpleName());
             map.put(key, cl.getName());
         }
         String className = processVariable.getMetaClassName();

@@ -5,7 +5,8 @@
 
 package com.haulmont.workflow.gui.app.sms.formatter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.workflow.core.enums.SmsStatus;
 
@@ -20,6 +21,6 @@ public class SmsStatusFormatter implements Formatter {
         SmsStatus status = (SmsStatus) value;
         if (status == null)
             return "";
-        return MessageProvider.getMessage(status);
+        return AppBeans.get(Messages.class).getMessage(status);
     }
 }

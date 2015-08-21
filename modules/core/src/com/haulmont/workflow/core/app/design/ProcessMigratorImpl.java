@@ -6,7 +6,11 @@ package com.haulmont.workflow.core.app.design;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.Proc;
@@ -30,9 +34,10 @@ public class ProcessMigratorImpl implements ProcessMigrator {
 
         log.info("Checking migration possibility for design " + designId + " and process " + procId);
 
-        Transaction tx = Locator.createTransaction();
+        Persistence persistence = AppBeans.get(Persistence.class);
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select cp from wf$CardProc cp where cp.proc.id = ?1 and cp.active = true");
             q.setParameter(1, procId);
             List<CardProc> list = q.getResultList();
@@ -64,7 +69,7 @@ public class ProcessMigratorImpl implements ProcessMigrator {
 
             // ensure all active states are present in the new proocess
             Set<String> newStates = new HashSet<String>();
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             q = em.createQuery("select df from wf$DesignFile df where df.design.id = ?1 and df.type = ?2");
             q.setParameter(1, designId);
             q.setParameter(2, "jpdl");
@@ -100,9 +105,10 @@ public class ProcessMigratorImpl implements ProcessMigrator {
     public void migrate(UUID designId, UUID procId, String oldJbpmProcessKey) {
         Preconditions.checkArgument(designId != null && procId != null, "designId or procId is null");
 
-        Transaction tx = Locator.createTransaction();
+        Persistence persistence = AppBeans.get(Persistence.class);
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Proc proc = em.find(Proc.class, procId);
 
             log.info("Starting migration from " + oldJbpmProcessKey + " to " + proc.getJbpmProcessKey());

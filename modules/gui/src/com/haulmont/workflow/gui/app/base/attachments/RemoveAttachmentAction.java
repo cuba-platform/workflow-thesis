@@ -6,10 +6,10 @@
 package com.haulmont.workflow.gui.app.base.attachments;
 
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -130,9 +130,9 @@ public class RemoveAttachmentAction extends RemoveAction {
     }
 
     protected Boolean userIsCreatorAllAttachments(Set<Attachment> oldLastVesrions) {
-        User user = UserSessionClient.getUserSession().getCurrentOrSubstitutedUser();
+        User user = AppBeans.get(UserSessionSource.class).getUserSession().getCurrentOrSubstitutedUser();
         // PROBLEM constant role name usage
-        if (UserSessionProvider.getUserSession().getRoles().contains("Administrators"))
+        if (AppBeans.get(UserSessionSource.class).getUserSession().getRoles().contains("Administrators"))
             return true;
         Map<Attachment, List<Attachment>> map = getMapVersions(oldLastVesrions);
         for (java.util.List<Attachment> list : map.values()) {

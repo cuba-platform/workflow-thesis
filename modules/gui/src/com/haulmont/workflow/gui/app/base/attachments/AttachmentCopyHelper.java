@@ -4,7 +4,8 @@
  */
 package com.haulmont.workflow.gui.app.base.attachments;
 
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.workflow.core.entity.Attachment;
 
 import java.util.ArrayList;
@@ -16,16 +17,17 @@ public class AttachmentCopyHelper {
     private AttachmentCopyHelper(){}
 
     public static void put(ArrayList<Attachment> items) {
-        UserSessionClient.getUserSession().setAttribute(FILE_DESCRIPTOR_BUFFER,items);
+        AppBeans.get(UserSessionSource.class).getUserSession().setAttribute(FILE_DESCRIPTOR_BUFFER,items);
     }
 
     public static java.util.List<Attachment> take() {
-        List<Attachment> lst = UserSessionClient.getUserSession().getAttribute(FILE_DESCRIPTOR_BUFFER);
-        UserSessionClient.getUserSession().removeAttribute(FILE_DESCRIPTOR_BUFFER);
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+        List<Attachment> lst = userSessionSource.getUserSession().getAttribute(FILE_DESCRIPTOR_BUFFER);
+        userSessionSource.getUserSession().removeAttribute(FILE_DESCRIPTOR_BUFFER);
         return lst;
     }
 
     public static java.util.List<Attachment> get() {
-        return UserSessionClient.getUserSession().getAttribute(FILE_DESCRIPTOR_BUFFER);
+        return AppBeans.get(UserSessionSource.class).getUserSession().getAttribute(FILE_DESCRIPTOR_BUFFER);
     }
 }

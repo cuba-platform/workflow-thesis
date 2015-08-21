@@ -7,7 +7,6 @@ package com.haulmont.workflow.gui.app.design;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -528,7 +527,6 @@ public class DesignBrowser extends AbstractWindow {
                                     design.setNotificationMatrix(window.getBytes());
                                     design.setNotificationMatrixUploaded(true);
                                     designDs.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
-                                    DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
                                     service.saveNotificationMatrixFile(design);
                                     designDs.refresh();
                                 }

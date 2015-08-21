@@ -5,9 +5,9 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.app.WfMailWorker;
@@ -49,7 +49,7 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
         ci.setActivity(context.getActivity());
         ci.setDescription(subject);
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         em.persist(ci);
 
         return ci;
@@ -80,7 +80,7 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
             bindingParams.put("user", user);
 
             Binding binding = new Binding(bindingParams);
-            ScriptingProvider.runGroovyScript(script, binding);
+            AppBeans.get(Scripting.class).runGroovyScript(script, binding);
             subject = binding.getVariable("subject").toString();
             body = binding.getVariable("body").toString();
         } catch (Exception e) {

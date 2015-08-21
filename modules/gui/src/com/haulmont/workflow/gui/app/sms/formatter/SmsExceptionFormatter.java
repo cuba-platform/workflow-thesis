@@ -5,7 +5,8 @@
 
 package com.haulmont.workflow.gui.app.sms.formatter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.workflow.core.exception.SmsException;
 
@@ -21,6 +22,6 @@ public class SmsExceptionFormatter implements Formatter {
         if (i == 0)
             return "";
         else
-            return MessageProvider.getMessage(SmsException.class,"smsException." + i);
+            return AppBeans.get(Messages.class).getMessage(SmsException.class, "smsException." + i);
     }
 }

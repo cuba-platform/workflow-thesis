@@ -4,7 +4,11 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.activity.CardActivity;
 import org.jbpm.api.activity.ActivityExecution;
 
@@ -14,13 +18,15 @@ public class TestNestedTxActivity extends CardActivity {
 
     public void execute(ActivityExecution execution) throws Exception {
         super.execute(execution);
-        EntityManager em = PersistenceProvider.getEntityManager();
+        Persistence persistence = AppBeans.get(Persistence.class);
+
+        EntityManager em = persistence.getEntityManager();
         System.out.println("conn: " + em.getConnection());
 
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em1 = PersistenceProvider.getEntityManager();
+            EntityManager em1 = persistence.getEntityManager();
             Query query = em1.createQuery("select u from sec$User u");
             List list = query.getResultList();
             System.out.println("nested conn: " + em1.getConnection());

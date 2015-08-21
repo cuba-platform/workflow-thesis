@@ -6,8 +6,6 @@
 package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;

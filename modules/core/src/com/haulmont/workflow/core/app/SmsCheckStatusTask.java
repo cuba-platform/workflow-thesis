@@ -5,7 +5,6 @@
 
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.SendingSms;
 import org.apache.commons.logging.Log;

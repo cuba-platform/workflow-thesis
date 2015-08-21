@@ -4,9 +4,12 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.*;
 import junit.framework.Assert;
@@ -37,10 +40,10 @@ public class SimpleDocflow3Test extends WfTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI mBean = AppBeans.get(WfEngineAPI.NAME);
         mBean.getProcessEngine();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             String curDir = System.getProperty("user.dir");
             Proc res = mBean.deployJpdlXml("/process/simple-docflow3.jpdl.xml");
@@ -48,7 +51,7 @@ public class SimpleDocflow3Test extends WfTestCase {
 
             tx.commitRetaining();
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             // Create users
 
@@ -100,7 +103,7 @@ public class SimpleDocflow3Test extends WfTestCase {
 
             // Create ProcRoles
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
             q.setParameter(1, "SimpleDocflow3");
@@ -153,7 +156,7 @@ public class SimpleDocflow3Test extends WfTestCase {
 
             // Create Card
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             card = new Card();
             card.setProc(proc);
@@ -163,7 +166,7 @@ public class SimpleDocflow3Test extends WfTestCase {
 
             // Create CardRoles
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             initiator = new CardRole();
             initiator.setProcRole(initiatorRole);
@@ -196,18 +199,18 @@ public class SimpleDocflow3Test extends WfTestCase {
     }
 
     public void test() {
-        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI wf = AppBeans.get(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 
         ProcessInstance pi;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             pi = es.startProcessInstanceByKey("SimpleDocflow3", card.getId().toString());
             Assert.assertNotNull(pi);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             card = em.merge(card);
             card.setJbpmProcessId(pi.getId());
             
@@ -281,7 +284,7 @@ public class SimpleDocflow3Test extends WfTestCase {
     }
 
     public void testWithException() {
-        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI wf = AppBeans.get(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 
@@ -289,12 +292,12 @@ public class SimpleDocflow3Test extends WfTestCase {
         List<Assignment> assignments = null;
         Assignment assignment = null;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             pi = es.startProcessInstanceByKey("SimpleDocflow3", card.getId().toString());
             Assert.assertNotNull(pi);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             card = em.merge(card);
             card.setJbpmProcessId(pi.getId());
 
@@ -321,7 +324,7 @@ public class SimpleDocflow3Test extends WfTestCase {
             tx.end();
         }
 
-        tx = Locator.createTransaction();
+        tx = persistence.createTransaction();
         try {
             pi = es.findProcessInstanceById(pi.getId());
             Execution inNew = pi.findActiveExecutionIn("New");

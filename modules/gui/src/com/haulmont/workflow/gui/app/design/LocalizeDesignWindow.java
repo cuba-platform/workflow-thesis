@@ -8,10 +8,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -46,6 +45,15 @@ public class LocalizeDesignWindow extends AbstractEditor {
     @Inject
     private CollectionDatasource<DesignLocValue, UUID> valuesDs;
 
+    @Inject
+    protected DesignerService service;
+
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
     private Document document;
     private Element rootEl;
     private BiMap<Element, DesignLocKey> keysMap;
@@ -78,15 +86,14 @@ public class LocalizeDesignWindow extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
 
-        Map<String,Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
-        List<String> languages = new ArrayList<String>(locales.size());
+        Map<String,Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
+        List<String> languages = new ArrayList<>(locales.size());
         for (Locale locale : locales.values()) {
             languages.add(locale.toString());
         }
 
         Design design = (Design) getItem();
 
-        DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
         try {
             langToMessages = service.compileMessagesForLocalization(design, languages);
         } catch (DesignCompilationException e) {
@@ -100,7 +107,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
         if(langToMessages.isEmpty())
             return;
 
-        String lang = UserSessionClient.getUserSession().getLocale().toString();
+        String lang = userSessionSource.getLocale().toString();
         properties = langToMessages.get(lang);
         if (properties == null)
             properties = langToMessages.values().iterator().next();
@@ -117,14 +124,14 @@ public class LocalizeDesignWindow extends AbstractEditor {
         ArrayList keys = new ArrayList(keysMap.values());
         Collections.sort(keys);
 
-        Map<String, Object> keysDsParams = new HashMap<String, Object>();
+        Map<String, Object> keysDsParams = new HashMap<>();
         keysDsParams.put("keysCollection", keys);
 
         keysDs.addListener(
                 new CollectionDsListenerAdapter<DesignLocKey>() {
                     @Override
                     public void itemChanged(Datasource<DesignLocKey> ds, DesignLocKey prevItem, DesignLocKey item) {
-                        Map<String, Object> valuesDsParams = new HashMap<String, Object>();
+                        Map<String, Object> valuesDsParams = new HashMap<>();
                         valuesDsParams.put("valuesCollection", getValues(item));
 
                         valuesDs.refresh(valuesDsParams);
@@ -160,7 +167,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private Collection<DesignLocValue> getValues(DesignLocKey designLocKey) {
         if (designLocKey == null)
             return null;
-        ArrayList<DesignLocValue> result = new ArrayList<DesignLocValue>();
+        ArrayList<DesignLocValue> result = new ArrayList<>();
 
         Element keyEl = keysMap.inverse().get(designLocKey);
         for (String lang : langToMessages.keySet()) {

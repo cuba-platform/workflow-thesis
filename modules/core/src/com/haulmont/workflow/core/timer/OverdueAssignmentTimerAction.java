@@ -6,14 +6,16 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.app.NotificationMatrix;
 import com.haulmont.workflow.core.app.NotificationMatrixAPI;
-import com.haulmont.workflow.core.entity.*;
+import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardRole;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.activity.ActivityExecution;
@@ -52,13 +54,13 @@ public class OverdueAssignmentTimerAction extends AssignmentTimerAction {
         if (assignmentLoadInfo == null)
             throw new IllegalStateException("Assignment not found in context params");
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         CardRole cardRole = (CardRole) em.find(cardRoleLoadInfo.getMetaClass().getJavaClass(), cardRoleLoadInfo.getId());
         Assignment assignment = (Assignment) em.find(assignmentLoadInfo.getMetaClass().getJavaClass(), assignmentLoadInfo.getId());
 
         Card card = context.getCard();
 
-        NotificationMatrixAPI notificationMatrix = Locator.lookup(NotificationMatrixAPI.NAME);
+        NotificationMatrixAPI notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
         notificationMatrix.notifyCardRole(card, cardRole, NotificationMatrix.OVERDUE_CARD_STATE, assignment);
     }
 

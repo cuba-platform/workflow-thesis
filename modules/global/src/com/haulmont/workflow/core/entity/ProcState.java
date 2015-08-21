@@ -8,7 +8,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
 import javax.persistence.*;
@@ -50,7 +50,7 @@ public class ProcState extends StandardEntity {
     @MetaProperty
     public String getLocName() {
         if (proc != null) {
-            return MessageProvider.getMessage(proc.getMessagesPack(), name);
+            return AppBeans.get(Messages.class).getMessage(proc.getMessagesPack(), name);
         }
 
         return name;

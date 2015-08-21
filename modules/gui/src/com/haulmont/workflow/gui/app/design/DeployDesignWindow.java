@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.gui.app.design;
 
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -30,6 +29,9 @@ public class DeployDesignWindow extends AbstractWindow {
     private LookupField roleField;
     private CheckBox newProcField;
     private String errorMsg;
+
+    @Inject
+    protected DesignerService service;
 
     @Inject
     protected CollectionDatasource<Proc, UUID> procDs;
@@ -111,7 +113,6 @@ public class DeployDesignWindow extends AbstractWindow {
     }
 
     void deploy(Proc proc, Role role) {
-        DesignerService service = ServiceLocator.lookup(DesignerService.NAME);
         try {
             service.deployDesign(design.getId(), proc == null ? null : proc.getId(), role);
             close("ok");

@@ -4,9 +4,10 @@
  */
 package com.haulmont.workflow.gui.app.timer;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.TimerEntity;

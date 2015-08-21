@@ -10,7 +10,10 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.app.ProcessVariableAPI;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
@@ -25,7 +28,6 @@ import org.dom4j.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
@@ -199,7 +201,11 @@ public class SubDesignModule extends Module {
                     try {
                         Object varValue = processVariableAPI.getValue(newDesignParameter);
                     } catch (IllegalStateException e) {
-                        throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class, "incorrectValueInSubprocessParams"), value, designProcessVariable.getAlias(), MessageProvider.getMessage(designProcessVariable.getAttributeType())));
+                        throw new DesignCompilationException(String.format(
+                                messages.getMessage(SubDesignModule.class, "incorrectValueInSubprocessParams"),
+                                value,
+                                designProcessVariable.getAlias(),
+                                AppBeans.get(Messages.class).getMessage(designProcessVariable.getAttributeType())));
                     }
                 }
             }

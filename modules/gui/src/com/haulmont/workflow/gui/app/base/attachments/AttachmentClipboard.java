@@ -4,7 +4,8 @@
  */
 package com.haulmont.workflow.gui.app.base.attachments;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.workflow.core.entity.Attachment;
 
@@ -22,6 +23,7 @@ public class AttachmentClipboard extends AbstractEditor {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+        Messages messages = AppBeans.get(Messages.class);
 
         Button removeAttachBtn = (Button) getComponent("removeAttach");
         final Table attachmentsTable = (Table) getComponent("attachmentsTable");
@@ -40,7 +42,7 @@ public class AttachmentClipboard extends AbstractEditor {
                 attachmentsTable.refresh();
             }
         });
-        removeAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Remove"));
+        removeAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Remove"));
 
         Button clearAttachBtn = (Button) getComponent("clearAttach");
         clearAttachBtn.setAction(new AbstractAction("clearAttach") {
@@ -52,7 +54,7 @@ public class AttachmentClipboard extends AbstractEditor {
                 attachmentsTable.refresh();
             }
         });
-        clearAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Clear"));
+        clearAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Clear"));
 
         Button refreshAttachBtn = (Button) getComponent("refreshAttach");
         refreshAttachBtn.setAction(new AbstractAction("refreshAttach") {
@@ -60,6 +62,6 @@ public class AttachmentClipboard extends AbstractEditor {
                 attachmentsTable.refresh();
             }
         });
-        refreshAttachBtn.setCaption(MessageProvider.getMessage(getClass(), "actions.Refresh"));
+        refreshAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Refresh"));
     }
 }

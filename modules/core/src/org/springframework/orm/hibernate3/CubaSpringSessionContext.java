@@ -5,7 +5,8 @@
 package org.springframework.orm.hibernate3;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FlushMode;
@@ -79,7 +80,7 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
         }
 
         log.debug("Opening Hibernate Session");
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Connection connection = em.getConnection();
         org.hibernate.Session session = sessionFactory.openSession(connection);
 

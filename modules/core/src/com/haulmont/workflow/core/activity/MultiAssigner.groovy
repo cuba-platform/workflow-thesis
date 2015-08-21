@@ -4,12 +4,13 @@
  */
 package com.haulmont.workflow.core.activity
 
-import org.jbpm.api.activity.ActivityExecution
-import com.haulmont.cuba.core.Query
-import com.haulmont.workflow.core.entity.CardRole
-import com.haulmont.cuba.core.PersistenceProvider
 import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Persistence
+import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.entity.Card
+import com.haulmont.workflow.core.entity.CardRole
+import org.jbpm.api.activity.ActivityExecution
 
 abstract class MultiAssigner extends Assigner {
 
@@ -35,7 +36,7 @@ abstract class MultiAssigner extends Assigner {
     }
 
     protected List<CardRole> getCardRoles(ActivityExecution execution, Card card) {
-    EntityManager em = PersistenceProvider.getEntityManager()
+    EntityManager em = AppBeans.get(Persistence.class).getEntityManager()
     Query q = em.createQuery('''
           select cr from wf$CardRole cr where cr.card.id = ?1 and cr.procRole.code = ?2 and cr.procRole.proc.id = ?3
           order by cr.sortOrder, cr.createTs

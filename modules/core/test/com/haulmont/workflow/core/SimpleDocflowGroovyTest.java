@@ -4,9 +4,12 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.*;
 import junit.framework.Assert;
@@ -37,16 +40,16 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            WfEngineAPI mBean = Locator.lookup(WfEngineAPI.NAME);
+            WfEngineAPI mBean = AppBeans.get(WfEngineAPI.NAME);
             String curDir = System.getProperty("user.dir");
             Proc res = mBean.deployJpdlXml("/process/simple-docflow-groovy.jpdl.xml");
             assertTrue(res != null);
 
             tx.commitRetaining();
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             // Create users
 
@@ -98,7 +101,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
             // Create ProcRoles
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             q = em.createQuery("select p from wf$Proc p where p.jbpmProcessKey = ?1");
             q.setParameter(1, "SimpleDocflowGroovy");
@@ -151,7 +154,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
             // Create Card
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             card = new Card();
             card.setProc(proc);
@@ -161,7 +164,7 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
 
             // Create CardRoles
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             initiator = new CardRole();
             initiator.setProcRole(initiatorRole);
@@ -194,18 +197,18 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
     }
 
     public void test() {
-        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI wf = AppBeans.get(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 
         ProcessInstance pi;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             pi = es.startProcessInstanceByKey("SimpleDocflowGroovy", card.getId().toString());
             Assert.assertNotNull(pi);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             card = em.merge(card);
             card.setJbpmProcessId(pi.getId());
 
@@ -279,18 +282,18 @@ public class SimpleDocflowGroovyTest extends WfTestCase {
     }
 
     public void testRefusedOnly() {
-        WfEngineAPI wf = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI wf = AppBeans.get(WfEngineAPI.NAME);
         ProcessEngine pe = wf.getProcessEngine();
         ExecutionService es = pe.getExecutionService();
 
         ProcessInstance pi;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             pi = es.startProcessInstanceByKey("SimpleDocflowGroovy", card.getId().toString());
             Assert.assertNotNull(pi);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             card = em.merge(card);
             card.setJbpmProcessId(pi.getId());
 

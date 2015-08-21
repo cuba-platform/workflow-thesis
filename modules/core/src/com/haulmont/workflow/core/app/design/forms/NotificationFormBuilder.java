@@ -4,9 +4,9 @@
  */
 package com.haulmont.workflow.core.app.design.forms;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.FormBuilder;
-
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -21,7 +21,7 @@ public class NotificationFormBuilder extends FormBuilder {
         el.addAttribute("after", "true");
         String notification = jsProperties.optString("message");
         if (StringUtils.trimToNull(notification)==null){
-            throw new DesignCompilationException(MessageProvider.getMessage(getClass(), "exception.emptyNotification"));
+            throw new DesignCompilationException(AppBeans.get(Messages.class).getMessage(getClass(), "exception.emptyNotification"));
         }
         addFormParam(el, "message", notification);
 

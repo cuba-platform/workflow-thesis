@@ -4,10 +4,10 @@
  */
 package com.haulmont.workflow.core.app.design;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
@@ -61,7 +61,7 @@ public class FormCompiler {
                 builderClasses = new HashMap<String, Class<? extends FormBuilder>>();
 
                 for (Map.Entry<String, String> entry : builderClassNames.entrySet()) {
-                    builderClasses.put(entry.getKey(), ScriptingProvider.loadClass(entry.getValue()));
+                    builderClasses.put(entry.getKey(), AppBeans.get(Scripting.class).loadClass(entry.getValue()));
                 }
             }
         }

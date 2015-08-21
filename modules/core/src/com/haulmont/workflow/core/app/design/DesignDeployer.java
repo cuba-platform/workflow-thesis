@@ -6,7 +6,9 @@ package com.haulmont.workflow.core.app.design;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.WfEngineAPI;
@@ -115,7 +117,7 @@ public class DesignDeployer {
 
         FileUtils.writeStringToFile(jpdlFile, Dom4j.writeDocument(document, true), "UTF-8");
 
-        WfEngineAPI wfEngine = Locator.lookup(WfEngineAPI.NAME);
+        WfEngineAPI wfEngine = AppBeans.get(WfEngineAPI.NAME);
         proc = wfEngine.deployJpdlXml("/process/" + procKey + "/" + jpdlFile.getName(), proc);
 
         proc.setDesign(design);
@@ -181,20 +183,22 @@ public class DesignDeployer {
     }
 
     private void deployProcessVariables(Proc proc, Design design, File dir) throws IOException {
-        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-        List<DesignProcessVariable> designProcessVariables = AppBeans.get(Persistence.class).getEntityManager().createQuery(
+        Persistence persistence = AppBeans.get(Persistence.class);
+        EntityManager em = persistence.getEntityManager();
+        ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+        List<DesignProcessVariable> designProcessVariables = persistence.getEntityManager().createQuery(
                 "select s from wf$DesignProcessVariable s where s.design.id = ?1")
                 .setParameter(1, design.getId())
-                .setView(MetadataProvider.getViewRepository().getView(DesignProcessVariable.class, View.LOCAL))
+                .setView(viewRepository.getView(DesignProcessVariable.class, View.LOCAL))
                 .getResultList();
 
-        List<ProcVariable> existsProcVariables = AppBeans.get(Persistence.class).getEntityManager().createQuery(
+        List<ProcVariable> existsProcVariables = persistence.getEntityManager().createQuery(
                 "select s from wf$ProcVariable s where s.proc.id = ?1")
                 .setParameter(1, proc.getId())
-                .setView(AppBeans.get(Metadata.class).getViewRepository().getView(ProcVariable.class, View.LOCAL))
+                .setView(viewRepository.getView(ProcVariable.class, View.LOCAL))
                 .getResultList();
 
-        List<ProcVariable> procVariables = new ArrayList<ProcVariable>();
+        List<ProcVariable> procVariables = new ArrayList<>();
 
         Map<String, DesignProcessVariable> designProcessVariableMap = new HashMap<String, DesignProcessVariable>();
         for (DesignProcessVariable designProcessVariable : designProcessVariables) {

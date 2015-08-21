@@ -6,9 +6,7 @@
 package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.Resources
 import com.haulmont.cuba.core.global.Scripting
-import com.haulmont.cuba.core.global.ScriptingProvider
 import com.haulmont.workflow.core.app.design.DesignDeployer
 import com.haulmont.workflow.core.entity.Card
 import org.apache.commons.logging.Log

@@ -5,7 +5,8 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.security.entity.User;
 
@@ -16,7 +17,7 @@ public abstract class AssignmentTimerAction implements TimerAction {
         if (entityLoadInfo == null)
           throw new IllegalStateException("No user load info in the parameters map");
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         User user = (User) em.find(entityLoadInfo.getMetaClass().getJavaClass(), entityLoadInfo.getId());
 
         execute(context, user);

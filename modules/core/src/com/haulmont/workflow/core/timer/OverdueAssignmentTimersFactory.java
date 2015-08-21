@@ -6,8 +6,9 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -85,7 +86,7 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
             queryStr += " and ci.user.id = ?3";
         }
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Query query = em.createQuery(queryStr);
         query.setParameter(1, execution.getId());
         query.setParameter(2, execution.getActivityName());

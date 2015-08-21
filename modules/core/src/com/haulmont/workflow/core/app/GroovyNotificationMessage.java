@@ -5,8 +5,8 @@
 
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import groovy.lang.Binding;
 
 import java.util.Map;
@@ -33,7 +33,7 @@ public class GroovyNotificationMessage implements NotificationMessage {
     public void setParameters(Map<String, Object> parameters) {
         this.parameters=parameters;
         binding = new Binding(parameters);
-        ScriptingProvider.evaluateGroovy(script, binding);
+        AppBeans.get(Scripting.class).evaluateGroovy(script, binding);
 
     }
 }

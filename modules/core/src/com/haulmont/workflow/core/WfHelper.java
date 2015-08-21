@@ -4,14 +4,14 @@
  */
 package com.haulmont.workflow.core;
 
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.workflow.core.app.TimerManagerAPI;
 import com.haulmont.workflow.core.app.WfEngineAPI;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
 import com.haulmont.workflow.core.global.TimeUnit;
-import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.ExecutionService;
+import org.jbpm.api.ProcessEngine;
 import org.jbpm.api.RepositoryService;
 
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class WfHelper {
     }
 
     public static WfEngineAPI getEngine() {
-        return Locator.lookup(WfEngineAPI.NAME);
+        return AppBeans.get(WfEngineAPI.NAME);
     }
 
     public static ProcessEngine getProcessEngine() {
@@ -44,7 +44,7 @@ public class WfHelper {
     }
 
     public static TimerManagerAPI getTimerManager() {
-        return Locator.lookup(TimerManagerAPI.NAME);
+        return AppBeans.get(TimerManagerAPI.NAME);
     }
 
     public static Long getTimeMillis(String expression) {
@@ -59,8 +59,8 @@ public class WfHelper {
             throw new UnsupportedOperationException("Unsupported time unit: " + expression);
 
         if (parts.length > 2 && parts[1].equalsIgnoreCase("business")) {
-            WorkCalendarAPI wcal = Locator.lookup(WorkCalendarAPI.NAME);
-            return wcal.getAbsoluteMillis(TimeProvider.currentTimestamp(), num, tu);
+            WorkCalendarAPI wcal = AppBeans.get(WorkCalendarAPI.NAME);
+            return wcal.getAbsoluteMillis(AppBeans.get(TimeSource.class).currentTimestamp(), num, tu);
         } else {
             return num * tu.getMillis();
         }

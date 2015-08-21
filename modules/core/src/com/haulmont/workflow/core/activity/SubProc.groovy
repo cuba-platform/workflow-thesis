@@ -6,8 +6,9 @@
 package com.haulmont.workflow.core.activity
 
 import com.haulmont.cuba.core.EntityManager
-import com.haulmont.cuba.core.PersistenceProvider
+import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.Query
+import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.Proc
 import org.apache.commons.lang.StringUtils
@@ -66,14 +67,14 @@ class SubProc extends CardActivity implements ExternalActivityBehaviour {
         } catch (Exception e) {
             throw new RuntimeException('Unable to get cardId', e);
         }
-        Card card = PersistenceProvider.getEntityManager().find(Card.class, cardId);
+        Card card = AppBeans.get(Persistence.class).getEntityManager().find(Card.class, cardId);
         if (card == null)
             throw new RuntimeException("Card not found: $cardId");
         return card;
     }
 
     protected String getJbpmKey(String code) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Query q = em.createQuery("select p from wf\$Proc p where p.code = :code").setParameter("code", code);
         List<Proc> result = q.getResultList();
         if (result.isEmpty())
