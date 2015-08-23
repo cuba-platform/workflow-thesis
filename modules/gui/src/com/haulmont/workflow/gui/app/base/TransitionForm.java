@@ -139,7 +139,7 @@ public class TransitionForm extends AbstractForm {
             collapseFormWithoutRoles();
         }
 
-        LoadContext ctx = new LoadContext(Assignment.class);
+        LoadContext<Assignment> ctx = new LoadContext<>(Assignment.class);
         //when starting process
         if (assignmentId != null) {
             ctx.setId(assignmentId);

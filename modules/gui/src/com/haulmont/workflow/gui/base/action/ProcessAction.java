@@ -146,7 +146,7 @@ public class ProcessAction extends AbstractAction {
     protected boolean checkVersion(Card card) {
         Preconditions.checkArgument(!PersistenceHelper.isNew(card), "Card can not be new");
 
-        LoadContext lc = new LoadContext(Card.class);
+        LoadContext<Card> lc = new LoadContext<>(Card.class);
         lc.setId(card.getId());
         Card reloadedCard = dataService.load(lc);
 
@@ -209,8 +209,7 @@ public class ProcessAction extends AbstractAction {
     }
 
     protected Card getReloadedCard(Card card) {
-        LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
-        return dataService.load(lc);
+        return dataService.load(new LoadContext<>(Card.class).setId(card.getId()).setView(View.LOCAL));
     }
 
     /**
@@ -219,15 +218,13 @@ public class ProcessAction extends AbstractAction {
      * If you change this logic, handle the exception.
      */
     protected boolean isCardInProcess(Card card) {
-        LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(View.LOCAL);
-        Card reloadedCard = dataService.load(lc);
+        Card reloadedCard = dataService.load(new LoadContext<>(Card.class).setId(card.getId()).setView(View.LOCAL));
         return (reloadedCard.getJbpmProcessId() != null);
     }
 
     protected boolean isCardInSameProcess(Card card) {
         View withProcess = metadata.getViewRepository().getView(Card.class, "w-card-proc");
-        LoadContext lc = new LoadContext(Card.class).setId(card.getId()).setView(withProcess);
-        Card reloadedCard = dataService.load(lc);
+        Card reloadedCard = dataService.load(new LoadContext<>(Card.class).setId(card.getId()).setView(withProcess));
 
         if (CollectionUtils.isEmpty(card.getProcs())) {
             return true;
@@ -359,8 +356,7 @@ public class ProcessAction extends AbstractAction {
 
     protected void handleFallback(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
         UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
-        LoadContext lc = new LoadContext(Assignment.class).setId(assignmentId).setView(View.LOCAL);
-        Assignment assignment = dataService.load(lc);
+        Assignment assignment = dataService.load(new LoadContext<>(Assignment.class).setId(assignmentId).setView(View.LOCAL));
         if (assignment.getFinished() != null) {
             String msg = messages.getMainMessage("assignmentAlreadyFinished.message");
             wmp.get().showNotification(msg, Frame.NotificationType.ERROR);

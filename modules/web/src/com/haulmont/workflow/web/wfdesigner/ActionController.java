@@ -387,8 +387,7 @@ public class ActionController {
     }
 
     protected Design loadDesign(UUID designId) {
-        LoadContext ctx = new LoadContext(Design.class).setId(designId).setView("_local");
-        return dataService.load(ctx);
+        return dataService.load(new LoadContext<>(Design.class).setId(designId).setView("_local"));
     }
 
     protected List<DesignScript> loadDesignScripts(UUID designId) {

@@ -218,7 +218,7 @@ public class ResolutionForm extends AbstractForm {
     }
 
     private Assignment reloadAssignment(Object id) {
-        LoadContext ctx = new LoadContext(Assignment.class);
+        LoadContext<Assignment> ctx = new LoadContext<>(Assignment.class);
         ctx.setId(id);
         ctx.setView("resolution-edit");
         return getDsContext().getDataSupplier().load(ctx);

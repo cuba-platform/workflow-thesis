@@ -70,9 +70,8 @@ public class UserGroupBrowser extends AbstractWindow {
             protected void afterCommit(Entity entity) {
                 DataService dataService = AppBeans.get(DataService.NAME);
 
-                LoadContext loadContext = new LoadContext(entity.getMetaClass())
-                        .setId(entity.getId())
-                        .setView(userGroupsDs.getView());
+                LoadContext<UserGroup> loadContext = new LoadContext<>(entity.getMetaClass());
+                loadContext.setId(entity.getId()).setView(userGroupsDs.getView());
                 UserGroup committedGroup = dataService.load(loadContext);
                 if (committedGroup != null) {
                     userGroupsDs.updateItem(committedGroup);
