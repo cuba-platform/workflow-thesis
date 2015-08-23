@@ -84,9 +84,4 @@ public class ProcessVariablesMetaClass extends MetadataObjectImpl implements Met
     public Collection<MetaProperty> getProperties() {
         return properties.values();
     }
-
-    @Override
-    public <T> T createInstance() throws InstantiationException, IllegalAccessException {
-        throw new UnsupportedOperationException();
-    }
 }
