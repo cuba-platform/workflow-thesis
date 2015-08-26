@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -259,7 +260,7 @@ public class ProcessAction extends AbstractAction {
                     messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
                     Frame.MessageType.CONFIRMATION,
                     new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
+                            new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
                                     if (commitEditor(editor)) {
@@ -280,7 +281,7 @@ public class ProcessAction extends AbstractAction {
                                     }
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO)
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     }
             );
         } else {
@@ -289,17 +290,13 @@ public class ProcessAction extends AbstractAction {
                     messages.getMessage(getClass(), "failCancelProcDescription"),
                     Frame.MessageType.CONFIRMATION,
                     new Action[]{
-                            new DialogAction(DialogAction.Type.OK) {
+                            new DialogAction(Type.OK) {
                                 @Override
                                 public void actionPerform(Component c) {
                                     editor.close(Window.CLOSE_ACTION_ID, true);
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO) {
-                                @Override
-                                public void actionPerform(Component c) {
-                                }
-                            }
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     }
             );
         }
