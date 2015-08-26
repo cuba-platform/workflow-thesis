@@ -132,8 +132,6 @@ configure(coreModule) {
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
         compile('org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final')
         compile(hibernate)
-        runtime('org.slf4j:slf4j-api:1.7.12')
-        runtime('org.slf4j:slf4j-log4j12:1.7.12')
         runtime('org.javassist:javassist:3.20.0-GA')
         provided(servletApi)
         jdbc(hsqldb)
