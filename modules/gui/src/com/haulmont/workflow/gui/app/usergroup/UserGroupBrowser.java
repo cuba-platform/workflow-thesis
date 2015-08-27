@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -177,7 +178,7 @@ public class UserGroupBrowser extends AbstractWindow {
                     getMessage("deleteFromGroup.dialogMessage"),
                     MessageType.CONFIRMATION,
                     new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
+                            new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
                                     UserGroup userGroup = userGroupsDs.getItem();
@@ -191,11 +192,7 @@ public class UserGroupBrowser extends AbstractWindow {
                                     userGroupsDs.setItem(userGroup);
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                }
-                            }
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     });
         }
 

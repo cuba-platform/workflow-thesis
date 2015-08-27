@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.User;
@@ -89,7 +90,7 @@ public class RemoveAttachmentAction extends RemoveAction {
                         getConfirmationMessage(messagesPackage),
                         Frame.MessageType.CONFIRMATION,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
+                                new DialogAction(Type.OK) {
 
                                     @Override
                                     public void actionPerform(Component component) {
@@ -100,7 +101,7 @@ public class RemoveAttachmentAction extends RemoveAction {
                                         target.requestFocus();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.CANCEL) {
+                                new DialogAction(Type.CANCEL, Status.PRIMARY) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         // move focus to owner

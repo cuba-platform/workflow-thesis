@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -554,7 +555,7 @@ public class DesignBrowser extends AbstractWindow {
                         String.format(getMessage("confirmNMClear.msg"), design.getName()),
                         MessageType.CONFIRMATION,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
+                                new DialogAction(Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         design.setNotificationMatrix(null);
@@ -565,7 +566,7 @@ public class DesignBrowser extends AbstractWindow {
                                         designTable.requestFocus();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.NO) {
+                                new DialogAction(Type.NO, Status.PRIMARY) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         designTable.requestFocus();

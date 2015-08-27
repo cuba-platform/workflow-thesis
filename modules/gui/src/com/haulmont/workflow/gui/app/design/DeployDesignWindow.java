@@ -5,6 +5,7 @@
 package com.haulmont.workflow.gui.app.design;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.Role;
@@ -77,6 +78,7 @@ public class DeployDesignWindow extends AbstractWindow {
         Button deployBtn = (Button) getComponentNN("deployBtn");
         deployBtn.setAction(
                 new AbstractAction("deployBtn") {
+                    @Override
                     public void actionPerform(Component component) {
                         final Proc proc = procField.getValue();
                         if (proc == null) {
@@ -87,13 +89,13 @@ public class DeployDesignWindow extends AbstractWindow {
                                     String.format(getMessage("confirmDeploy.msg"), proc.getName()),
                                     MessageType.CONFIRMATION,
                                     new Action[]{
-                                            new DialogAction(DialogAction.Type.YES) {
+                                            new DialogAction(Type.YES) {
                                                 @Override
                                                 public void actionPerform(Component component) {
                                                     deploy(proc, null);
                                                 }
                                             },
-                                            new DialogAction(DialogAction.Type.NO)
+                                            new DialogAction(Type.NO, Status.PRIMARY)
                                     }
                             );
 

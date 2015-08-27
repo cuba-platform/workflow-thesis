@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -59,6 +60,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         cancelBtn.setAction(new AbstractAction("actions.Cancel") {
 
             // OnClose
+            @Override
             public void actionPerform(Component component) {
                 if (AttachmentsMultiUploader.this.isUploading)
                     AttachmentsMultiUploader.this.showOptionDialog(
@@ -66,13 +68,13 @@ public class AttachmentsMultiUploader extends AbstractEditor {
                             getMessage("uploadStopRequest"),
                             MessageType.CONFIRMATION,
                             new Action[]{
-                                    new DialogAction(DialogAction.Type.YES) {
+                                    new DialogAction(Type.YES) {
                                         @Override
                                         public void actionPerform(Component component) {
                                             AttachmentsMultiUploader.this.close("");
                                         }
                                     },
-                                    new DialogAction(DialogAction.Type.NO)
+                                    new DialogAction(Type.NO, Status.PRIMARY)
                             });
                 else
                     close("");
