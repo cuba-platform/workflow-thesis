@@ -109,6 +109,11 @@ public class UserGroupBrowser extends AbstractWindow {
         });
 
         usersTable.addAction(new AbstractAction("add", clientConfig.getTableInsertShortcut()) {
+
+            {
+                setIcon(messages.getMainMessage("actions.Add.icon"));
+            }
+
             @Override
             public void actionPerform(Component component) {
                 if (userGroupsTable.getSelected().size() == 0) {

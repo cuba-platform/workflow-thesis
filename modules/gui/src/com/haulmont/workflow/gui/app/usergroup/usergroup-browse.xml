@@ -33,9 +33,9 @@
             <vbox id="table-panel" expand="userGroupsTable" spacing="true" margin="false;true;false;false" height="100%">
                 <table id="userGroupsTable" width="100%">
                     <buttonsPanel>
-                        <button action="userGroupsTable.create" icon="icons/create.png"/>
-                        <button action="userGroupsTable.edit" icon="icons/edit.png"/>
-                        <button action="userGroupsTable.remove" icon="icons/remove.png"/>
+                        <button action="userGroupsTable.create"/>
+                        <button action="userGroupsTable.edit"/>
+                        <button action="userGroupsTable.remove"/>
                     </buttonsPanel>
                     <actions>
                         <action id="create"/>
@@ -51,10 +51,14 @@
             </vbox>
 
             <vbox id="usersPanel" expand="usersTable" spacing="true" margin="false;false;false;true" height="100%">
+                <buttonsPanel>
+                    <button action="usersTable.add" icon="icons/add.png"/>
+                    <button action="usersTable.remove" icon="icons/remove.png"/>
+                </buttonsPanel>
                 <table id="usersTable" width="100%">
                     <buttonsPanel>
-                        <button action="usersTable.add" icon="icons/add.png"/>
-                        <button action="usersTable.remove" icon="icons/remove.png"/>
+                        <button action="usersTable.add"/>
+                        <button action="usersTable.remove"/>
                     </buttonsPanel>
                     <actions>
                         <action id="add"/>
