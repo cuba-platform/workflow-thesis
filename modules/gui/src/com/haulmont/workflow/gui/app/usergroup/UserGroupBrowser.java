@@ -12,13 +12,14 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
@@ -111,7 +112,8 @@ public class UserGroupBrowser extends AbstractWindow {
         usersTable.addAction(new AbstractAction("add", clientConfig.getTableInsertShortcut()) {
 
             {
-                setIcon(messages.getMainMessage("actions.Add.icon"));
+                ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+                icon = thCM.getThemeValue("actions.Add.icon");
             }
 
             @Override
@@ -165,7 +167,8 @@ public class UserGroupBrowser extends AbstractWindow {
             super("remove");
             setShortcut(clientConfig.getTableRemoveShortcut());
 
-            icon = messages.getMainMessage("actions.Remove.icon");
+            ThemeConstantsManager thCM = AppBeans.get(ThemeConstantsManager.NAME);
+            icon = thCM.getThemeValue("actions.Remove.icon");
         }
 
         @Override
@@ -186,7 +189,7 @@ public class UserGroupBrowser extends AbstractWindow {
                     getMessage("deleteFromGroup.dialogMessage"),
                     MessageType.CONFIRMATION,
                     new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
+                            new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
                                     UserGroup userGroup = userGroupsDs.getItem();
@@ -200,11 +203,7 @@ public class UserGroupBrowser extends AbstractWindow {
                                     userGroupsDs.setItem(userGroup);
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                }
-                            }
+                            new DialogAction(Type.NO, Status.PRIMARY)
                     });
         }
 
