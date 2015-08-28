@@ -51,10 +51,6 @@
             </vbox>
 
             <vbox id="usersPanel" expand="usersTable" spacing="true" margin="false;false;false;true" height="100%">
-                <buttonsPanel>
-                    <button action="usersTable.add" icon="icons/add.png"/>
-                    <button action="usersTable.remove" icon="icons/remove.png"/>
-                </buttonsPanel>
                 <table id="usersTable" width="100%">
                     <buttonsPanel>
                         <button action="usersTable.add"/>
