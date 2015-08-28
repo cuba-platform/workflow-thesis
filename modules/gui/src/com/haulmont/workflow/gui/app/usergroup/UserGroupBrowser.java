@@ -163,6 +163,8 @@ public class UserGroupBrowser extends AbstractWindow {
         public DeleteUserAction() {
             super("remove");
             setShortcut(clientConfig.getTableRemoveShortcut());
+
+            icon = messages.getMainMessage("actions.Remove.icon");
         }
 
         @Override
