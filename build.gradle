@@ -43,10 +43,10 @@ def coreModule = project(':workflow-core')
 def guiModule = project(':workflow-gui')
 def webModule = project(':workflow-web')
 
-def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
+def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
 def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
-def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
+def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
 
 def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 
@@ -71,7 +71,7 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
         compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.4')
 
         compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: baseVersion)
-        testCompile(group: 'junit', name: 'junit', version: '4.5')
+        testCompile('junit:junit:4.12')
     }
 
     task sourceJar(type: Jar) {
