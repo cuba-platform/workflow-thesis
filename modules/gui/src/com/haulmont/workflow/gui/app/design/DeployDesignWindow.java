@@ -7,7 +7,6 @@ package com.haulmont.workflow.gui.app.design;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
@@ -53,21 +52,18 @@ public class DeployDesignWindow extends AbstractWindow {
 
         newProcField = (CheckBox) getComponentNN("newProcField");
         newProcField.setValue(true);
-        newProcField.addListener(
-                new ValueListener() {
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (BooleanUtils.isTrue((Boolean) value)) {
-                            procField.setValue(null);
-                            procField.setEnabled(false);
-                            roleField.setEnabled(true);
-                        } else {
-                            procField.setEnabled(true);
-                            procField.setValue(findDesignProc());
-                            roleField.setEnabled(false);
-                        }
-                    }
-                }
-        );
+
+        newProcField.addValueChangeListener(e -> {
+            if (BooleanUtils.isTrue((Boolean) e.getValue())) {
+                procField.setValue(null);
+                procField.setEnabled(false);
+                roleField.setEnabled(true);
+            } else {
+                procField.setEnabled(true);
+                procField.setValue(findDesignProc());
+                roleField.setEnabled(false);
+            }
+        });
 
         Proc designProc = findDesignProc();
         if (designProc != null) {

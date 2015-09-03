@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.gui.data;
 
-import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -147,11 +146,10 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
         }
 
         item = new ProcessVariablesEntity(getMetaClass(), variables);
-        item.addListener(new ValueListener() {
-            public void propertyChanged(Object item, String property, Object prevValue, Object value) {
-                modified = true;
-            }
+        item.addPropertyChangeListener(e -> {
+            modified = true;
         });
+
         state = State.VALID;
         fireItemChanged(null);
         modified = false;

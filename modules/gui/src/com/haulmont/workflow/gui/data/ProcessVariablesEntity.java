@@ -5,12 +5,13 @@
 package com.haulmont.workflow.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListenerWrapper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.lang.ObjectUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
@@ -25,7 +26,8 @@ public class ProcessVariablesEntity implements Entity {
     protected UUID id;
     protected Map<String, Object> values;
     protected Map<String, Object> changed = new HashMap<>();
-    protected Set<ValueListener> listeners = new LinkedHashSet<>();
+
+    protected Collection<WeakReference<PropertyChangeListener>> __valueListeners;
 
     public ProcessVariablesEntity(MetaClass metaClass, Map<String, Object> variables) {
         this.metaClass = metaClass;
@@ -54,18 +56,53 @@ public class ProcessVariablesEntity implements Entity {
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        listeners.add(listener);
+    public void addListener(com.haulmont.chile.core.common.ValueListener listener) {
+        addPropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
     }
 
     @Override
     public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
+        removePropertyChangeListener(new InstancePropertyChangeListenerWrapper(listener));
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners == null) {
+            __valueListeners = new ArrayList<>();
+        }
+        __valueListeners.add(new WeakReference<>(listener));
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if (__valueListeners != null) {
+            for (Iterator<WeakReference<PropertyChangeListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+                PropertyChangeListener iteratorListener = it.next().get();
+                if (iteratorListener == null || iteratorListener.equals(listener)) {
+                    it.remove();
+                }
+            }
+        }
     }
 
     @Override
     public void removeAllListeners() {
-        listeners.clear();
+        if (__valueListeners != null) {
+            __valueListeners.clear();
+        }
+    }
+
+    protected void propertyChanged(String s, Object prev, Object curr) {
+        if (__valueListeners != null) {
+            for (WeakReference<PropertyChangeListener> reference : new ArrayList<>(__valueListeners)) {
+                PropertyChangeListener listener = reference.get();
+                if (listener == null) {
+                    __valueListeners.remove(reference);
+                } else {
+                    listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
+                }
+            }
+        }
     }
 
     @Override
@@ -79,9 +116,8 @@ public class ProcessVariablesEntity implements Entity {
         if (!ObjectUtils.equals(oldValue, value)) {
             values.put(name, value);
             changed.put(name, value);
-            for (ValueListener listener : listeners) {
-                listener.propertyChanged(this, name, oldValue, value);
-            }
+
+            propertyChanged(name, oldValue, value);
         }
     }
 
@@ -96,9 +132,8 @@ public class ProcessVariablesEntity implements Entity {
         if (!ObjectUtils.equals(oldValue, value)) {
             values.put(propertyPath, value);
             changed.put(propertyPath, value);
-            for (ValueListener listener : listeners) {
-                listener.propertyChanged(this, propertyPath, oldValue, value);
-            }
+
+            propertyChanged(propertyPath, oldValue, value);
         }
     }
 

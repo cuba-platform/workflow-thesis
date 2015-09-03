@@ -161,15 +161,13 @@ public class CardRolesFrame extends AbstractFrame {
             }
         });
 
-        createRoleLookup.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if ((value == null) || createRoleCaption.equals(value))
-                    return;
-
-                final ProcRole procRole = (ProcRole) value;
-                tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
+        createRoleLookup.addValueChangeListener(e -> {
+            if ((e.getValue() == null) || createRoleCaption.equals(e.getValue())) {
+                return;
             }
+
+            ProcRole procRole = (ProcRole) e.getValue();
+            tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
         });
     }
 
@@ -1186,7 +1184,7 @@ public class CardRolesFrame extends AbstractFrame {
         pickerField.setValue(value);
         pickerField.setWidth("100%");
 
-        pickerField.addListener(getCardRoleFieldValueListener(cardRole));
+        pickerField.addValueChangeListener(getCardRoleFieldValueListener(cardRole));
 
         pickerField.setEditable(rolesTable.isEditable());
 
@@ -1198,17 +1196,14 @@ public class CardRolesFrame extends AbstractFrame {
         return pickerField;
     }
 
-    protected ValueListener getCardRoleFieldValueListener(final CardRole cardRole) {
-        return new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                User selectedUser = (User) value;
-                CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
-                if (cr != null) {
-                    cr.setUser(selectedUser);
-                } else {
-                    cardRole.setUser(selectedUser);
-                }
+    protected ValueChangeListener getCardRoleFieldValueListener(final CardRole cardRole) {
+        return e -> {
+            User selectedUser = (User) e.getValue();
+            CardRole cr = tmpCardRolesDs.getItem(cardRole.getId());
+            if (cr != null) {
+                cr.setUser(selectedUser);
+            } else {
+                cardRole.setUser(selectedUser);
             }
         };
     }

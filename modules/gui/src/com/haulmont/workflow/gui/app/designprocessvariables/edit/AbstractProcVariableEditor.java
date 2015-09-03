@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.workflow.core.app.ProcessVariableService;
@@ -112,11 +111,9 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     }
 
     private void addListenerToMetaClass() {
-        metaClassNameField.addListener(new ValueListener() {
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (processVariable != null) {
-                    processVariable.setMetaClassName((String) value);
-                }
+        metaClassNameField.addValueChangeListener(e -> {
+            if (processVariable != null) {
+                processVariable.setMetaClassName((String) e.getValue());
             }
         });
     }
@@ -182,6 +179,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createMetaclassNameField() {
         designProcessFields.addCustomField("metaClassName", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 metaClassNameField = componentsFactory.createComponent(LookupField.class);
                 return metaClassNameField;
@@ -192,20 +190,18 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createUseLookupButton() {
         designProcessFields.addCustomField("useLookup", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 useLookupCheckBox = componentsFactory.createComponent(CheckBox.class);
                 useLookupCheckBox.setValue(useLookup);
-                useLookupCheckBox.addListener(new ValueListener() {
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        useLookup = BooleanUtils.isTrue((Boolean) value);
-                        if (AttributeType.ENTITY.equals(processVariable.getAttributeType())) {
-                            setFields();
-                            if (StringUtils.isNotBlank(processVariable.getMetaClassName())) {
-                                setCollectionDSonDefaultValue(processVariable.getMetaClassName());
-                                setValueToFields();
-                            }
+                useLookupCheckBox.addValueChangeListener(e -> {
+                    useLookup = BooleanUtils.isTrue((Boolean) e.getValue());
+                    if (AttributeType.ENTITY.equals(processVariable.getAttributeType())) {
+                        setFields();
+                        if (StringUtils.isNotBlank(processVariable.getMetaClassName())) {
+                            setCollectionDSonDefaultValue(processVariable.getMetaClassName());
+                            setValueToFields();
                         }
-
                     }
                 });
                 return useLookupCheckBox;

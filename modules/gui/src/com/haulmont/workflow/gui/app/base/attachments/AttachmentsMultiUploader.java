@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.workflow.core.entity.Attachment;
@@ -135,19 +134,14 @@ public class AttachmentsMultiUploader extends AbstractEditor {
         }
         attachTypeCombo.setOptionsMap(attachmentTypesMap);
 
-        attachTypeCombo.addListener(new ValueListener() {
-
-            private static final long serialVersionUID = -7749607248779629771L;
-
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if ((value != null) && (value instanceof AttachmentType)) {
-                    Collection ids = attachDs.getItemIds();
-                    for (Object id : ids) {
-                        Attachment item = (Attachment) attachDs.getItem(id);
-                        item.setAttachType((AttachmentType) value);
-                    }
-                    uploadsTable.refresh();
+        attachTypeCombo.addValueChangeListener(e -> {
+            if ((e.getValue() != null) && (e.getValue() instanceof AttachmentType)) {
+                Collection ids1 = attachDs.getItemIds();
+                for (Object id : ids1) {
+                    Attachment item = (Attachment) attachDs.getItem(id);
+                    item.setAttachType((AttachmentType) e.getValue());
                 }
+                uploadsTable.refresh();
             }
         });
 
