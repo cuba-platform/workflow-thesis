@@ -21,7 +21,7 @@
     </dsContext>
 
     <layout expand="table" spacing="true">
-        <filter id="genericFilter" datasource="userNotifiedBySmsDs">
+        <filter id="genericFilter" datasource="userNotifiedBySmsDs" applyTo="table">
             <properties include=".*" exclude=""/>
         </filter>
         <table id="table" width="100%">
