@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.*;
@@ -278,14 +277,12 @@ public class TransitionForm extends AbstractForm {
             cardRolesFrame.tmpCardRolesDs.setVisibleRoles(Sets.newHashSet(visibleRoles.split("\\s*,\\s*")));
 
         cardRolesFrame.setCard(procContextCard);
-        cardRolesDs.addListener(new DsListenerAdapter<CardRole>() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (state == Datasource.State.VALID) {
-                    cardRolesFrame.procChanged(procContextCard.getProc());
-                    cardRolesFrame.setRequiredRolesCodesStr(getRequiredRoles());
-                    cardRolesFrame.fillMissingRoles();
-                }
+
+        cardRolesDs.addStateChangeListener(e -> {
+            if (e.getState() == Datasource.State.VALID) {
+                cardRolesFrame.procChanged(procContextCard.getProc());
+                cardRolesFrame.setRequiredRolesCodesStr(getRequiredRoles());
+                cardRolesFrame.fillMissingRoles();
             }
         });
         cardRolesDs.refresh();

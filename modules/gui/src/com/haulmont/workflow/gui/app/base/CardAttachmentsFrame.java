@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
@@ -193,14 +192,12 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     protected void initAttachmentsDs() {
         CollectionDatasource attachmentDs = attachmentsTable.getDatasource();
-        attachmentDs.addListener(new DsListenerAdapter() {
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                if (!generatedColumnInited && state == Datasource.State.VALID) {
-                    FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
-                    AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
-                    generatedColumnInited = true;
-                }
+        //noinspection unchecked
+        attachmentDs.addStateChangeListener(e -> {
+            if (!generatedColumnInited && e.getState() == Datasource.State.VALID) {
+                FileDownloadHelper.initGeneratedColumn(attachmentsTable, "file");
+                AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+                generatedColumnInited = true;
             }
         });
 

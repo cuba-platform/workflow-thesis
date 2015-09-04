@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
@@ -204,13 +205,10 @@ public class ResolutionForm extends AbstractForm {
                 assignmentDs.addItem(assign);
             }
 
-            assignmentDs.addListener(new DsListenerAdapter<Assignment>() {
-                @Override
-                public void valueChanged(Assignment source, String property, Object prevValue, Object value) {
-                    if (source.equals(assignment)) {
-                        for (Object key : assignmentDs.getItemIds()) {
-                            InstanceUtils.setValueEx(assignmentDs.getItem((UUID) key), property, value);
-                        }
+            assignmentDs.addItemPropertyChangeListener(e -> {
+                if (e.getItem().equals(assignment)) {
+                    for (Object key : assignmentDs.getItemIds()) {
+                        InstanceUtils.setValueEx(assignmentDs.getItem((UUID) key), e.getProperty(), e.getValue());
                     }
                 }
             });

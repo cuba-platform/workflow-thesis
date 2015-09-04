@@ -5,7 +5,6 @@
 
 package com.haulmont.workflow.gui.app.proc;
 
-import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -20,7 +19,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.DefaultProcActor;
@@ -28,7 +26,6 @@ import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
 import org.apache.commons.lang.BooleanUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -232,14 +229,8 @@ public class ProcEditor extends AbstractEditor<Proc> {
         RemoveAction dpaRemoveAction = new RemoveAction(dpaTable, false);
         dpaTable.addAction(dpaRemoveAction);
 
-        rolesDs.addListener(new DsListenerAdapter<ProcRole>() {
-            @Override
-            public void itemChanged(Datasource<ProcRole> ds, @Nullable ProcRole prevItem, @Nullable ProcRole item) {
-                createDpaAction.refreshState();
-            }
-        });
+        rolesDs.addItemPropertyChangeListener(e -> createDpaAction.refreshState());
     }
-
 
     protected void sortRolesDs(String property) {
         CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> sortInfo = new CollectionDatasource.Sortable.SortInfo<>();

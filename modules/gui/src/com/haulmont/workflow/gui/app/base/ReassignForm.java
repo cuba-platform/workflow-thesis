@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.workflow.core.app.WfAssignmentService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
@@ -78,11 +77,10 @@ public class ReassignForm extends AbstractWindow {
             cardRolesFrame.init();
             cardRolesFrame.setCard(procContextCard);
             tmpCardRolesDs.setVisibleRoles(ImmutableSet.<String>builder().add(reassignmentInfo.getRole()).addAll(visibleRoles).build());
-            cardRolesDs.addListener(new DsListenerAdapter<CardRole>() {
-                @Override
-                public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                    if (state == Datasource.State.VALID)
-                        doAfterCardRolesDsInitialization();
+
+            cardRolesDs.addStateChangeListener(e -> {
+                if (e.getState() == Datasource.State.VALID) {
+                    doAfterCardRolesDsInitialization();
                 }
             });
             cardRolesDs.refresh();

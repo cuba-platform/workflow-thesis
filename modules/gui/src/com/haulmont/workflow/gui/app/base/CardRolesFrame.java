@@ -1119,7 +1119,8 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void doSort() {
             super.doSort();
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
         }
 
         public void fillForProc(Proc proc) {

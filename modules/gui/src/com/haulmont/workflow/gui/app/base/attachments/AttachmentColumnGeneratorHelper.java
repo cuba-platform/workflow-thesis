@@ -10,21 +10,24 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.workflow.core.entity.Attachment;
 
+/**
+ * @author novikov
+ * @version $Id$
+ */
 public class AttachmentColumnGeneratorHelper {
 
     public static void addSizeGeneratedColumn(final Table attachmentsTable) {
         if (attachmentsTable.getDatasource().getState() != Datasource.State.VALID) {
-            attachmentsTable.getDatasource().addListener(new DsListenerAdapter() {
+            //noinspection unchecked
+            attachmentsTable.getDatasource().addStateChangeListener(new Datasource.StateChangeListener() {
                 private boolean generatorAdded = false;
 
                 @Override
-                public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                    super.stateChanged(ds, prevState, state);
-                    if (state == Datasource.State.VALID && !generatorAdded) {
+                public void stateChanged(Datasource.StateChangeEvent e) {
+                    if (e.getState() == Datasource.State.VALID && !generatorAdded) {
                         generatorAdded = true;
                         setGenerateColumn(attachmentsTable);
                     }
