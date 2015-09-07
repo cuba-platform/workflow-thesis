@@ -94,7 +94,7 @@
                         </groupTable>
                     </vbox>
                 </split>
-                <vbox id="rightPanel" width="190px" margin="true" spacing="true">
+                <vbox id="rightPanel" width="210px" margin="true" spacing="true">
                     <button id="importBtn" width="100%" action="designTable.import" icon="icons/wf-design-import.png"/>
                     <button id="exportBtn" width="100%" action="designTable.export" icon="icons/wf-design-export.png"/>
                     <button id="showAffectedDesigns" width="100%" action="designTable.showAffectedDesigns"/>
