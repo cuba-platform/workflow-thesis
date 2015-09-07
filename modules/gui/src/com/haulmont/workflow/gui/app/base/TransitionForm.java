@@ -226,12 +226,9 @@ public class TransitionForm extends AbstractForm {
         attachmentsTab = tabsheet.getTab("attachmentsTab");
         attachmentsTab.setCaption(getAttachmentsTabCaption());
 
-        attachmentsDs.addListener(new CollectionDsListenerAdapter<Attachment>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Attachment> items) {
-                attachmentsTab.setCaption(getAttachmentsTabCaption());
-                updateRequiredAttachmentsPane();
-            }
+        attachmentsDs.addCollectionChangeListener(e -> {
+            attachmentsTab.setCaption(getAttachmentsTabCaption());
+            updateRequiredAttachmentsPane();
         });
 
         attachmentsFrame.setCardCommitCheckRequired(false);

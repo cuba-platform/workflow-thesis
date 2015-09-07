@@ -17,8 +17,6 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.User;
@@ -26,7 +24,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.UserGroup;
 import org.apache.commons.collections.CollectionUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -85,26 +82,20 @@ public class UserGroupBrowser extends AbstractWindow {
 
         userGroupsTable.addAction(new RemoveAction(userGroupsTable));
 
-        userGroupsDs.addListener(new CollectionDsListenerAdapter<UserGroup>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List items) {
-                usersDs.refresh();
-            }
+        userGroupsDs.addCollectionChangeListener(e -> usersDs.refresh());
 
-            @Override
-            public void itemChanged(Datasource<UserGroup> ds, @Nullable UserGroup prevItem, @Nullable UserGroup item) {
-                if (item != null) {
-                    boolean isEnabled = getUserGroupEditable(item);
-                    userGroupsTable.getAction("edit").setEnabled(isEnabled);
-                    userGroupsTable.getAction("remove").setEnabled(isEnabled);
+        userGroupsDs.addItemChangeListener(e -> {
+            if (e.getItem() != null) {
+                boolean isEnabled = getUserGroupEditable(e.getItem());
+                userGroupsTable.getActionNN("edit").setEnabled(isEnabled);
+                userGroupsTable.getActionNN("remove").setEnabled(isEnabled);
 
-                    MetaClass metaClass = userGroupsTable.getDatasource().getMetaClass();
+                MetaClass metaClass = userGroupsTable.getDatasource().getMetaClass();
 
-                    usersTable.getAction("add").setEnabled(isEnabled &&
-                            security.isEntityOpPermitted(metaClass, EntityOp.CREATE));
-                    usersTable.getAction("remove").setEnabled(isEnabled &&
-                            security.isEntityOpPermitted(metaClass, EntityOp.DELETE));
-                }
+                usersTable.getActionNN("add").setEnabled(isEnabled &&
+                        security.isEntityOpPermitted(metaClass, EntityOp.CREATE));
+                usersTable.getActionNN("remove").setEnabled(isEnabled &&
+                        security.isEntityOpPermitted(metaClass, EntityOp.DELETE));
             }
         });
 
@@ -160,7 +151,7 @@ public class UserGroupBrowser extends AbstractWindow {
                 userSession.getCurrentOrSubstitutedUser().equals(item.getSubstitutedCreator());
     }
 
-    private class DeleteUserAction extends AbstractAction {
+    protected class DeleteUserAction extends AbstractAction {
 
         public DeleteUserAction() {
             super("remove");

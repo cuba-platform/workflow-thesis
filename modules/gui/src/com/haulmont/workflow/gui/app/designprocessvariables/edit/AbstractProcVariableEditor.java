@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.workflow.core.app.ProcessVariableService;
 import com.haulmont.workflow.core.entity.AbstractProcessVariable;
@@ -127,26 +126,23 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
     }
 
     private void addListenerToEntity() {
-
-        processVariableDs.addListener(new CollectionDsListenerAdapter<AbstractProcessVariable>() {
-            @Override
-            public void valueChanged(AbstractProcessVariable source, String property, Object prevValue, Object value) {
-                if ("attributeType".equals(property)) {
-                    setFields();
-                    if (!Arrays.asList(AttributeType.ENTITY, AttributeType.ENUM).contains(processVariable.getAttributeType())) {
-                        processVariable.setMetaClassName(null);
-                        metaClassNameField.setValue(null);
-                    }
-                    setValueToFields();
+        processVariableDs.addItemPropertyChangeListener(e -> {
+            if ("attributeType".equals(e.getProperty())) {
+                setFields();
+                if (!Arrays.asList(AttributeType.ENTITY, AttributeType.ENUM).contains(processVariable.getAttributeType())) {
+                    processVariable.setMetaClassName(null);
+                    metaClassNameField.setValue(null);
                 }
-                if ("metaClassName".equals(property)) {
-                    if (processVariable.getMetaClassName() != null && processVariable.getAttributeType() != null) {
-                        reloadOptionsDatasource();
-                        setValueToFields();
-                    } else {
-                        actionsFieldValueField.setEnabled(false);
-                        lookupValueField.setEnabled(false);
-                    }
+                setValueToFields();
+            }
+
+            if ("metaClassName".equals(e.getProperty())) {
+                if (processVariable.getMetaClassName() != null && processVariable.getAttributeType() != null) {
+                    reloadOptionsDatasource();
+                    setValueToFields();
+                } else {
+                    actionsFieldValueField.setEnabled(false);
+                    lookupValueField.setEnabled(false);
                 }
             }
         });

@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
@@ -146,18 +147,14 @@ public class CardRolesFrame extends AbstractFrame {
 
         initMoveButtons();
 
-        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
-            private static final long serialVersionUID = 1205336750221624070L;
+        tmpCardRolesDs.addCollectionChangeListener(e -> {
+            initCreateRoleLookup();
 
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<CardRole> items) {
-                initCreateRoleLookup();
-                if (operation.equals(Operation.REMOVE) && !tmpCardRolesDs.fill)
-                    normalizeSortOrders();
+            if (e.getOperation() == Operation.REMOVE && !tmpCardRolesDs.fill)
+                normalizeSortOrders();
 
-                if (operation.equals(Operation.ADD) || operation.equals(Operation.REMOVE)) {
-                    tmpCardRolesDs.doSort();
-                }
+            if (e.getOperation() == Operation.ADD || e.getOperation() == Operation.REMOVE) {
+                tmpCardRolesDs.doSort();
             }
         });
 
@@ -231,30 +228,27 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     protected void initDurationColumns() {
-        tmpCardRolesDs.addListener(new CollectionDsListenerAdapter<CardRole>() {
-            @Override
-            public void valueChanged(CardRole source, String property, Object prevValue, Object value) {
-                if ("duration".equals(property)) {
-                    for (UUID uuid : tmpCardRolesDs.getItemIds()) {
-                        CardRole cr = tmpCardRolesDs.getItem(uuid);
-                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
-                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
-                            cr.setDuration(source.getDuration());
-                        }
+        tmpCardRolesDs.addItemPropertyChangeListener(e -> {
+            if ("duration".equals(e.getProperty())) {
+                for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+                    CardRole cr = tmpCardRolesDs.getItem(uuid);
+                    if (cr.getSortOrder() != null && cr.getSortOrder().equals(e.getItem().getSortOrder())
+                            && cr.getProcRole() != null && cr.getProcRole().equals(e.getItem().getProcRole())) {
+                        cr.setDuration(e.getItem().getDuration());
                     }
-                } else if ("timeUnit".equals(property)) {
-                    for (UUID uuid : tmpCardRolesDs.getItemIds()) {
-                        CardRole cr = tmpCardRolesDs.getItem(uuid);
-                        if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
-                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
-                            TimeUnit timeUnit = source.getTimeUnit();
-                            if (timeUnit != null)
-                                cr.setTimeUnit(timeUnit);
-                        }
-                    }
-                } else if ("sortOrder".equals(property)) {
-                    assignDurationAndTimeUnit(source);
                 }
+            } else if ("timeUnit".equals(e.getProperty())) {
+                for (UUID uuid : tmpCardRolesDs.getItemIds()) {
+                    CardRole cr = tmpCardRolesDs.getItem(uuid);
+                    if (cr.getSortOrder() != null && cr.getSortOrder().equals(e.getItem().getSortOrder())
+                            && cr.getProcRole() != null && cr.getProcRole().equals(e.getItem().getProcRole())) {
+                        TimeUnit timeUnit = e.getItem().getTimeUnit();
+                        if (timeUnit != null)
+                            cr.setTimeUnit(timeUnit);
+                    }
+                }
+            } else if ("sortOrder".equals(e.getProperty())) {
+                assignDurationAndTimeUnit(e.getItem());
             }
         });
     }

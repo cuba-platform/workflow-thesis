@@ -7,6 +7,7 @@ package com.haulmont.workflow.gui.app.design;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
@@ -14,7 +15,6 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignLocKey;
@@ -59,7 +59,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
     private BiMap<Element, DesignLocKey> keysMap;
     private BiMap<Element, DesignLocValue> valuesMap;
 
-    private enum type {
+    private enum Type {
         ACTION("action"),
         STATE("state"),
         TRANSITION("transition"),
@@ -68,7 +68,7 @@ public class LocalizeDesignWindow extends AbstractEditor {
 
         private String aType;
 
-        type(String result) {
+        Type(String result) {
             this.aType = result;
         }
 
@@ -121,40 +121,27 @@ public class LocalizeDesignWindow extends AbstractEditor {
         }
 
         fillKeys();
-        ArrayList keys = new ArrayList(keysMap.values());
+        ArrayList<DesignLocKey> keys = new ArrayList<>(keysMap.values());
         Collections.sort(keys);
 
         Map<String, Object> keysDsParams = new HashMap<>();
         keysDsParams.put("keysCollection", keys);
 
-        keysDs.addListener(
-                new CollectionDsListenerAdapter<DesignLocKey>() {
-                    @Override
-                    public void itemChanged(Datasource<DesignLocKey> ds, DesignLocKey prevItem, DesignLocKey item) {
-                        Map<String, Object> valuesDsParams = new HashMap<>();
-                        valuesDsParams.put("valuesCollection", getValues(item));
+        keysDs.addItemChangeListener(e -> {
+            valuesDs.refresh(ParamsMap.of("valuesCollection", getValues(e.getItem())));
+        });
 
-                        valuesDs.refresh(valuesDsParams);
-                    }
-                }
-        );
+        valuesDs.addItemPropertyChangeListener(e -> {
+            Element el = valuesMap.inverse().get(e.getItem());
+            if (el != null) {
+                el.setText((String) e.getValue());
 
-        valuesDs.addListener(
-                new CollectionDsListenerAdapter<DesignLocValue>() {
-                    @Override
-                    public void valueChanged(DesignLocValue source, String property, Object prevValue, Object value) {
-                        Element el = valuesMap.inverse().get(source);
-                        if (el != null) {
-                            el.setText((String) value);
-
-                            String xml = Dom4j.writeDocument(document, true);
-                            Design design = designDs.getItem();
-                            design.setLocalization(xml);
-                            design.setCompileTs(null);
-                        }
-                    }
-                }
-        );
+                String xml = Dom4j.writeDocument(document, true);
+                Design design1 = designDs.getItem();
+                design1.setLocalization(xml);
+                design1.setCompileTs(null);
+            }
+        });
 
         keysDs.refresh(keysDsParams);
     }
@@ -207,15 +194,15 @@ public class LocalizeDesignWindow extends AbstractEditor {
                     WfConstants.ACTION_SAVE_AND_CLOSE.equals(id) ||
                     WfConstants.ACTION_SAVE.equals(id) ||
                     WfConstants.ACTION_CANCEL.equals(id)) {
-                description = type.ACTION.type();
+                description = Type.ACTION.type();
             } else if (id.equals("description")) {
-                description = type.DESCRIPTION.type();
+                description = Type.DESCRIPTION.type();
             } else if (id.equals("Result")) {
-                description = type.RESULT.type();
+                description = Type.RESULT.type();
             } else if (parent == null) {
-                description = type.STATE.type();
+                description = Type.STATE.type();
             } else if (parent.getParentKey() == null) {
-                description = type.TRANSITION.type();
+                description = Type.TRANSITION.type();
             }
             String property = properties.getProperty(propName);
             DesignLocKey designLocKey = null;
@@ -265,15 +252,15 @@ public class LocalizeDesignWindow extends AbstractEditor {
                         WfConstants.ACTION_SAVE_AND_CLOSE.equals(part) ||
                         WfConstants.ACTION_SAVE.equals(part) ||
                         WfConstants.ACTION_CANCEL.equals(part)) {
-                    description = type.ACTION.type();
+                    description = Type.ACTION.type();
                 } else if (part.equals("description")) {
-                    description = type.DESCRIPTION.type();
+                    description = Type.DESCRIPTION.type();
                 } else if (part.equals("Result")) {
-                    description = type.RESULT.type();
+                    description = Type.RESULT.type();
                 } else if (level == 0) {
-                    description = type.STATE.type();
+                    description = Type.STATE.type();
                 } else if (level == 1) {
-                    description = type.TRANSITION.type();
+                    description = Type.TRANSITION.type();
                 }
 
                 if (partEl == null) {
