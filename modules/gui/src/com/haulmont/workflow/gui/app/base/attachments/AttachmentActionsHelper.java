@@ -276,57 +276,43 @@ public class AttachmentActionsHelper {
         final Frame frame = attachmentsTable.getFrame();
         final FileUploadField fileUploadField = AppConfig.getFactory().createComponent(FileUploadField.class);
         fileUploadField.setFrame(frame);
-        fileUploadField.addListener(new FileUploadField.Listener() {
-            @Override
-            public void uploadStarted(Event event) {
+
+        fileUploadField.addFileUploadSucceedListener(e -> {
+            Map<String, Object> openParams = new HashMap<>();
+            UUID fileId = fileUploadField.getFileId();
+            String filename = e.getFileName();
+            openParams.put("fileId", fileId);
+            if (windowParams != null)
+                openParams.putAll(windowParams);
+            if (openParams.containsKey("prevVersion")) {
+                openParams.remove("prevVersion");
             }
 
-            @Override
-            public void uploadFinished(Event event) {
-            }
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+            FileDescriptor fileDescriptor = fileUploading.getFileDescriptor(fileId, filename);
 
-            @Override
-            public void uploadSucceeded(Event event) {
-                Map<String, Object> openParams = new HashMap<String, Object>();
-                UUID fileId = fileUploadField.getFileId();
-                String filename = event.getFilename();
-                openParams.put("fileId", fileId);
-                if (windowParams != null)
-                    openParams.putAll(windowParams);
-                if (openParams.containsKey("prevVersion")) {
-                    openParams.remove("prevVersion");
-                }
+            Attachment attachment = creator.createObject();
+            attachment.setFile(fileDescriptor);
 
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                FileDescriptor fileDescriptor = fileUploading.getFileDescriptor(fileId, filename);
-
-                Attachment attachment = creator.createObject();
-                attachment.setFile(fileDescriptor);
-
-                final Window.Editor editor = frame.openEditor(uploadScreenId, attachment, openType, openParams);
-                editor.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.Editor.COMMIT_ACTION_ID.equals(actionId)) {
-                            CollectionDatasource attachDs = attachmentsTable.getDatasource();
-                            attachDs.addItem(editor.getItem());
-                            if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
-                                    !PersistenceHelper.isNew(
-                                            ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
-                                CollectionDatasource datasource = attachmentsTable.getDatasource();
-                                if (!(datasource instanceof PropertyDatasource)) {
-                                    datasource.commit();
-                                }
-                                attachmentsTable.refresh();
+            final Window.Editor editor = frame.openEditor(uploadScreenId, attachment, openType, openParams);
+            editor.addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    if (Window.Editor.COMMIT_ACTION_ID.equals(actionId)) {
+                        CollectionDatasource attachDs = attachmentsTable.getDatasource();
+                        attachDs.addItem(editor.getItem());
+                        if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                                !PersistenceHelper.isNew(
+                                        ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                            CollectionDatasource datasource = attachmentsTable.getDatasource();
+                            if (!(datasource instanceof PropertyDatasource)) {
+                                datasource.commit();
                             }
+                            attachmentsTable.refresh();
                         }
                     }
-                });
-            }
-
-            @Override
-            public void uploadFailed(Event event) {
-            }
+                }
+            });
         });
         fileUploadField.setCaption(AppBeans.get(Messages.class).getMessage(AttachmentActionsHelper.class, "wf.upload.submit"));
         return fileUploadField;

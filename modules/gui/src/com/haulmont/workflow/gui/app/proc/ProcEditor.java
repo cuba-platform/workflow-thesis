@@ -7,7 +7,6 @@ package com.haulmont.workflow.gui.app.proc;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -16,7 +15,6 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Role;
@@ -64,29 +62,24 @@ public class ProcEditor extends AbstractEditor<Proc> {
         createRolesTableActions();
         createDpaTableActions();
 
-        getDsContext().addListener(new DsContext.CommitListener() {
-            @Override
-            public void beforeCommit(CommitContext context) {
-                for (Entity entity : context.getCommitInstances()) {
-                    if (procDs.getItem().equals(entity)) {
-                        Proc p = (Proc) entity;
-                        if (p.getCardTypes() != null && !p.getCardTypes().startsWith(","))
-                            p.setCardTypes("," + p.getCardTypes());
-                        if (p.getCardTypes() != null && !p.getCardTypes().endsWith(","))
-                            p.setCardTypes(p.getCardTypes() + ",");
-                        return;
-                    }
+        getDsContext().addBeforeCommitListener(context -> {
+            for (Entity entity : context.getCommitInstances()) {
+                if (procDs.getItem().equals(entity)) {
+                    Proc p = (Proc) entity;
+                    if (p.getCardTypes() != null && !p.getCardTypes().startsWith(","))
+                        p.setCardTypes("," + p.getCardTypes());
+                    if (p.getCardTypes() != null && !p.getCardTypes().endsWith(","))
+                        p.setCardTypes(p.getCardTypes() + ",");
+                    return;
                 }
-            }
-
-            @Override
-            public void afterCommit(CommitContext context, Set<Entity> result) {
             }
         });
     }
 
+    @Override
     public void setItem(Entity item) {
         super.setItem(item);
+
         invisibleRolesFiltering();
     }
 

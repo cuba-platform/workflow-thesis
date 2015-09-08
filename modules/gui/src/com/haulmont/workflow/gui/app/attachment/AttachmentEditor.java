@@ -137,43 +137,40 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                 attachItem.setSubstitutedCreator(userSession.getCurrentOrSubstitutedUser());
                 fileDs.refresh();
                 okBtn.setEnabled(false);
-                uploadField.addListener(new FileUploadField.ListenerAdapter() {
 
-                    @Override
-                    public void uploadSucceeded(Event event) {
-                        String uploadFieldFileName = uploadField.getFileName();
-                        fileId = uploadField.getFileId();
+                uploadField.addFileUploadSucceedListener(e -> {
+                    String uploadFieldFileName = uploadField.getFileName();
+                    fileId = uploadField.getFileId();
 
-                        fileNameText.setValue(uploadFieldFileName);
-                        nameText.setValue(StringUtils.substringBeforeLast(uploadFieldFileName, "."));
+                    fileNameText.setValue(uploadFieldFileName);
+                    nameText.setValue(StringUtils.substringBeforeLast(uploadFieldFileName, "."));
 
-                        if (StringUtils.isBlank(nameText.getValue().toString()))
-                            nameText.setValue(uploadField.getFileName());
+                    if (StringUtils.isBlank(nameText.getValue().toString()))
+                        nameText.setValue(uploadField.getFileName());
 
-                        DecimalFormat formatter = new DecimalFormat("###,###,###,###");
-                        FileDescriptor fileDescriptor = fileDs.getItem();
+                    DecimalFormat formatter = new DecimalFormat("###,###,###,###");
+                    FileDescriptor fileDescriptor = fileDs.getItem();
 
-                        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                        File tmpFile = fileUploading.getFile(fileId);
+                    FileUploadingAPI fileUploading1 = AppBeans.get(FileUploadingAPI.NAME);
+                    File tmpFile = fileUploading1.getFile(fileId);
 
-                        fileDescriptor.setExtension(FilenameUtils.getExtension(uploadFieldFileName));
-                        if (tmpFile != null) {
-                            sizeLab.setValue(formatSize(tmpFile.length(), 0)
-                                    + " ("
-                                    + formatter.format(tmpFile.length())
-                                    + " "
-                                    + messages.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")");
-                        }
-
-                        if (tmpFile != null) {
-                            fileDescriptor.setSize(tmpFile.length());
-                        }
-                        fileDescriptor.setCreateDate(timeSource.currentTimestamp());
-
-                        okBtn.setEnabled(true);
-
-                        needSave = true;
+                    fileDescriptor.setExtension(FilenameUtils.getExtension(uploadFieldFileName));
+                    if (tmpFile != null) {
+                        sizeLab.setValue(formatSize(tmpFile.length(), 0)
+                                + " ("
+                                + formatter.format(tmpFile.length())
+                                + " "
+                                + messages.getMessage(AttachmentColumnGeneratorHelper.class, "fmtB") + ")");
                     }
+
+                    if (tmpFile != null) {
+                        fileDescriptor.setSize(tmpFile.length());
+                    }
+                    fileDescriptor.setCreateDate(timeSource.currentTimestamp());
+
+                    okBtn.setEnabled(true);
+
+                    needSave = true;
                 });
             }
         } else {

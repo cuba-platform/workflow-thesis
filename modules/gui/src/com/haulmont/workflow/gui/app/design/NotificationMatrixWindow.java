@@ -23,45 +23,27 @@ import java.util.Map;
  */
 public class NotificationMatrixWindow extends AbstractEditor {
 
-    private FileUploadField uploadField;
-    private byte[] bytes;
+    protected FileUploadField uploadField;
+    protected byte[] bytes;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        uploadField = (FileUploadField) getComponent("uploadField");
-        uploadField.addListener(
-                new FileUploadField.Listener() {
-                    public void uploadStarted(Event event) {
-                    }
+        uploadField = (FileUploadField) getComponentNN("uploadField");
+        uploadField.addFileUploadSucceedListener(e -> {
+            try {
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
-                    public void uploadFinished(Event event) {
-                    }
+                InputStream inputFile = new FileInputStream(fileUploading.getFile(uploadField.getFileId()));
+                bytes = IOUtils.toByteArray(inputFile);
+                inputFile.close();
+                fileUploading.deleteFile(uploadField.getFileId());
 
-                    public void uploadSucceeded(Event event) {
-                        //bytes = uploadField.getBytes();
-                        try {
-                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-
-                            InputStream inputFile = new FileInputStream(fileUploading.getFile(uploadField.getFileId()));
-                            bytes = IOUtils.toByteArray(inputFile);
-                            inputFile.close();
-                            fileUploading.deleteFile(uploadField.getFileId());
-                            close(Window.COMMIT_ACTION_ID);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (FileStorageException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                    public void uploadFailed(Event event) {
-                    }
-
-                    public void updateProgress(long readBytes, long contentLength) {
-                    }
-                }
-        );
+                close(Window.COMMIT_ACTION_ID);
+            } catch (IOException | FileStorageException ex) {
+                throw new RuntimeException("Load failed", ex);
+            }
+        });
     }
 
     public byte[] getBytes(){

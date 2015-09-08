@@ -23,7 +23,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class ImportDialog extends AbstractWindow {
-    byte[] bytes;
+    protected byte[] bytes;
 
     public byte[] getBytes() {
         return bytes;
@@ -32,39 +32,23 @@ public class ImportDialog extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        final FileUploadField fileUploadField = (FileUploadField) getComponent("fileUpload");
-        fileUploadField.addListener(new FileUploadField.Listener() {
-            public void uploadStarted(Event event) {
+        final FileUploadField fileUploadField = (FileUploadField) getComponentNN("fileUpload");
+
+        fileUploadField.addFileUploadSucceedListener(e -> {
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+            File file = fileUploading.getFile(fileUploadField.getFileId());
+
+            InputStream fileInput = null;
+            try {
+                fileInput = new FileInputStream(file);
+                bytes = IOUtils.toByteArray(fileInput);
+                fileInput.close();
+                fileUploading.deleteFile(fileUploadField.getFileId());
+            } catch (IOException | FileStorageException ex) {
+                throw new RuntimeException("Import failed", ex);
             }
 
-            public void uploadFinished(Event event) {
-            }
-
-            public void uploadSucceeded(Event event) {
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                File file = fileUploading.getFile(fileUploadField.getFileId());
-
-                InputStream fileInput = null;
-                try {
-                    fileInput = new FileInputStream(file);
-                    bytes = IOUtils.toByteArray(fileInput);
-                    fileInput.close();
-                    fileUploading.deleteFile(fileUploadField.getFileId());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (FileStorageException e) {
-                    throw new RuntimeException(e);
-                }
-
-                close(Window.COMMIT_ACTION_ID);
-
-            }
-
-            public void uploadFailed(Event event) {
-            }
-
-            public void updateProgress(long readBytes, long contentLength) {
-            }
+            close(Window.COMMIT_ACTION_ID);
         });
     }
 }

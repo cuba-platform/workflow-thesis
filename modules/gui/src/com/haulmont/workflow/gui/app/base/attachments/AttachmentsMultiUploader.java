@@ -145,45 +145,40 @@ public class AttachmentsMultiUploader extends AbstractEditor {
             }
         });
 
-        uploadField.addListener(new FileMultiUploadField.UploadListener() {
+        uploadField.addQueueUploadCompleteListener(() -> {
+            needSave = true;
+            isUploading = false;
+            okBtn.setEnabled(true);
+            delBtn.setEnabled(true);
 
-            @Override
-            public void queueUploadComplete() {
-                needSave = true;
-                isUploading = false;
-                okBtn.setEnabled(true);
-                delBtn.setEnabled(true);
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+            for (Map.Entry<UUID, String> upload : uploadField.getUploadsMap().entrySet()) {
+                FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
+                filesDs.addItem(fDesc);
+                Attachment attach = creator.createObject();
+                attach.setComment("");
+                attach.setName(StringUtils.substringBeforeLast(fDesc.getName(), "."));
+                attach.setFile(fDesc);
 
-                for (Map.Entry<UUID, String> upload : uploadField.getUploadsMap().entrySet()) {
-                    FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
-                    filesDs.addItem(fDesc);
-                    Attachment attach = creator.createObject();
-                    attach.setComment("");
-                    attach.setName(StringUtils.substringBeforeLast(fDesc.getName(), "."));
-                    attach.setFile(fDesc);
+                AttachmentType aType = attachTypeCombo.getValue();
 
-                    AttachmentType aType = attachTypeCombo.getValue();
+                if (aType != null)
+                    attach.setAttachType(aType);
+                else
+                    attach.setAttachType(defaultAttachType);
 
-                    if (aType != null)
-                        attach.setAttachType(aType);
-                    else
-                        attach.setAttachType(defaultAttachType);
-
-                    descriptors.put(fDesc, upload.getKey());
-                    attachDs.includeItem(attach);
-                }
-                uploadField.clearUploads();
-                uploadsTable.refresh();
+                descriptors.put(fDesc, upload.getKey());
+                attachDs.includeItem(attach);
             }
+            uploadField.clearUploads();
+            uploadsTable.refresh();
+        });
 
-            @Override
-            public void fileUploadStart(String fileName) {
-                isUploading = true;
-                okBtn.setEnabled(false);
-                delBtn.setEnabled(false);
-            }
+        uploadField.addFileUploadStartListener(e -> {
+            isUploading = true;
+            okBtn.setEnabled(false);
+            delBtn.setEnabled(false);
         });
     }
 
