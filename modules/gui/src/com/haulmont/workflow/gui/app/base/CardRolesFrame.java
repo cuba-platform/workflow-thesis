@@ -15,7 +15,6 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.Role;
@@ -559,15 +558,15 @@ public class CardRolesFrame extends AbstractFrame {
         durationTF.setWidth("60px");
         if (cardRole != null && cardRole.getDuration() != null)
             durationTF.setValue(cardRole.getDuration().toString());
-        durationTF.addListener(getDurationValueListener(cardRole, durationTF));
+        durationTF.addValueChangeListener(getDurationValueListener(cardRole, durationTF));
         return durationTF;
     }
 
-    protected ValueListener getDurationValueListener(CardRole cardRole, TextField field) {
+    protected Component.ValueChangeListener getDurationValueListener(CardRole cardRole, TextField field) {
         return new DurationValueListener(cardRole, field);
     }
 
-    protected class DurationValueListener implements ValueListener {
+    protected class DurationValueListener implements Component.ValueChangeListener {
 
         protected CardRole cardRole;
         protected TextField field;
@@ -578,14 +577,14 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         @Override
-        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+        public void valueChanged(ValueChangeEvent e) {
             try {
-                setValue(value);
+                setValue(e.getValue());
             } catch (NumberFormatException ex) {
                 String msg = messages.getMessage("com.haulmont.cuba.gui", "validationFail");
                 String caption = messages.getMessage("com.haulmont.cuba.gui", "validationFail.caption");
                 showNotification(caption, msg, NotificationType.TRAY);
-                setValue(prevValue);
+                setValue(e.getPrevValue());
             }
         }
 
@@ -613,16 +612,16 @@ public class CardRolesFrame extends AbstractFrame {
         if (cardRole != null && cardRole.getTimeUnit() != null) {
             timeUnitField.setValue(cardRole.getTimeUnit());
         }
-        timeUnitField.addListener(getTimeUnitValueListener(cardRole));
+        timeUnitField.addValueChangeListener(getTimeUnitValueListener(cardRole));
 
         return timeUnitField;
     }
 
-    protected ValueListener getTimeUnitValueListener(CardRole cardRole) {
+    protected Component.ValueChangeListener getTimeUnitValueListener(CardRole cardRole) {
         return new TimeUnitValueListener(cardRole);
     }
 
-    protected class TimeUnitValueListener implements ValueListener {
+    protected class TimeUnitValueListener implements Component.ValueChangeListener {
         protected CardRole cardRole;
 
         public TimeUnitValueListener(CardRole cardRole) {
@@ -630,9 +629,9 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         @Override
-        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+        public void valueChanged(ValueChangeEvent e) {
             if (cardRole != null)
-                cardRole.setTimeUnit((TimeUnit) value);
+                cardRole.setTimeUnit((TimeUnit) e.getValue());
         }
     }
 
@@ -649,7 +648,7 @@ public class CardRolesFrame extends AbstractFrame {
                     orderLookup.setRequired(true);
                 }
 
-                orderLookup.addListener(getSortOrderValueListener(cardRole));
+                orderLookup.addValueChangeListener(getSortOrderValueListener(cardRole));
                 return orderLookup;
             } else {
                 Label label = componentsFactory.createComponent(Label.class);
@@ -660,11 +659,11 @@ public class CardRolesFrame extends AbstractFrame {
         return null;
     }
 
-    protected ValueListener getSortOrderValueListener(final CardRole cardRole) {
+    protected Component.ValueChangeListener getSortOrderValueListener(final CardRole cardRole) {
         return new SortOrderValueListener(cardRole);
     }
 
-    protected class SortOrderValueListener implements ValueListener {
+    protected class SortOrderValueListener implements Component.ValueChangeListener {
         protected CardRole cardRole;
 
         public SortOrderValueListener(CardRole cardRole) {
@@ -672,8 +671,8 @@ public class CardRolesFrame extends AbstractFrame {
         }
 
         @Override
-        public void valueChanged(Object source, String property, Object prevValue, final Object value) {
-            cardRole.setSortOrder((Integer) value);
+        public void valueChanged(ValueChangeEvent e) {
+            cardRole.setSortOrder((Integer) e.getValue());
             normalizeSortOrders();
             tmpCardRolesDs.doSort();
         }

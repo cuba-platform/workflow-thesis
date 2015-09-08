@@ -6,9 +6,9 @@ package com.haulmont.workflow.gui.app.proc
 
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.gui.components.AbstractEditor
+import com.haulmont.cuba.gui.components.Component
 import com.haulmont.cuba.gui.components.LookupField
 import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.workflow.core.entity.DefaultProcActor
 
@@ -60,10 +60,9 @@ class DefaultProcActorEditor extends AbstractEditor{
       if (sortOrderField != null) {
           sortOrderField.optionsList = orderValues
           sortOrderField.value = item.sortOrder
-          sortOrderField.addListener(
-                  {Object source, String property, Object prevValue, Object value ->
-                      item.sortOrder = value
-                  } as ValueListener)
+          sortOrderField.addValueChangeListener({ Component.ValueChangeEvent e ->
+              item.sortOrder = e.value
+          })
       }
   }
 }
