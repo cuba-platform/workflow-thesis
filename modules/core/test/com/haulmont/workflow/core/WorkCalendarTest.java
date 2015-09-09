@@ -218,10 +218,10 @@ public class WorkCalendarTest extends WfTestCase {
     }
 
 
-    @Override
-    protected void initDataSources() throws Exception {
-        Class.forName("org.postgresql.Driver");
-        TestDataSource ds = new TestDataSource("jdbc:postgresql://localhost/refapp", "root", "root");
-        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
-    }
+//    @Override
+//    protected void initDataSources() throws Exception {
+//        Class.forName("org.postgresql.Driver");
+//        TestDataSource ds = new TestDataSource("jdbc:postgresql://localhost/refapp", "root", "root");
+//        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
+//    }
 }
