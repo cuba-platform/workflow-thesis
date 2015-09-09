@@ -26,7 +26,7 @@
                 <button action="procTable.refresh" icon="icons/refresh.png"/>
                 <button action="procTable.edit" icon="icons/edit.png"/>
                 <button action="procTable.remove" icon="icons/remove.png" />
-                <button action="procTable.editProcessVariables" icon="icons/edit.png"/>
+                <button action="procTable.editProcessVariables" icon="icons/wf-design-scripts.png"/>
             </buttonsPanel>
             <actions>
                 <action id="edit"/>

@@ -7,6 +7,7 @@ package com.haulmont.workflow.gui.app.proc;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -32,31 +33,26 @@ public class ProcBrowser extends AbstractLookup {
         table.addAction(new RefreshAction(table));
         table.addAction(new EditAction(table));
         table.addAction(new RemoveProc(table, true));
-        table.addAction(new AbstractEntityAction<Proc>("editProcessVariables", table) {
+        table.addAction(new BaseAction("editProcessVariables") {
 
             @Override
-            protected Boolean isShowAfterActionNotification() {
-                return false;
-            }
-
-            @Override
-            protected Boolean isUpdateSelectedEntities() {
-                return false;
-            }
-
-            @Override
-            public void doActionPerform(Component component) {
+            public void actionPerform(Component component) {
                 getDialogParams().setWidth(900);
                 getDialogParams().setHeight(600);
 
                 Window variablesEditor = openWindow("wf$ProcVariable.browse",
-                        WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", getEntity()));
+                        WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", target.getSingleSelected()));
                 variablesEditor.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
-                        table.requestFocus();
+                        target.requestFocus();
                     }
                 });
+            }
+
+            @Override
+            public boolean isApplicable() {
+                return target != null && target.getSelected().size() == 1;
             }
         });
     }
