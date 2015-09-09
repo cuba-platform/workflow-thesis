@@ -931,12 +931,12 @@ public class CardRolesFrame extends AbstractFrame {
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-
-        if (rolesTable.getActions() != null) {
-            for (Action action : rolesTable.getActions()) {
-                action.setVisible(enabled);
-            }
+        if(!enabled) {
+            if (rolesTable.getActions() != null)
+                for (Action action : rolesTable.getActions())
+                    action.setVisible(false);
         }
+
         for (Component action : rolesActions) {
             action.setEnabled(enabled);
         }
@@ -956,10 +956,10 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+        if(!editable)
+            for (Action action : rolesTable.getActions())
+                action.setVisible(false);
 
-        for (Action action : rolesTable.getActions()) {
-            action.setVisible(editable);
-        }
         rolesTable.setEditable(editable);
 
         createRoleLookup.setEditable(editable);
