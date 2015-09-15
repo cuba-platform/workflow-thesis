@@ -161,6 +161,14 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     }
 
     protected Assignment createAssignment(Card card, CardRole cr, String state) {
+        List<Assignment> assignments = getAssignmentsByState(card, state);
+        Date dueDate = null;
+        for(Assignment assignment : assignments){
+            if(assignment.getDueDate() != null){
+                dueDate = assignment.getDueDate();
+                break;
+            }
+        }
         Assignment assignment = metadata.create(Assignment.class);
         assignment.setName(state);
         assignment.setDescription("msg://" + state);
@@ -172,6 +180,9 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         assignment.setIteration(1);
         assignment.setMasterAssignment(master);
         assignment.setFamilyAssignment(getFamilyAssignment(card));
+        if(dueDate != null){
+            assignment.setDueDate(dueDate);
+        }
         persistence.getEntityManager().persist(assignment);
         fireCreateEvent(assignment, cr);
         return assignment;
