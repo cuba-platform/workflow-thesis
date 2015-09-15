@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -170,27 +171,25 @@ public abstract class FormManager implements Serializable {
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
             WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
 
-            final Window window = wmp.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-            window.addListener(new Window.CloseListener() {
-                public void windowClosed(String actionId) {
-                    if (window instanceof WfForm) {
-                        WfForm wfForm = (WfForm) window;
-                        FormResult formResult = wfForm.getFormResult();
-                        if (formResult != null) {
-                            chain.addFormResult(screenId, formResult);
-                        }
+            Window window = wmp.get().openWindow(windowInfo, OpenType.DIALOG, params);
+            window.addCloseListener(actionId -> {
+                if (window instanceof WfForm) {
+                    WfForm wfForm = (WfForm) window;
+                    FormResult formResult = wfForm.getFormResult();
+                    if (formResult != null) {
+                        chain.addFormResult(screenId, formResult);
                     }
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        String comment = window instanceof WfForm ? ((WfForm) window).getComment() : "";
-                        try {
-                            chain.doManagerBefore(comment);
-                        } catch (RuntimeException e) {
-                            chain.fail();
-                            throw e;
-                        }
-                    } else {
+                }
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    String comment1 = window instanceof WfForm ? ((WfForm) window).getComment() : "";
+                    try {
+                        chain.doManagerBefore(comment1);
+                    } catch (RuntimeException e) {
                         chain.fail();
+                        throw e;
                     }
+                } else {
+                    chain.fail();
                 }
             });
         }
@@ -203,12 +202,10 @@ public abstract class FormManager implements Serializable {
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
             WindowManagerProvider wmp = AppBeans.get(WindowManagerProvider.NAME);
 
-            final Window window = wmp.get().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
-            window.addListener(new Window.CloseListener() {
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        chain.doManagerAfter();
-                    }
+            final Window window = wmp.get().openWindow(windowInfo, OpenType.DIALOG, params);
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    chain.doManagerAfter();
                 }
             });
         }
@@ -237,9 +234,7 @@ public abstract class FormManager implements Serializable {
             } catch (NoSuchMethodException e) {
                 try {
                     runnable = (Callable<Boolean>) cls.newInstance();
-                } catch (InstantiationException e1) {
-                    throw new RuntimeException(e1);
-                } catch (IllegalAccessException e1) {
+                } catch (InstantiationException | IllegalAccessException e1) {
                     throw new RuntimeException(e1);
                 }
             }

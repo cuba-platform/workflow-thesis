@@ -214,26 +214,23 @@ public class AttachmentActionsHelper {
                 }
                 paramz.put("creator", creator);
 
-                final Window editor = frame.openEditor("wf$AttachUploader", null,
+                Window.Editor editor = frame.openEditor("wf$AttachUploader", null,
                         openType,
                         paramz, null);
 
-                editor.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId) && editor instanceof Window.Editor) {
-                            List<Attachment> items = ((AttachmentsMultiUploader) editor).getAttachments();
-                            for (Attachment attach : items) {
-                                attachDs.addItem(attach);
+                editor.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        List<Attachment> items = ((AttachmentsMultiUploader) editor).getAttachments();
+                        for (Attachment attach : items) {
+                            attachDs.addItem(attach);
+                        }
+                        if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                                !PersistenceHelper.isNew(
+                                        ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                            if (!(attachDs instanceof PropertyDatasource)) {
+                                attachDs.commit();
                             }
-                            if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
-                                    !PersistenceHelper.isNew(
-                                            ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
-                                if (!(attachDs instanceof PropertyDatasource)) {
-                                    attachDs.commit();
-                                }
-                                attachments.refresh();
-                            }
+                            attachments.refresh();
                         }
                     }
                 });
@@ -294,22 +291,19 @@ public class AttachmentActionsHelper {
             Attachment attachment = creator.createObject();
             attachment.setFile(fileDescriptor);
 
-            final Window.Editor editor = frame.openEditor(uploadScreenId, attachment, openType, openParams);
-            editor.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.Editor.COMMIT_ACTION_ID.equals(actionId)) {
-                        CollectionDatasource attachDs = attachmentsTable.getDatasource();
-                        attachDs.addItem(editor.getItem());
-                        if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
-                                !PersistenceHelper.isNew(
-                                        ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
-                            CollectionDatasource datasource = attachmentsTable.getDatasource();
-                            if (!(datasource instanceof PropertyDatasource)) {
-                                datasource.commit();
-                            }
-                            attachmentsTable.refresh();
+            Window.Editor editor = frame.openEditor(uploadScreenId, attachment, openType, openParams);
+            editor.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    CollectionDatasource attachDs = attachmentsTable.getDatasource();
+                    attachDs.addItem(editor.getItem());
+                    if (creator instanceof AttachmentCreator.CardAttachmentCreator &&
+                            !PersistenceHelper.isNew(
+                                    ((AttachmentCreator.CardAttachmentCreator) creator).getCard())) {
+                        CollectionDatasource datasource = attachmentsTable.getDatasource();
+                        if (!(datasource instanceof PropertyDatasource)) {
+                            datasource.commit();
                         }
+                        attachmentsTable.refresh();
                     }
                 }
             });

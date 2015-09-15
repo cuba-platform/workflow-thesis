@@ -5,7 +5,6 @@
 
 package com.haulmont.workflow.gui.app.base.attachments;
 
-
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -69,19 +68,16 @@ public class RemoveAttachmentAction extends RemoveAction {
                 target.getFrame().getDialogParams().setWidth(500);
                 Window window = target.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
 
-                window.addListener(new Window.CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
-                            migrateToNewLastVersion(selected);
-                            doRemove(selected, autocommit);
-                        } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
-                            doRemove(getAllVersions(selected), autocommit);
-                        }
-
-                        // move focus to owner
-                        target.requestFocus();
+                window.addCloseListener(actionId -> {
+                    if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
+                        migrateToNewLastVersion(selected);
+                        doRemove(selected, autocommit);
+                    } else if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_ALL_VERSIONS)) {
+                        doRemove(getAllVersions(selected), autocommit);
                     }
+
+                    // move focus to owner
+                    target.requestFocus();
                 });
             } else {
                 final String messagesPackage = AppConfig.getMessagesPack();

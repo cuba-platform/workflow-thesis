@@ -23,7 +23,7 @@ import java.util.Set;
 public class AssignmentBrowser extends AbstractWindow {
 
     @Named("aTable")
-    protected Table table;
+    protected Table<Assignment> table;
 
     @Inject
     protected WindowConfig windowConfig;
@@ -39,12 +39,9 @@ public class AssignmentBrowser extends AbstractWindow {
             }
 
             Window window = openEditor(windowAlias, card, WindowManager.OpenType.THIS_TAB);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        table.getDatasource().refresh();
-                    }
+            window.addCloseListener(actionId -> {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    table.getDatasource().refresh();
                 }
             });
         }

@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.gui.app.proc;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -12,9 +13,7 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.workflow.core.entity.Proc;
-import com.haulmont.workflow.gui.components.AbstractEntityAction;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,13 +41,8 @@ public class ProcBrowser extends AbstractLookup {
                 getDialogParams().setHeight(600);
 
                 Window variablesEditor = openWindow("wf$ProcVariable.browse",
-                        WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("proc", target.getSingleSelected()));
-                variablesEditor.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        target.requestFocus();
-                    }
-                });
+                        WindowManager.OpenType.DIALOG, ParamsMap.of("proc", target.getSingleSelected()));
+                variablesEditor.addCloseListener(actionId -> target.requestFocus());
             }
 
             @Override

@@ -8,7 +8,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -65,14 +65,11 @@ public class WorkCalendarBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 Entity entity = exceptionDaysDs.getItem();
                 if (entity != null) {
-                    Window window = openEditor("wf$WorkCalendarExceptionDay.edit", entity, WindowManager.OpenType.DIALOG);
-                    window.addListener(new CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            exceptionDaysDs.refresh();
+                    Window window = openEditor("wf$WorkCalendarExceptionDay.edit", entity, OpenType.DIALOG);
+                    window.addCloseListener(actionId -> {
+                        exceptionDaysDs.refresh();
 
-                            exceptionDaysTable.requestFocus();
-                        }
+                        exceptionDaysTable.requestFocus();
                     });
                 }
             }
@@ -92,14 +89,11 @@ public class WorkCalendarBrowser extends AbstractWindow {
         AbstractAction createAction = new AbstractAction(CREATE_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
-                Window window = openEditor("wf$WorkCalendarExceptionDay.edit", new WorkCalendarEntity(), WindowManager.OpenType.DIALOG);
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        exceptionDaysDs.refresh();
+                Window window = openEditor("wf$WorkCalendarExceptionDay.edit", new WorkCalendarEntity(), OpenType.DIALOG);
+                window.addCloseListener(actionId -> {
+                    exceptionDaysDs.refresh();
 
-                        exceptionDaysTable.requestFocus();
-                    }
+                    exceptionDaysTable.requestFocus();
                 });
             }
 
@@ -118,12 +112,9 @@ public class WorkCalendarBrowser extends AbstractWindow {
         AbstractAction createAction = new AbstractAction(CREATE_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
-                Window window = openEditor("wf$WorkCalendarWorkDay.edit", new WorkCalendarEntity(), WindowManager.OpenType.DIALOG);
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        workDaysDs.refresh();
-                    }
+                Window window = openEditor("wf$WorkCalendarWorkDay.edit", new WorkCalendarEntity(), OpenType.DIALOG);
+                window.addCloseListener(actionId -> {
+                    workDaysDs.refresh();
                 });
             }
 
@@ -144,12 +135,9 @@ public class WorkCalendarBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 Entity entity = workDaysDs.getItem();
                 if (entity != null) {
-                    Window window = openEditor("wf$WorkCalendarWorkDay.edit", entity, WindowManager.OpenType.DIALOG);
-                    window.addListener(new CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            workDaysDs.refresh();
-                        }
+                    Window window = openEditor("wf$WorkCalendarWorkDay.edit", entity, OpenType.DIALOG);
+                    window.addCloseListener(actionId -> {
+                        workDaysDs.refresh();
                     });
                 }
             }

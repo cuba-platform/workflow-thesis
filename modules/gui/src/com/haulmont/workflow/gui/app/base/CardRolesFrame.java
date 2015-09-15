@@ -309,11 +309,13 @@ public class CardRolesFrame extends AbstractFrame {
 
             @Override
             public void actionPerform(Component component) {
+                getDialogParams()
+                        .setWidth(835)
+                        .setHeight(505);
+
                 Map<String, Object> params = getUsergroupAddParams(cardRole);
-                getDialogParams().setWidth(835);
-                getDialogParams().setHeight(505);
                 Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);
-                window.addListener(new AddUserGroupWindowCloseListener(window, cardRole));
+                window.addCloseListener(new AddUserGroupWindowCloseListener(window, cardRole));
             }
         };
         addUserGroupAction.setIcon("icons/wf-user-group-button.png");

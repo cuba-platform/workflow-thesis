@@ -5,9 +5,10 @@
 package com.haulmont.workflow.gui.app.design;
 
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -26,6 +27,7 @@ import com.haulmont.workflow.core.app.DesignerService;
 import com.haulmont.workflow.core.app.ProcessVariableService;
 import com.haulmont.workflow.core.entity.AbstractProcessVariable;
 import com.haulmont.workflow.core.entity.Design;
+import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
@@ -46,13 +48,13 @@ public class DesignBrowser extends AbstractWindow {
     protected CollectionDatasource<Design, UUID> designDs;
 
     @Inject
-    protected Table designTable;
+    protected Table<Design> designTable;
 
     @Inject
     protected DesignerService service;
 
     @Inject
-    protected Table variablesTable;
+    protected Table<DesignProcessVariable> variablesTable;
 
     @Inject
     protected ProcessVariableService processVariableService;
@@ -76,7 +78,7 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     protected void initActions() {
-        designTable.addAction(new CreateAction(designTable, WindowManager.OpenType.DIALOG) {
+        designTable.addAction(new CreateAction(designTable, OpenType.DIALOG) {
             @Override
             protected void afterCommit(Entity entity) {
                 openDesigner(entity.getId().toString());
@@ -86,7 +88,7 @@ public class DesignBrowser extends AbstractWindow {
         designTable.addAction(new CopyAction());
         designTable.addAction(new ImportAction());
         designTable.addAction(new ExportAction());
-        designTable.addAction(new EditAction(designTable, WindowManager.OpenType.DIALOG));
+        designTable.addAction(new EditAction(designTable, OpenType.DIALOG));
         designTable.addAction(new RemoveAction(designTable) {
             @Override
             protected void doRemove(Set selected, boolean autocommit) {
@@ -144,14 +146,11 @@ public class DesignBrowser extends AbstractWindow {
             @Override
             public void doActionPerform(Component component) {
                 Window window = openWindow("wf$Design.browse",
-                        WindowManager.OpenType.THIS_TAB,
-                        Collections.<String, Object>singletonMap("subprocId", "%" + getEntity().getId().toString() + "%"));
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        table.getDatasource().refresh();
-                        table.requestFocus();
-                    }
+                        OpenType.THIS_TAB,
+                        ParamsMap.of("subprocId", "%" + getEntity().getId().toString() + "%"));
+                window.addCloseListener(actionId -> {
+                    table.getDatasource().refresh();
+                    table.requestFocus();
                 });
             }
         });
@@ -169,18 +168,16 @@ public class DesignBrowser extends AbstractWindow {
 
             @Override
             public void doActionPerform(Component component) {
-                getDialogParams().setWidth(900);
-                getDialogParams().setHeight(600);
+                getDialogParams()
+                        .setWidth(900)
+                        .setHeight(600);
 
-                final Window window = openWindow("wf$DesignProcessVariable.browse",
-                        WindowManager.OpenType.DIALOG,
+                Window window = openWindow("wf$DesignProcessVariable.browse",
+                        OpenType.DIALOG,
                         Collections.<String, Object>singletonMap("design", getEntity()));
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        designDs.refresh();
-                        table.requestFocus();
-                    }
+                window.addCloseListener(actionId -> {
+                    designDs.refresh();
+                    table.requestFocus();
                 });
             }
         });
@@ -295,25 +292,21 @@ public class DesignBrowser extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            final ImportDialog importDialog = (ImportDialog) openWindow("wf$Design.import", WindowManager.OpenType.DIALOG);
-            importDialog.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+            final ImportDialog importDialog = (ImportDialog) openWindow("wf$Design.import", OpenType.DIALOG);
+            importDialog.addCloseListener(actionId -> {
+                if (COMMIT_ACTION_ID.equals(actionId)) {
+                    try {
+                        service.importDesigns(importDialog.getBytes());
+                    } catch (Exception ex) {
 
-                        try {
-                            service.importDesigns(importDialog.getBytes());
-                        } catch (Exception ex) {
-
-                            showNotification(
-                                    getMessage("notification.importFailed"),
-                                    ex.getMessage(),
-                                    NotificationType.ERROR
-                            );
-                            throw new RuntimeException(ex);
-                        }
-                        designTable.getDatasource().refresh();
+                        showNotification(
+                                getMessage("notification.importFailed"),
+                                ex.getMessage(),
+                                NotificationType.ERROR
+                        );
+                        throw new RuntimeException("Unable to import designs", ex);
                     }
+                    designTable.getDatasource().refresh();
                 }
             });
         }
@@ -416,27 +409,25 @@ public class DesignBrowser extends AbstractWindow {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
                     getDialogParams().setWidth(500);
-                    final DeployDesignWindow window = (DeployDesignWindow) openWindow("wf$Design.deploy",
-                            WindowManager.OpenType.DIALOG,
-                            Collections.<String, Object>singletonMap("design", design));
-                    window.addListener(
-                            new CloseListener() {
-                                public void windowClosed(String actionId) {
-                                    if ("close".equals(actionId) || "cancel".equals(actionId))
-                                        return;
-                                    if ("ok".equals(actionId)) {
-                                        designDs.refresh();
-                                        showNotification(getMessage("notification.deploySuccess"), NotificationType.HUMANIZED);
-                                    } else {
-                                        showNotification(
-                                                getMessage("notification.deployFailed"),
-                                                window.getErrorMsg(),
-                                                NotificationType.HUMANIZED
-                                        );
-                                    }
-                                }
-                            }
-                    );
+
+                    DeployDesignWindow window = (DeployDesignWindow) openWindow("wf$Design.deploy",
+                            OpenType.DIALOG, ParamsMap.of("design", design));
+
+                    window.addCloseListener(actionId -> {
+                        if ("close".equals(actionId) || "cancel".equals(actionId)) {
+                            return;
+                        }
+                        if ("ok".equals(actionId)) {
+                            designDs.refresh();
+                            showNotification(getMessage("notification.deploySuccess"), NotificationType.HUMANIZED);
+                        } else {
+                            showNotification(
+                                    getMessage("notification.deployFailed"),
+                                    window.getErrorMsg(),
+                                    NotificationType.HUMANIZED
+                            );
+                        }
+                    });
                 }
             }
         }
@@ -454,14 +445,11 @@ public class DesignBrowser extends AbstractWindow {
                 final Design design = selected.iterator().next();
                 Window window = openWindow(
                         "wf$DesignScript.browse",
-                        WindowManager.OpenType.THIS_TAB,
+                        OpenType.THIS_TAB,
                         Collections.<String, Object>singletonMap("design", design)
                 );
-                window.addListener(new CloseListener() {
-                    @Override
-                    public void windowClosed(String actionId) {
-                        designTable.requestFocus();
-                    }
+                window.addCloseListener(actionId -> {
+                    designTable.requestFocus();
                 });
             }
         }
@@ -480,15 +468,12 @@ public class DesignBrowser extends AbstractWindow {
                 if (design.getCompileTs() == null) {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
-                    Window window = openEditor("wf$Design.localize", design, WindowManager.OpenType.THIS_TAB);
-                    window.addListener(new CloseListener() {
-                        @Override
-                        public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                designDs.refresh();
-                            }
-                            designTable.requestFocus();
+                    Window window = openEditor("wf$Design.localize", design, OpenType.THIS_TAB);
+                    window.addCloseListener(actionId -> {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                            designDs.refresh();
                         }
+                        designTable.requestFocus();
                     });
                 }
             }
@@ -498,16 +483,12 @@ public class DesignBrowser extends AbstractWindow {
     protected void showDesignProcessVariables(Design design) {
         getDialogParams().setWidth(900);
         getDialogParams().setHeight(600);
-        final Window window = openWindow("wf$DesignProcessVariable.browse",
-                WindowManager.OpenType.DIALOG,
-                Collections.<String, Object>singletonMap("design", design));
-        window.addListener(
-                new CloseListener() {
-                    public void windowClosed(String actionId) {
-                        designDs.refresh();
-                    }
-                }
-        );
+
+        Window window = openWindow("wf$DesignProcessVariable.browse",
+                OpenType.DIALOG, ParamsMap.of("design", design));
+        window.addCloseListener(actionId -> {
+            designDs.refresh();
+        });
     }
 
     protected class UploadNotificationMatrixAction extends AbstractAction {
@@ -520,21 +501,17 @@ public class DesignBrowser extends AbstractWindow {
             Set<Design> selected = designTable.getSelected();
             if (!selected.isEmpty()) {
                 Design selectedDesign = selected.iterator().next();
-                final Design design = designDs.getDataSupplier().reload(selectedDesign, "_local");
-                final NotificationMatrixWindow window = (NotificationMatrixWindow) openWindow("wf$Design.notificationMatrix", WindowManager.OpenType.DIALOG);
-                window.addListener(
-                        new CloseListener() {
-                            public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                                    design.setNotificationMatrix(window.getBytes());
-                                    design.setNotificationMatrixUploaded(true);
-                                    designDs.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
-                                    service.saveNotificationMatrixFile(design);
-                                    designDs.refresh();
-                                }
-                            }
-                        }
-                );
+                Design design = designDs.getDataSupplier().reload(selectedDesign, "_local");
+                NotificationMatrixWindow window = (NotificationMatrixWindow) openWindow("wf$Design.notificationMatrix", OpenType.DIALOG);
+                window.addCloseListener(actionId -> {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        design.setNotificationMatrix(window.getBytes());
+                        design.setNotificationMatrixUploaded(true);
+                        designDs.getDataSupplier().commit(new CommitContext(Collections.singleton(design)));
+                        service.saveNotificationMatrixFile(design);
+                        designDs.refresh();
+                    }
+                });
             }
         }
     }
