@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
 import org.apache.commons.lang.time.DateUtils;
@@ -74,6 +75,16 @@ public class WorkCalendar implements WorkCalendarAPI {
                 tx.commit();
             } finally {
                 tx.end();
+            }
+            for (DayOfWeek dow : DayOfWeek.values()) {
+                if (defaultDays.get(dow.getId()) == null) {
+                    WorkCalendarEntity wce = new WorkCalendarEntity();
+                    wce.setDayOfWeek(dow);
+                    CalendarItem ci = new CalendarItem(wce);
+                    List<CalendarItem> mapValue = new LinkedList<>();
+                    mapValue.add(ci);
+                    defaultDays.put(dow.getId(), mapValue);
+                }
             }
         }
     }
