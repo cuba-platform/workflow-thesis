@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -70,7 +71,6 @@ public class DesignerWorker implements DesignerWorkerAPI {
     protected UserSessionSource userSessionSource;
 
     protected static final String DESIGN = "design.xml";
-    protected static final String ENCODING = "UTF-8";
 
     @Override
     public CompilationMessage compileDesign(UUID designId) throws DesignCompilationException {
@@ -115,7 +115,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
 
             ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
             zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
-            zipOutputStream.setEncoding(ENCODING);
+            zipOutputStream.setEncoding(StandardCharsets.UTF_8.name());
             for (Design design : designs) {
                 try {
                     byte[] designBytes = exportDesign(design);
@@ -144,7 +144,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
 
         ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
         zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
-        zipOutputStream.setEncoding(ENCODING);
+        zipOutputStream.setEncoding(StandardCharsets.UTF_8.name());
         String xml = toXML(design);
         byte[] xmlBytes = xml.getBytes();
         ArchiveEntry zipEntryDesign = newStoredEntry(DESIGN, xmlBytes);
@@ -217,6 +217,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
         }
     }
 
+    @Override
     public Collection<Design> importDesigns(byte[] zipBytes) throws IOException, FileStorageException {
         return importDesignsCollection(zipBytes);
     }
@@ -345,5 +346,4 @@ public class DesignerWorker implements DesignerWorkerAPI {
             }
         return design;
     }
-
 }

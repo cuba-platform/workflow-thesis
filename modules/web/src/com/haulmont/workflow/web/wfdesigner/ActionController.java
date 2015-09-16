@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -60,7 +61,7 @@ public class ActionController {
         try {
             Design design;
             if (auth(request, response) && (design = findDesign(request, response, id)) != null) {
-                String src = IOUtils.toString(request.getInputStream(), "UTF-8");
+                String src = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
                 JSONObject jsonObject = new JSONObject(src);
                 String name = jsonObject.getString("name");
 
@@ -328,7 +329,7 @@ public class ActionController {
     protected void setHeaders(HttpServletResponse resp) {
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
     }
 
     protected void printJson(HttpServletResponse response, String json) throws IOException {

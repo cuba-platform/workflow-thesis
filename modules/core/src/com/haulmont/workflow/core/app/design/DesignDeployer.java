@@ -25,6 +25,7 @@ import org.dom4j.Document;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -115,7 +116,7 @@ public class DesignDeployer {
         document.getRootElement().addAttribute("name", procKey);
         document.getRootElement().addAttribute("key", procKey);
 
-        FileUtils.writeStringToFile(jpdlFile, Dom4j.writeDocument(document, true), "UTF-8");
+        FileUtils.writeStringToFile(jpdlFile, Dom4j.writeDocument(document, true), StandardCharsets.UTF_8);
 
         WfEngineAPI wfEngine = AppBeans.get(WfEngineAPI.NAME);
         proc = wfEngine.deployJpdlXml("/process/" + procKey + "/" + jpdlFile.getName(), proc);
@@ -131,7 +132,7 @@ public class DesignDeployer {
         for (DesignFile df : designFiles) {
             if (df.getType().equals("messages")) {
                 File file = new File(dir, df.getName());
-                FileUtils.writeStringToFile(file, df.getContent(), "UTF-8");
+                FileUtils.writeStringToFile(file, df.getContent(), StandardCharsets.UTF_8);
             }
         }
     }
@@ -140,7 +141,7 @@ public class DesignDeployer {
         for (DesignFile df : designFiles) {
             if (df.getType().equals("forms")) {
                 File file = new File(dir, "forms.xml");
-                FileUtils.writeStringToFile(file, df.getContent(), "UTF-8");
+                FileUtils.writeStringToFile(file, df.getContent(), StandardCharsets.UTF_8);
                 break;
             }
         }
@@ -161,7 +162,7 @@ public class DesignDeployer {
                     !designScript.getContent().trim().endsWith(".groovy")) {
                 String script = "// " + designScript.getName() + "\n" + designScript.getContent();
                 File file = new File(scriptsDir, designScript.getFileName());
-                FileUtils.writeStringToFile(file, script, "UTF-8");
+                FileUtils.writeStringToFile(file, script, StandardCharsets.UTF_8);
             }
         }
     }
@@ -224,7 +225,7 @@ public class DesignDeployer {
         }
 
         File file = new File(dir, "variables.xml");
-        FileUtils.writeStringToFile(file, toXML(procVariables), "UTF-8");
+        FileUtils.writeStringToFile(file, toXML(procVariables), StandardCharsets.UTF_8);
     }
 
     private void deployNotificationMatrix(List<DesignFile> designFiles, File dir) throws IOException {

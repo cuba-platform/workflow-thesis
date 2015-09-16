@@ -21,6 +21,7 @@ import org.springframework.core.io.Resource;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -60,6 +61,7 @@ public class CubaJbpmSpringHelper extends SpringHelper {
         }
     }
 
+    @Override
     public ProcessEngine createProcessEngine() {
         try {
             processEngine = new ConfigurationImpl()
@@ -103,13 +105,13 @@ public class CubaJbpmSpringHelper extends SpringHelper {
 
         // Insert DTD because Hibernate validates XML on load
         try {
-            List<String> lines = FileUtils.readLines(hibernateCfgFile, "UTF-8");
+            List<String> lines = FileUtils.readLines(hibernateCfgFile, StandardCharsets.UTF_8);
 
             lines.add(1, "<!DOCTYPE hibernate-configuration PUBLIC" +
                     " \"-//Hibernate/Hibernate Configuration DTD 3.0//EN\"" +
                     " \"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd\">");
 
-            FileUtils.writeLines(hibernateCfgFile, "UTF-8", lines, "\n");
+            FileUtils.writeLines(hibernateCfgFile, StandardCharsets.UTF_8.name(), lines, "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -136,6 +138,4 @@ public class CubaJbpmSpringHelper extends SpringHelper {
         }
         return jbpmCfgFile;
     }
-
-
 }

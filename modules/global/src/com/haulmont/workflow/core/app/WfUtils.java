@@ -15,8 +15,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class WfUtils {
 
-    public static final String ENC = "UTF-8";
-
     /**
      * Checks whether card's state field contains sended state
      *
@@ -123,6 +121,5 @@ public class WfUtils {
             }
             return sb.toString();
         }
-
     }
 }

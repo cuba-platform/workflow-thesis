@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class ContentController extends StaticContentController {
         }
 
         private Map<String, Object> createTemplateParams() {
-            HashMap<String, Object> params = new HashMap<String, Object>();
+            HashMap<String, Object> params = new HashMap<>();
             UserSession userSession = ControllerUtils.getUserSession(req);
             params.put("locale", userSession == null ? "en" : userSession.getLocale().getLanguage());
             return params;
@@ -76,9 +77,11 @@ public class ContentController extends StaticContentController {
             return configuration;
         }
 
+        @Override
         public void respondHead(HttpServletRequest req, HttpServletResponse resp) {
         }
 
+        @Override
         public long getLastModified() {
             return -1;
         }
@@ -86,7 +89,7 @@ public class ContentController extends StaticContentController {
         protected void setHeaders(HttpServletResponse resp) {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType(mimeType);
-            resp.setCharacterEncoding("UTF-8");
+            resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         }
     }
 
