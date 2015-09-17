@@ -24,7 +24,7 @@
         <groupTable id="table" multiselect="true" height="100%" width="100%">
             <buttonsPanel>
                 <button action="table.create" icon="icons/create.png"/>
-                <button action="table.override" icon="icons/exchange.png"/>
+                <button action="table.override" icon="icons/wf-exchange.png"/>
                 <button action="table.edit" icon="icons/edit.png"/>
                 <button action="table.remove" icon="icons/remove.png"/>
                 <button action="table.refresh" icon="icons/refresh.png"/>
