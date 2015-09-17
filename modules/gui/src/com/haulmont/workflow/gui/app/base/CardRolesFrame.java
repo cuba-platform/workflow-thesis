@@ -5,6 +5,7 @@
 package com.haulmont.workflow.gui.app.base;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -130,16 +131,7 @@ public class CardRolesFrame extends AbstractFrame {
         companion = getCompanion();
 
         rolesTable.removeAction(rolesTable.getAction(RemoveAction.ACTION_ID));
-        RemoveAction removeAction = new RemoveAction(rolesTable, false) {
-            @Override
-            protected void afterRemove(Set selected) {
-                if (selected != null) {
-                    for (Object item : selected) {
-                        actorFieldsMap.remove(item);
-                    }
-                }
-            }
-        };
+        RemoveAction removeAction = createRemoveAction();
         rolesTable.addAction(removeAction);
 
         initRolesTable();
@@ -167,6 +159,23 @@ public class CardRolesFrame extends AbstractFrame {
         });
     }
 
+    protected RemoveAction createRemoveAction() {
+        return new RemoveAction(rolesTable, false) {
+            @Override
+            protected void afterRemove(Set selected) {
+                //noinspection unchecked
+                afterCardRolesRemove(selected);
+            }
+        };
+    }
+
+    protected void afterCardRolesRemove(Set<CardRole> cardRoles) {
+        if (CollectionUtils.isNotEmpty(cardRoles)) {
+            for (CardRole cr : cardRoles) {
+                actorFieldsMap.remove(cr);
+            }
+        }
+    }
 
     protected CardRole createCardRole(ProcRole procRole, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
         CardRole cardRole = metadata.create(CardRole.class);
@@ -933,11 +942,9 @@ public class CardRolesFrame extends AbstractFrame {
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if(!enabled) {
-            if (rolesTable.getActions() != null)
-                for (Action action : rolesTable.getActions())
-                    action.setVisible(false);
-        }
+        if (rolesTable.getActions() != null)
+            for (Action action : rolesTable.getActions())
+                action.setVisible(enabled);
 
         for (Component action : rolesActions) {
             action.setEnabled(enabled);
@@ -958,9 +965,8 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
-        if(!editable)
-            for (Action action : rolesTable.getActions())
-                action.setVisible(false);
+        for (Action action : rolesTable.getActions())
+            action.setVisible(editable);
 
         rolesTable.setEditable(editable);
 
@@ -1324,7 +1330,6 @@ public class CardRolesFrame extends AbstractFrame {
     /**
      * This is obsolete method.<br/>
      * Use injected {@link CardRolesFrameWorker} interface.
-     *
      */
     @Deprecated
     protected void assignNextSortOrder(CardRole cr) {
@@ -1334,7 +1339,6 @@ public class CardRolesFrame extends AbstractFrame {
     /**
      * This is obsolete method.<br/>
      * Use injected {@link CardRolesFrameWorker} interface.
-     *
      */
     @Deprecated
     protected void normalizeSortOrders() {
