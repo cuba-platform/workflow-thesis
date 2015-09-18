@@ -31,14 +31,12 @@
     <assign name="height" value="300"/>
 
     <layout expand="windowActions" spacing="true">
-
-
         <table id="uploadsTable" editable="true" multiselect="true"
                width="${width}" height="${height}">
-            <buttonsPanel height="30">
-                <multiUpload id="multiUpload" height="25px" width="90px" caption="msg://upload"/>
+            <buttonsPanel>
+                <multiUpload id="multiUpload" caption="msg://upload"/>
                 <button id="removeAttachBtn" icon="icons/remove.png"/>
-                <label value="msg://setAttachmentsType"/>
+                <label value="msg://setAttachmentsType" align="MIDDLE_CENTER"/>
                 <lookupField id="attachTypeCombo" editable="true"/>
             </buttonsPanel>
             <columns>
