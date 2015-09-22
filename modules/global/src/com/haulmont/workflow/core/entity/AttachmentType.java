@@ -9,6 +9,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +22,7 @@ import javax.persistence.Table;
 @Table(name = "WF_ATTACHMENTTYPE")
 @NamePattern("%s|locName")
 @SystemLevel
+@TrackEditScreenHistory
 public class AttachmentType extends StandardEntity implements SoftDelete {
     private static final long serialVersionUID = -7892781327440916914L;
 
