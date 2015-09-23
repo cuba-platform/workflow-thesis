@@ -14,11 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface WfEngineAPI {
 
     String NAME = "workflow_WfEngine";
 
-    public interface Listener {
+    interface Listener {
         void onProcessCancel(Card card);
     }
 

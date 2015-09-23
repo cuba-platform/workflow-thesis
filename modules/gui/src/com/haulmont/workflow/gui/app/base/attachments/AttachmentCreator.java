@@ -7,12 +7,17 @@ package com.haulmont.workflow.gui.app.base.attachments;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public interface AttachmentCreator {
     Attachment createObject();
 
-    public interface CardAttachmentCreator extends AttachmentCreator, CardGetter {}
+    interface CardAttachmentCreator extends AttachmentCreator, CardGetter {
+    }
 
-    public interface CardGetter {
+    interface CardGetter {
         Card getCard();
     }
 }

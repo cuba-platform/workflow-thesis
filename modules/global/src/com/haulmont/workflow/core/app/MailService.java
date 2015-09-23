@@ -11,9 +11,13 @@ import com.haulmont.workflow.core.entity.Card;
 
 import java.util.List;
 
+/**
+ * @author novikov
+ * @version $Id$
+ */
 public interface MailService {
 
-    public static String NAME = "workflow_MailService";
+    String NAME = "workflow_MailService";
 
     /**
      * Sends email, performed by a specified script to given users.
@@ -35,5 +39,4 @@ public interface MailService {
      * @throws EmailException
      */
     void sendEmail(User user, String caption, String body, EmailAttachment... attachment) throws EmailException;
-
 }

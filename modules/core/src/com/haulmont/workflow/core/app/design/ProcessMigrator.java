@@ -12,7 +12,7 @@ public interface ProcessMigrator {
 
     void migrate(UUID designId, UUID procId, String oldJbpmProcessKey);
 
-    public static class Result {
+    class Result {
         private boolean success;
         private String message;
         private String oldJbpmProcessKey;

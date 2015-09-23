@@ -6,13 +6,12 @@
 package com.haulmont.workflow.core.app;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 public interface SmsService {
 
-    public static String NAME = "workflow_SmsService";
+    String NAME = "workflow_SmsService";
 
     /**
      * Sends an sms message.

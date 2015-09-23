@@ -19,7 +19,7 @@ import java.util.Map;
 public interface NotificationMatrixAPI {
     String NAME = "workflow_NotificationMatrix";
 
-    public enum NotificationType {
+    enum NotificationType {
         NO,
         SIMPLE,  //grey
         ACTION,  //green

@@ -48,14 +48,13 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @Inject
     protected Metadata metadata;
 
-    protected List<AssignmentListener> listeners = new ArrayList<AssignmentListener>();
+    protected List<AssignmentListener> listeners = new ArrayList<>();
 
-    public static interface AssignmentListener {
+    public interface AssignmentListener {
 
         void createAssignment(Assignment assignment, CardRole cardRole);
 
         void closeAssignment(Assignment assignment, CardRole cr);
-
     }
 
     protected static final String FIND_ASSIGNMENTS_BY_STATE_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state";
@@ -78,7 +77,6 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
             return a1.getCreateTs().compareTo(a2.getCreateTs());
         }
     };
-
 
     private final AssignmentListener notificationMatrixListener = new AssignmentListener() {
         @Override
@@ -220,11 +218,10 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         return cr;
     }
 
-
     @SuppressWarnings("unchecked")
     protected List<Assignment> getAssignmentsByState(Card card, String state) {
         List<Assignment> r = loadAssignmentsByState(card, state);
-        Set<Assignment> masterAssignments = new HashSet<Assignment>();
+        Set<Assignment> masterAssignments = new HashSet<>();
         for (Assignment assignment : r) {
             if (assignment.getMasterAssignment() != null) {
                 masterAssignments.add(assignment.getMasterAssignment());
@@ -240,7 +237,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         }
         //universal assignment
         Assignment lastMasterAssignment = Collections.max(masterAssignments, BY_CREATE_TS_COMPARATOR);
-        List<Assignment> filter = new LinkedList<Assignment>();
+        List<Assignment> filter = new LinkedList<>();
         for (Assignment assignment : r) {
             if (lastMasterAssignment.equals(assignment.getMasterAssignment()))
                 filter.add(assignment);
