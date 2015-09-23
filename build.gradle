@@ -136,7 +136,7 @@ configure(coreModule) {
         compile(globalModule)
         compile(sharedLibModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
-        testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'tests')
+        testCompile(group: 'com.haulmont.cuba', name: 'cuba-core-tests', version: baseVersion)
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
         compile(json)
         runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
@@ -184,16 +184,6 @@ configure(guiModule) {
     dependencies {
         compile(globalModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-gui', version: baseVersion)
-    }
-
-	task testsJar(dependsOn: testClasses, type: Jar) {
-        from sourceSets.main.output.classesDir
-        from sourceSets.test.output.classesDir
-        classifier = 'tests'
-    }
-
-    artifacts {
-        archives testsJar
     }
 }
 
