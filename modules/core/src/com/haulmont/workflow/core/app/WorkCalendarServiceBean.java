@@ -10,19 +10,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 @Service(WorkCalendarService.NAME)
 public class WorkCalendarServiceBean implements WorkCalendarService{
 
+    @Override
     public Date addInterval(Date startDate, int qty, TimeUnit unit) {
         WorkCalendarAPI workCalendarAPI = AppBeans.get(WorkCalendarAPI.NAME);
         return workCalendarAPI.addInterval(startDate, qty, unit);
     }
 
+    @Override
     public Long getWorkDayLengthInMillis() {
         WorkCalendarAPI workCalendarAPI = AppBeans.get(WorkCalendarAPI.NAME);
         return workCalendarAPI.getWorkDayLengthInMillis();
     }
 
+    @Override
     public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
         WorkCalendarAPI workCalendarAPI = AppBeans.get(WorkCalendarAPI.NAME);
         return workCalendarAPI.getIntervalDuration(startTime, endTime, timeUnit);

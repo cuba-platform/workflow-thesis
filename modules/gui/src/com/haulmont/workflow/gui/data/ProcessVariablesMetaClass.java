@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class ProcessVariablesMetaClass extends MetadataObjectImpl implements MetaClass {
 
-    private Map<String, MetaProperty> properties = new HashMap<String, MetaProperty>();
+    private Map<String, MetaProperty> properties = new HashMap<>();
 
     public void addProperty(MetaProperty property) {
         properties.put(property.getName(), property);

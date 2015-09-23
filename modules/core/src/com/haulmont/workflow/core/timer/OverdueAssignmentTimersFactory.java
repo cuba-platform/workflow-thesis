@@ -39,7 +39,7 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
 
     @Override
     public void createTimers(ActivityExecution execution, Assignment assignment) {
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<>();
         EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
         params.put("user", userLoadInfo.toString());
 

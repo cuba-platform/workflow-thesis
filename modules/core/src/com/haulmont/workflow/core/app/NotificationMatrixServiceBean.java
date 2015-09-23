@@ -10,19 +10,26 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 @Service(NotificationMatrixService.NAME)
 public class NotificationMatrixServiceBean implements NotificationMatrixService {
     @Inject
     private NotificationMatrixAPI notificationMatrixAPI;
 
+    @Override
     public void notify(Card card, String state) {
         notificationMatrixAPI.notifyByCard(card, state);
     }
 
+    @Override
     public void notify(Card card, String state, List<String> excludedRoles) {
         notificationMatrixAPI.notifyByCard(card, state, excludedRoles);
     }
 
+    @Override
     public void notify(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         notificationMatrixAPI.notifyByCard(card, state, excludedRoles, messageGenerator);
     }

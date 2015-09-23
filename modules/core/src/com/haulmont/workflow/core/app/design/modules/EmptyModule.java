@@ -12,16 +12,15 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
-
 public class EmptyModule extends Module {
     public EmptyModule(){
         activityClassName="com.haulmont.workflow.core.activity.EmptyModule";
     }
 
+    @Override
     public void init(Context context) throws DesignCompilationException {
         super.init(context);
 

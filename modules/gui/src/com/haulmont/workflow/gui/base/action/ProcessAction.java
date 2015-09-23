@@ -270,10 +270,12 @@ public class ProcessAction extends AbstractAction {
 
                                         final FormManagerChain managerChain = createManagerChain();
                                         managerChain.setHandler(new FormManagerChain.Handler() {
+                                            @Override
                                             public void onSuccess(String comment) {
                                                 cancelProcess(editor, managerChain);
                                             }
 
+                                            @Override
                                             public void onFail() {
                                             }
                                         });
@@ -361,11 +363,13 @@ public class ProcessAction extends AbstractAction {
         }
 
         managerChain.setHandler(new FormManagerChain.Handler() {
+            @Override
             public void onSuccess(String comment) {
                 CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
                 finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
             }
 
+            @Override
             public void onFail() {
                 CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
                 removeSubProcCard(subProcCardContext.getCard());

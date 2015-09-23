@@ -72,7 +72,7 @@ public class WorkCalendar implements WorkCalendarMBean {
                 Document doc = Dom4j.readDocument(xml);
                 Element root = doc.getRootElement();
 
-                List<Date> filledDays = new ArrayList<Date>();
+                List<Date> filledDays = new ArrayList<>();
 
                 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
                 for (Element dayElement : Dom4j.elements(root)) {

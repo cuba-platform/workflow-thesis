@@ -21,6 +21,10 @@ import org.jbpm.api.Execution;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class MainAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(getClass());
@@ -64,7 +68,6 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
         }
     }
 
-
     @Override
     protected void execute(TimerActionContext context, User user) {
         if (!makesSense(context)) return;
@@ -73,7 +76,7 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
         String subject;
         String body;
         try {
-            Map<String, Object> bindingParams = new HashMap<String, Object>();
+            Map<String, Object> bindingParams = new HashMap<>();
             bindingParams.put("card", context.getCard());
             bindingParams.put("dueDate", context.getDueDate());
             bindingParams.put("activity", context.getActivity());

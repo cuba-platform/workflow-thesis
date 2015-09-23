@@ -26,6 +26,7 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
     @Inject
     protected Configuration configuration;
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         initActions();
@@ -39,6 +40,7 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
     protected void initActions() {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         addAction(new AbstractAction("windowCommit", clientConfig.getCommitShortcut()) {
+            @Override
             public void actionPerform(Component component) {
                 onWindowCommit();
             }
@@ -50,6 +52,7 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
         });
 
         addAction(new AbstractAction("windowClose", clientConfig.getCloseShortcut()) {
+            @Override
             public void actionPerform(Component component) {
                 onWindowClose();
             }
@@ -69,8 +72,10 @@ public abstract class AbstractForm extends AbstractWindow implements WfForm {
 
     }
 
+    @Override
     public abstract String getComment();
 
+    @Override
     @Nullable
     public FormResult getFormResult() {
         return null;

@@ -8,9 +8,8 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
- * <p>$Id$</p>
- *
  * @author chernov
+ * @version $Id$
  */
 public enum OrderFillingType implements EnumClass<String> {
     PARALLEL("P"),
@@ -22,6 +21,7 @@ public enum OrderFillingType implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

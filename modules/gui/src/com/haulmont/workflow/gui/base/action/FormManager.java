@@ -9,7 +9,6 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -321,12 +320,12 @@ public abstract class FormManager implements Serializable {
     }
 
     public abstract static class SimpleFormManager extends FormManager {
-
         public SimpleFormManager(FormManagerChain chain) {
             super(new DOMElement(""), "", "", chain);
         }
 
         // provide your specific implementation
+        @Override
         public abstract FormManager copy();
 
         @Override

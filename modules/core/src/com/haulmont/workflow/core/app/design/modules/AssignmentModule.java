@@ -36,7 +36,7 @@ public class AssignmentModule extends Module {
 
     protected JSONObject jsOptions;
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     private static final String TIMERS_FACTORY = "com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory";
     
@@ -184,6 +184,7 @@ public class AssignmentModule extends Module {
         return transitionEl;
     }
 
+    @Override
     protected String getTimersFactory() {
         return TIMERS_FACTORY;
     }

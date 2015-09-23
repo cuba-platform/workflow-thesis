@@ -17,6 +17,10 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaSpringSessionSynchronization implements TransactionSynchronization, Ordered {
 
     private final SessionHolder sessionHolder;
@@ -80,10 +84,12 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
     }
 
 
+    @Override
     public int getOrder() {
         return SessionFactoryUtils.SESSION_SYNCHRONIZATION_ORDER;
     }
 
+    @Override
     public void suspend() {
         if (this.holderActive) {
             TransactionSynchronizationManager.unbindResource(this.sessionFactory);
@@ -94,12 +100,14 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
         }
     }
 
+    @Override
     public void resume() {
         if (this.holderActive) {
             TransactionSynchronizationManager.bindResource(this.sessionFactory, this.sessionHolder);
         }
     }
 
+    @Override
     public void flush() {
         try {
             SessionFactoryUtils.logger.debug("Flushing Hibernate Session on explicit request");
@@ -110,6 +118,7 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
         }
     }
 
+    @Override
     public void beforeCommit(boolean readOnly) throws DataAccessException {
         if (!readOnly) {
             Session session = getCurrentSession();
@@ -136,6 +145,7 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
         return SessionFactoryUtils.convertHibernateAccessException(ex);
     }
 
+    @Override
     public void beforeCompletion() {
         if (this.jtaTransaction != null) {
             // Typically in case of a suspended JTA transaction:
@@ -190,9 +200,11 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
         }
     }
 
+    @Override
     public void afterCommit() {
     }
 
+    @Override
     public void afterCompletion(int status) {
         if (!this.hibernateTransactionCompletion || !this.newSession) {
             // No Hibernate TransactionManagerLookup: apply afterTransactionCompletion callback.
@@ -222,5 +234,4 @@ public class CubaSpringSessionSynchronization implements TransactionSynchronizat
             this.sessionHolder.setSynchronizedWithTransaction(false);
         }
     }
-
 }

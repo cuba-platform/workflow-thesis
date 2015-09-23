@@ -4,7 +4,6 @@
  */
 package com.haulmont.workflow.core.app;
 
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -15,7 +14,10 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.*;
 
-
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class FreeMarkerNotificationMessageBuilder implements NotificationMessageBuilder {
     private Template templateSubject;
     private Template templateBody;
@@ -60,6 +62,7 @@ public class FreeMarkerNotificationMessageBuilder implements NotificationMessage
         }
     }
 
+    @Override
     public NotificationMatrixMessage build(Map<String, Object> parameters) {
         Map<String, Object> dataModel = parameters;
         NotificationMatrixMessage msg = new NotificationMatrixMessage();
@@ -72,10 +75,8 @@ public class FreeMarkerNotificationMessageBuilder implements NotificationMessage
             templateBody.process(dataModel, outBody);
             msg.setBody(outBody.getBuffer().toString());
 
-        } catch (TemplateException e) {
-            log.warn("Can not load templeate");
-        } catch (IOException e) {
-            log.warn("Can not load templeate");
+        } catch (TemplateException | IOException e) {
+            log.warn("Can not load template");
         }
 
         return msg;

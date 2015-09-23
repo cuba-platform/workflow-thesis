@@ -527,7 +527,6 @@ public class DesignCompiler {
     protected void createRolesSheet(Workbook book, List<String> rolesList) {
 
         Sheet roles = book.getSheet("Roles");
-        int i = 0;
         Iterator<String> roleIt = rolesList.iterator();
         Iterator<Row> rowIt = roles.rowIterator();
         while (rowIt.hasNext()) {
@@ -699,7 +698,7 @@ public class DesignCompiler {
         JSONObject json = new JSONObject(design.getSrc());
 
         JSONObject jsWorking = json.getJSONObject("working");
-        JSONArray jsModules = null;
+        JSONArray jsModules;
         try {
             jsModules = jsWorking.getJSONArray("modules");
         } catch (JSONException e) {

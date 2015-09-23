@@ -20,6 +20,10 @@ import org.json.JSONObject;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class Module {
 
     public static class Context {
@@ -62,9 +66,9 @@ public abstract class Module {
 
     protected String activityClassName;
 
-    protected List<Transition> transitions = new ArrayList<Transition>();
+    protected List<Transition> transitions = new ArrayList<>();
 
-    protected Map<String, String> scriptNamesMap = new HashMap<String, String>();
+    protected Map<String, String> scriptNamesMap = new HashMap<>();
 
     protected List<DesignProcessVariable> designProcessVariables = new ArrayList<>();
 

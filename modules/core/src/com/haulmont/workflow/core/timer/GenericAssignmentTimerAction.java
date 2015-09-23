@@ -6,7 +6,7 @@ package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.security.entity.User;
@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class GenericAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(GenericAssignmentTimerAction.class);
@@ -45,7 +49,6 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
                 runScript(context, user, script);
             }
         }
-
     }
 
     protected boolean makesSense(TimerActionContext context, User user) {
@@ -65,7 +68,9 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
         Assignment assignment = null;
 
         EntityManager em = AppBeans.get(Persistence.NAME,Persistence.class).getEntityManager();
-        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
+        TypedQuery<Assignment> query = em.createQuery(
+                "select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
+                Assignment.class);
         query.setParameter(1, context.getCard());
         List<Assignment> assignments = query.getResultList();
         if (!assignments.isEmpty())
@@ -78,7 +83,7 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
     }
 
     private void runScript(TimerActionContext context, User user, String script) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("card", context.getCard());
         params.put("dueDate", context.getDueDate());
         params.put("activity", context.getActivity());
@@ -91,6 +96,6 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
             fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + script;
         }
         debug("Running script " + fileName, user);
-        AppBeans.get(Scripting.NAME,Scripting.class).runGroovyScript(fileName, params);
+        AppBeans.get(Scripting.NAME, Scripting.class).runGroovyScript(fileName, params);
     }
 }

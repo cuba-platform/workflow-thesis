@@ -10,8 +10,13 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.security.entity.User;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class AssignmentTimerAction implements TimerAction {
 
+    @Override
     public void execute(TimerActionContext context) {
         EntityLoadInfo entityLoadInfo = EntityLoadInfo.parse(context.getParams().get("user"));
         if (entityLoadInfo == null)

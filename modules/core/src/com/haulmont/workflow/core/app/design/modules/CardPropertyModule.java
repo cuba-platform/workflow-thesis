@@ -5,7 +5,6 @@
 
 package com.haulmont.workflow.core.app.design.modules;
 
-
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
@@ -48,9 +47,9 @@ public abstract class CardPropertyModule extends Module {
     protected CardPropertyHandler objectLoader;
 
     public CardPropertyModule() {
-
     }
 
+    @Override
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
         jsOptions = jsValue.optJSONObject("options");
@@ -102,9 +101,7 @@ public abstract class CardPropertyModule extends Module {
     private Class getClassFromPropertyPath() throws DesignCompilationException {
         try {
             Metadata metadata = AppBeans.get(Metadata.NAME);
-            MetaClass metaClass = null;
-
-            metaClass = metadata.getSession().getClass(Class.forName(cardClass));
+            MetaClass metaClass = metadata.getSession().getClass(Class.forName(cardClass));
 
             Class clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
             if (clazz == null) {
@@ -115,7 +112,6 @@ public abstract class CardPropertyModule extends Module {
             throw new DesignCompilationException("Cant load metaclass " + cardClass, e);
         }
     }
-
 
     @Override
     public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
@@ -146,7 +142,7 @@ public abstract class CardPropertyModule extends Module {
     }
 
     protected void setTransitionNames(String... names) {
-        transitionNames = new HashSet<String>();
+        transitionNames = new HashSet<>();
         Collections.addAll(transitionNames, names);
     }
 }

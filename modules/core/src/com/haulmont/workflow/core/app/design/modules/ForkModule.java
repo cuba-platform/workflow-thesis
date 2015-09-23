@@ -11,7 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
-
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class ForkModule extends Module {
     @Override
     public void init(Context context) throws DesignCompilationException {
@@ -27,6 +30,7 @@ public class ForkModule extends Module {
         }
     }
 
+    @Override
     protected void writeJpdlTransitions(Element parentEl) {
         for (Transition transition : transitions) {
             Element trEl = parentEl.addElement("transition");
@@ -40,5 +44,4 @@ public class ForkModule extends Module {
         el.addAttribute("name", name);
         return el;
     }
-
 }

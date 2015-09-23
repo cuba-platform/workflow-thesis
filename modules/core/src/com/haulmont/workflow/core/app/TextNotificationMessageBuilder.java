@@ -6,7 +6,10 @@ package com.haulmont.workflow.core.app;
 
 import java.util.Map;
 
-
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class TextNotificationMessageBuilder implements NotificationMessageBuilder {
     private String subject;
     private String body;
@@ -31,6 +34,7 @@ public class TextNotificationMessageBuilder implements NotificationMessageBuilde
 
     }
 
+    @Override
     public NotificationMatrixMessage build(Map<String, Object> parameters) {
         return new NotificationMatrixMessage(subject, body);
     }

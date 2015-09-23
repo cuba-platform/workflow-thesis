@@ -38,9 +38,8 @@ import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPAR
 import static com.haulmont.workflow.core.global.WfConstants.SUBDESIGN_SEPARATOR;
 
 /**
- * <p>$Id$</p>
- *
  * @author Zaharchenko
+ * @version $Id$
  */
 public class SubDesignModule extends Module {
 
@@ -58,6 +57,7 @@ public class SubDesignModule extends Module {
     public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
     protected Pattern variablePattern = Pattern.compile("^\\$\\{([a-zA-Z0-9]*)\\}.*$");
 
+    @Override
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
         Transaction tx = AppBeans.get(Persistence.class).getTransaction();
@@ -83,6 +83,7 @@ public class SubDesignModule extends Module {
         }
     }
 
+    @Override
     public Element writeJpdlXml(Element parentEl) throws DesignCompilationException {
         DesignFile designFile = getDesignFile("jpdl", "");
         Document document = Dom4j.readDocument(designFile.getContent());
@@ -162,7 +163,7 @@ public class SubDesignModule extends Module {
     }
 
     public static Map<String, String> parseParamsString(String paramsStr) throws DesignCompilationException {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if (StringUtils.isEmpty(paramsStr)) {
             return params;
         }
@@ -232,7 +233,7 @@ public class SubDesignModule extends Module {
 
     private Map<String, String> getTransitionsMap() {
         if (transitionsMap == null) {
-            transitionsMap = new HashMap<String, String>();
+            transitionsMap = new HashMap<>();
             for (Module.Transition transition : transitions) {
                 transitionsMap.put(WfUtils.encodeKey(transition.srcTerminal), transition.dstName);
             }

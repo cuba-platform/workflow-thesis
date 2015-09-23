@@ -14,9 +14,13 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FormCompiler {
 
-    public static enum TransitionStyle {
+    public enum TransitionStyle {
         SUCCESS("success", "wf-success"),
         FAILURE("failure", "wf-failure");
 

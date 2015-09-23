@@ -10,7 +10,10 @@ import groovy.lang.Binding;
 
 import java.util.Map;
 
-
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class GroovyNotificationMessageBuilder implements NotificationMessageBuilder {
     private String script;
 
@@ -18,6 +21,7 @@ public class GroovyNotificationMessageBuilder implements NotificationMessageBuil
         this.script = script;
     }
 
+    @Override
     public NotificationMatrixMessage build(Map<String, Object> parameters) {
         Binding binding = new Binding(parameters);
         AppBeans.get(Scripting.class).evaluateGroovy(script, binding);

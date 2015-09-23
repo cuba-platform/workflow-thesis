@@ -11,6 +11,10 @@ import groovy.lang.Binding;
 
 import java.util.Map;
 
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public class GroovyNotificationMessage implements NotificationMessage {
     private Binding binding;
     private Map<String,Object> parameters;
@@ -20,16 +24,19 @@ public class GroovyNotificationMessage implements NotificationMessage {
         this.script = script;
     }
 
+    @Override
     public String getSubject() {
         String subject = (String)binding.getVariable("subject");
         return subject;
     }
 
+    @Override
     public String getBody() {
         String body = (String)binding.getVariable("body");
         return body;
     }
 
+    @Override
     public void setParameters(Map<String, Object> parameters) {
         this.parameters=parameters;
         binding = new Binding(parameters);

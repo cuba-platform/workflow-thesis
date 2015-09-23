@@ -55,6 +55,7 @@ public class ReadCardPropertyModule extends CardPropertyModule {
         checkValue();
     }
 
+    @Override
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
         AttributeType attributeType = getAttributeTypeFromClass();

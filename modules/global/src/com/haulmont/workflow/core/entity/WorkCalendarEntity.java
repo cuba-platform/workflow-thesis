@@ -11,6 +11,10 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "wf$Calendar")
 @Table(name = "WF_CALENDAR")
 @SystemLevel
@@ -41,21 +45,26 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
     @Column(name = "CALENDAR_COMMENT")
     protected String comment;
 
+    @Override
     public String getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
         this.updateTs = updateTs;
     }
+
     public Date getDay() {
         return day;
     }

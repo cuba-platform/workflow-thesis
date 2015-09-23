@@ -17,21 +17,28 @@ import org.jbpm.api.activity.ActivityExecution;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorbunkov
+ * @version $Id$
+ */
 public class MainAssignmentTimersFactory implements AssignmentTimersFactory{
     
+    @Override
     public void createTimers(ActivityExecution execution, Assignment assignment) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
         params.put("user", userLoadInfo.toString());
         WfHelper.getTimerManager().addTimer(assignment.getCard(), execution, assignment.getDueDate(),
                 MainAssignmentTimerAction.class, params);
     }
 
+    @Override
     public void removeTimers(ActivityExecution execution) {
         WfHelper.getTimerManager().removeTimers(execution);
         removeTimers(execution, null);
     }
 
+    @Override
     public void removeTimers(ActivityExecution execution, Assignment assignment) {
         if (assignment == null)
             WfHelper.getTimerManager().removeTimers(execution);

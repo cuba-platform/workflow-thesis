@@ -31,7 +31,6 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     protected Table<T> table;
     protected Datasource<T> datasource;
 
-
     /**
      * Constructor for entity.
      *
@@ -143,7 +142,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     protected List<T> getEntities() {
         List<T> entities = new ArrayList<>();
         if (table != null) {
-            for (T entity : (Set<T>) table.getSelected()) {
+            for (T entity : table.getSelected()) {
                 entities.add(entity);
             }
         } else if (getEntity() != null) entities.add(getEntity());
@@ -218,7 +217,6 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
         return getActionMessage("notification.notSupportMultiselect");
     }
 
-
     @Override
     public final void actionPerform(final Component buttonComponent) {
         if (entityIsNotSelected()) return;
@@ -243,7 +241,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     protected T reloadEntity(T entity) {
-        View view = null;
+        View view;
         if (table != null) view = table.getDatasource().getView();
         else if (datasource != null) view = datasource.getView();
         else view = AppBeans.get(Metadata.class).getViewRepository().getView(entity.getClass(), View.LOCAL);
@@ -256,5 +254,4 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
      * @param component
      */
     public abstract void doActionPerform(Component component);
-
 }

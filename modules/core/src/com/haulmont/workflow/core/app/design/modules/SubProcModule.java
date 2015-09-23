@@ -12,8 +12,6 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.text.MessageFormat;
-
 /**
  * @author subbotin
  * @version $Id$

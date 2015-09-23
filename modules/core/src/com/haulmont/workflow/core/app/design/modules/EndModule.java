@@ -5,15 +5,17 @@
 package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.workflow.core.app.WfUtils;
-import com.haulmont.workflow.core.app.design.FormCompiler;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class EndModule extends Module {
-
     @Override
     public void init(Context context) throws DesignCompilationException {
         super.init(context);

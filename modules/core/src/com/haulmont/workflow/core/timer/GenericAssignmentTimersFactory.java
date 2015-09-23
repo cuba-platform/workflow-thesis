@@ -21,6 +21,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
 
     protected String[] dueDatesArr;
@@ -41,6 +45,7 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
         this.scriptsArr = scripts.split("\\|");
     }
 
+    @Override
     public void createTimers(ActivityExecution execution, Assignment assignment) {
         for (int i = 0; i < dueDatesArr.length; i++) {
             String dueDate = dueDatesArr[i];
@@ -54,7 +59,7 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
             }
             EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
 
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("user", userLoadInfo.toString());
 
             if (!StringUtils.isBlank(transitionsArr[i])) {
@@ -76,11 +81,13 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
         }
     }
 
+    @Override
     public void removeTimers(ActivityExecution execution) {
         WfHelper.getTimerManager().removeTimers(execution);
         removeTimers(execution, null);
     }
 
+    @Override
     public void removeTimers(ActivityExecution execution, Assignment assignment) {
         if (assignment == null)
             WfHelper.getTimerManager().removeTimers(execution);

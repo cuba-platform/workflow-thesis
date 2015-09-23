@@ -149,7 +149,7 @@ public class FormManagerChain {
 
     public FormManagerChain copy() {
         FormManagerChain copiedChain = new FormManagerChain();
-        copiedChain.setCommonParams(new HashMap(getCommonParams()));
+        copiedChain.setCommonParams(new HashMap<>(getCommonParams()));
 
         for (FormManager manager : getManagersAfter()) {
             FormManager clonedManager = manager.copy();
@@ -180,7 +180,7 @@ public class FormManagerChain {
     }
 
     public void doManagerBefore(String comment) {
-        doManagerBefore(comment, new HashMap<String, Object>());
+        doManagerBefore(comment, new HashMap<>());
     }
 
     public void doManagerBefore(String comment, Map<String, Object> params) {

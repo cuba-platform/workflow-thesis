@@ -22,9 +22,9 @@ public class RemoveAttachmentConfirmDialog extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        final OptionsGroup options = (OptionsGroup) getComponent("options");
+        final OptionsGroup options = (OptionsGroup) getComponentNN("options");
 
-        ArrayList optionList = new ArrayList();
+        ArrayList<String> optionList = new ArrayList<>();
         optionList.add(getMessage(OPTION_LAST_VERSION));
         optionList.add(getMessage(OPTION_ALL_VERSIONS));
 
@@ -32,6 +32,7 @@ public class RemoveAttachmentConfirmDialog extends AbstractWindow {
         options.setValue(getMessage(OPTION_LAST_VERSION));
 
         addAction(new AbstractAction("ok") {
+            @Override
             public void actionPerform(Component component) {
                 String value = options.getValue();
                 if (getMessage(OPTION_LAST_VERSION).equals(value)) {
@@ -43,6 +44,7 @@ public class RemoveAttachmentConfirmDialog extends AbstractWindow {
         });
 
         addAction(new AbstractAction("cancel") {
+            @Override
             public void actionPerform(Component component) {
                 RemoveAttachmentConfirmDialog.this.close("cancel");
             }

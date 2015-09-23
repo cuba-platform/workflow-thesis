@@ -102,6 +102,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
         dateValidator = new DateValidator();
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         createCustomfields();
@@ -153,7 +154,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
             setCollectionDSonDefaultValue(processVariable.getMetaClassName());
         }
         if (AttributeType.ENUM.equals(processVariable.getAttributeType())) {
-            Class enumClass = null;
+            Class enumClass;
             try {
                 enumClass = Class.forName(processVariable.getMetaClassName());
             } catch (ClassNotFoundException e) {
@@ -208,6 +209,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createActionsField() {
         designProcessFields.addCustomField("actionsFieldValue", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 actionsFieldValueField = componentsFactory.createComponent(PickerField.class);
                 return actionsFieldValueField;
@@ -217,6 +219,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createLookupField() {
         designProcessFields.addCustomField("lookupValue", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 lookupValueField = componentsFactory.createComponent(LookupField.class);
                 return lookupValueField;
@@ -226,6 +229,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createBooleanField() {
         designProcessFields.addCustomField("booleanValue", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 booleanValueField = componentsFactory.createComponent(CheckBox.class);
                 return booleanValueField;
@@ -235,6 +239,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createDateField() {
         designProcessFields.addCustomField("dateValue", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 dateValueField = componentsFactory.createComponent(DateField.class);
                 dateValueField.setResolution(DateField.Resolution.DAY);
@@ -245,6 +250,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
 
     private void createStringField() {
         designProcessFields.addCustomField("stringValue", new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 stringValueField = componentsFactory.createComponent(TextField.class);
                 return stringValueField;
@@ -403,6 +409,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
         metaClassNameField.setValue(className);
     }
 
+    @Override
     public void commitAndClose() {
         Object value = processVariable.getValue();
         if (processVariable.getAttributeType() != null) {
@@ -450,6 +457,7 @@ public abstract class AbstractProcVariableEditor extends AbstractEditor {
         return true;
     }
 
+    @Override
     public void setItem(Entity item) {
         super.setItem(item);
         processVariable = (AbstractProcessVariable) getItem();

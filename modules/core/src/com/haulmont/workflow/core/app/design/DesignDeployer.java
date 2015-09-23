@@ -29,6 +29,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DesignDeployer {
 
     public static final String SCRIPTS_DIR = "scripts";
@@ -66,7 +70,7 @@ public class DesignDeployer {
             if (!dir.mkdirs())
                 throw new RuntimeException("Unable to create directory " + dir.getAbsolutePath());
 
-            List<DesignFile> designFiles = em.createQuery("select df from wf$DesignFile df where df.design.id = ?1")
+            List<DesignFile> designFiles = em.createQuery("select df from wf$DesignFile df where df.design.id = ?1", DesignFile.class)
                     .setParameter(1, designId)
                     .getResultList();
 
@@ -149,7 +153,7 @@ public class DesignDeployer {
 
     private void deployScripts(Design design, File dir) throws IOException {
         List<DesignScript> designScripts = AppBeans.get(Persistence.class).getEntityManager().createQuery(
-                "select s from wf$DesignScript s where s.design.id = ?1")
+                "select s from wf$DesignScript s where s.design.id = ?1", DesignScript.class)
                 .setParameter(1, design.getId())
                 .getResultList();
 
@@ -188,20 +192,20 @@ public class DesignDeployer {
         EntityManager em = persistence.getEntityManager();
         ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
         List<DesignProcessVariable> designProcessVariables = persistence.getEntityManager().createQuery(
-                "select s from wf$DesignProcessVariable s where s.design.id = ?1")
+                "select s from wf$DesignProcessVariable s where s.design.id = ?1", DesignProcessVariable.class)
                 .setParameter(1, design.getId())
                 .setView(viewRepository.getView(DesignProcessVariable.class, View.LOCAL))
                 .getResultList();
 
         List<ProcVariable> existsProcVariables = persistence.getEntityManager().createQuery(
-                "select s from wf$ProcVariable s where s.proc.id = ?1")
+                "select s from wf$ProcVariable s where s.proc.id = ?1", ProcVariable.class)
                 .setParameter(1, proc.getId())
                 .setView(viewRepository.getView(ProcVariable.class, View.LOCAL))
                 .getResultList();
 
         List<ProcVariable> procVariables = new ArrayList<>();
 
-        Map<String, DesignProcessVariable> designProcessVariableMap = new HashMap<String, DesignProcessVariable>();
+        Map<String, DesignProcessVariable> designProcessVariableMap = new HashMap<>();
         for (DesignProcessVariable designProcessVariable : designProcessVariables) {
             designProcessVariableMap.put(designProcessVariable.getAlias(), designProcessVariable);
         }

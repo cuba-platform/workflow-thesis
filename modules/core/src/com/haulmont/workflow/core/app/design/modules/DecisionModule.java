@@ -14,12 +14,15 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DecisionModule extends Module {
 
     protected JSONObject jsOptions;
