@@ -23,7 +23,7 @@
             <vbox id="table-panel" expand="table" spacing="true" height="100%">
                 <table id="table" editable="false" height="100%" width="100%">
                     <buttonsPanel align="MIDDLE_LEFT">
-                        <button action="table.create" icon="icons/create.png"/>
+                        <button action="table.create"/>
                         <button action="table.edit" icon="icons/edit.png"/>
                         <button action="table.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
