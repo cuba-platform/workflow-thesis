@@ -56,7 +56,7 @@
                 <label value="msg://exceptionDays"/>
                 <table id="exceptionDaysTable" width="100%">
                     <buttonsPanel align="MIDDLE_LEFT">
-                        <button id="createAttach" action="exceptionDaysTable.create" icon="icons/create.png"/>
+                        <button id="createAttach" action="exceptionDaysTable.create" icon="icons/create.png" description="msg://add"/>
                         <button id="editAttach" action="exceptionDaysTable.edit" icon="icons/edit.png"/>
                         <button id="removeAttach" action="exceptionDaysTable.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
