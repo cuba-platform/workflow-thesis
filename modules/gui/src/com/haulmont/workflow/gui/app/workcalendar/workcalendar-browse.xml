@@ -34,7 +34,7 @@
                 <label value="msg://timeTable"/>
                 <table id="workDaysTable" width="100%">
                     <buttonsPanel align="MIDDLE_LEFT">
-                        <button id="createAttach" action="workDaysTable.create" icon="icons/create.png"/>
+                        <button id="createAttach" action="workDaysTable.create" icon="icons/create.png" description="msg://add"/>
                         <button id="editAttach" action="workDaysTable.edit" icon="icons/edit.png"/>
                         <button id="removeAttach" action="workDaysTable.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
