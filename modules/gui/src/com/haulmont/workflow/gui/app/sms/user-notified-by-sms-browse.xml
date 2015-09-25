@@ -26,7 +26,7 @@
         </filter>
         <table id="table" width="100%">
             <buttonsPanel>
-                <button id="add" action="table.add" icon="icons/add.png"/>
+                <button id="add" action="table.add" icon="theme://actions.Add.icon"/>
                 <button action="table.remove" icon="icons/remove.png"/>
                 <button action="table.refresh" icon="icons/refresh.png"/>
             </buttonsPanel>
