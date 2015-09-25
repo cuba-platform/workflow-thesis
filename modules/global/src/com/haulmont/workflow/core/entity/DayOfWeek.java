@@ -4,7 +4,9 @@
  */
 package com.haulmont.workflow.core.entity;
 
-public enum DayOfWeek {
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+public enum DayOfWeek implements EnumClass<Integer> {
     SUNDAY(1),
     MONDAY(2),
     TUESDAY(3),
@@ -19,6 +21,7 @@ public enum DayOfWeek {
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
