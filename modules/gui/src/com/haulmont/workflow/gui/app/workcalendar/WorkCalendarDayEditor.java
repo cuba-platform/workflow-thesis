@@ -20,10 +20,17 @@ import java.util.List;
  * @author gaslov
  * @version $Id$
  */
-public class WorkCalendarWorkDayEditor extends AbstractEditor<WorkCalendarEntity> {
+public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
 
     @Inject
-    DataManager dataManager;
+    protected DataManager dataManager;
+
+    protected boolean isWorkDayEditor;
+
+    @Override
+    protected void postInit() {
+        isWorkDayEditor = getCaption().equals(getMessage("workDayEditCaption"));
+    }
 
     @Override
     protected void postValidate(ValidationErrors errors) {
@@ -39,12 +46,7 @@ public class WorkCalendarWorkDayEditor extends AbstractEditor<WorkCalendarEntity
             return;
         }
 
-        LoadContext loadContext = new LoadContext(item.getClass());
-        loadContext.setView(View.LOCAL);
-        loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
-                .setParameter("workDay", item.getDayOfWeek().getId());
-        List<WorkCalendarEntity> resultList = dataManager.loadList(loadContext);
-        for (WorkCalendarEntity wce : resultList) {
+        for (WorkCalendarEntity wce : getCalendarList()) {
             if (wce.getId().equals(item.getId())) {
                 continue;
             }
@@ -55,18 +57,37 @@ public class WorkCalendarWorkDayEditor extends AbstractEditor<WorkCalendarEntity
                     if (startNew.compareTo(start) == 0
                             || startNew.before(start) && endNew.after(start)
                             || startNew.after(start) && startNew.compareTo(end) < 0) {
-                        errors.add(getMessage("timeIntervalIntersection"));
+                        errors.add(getSuitableMessage("timeIntervalIntersection"));
                         break;
                     }
                 } else {
-                    errors.add(getMessage("existsEntryWithInterval"));
+                    errors.add(getSuitableMessage("existsEntryWithInterval"));
                     break;
                 }
             } else if (startNew != null) {
-                errors.add(getMessage("existsDayOffEntry"));
+                errors.add(getSuitableMessage("existsDayOffEntry"));
             } else {
-                errors.add(getMessage("alreadyExistsDayOffEntry"));
+                errors.add(getSuitableMessage("alreadyExistsDayOffEntry"));
             }
         }
+    }
+
+    protected List<WorkCalendarEntity> getCalendarList() {
+        WorkCalendarEntity item = getItem();
+        LoadContext loadContext = new LoadContext(item.getClass());
+        loadContext.setView(View.LOCAL);
+        if (isWorkDayEditor) {
+            loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
+                    .setParameter("workDay", item.getDayOfWeek().getId());
+        } else {
+            loadContext.setQueryString("select c from wf$Calendar c where c.day = :day")
+                    .setParameter("day", item.getDay());
+        }
+        return dataManager.loadList(loadContext);
+    }
+
+    protected String getSuitableMessage(String key) {
+        String suffix = isWorkDayEditor ? "WD" : "ED";
+        return getMessage(key + suffix);
     }
 }
