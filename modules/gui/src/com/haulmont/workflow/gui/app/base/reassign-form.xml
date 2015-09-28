@@ -32,7 +32,7 @@
             <textArea id="commentText"  rows="4" maxLength="4000"/>
         </hbox>
         <vbox margin="true">
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <iframe id="windowActions" screen="editWindowActions"/>
         </vbox>
     </layout>
 </window>

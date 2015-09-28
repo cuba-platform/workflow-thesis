@@ -18,6 +18,6 @@
 
     <layout spacing="true">
         <iframe id="frame" screen="attachmentFrame"/>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

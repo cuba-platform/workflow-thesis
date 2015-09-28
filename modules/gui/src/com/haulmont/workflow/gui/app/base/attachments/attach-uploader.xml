@@ -50,6 +50,6 @@
             </columns>
             <rows datasource="attachDs"/>
         </table>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

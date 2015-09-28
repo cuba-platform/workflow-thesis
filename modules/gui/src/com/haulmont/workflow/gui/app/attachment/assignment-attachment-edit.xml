@@ -18,6 +18,6 @@
 
     <layout expand="windowActions" spacing="true">
         <iframe id="frame" src="/com/haulmont/workflow/gui/app/attachment/attachment-frame.xml"/>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>
