@@ -18,6 +18,6 @@
 
     <layout expand="windowActions" spacing="true">
         <frame id="frame" src="/com/haulmont/workflow/gui/app/attachment/attachment-frame.xml"/>
-        <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="windowActions" screen="editWindowActions" />
     </layout>
 </window>

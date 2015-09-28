@@ -32,7 +32,7 @@
             <textArea id="commentText"  rows="4" maxLength="4000"/>
         </hbox>
         <vbox margin="true">
-            <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <frame id="windowActions" screen="editWindowActions" />
         </vbox>
     </layout>
 </window>

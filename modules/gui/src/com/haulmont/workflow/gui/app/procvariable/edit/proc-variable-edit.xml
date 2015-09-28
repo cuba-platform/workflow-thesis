@@ -35,6 +35,6 @@
                 <field id="comment" rows="3"/>
             </column>
         </fieldGroup>
-        <frame id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <frame id="buttons" screen="editWindowActions" />
     </layout>
 </window>

@@ -72,7 +72,7 @@
             </tab>
         </tabSheet>
         <vbox>
-            <frame id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <frame id="windowActions" screen="editWindowActions" />
         </vbox>
     </layout>
 </window>
