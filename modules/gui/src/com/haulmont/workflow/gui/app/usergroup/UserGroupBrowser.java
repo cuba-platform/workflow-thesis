@@ -128,9 +128,7 @@ public class UserGroupBrowser extends AbstractWindow {
                             users.add((User) user);
                         }
                         userGroup.setUsers(users);
-                        CommitContext ctx = new CommitContext();
-                        ctx.getCommitInstances().add(userGroup);
-                        getDsContext().getDataSupplier().commit(ctx);
+                        getDsContext().getDataSupplier().commit(userGroup);
                         userGroupsDs.refresh();
                     }
                 }, WindowManager.OpenType.THIS_TAB, userBrowserParams);
