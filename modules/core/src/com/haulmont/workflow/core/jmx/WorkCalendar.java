@@ -21,7 +21,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_WorkCalendarMBean")
+@Component("workflow_WorkCalendarMBean")
 public class WorkCalendar implements WorkCalendarMBean {
 
     @Inject

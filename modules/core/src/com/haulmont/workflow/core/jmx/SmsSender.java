@@ -21,7 +21,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_SmsSenderMBean")
+@Component("workflow_SmsSenderMBean")
 public class SmsSender implements SmsSenderMBean {
 
     protected Log log = LogFactory.getLog(getClass());

@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +46,7 @@ import java.util.zip.CRC32;
  * @author Sergey Saiyan
  * @version $Id$
  */
-@ManagedBean(DesignerWorkerAPI.NAME)
+@Component(DesignerWorkerAPI.NAME)
 public class DesignerWorker implements DesignerWorkerAPI {
 
     @Inject

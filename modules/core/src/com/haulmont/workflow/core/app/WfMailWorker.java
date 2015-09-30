@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
  * @author Sergey Saiyan
  * @version $Id$
  */
-@ManagedBean(WfMailWorker.NAME)
+@Component(WfMailWorker.NAME)
 public class WfMailWorker {
 
     public static final String NAME = "workflow_MailWorker";

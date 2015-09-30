@@ -25,7 +25,7 @@ import org.dom4j.Element;
 import org.jbpm.api.*;
 import org.jbpm.pvm.internal.processengine.SpringHelper;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-@ManagedBean(WfEngineAPI.NAME)
+@Component(WfEngineAPI.NAME)
 public class WfEngine implements WfEngineAPI {
 
     private Log log = LogFactory.getLog(getClass());

@@ -16,7 +16,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadFactory;
  * @author novikov
  * @version $Id$
  */
-@ManagedBean(SmsManagerAPI.NAME)
+@Component(SmsManagerAPI.NAME)
 public class SmsManager implements SmsManagerAPI {
 
     private static final Log log = LogFactory.getLog(SmsManager.class);

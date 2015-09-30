@@ -8,14 +8,14 @@ package com.haulmont.workflow.core.jmx;
 import com.haulmont.workflow.core.app.NotificationMatrixAPI;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_NotificationMatrixMBean")
+@Component("workflow_NotificationMatrixMBean")
 public class NotificationMatrix implements NotificationMatrixMBean {
 
     @Inject

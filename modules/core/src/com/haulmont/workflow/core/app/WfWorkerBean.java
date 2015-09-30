@@ -25,7 +25,7 @@ import org.jbpm.api.model.Activity;
 import org.jbpm.api.model.Transition;
 import org.jbpm.pvm.internal.client.ClientProcessDefinition;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -35,7 +35,7 @@ import java.util.*;
  * @author Sergey Saiyan
  * @version $Id$
  */
-@ManagedBean(WfWorkerAPI.NAME)
+@Component(WfWorkerAPI.NAME)
 public class WfWorkerBean implements WfWorkerAPI {
 
     @Inject

@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.CardAttachment;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
  * @version $Id$
  */
 
-@ManagedBean(ProcessAttachmentsAPI.NAME)
+@Component(ProcessAttachmentsAPI.NAME)
 public class ProcessAttachmentsManager implements ProcessAttachmentsAPI {
 
     @Override

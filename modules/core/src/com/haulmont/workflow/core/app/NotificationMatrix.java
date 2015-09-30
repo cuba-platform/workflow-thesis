@@ -27,7 +27,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author pavlov
  * @version $Id$
  */
-@ManagedBean(NotificationMatrixAPI.NAME)
+@Component(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixAPI {
 
     protected static final String MAIL_SHEET = "Mail";

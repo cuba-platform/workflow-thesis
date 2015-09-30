@@ -15,7 +15,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.SQLException;
 
@@ -23,7 +23,7 @@ import java.sql.SQLException;
  * @author chernov
  * @version $Id$
  */
-@ManagedBean("workflow_CardAttachmentEntityListener")
+@Component("workflow_CardAttachmentEntityListener")
 public class CardAttachmentEntityListener implements
         AfterInsertEntityListener<CardAttachment>, AfterDeleteEntityListener<CardAttachment> {
 

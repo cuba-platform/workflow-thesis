@@ -16,11 +16,11 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
-@ManagedBean(WorkCalendarAPI.NAME)
+@Component(WorkCalendarAPI.NAME)
 public class WorkCalendar implements WorkCalendarAPI {
 
     protected Log log = LogFactory.getLog(WorkCalendar.class);

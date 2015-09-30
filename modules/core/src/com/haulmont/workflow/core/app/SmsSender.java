@@ -18,7 +18,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
  * @author novikov
  * @version $Id$
  */
-@ManagedBean(SmsSenderAPI.NAME)
+@Component(SmsSenderAPI.NAME)
 public class SmsSender implements SmsSenderAPI {
 
     protected static final Log log = LogFactory.getLog(SmsSender.class);

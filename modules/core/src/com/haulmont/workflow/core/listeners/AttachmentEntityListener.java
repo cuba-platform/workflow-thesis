@@ -4,14 +4,14 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.workflow.core.entity.Attachment;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author Sergey Saiyan
  * @version $Id$
  */
-@ManagedBean("workflow_AttachmentEntityListener")
+@Component("workflow_AttachmentEntityListener")
 public class AttachmentEntityListener implements BeforeInsertEntityListener<Attachment> {
 
     @Inject

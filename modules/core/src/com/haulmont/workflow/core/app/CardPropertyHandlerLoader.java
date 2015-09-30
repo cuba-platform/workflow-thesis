@@ -15,14 +15,14 @@ import com.haulmont.workflow.core.app.valuehandler.EnumCardPropertyHandler;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
  * @author zaharchenko
  * @version $Id$
  */
-@ManagedBean(CardPropertyHandlerLoader.NAME)
+@Component(CardPropertyHandlerLoader.NAME)
 public class CardPropertyHandlerLoader {
 
     public static final String NAME = "workflow_WfCardPropertyValueHandlerLoader";

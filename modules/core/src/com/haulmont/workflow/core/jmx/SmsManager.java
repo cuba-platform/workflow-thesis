@@ -9,14 +9,14 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.app.SmsSenderConfig;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_SmsManagerMBean")
+@Component("workflow_SmsManagerMBean")
 public class SmsManager implements SmsManagerMBean {
 
     protected SmsSenderConfig config;

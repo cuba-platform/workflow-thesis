@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Zaharchenko
  */
-@ManagedBean(ProcessVariableAPI.NAME)
+@Component(ProcessVariableAPI.NAME)
 public class ProcessVariableManager implements ProcessVariableAPI {
 
     @Inject

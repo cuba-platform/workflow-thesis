@@ -7,14 +7,14 @@ package com.haulmont.workflow.core.jmx;
 
 import com.haulmont.workflow.core.app.TimerManagerAPI;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_TimerManagerMBean")
+@Component("workflow_TimerManagerMBean")
 public class TimerManager implements TimerManagerMBean {
 
     @Inject

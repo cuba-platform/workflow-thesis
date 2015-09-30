@@ -20,7 +20,7 @@ import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.global.WfEntityDescriptor;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -29,7 +29,7 @@ import java.util.UUID;
  * @author zaharchenko
  * @version $Id$
  */
-@ManagedBean(WfEntityDescriptorTools.NAME)
+@Component(WfEntityDescriptorTools.NAME)
 public class WfEntityDescriptorTools {
 
     public static final String NAME = "workflow_WfDynamicEntityProvider";

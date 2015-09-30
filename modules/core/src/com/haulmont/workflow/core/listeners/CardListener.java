@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
  * @author devyatkin
  * @version $Id$
  */
-@ManagedBean("workflow_CardListener")
+@Component("workflow_CardListener")
 public class CardListener implements
         BeforeDeleteEntityListener<Card>,
         BeforeUpdateEntityListener<Card>,

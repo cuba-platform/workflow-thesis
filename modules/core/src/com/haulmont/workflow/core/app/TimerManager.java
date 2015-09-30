@@ -23,7 +23,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.jbpm.api.activity.ActivityExecution;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean(TimerManagerAPI.NAME)
+@Component(TimerManagerAPI.NAME)
 public class TimerManager implements TimerManagerAPI {
 
     private Log log = LogFactory.getLog(TimerManager.class);

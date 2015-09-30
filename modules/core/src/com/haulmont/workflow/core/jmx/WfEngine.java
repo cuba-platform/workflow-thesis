@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jbpm.api.*;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -28,7 +28,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("workflow_WfEngineMBean")
+@Component("workflow_WfEngineMBean")
 public class WfEngine implements WfEngineMBean {
 
     @Inject

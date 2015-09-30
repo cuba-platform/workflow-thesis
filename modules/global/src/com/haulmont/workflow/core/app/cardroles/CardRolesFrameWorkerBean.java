@@ -14,14 +14,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.ManagedBean;
+import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
  * @author stekolschikov
  * @version $Id$
  */
-@ManagedBean(CardRolesFrameWorker.NAME)
+@Component(CardRolesFrameWorker.NAME)
 public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
 
     public Set<String> getEmptyRolesNames(Card card, Set<CardRole> cardRoles, String requiredRolesCodesStr,
