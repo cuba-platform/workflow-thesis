@@ -131,6 +131,11 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
         return version;
     }
 
+    @Override
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     public Date getUpdateTs() {
         return updateTs;
     }
