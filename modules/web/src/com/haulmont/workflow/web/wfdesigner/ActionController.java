@@ -156,7 +156,7 @@ public class ActionController {
                         json.value(value);
                     }
                     json.endArray();
-                    printJson(response,json.toString());
+                    printJson(response, json.toString());
 
                 } finally {
                     AppContext.setSecurityContext(null);
@@ -171,7 +171,7 @@ public class ActionController {
 
     private List<String> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
-        Class clazz = StringUtils.isBlank(propertyPath) ? Card.class : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+        Class clazz = StringUtils.isBlank(propertyPath) ? metaClass.getJavaClass() : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
         List<String> paths = new ArrayList<>();
         if (clazz == null) {
             return paths;
@@ -406,7 +406,7 @@ public class ActionController {
         json.object()
                 .key("attributeType").value(attributeType.getId())
                 .key("ops").array();
-        for (OperationsType operationsType :  OperationsType.availableOps(attributeType)) {
+        for (OperationsType operationsType : OperationsType.availableOps(attributeType)) {
             json.object()
                     .key("value").value(operationsType.getId())
                     .key("label").value(messages.getMessage(operationsType))

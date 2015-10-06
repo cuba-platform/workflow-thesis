@@ -60,7 +60,7 @@ abstract class CardPropertyActivity extends ProcessVariableActivity {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager()
-            card = em.find(Card.class, card.getId(), getRequiredView());
+            card = (Card) em.find(metaClass.getJavaClass(), card.getId(), getRequiredView(metaClass.getJavaClass()));
             tx.commit();
         } finally {
             tx.end();
@@ -69,8 +69,8 @@ abstract class CardPropertyActivity extends ProcessVariableActivity {
 
     }
 
-    View getRequiredView() {
-        View view = new View(Card.class);
+    View getRequiredView(Class cardClass) {
+        View view = new View(cardClass);
         CardPropertyUtils.generateViewByPropertyPath(view, propertyPath);
         return view;
     }
