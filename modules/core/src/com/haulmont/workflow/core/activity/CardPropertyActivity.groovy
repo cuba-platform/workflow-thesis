@@ -50,7 +50,7 @@ abstract class CardPropertyActivity extends ProcessVariableActivity {
         messages = AppBeans.get(Messages.NAME, Messages.class);
         dynamicEntityProviderAPI = AppBeans.get(WfEntityDescriptorTools.NAME);
         CardPropertyHandlerLoader designManagerAPI = AppBeans.get(CardPropertyHandlerLoader.NAME);
-        MetaClass metaClass = AppBeans.get(Metadata.NAME, Metadata.class).getSession().getClass(Class.forName(cardClass));
+        com.haulmont.chile.core.model.MetaClass metaClass = AppBeans.get(Metadata.NAME, Metadata.class).getSession().getClass(Class.forName(cardClass, true, Thread.currentThread().contextClassLoader));
         propertyClass = CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
         if (propertyClass == null) {
             throw new RuntimeException("Path '" + propertyPath + "' not found in class '" + metaClass.getName() + "'");
