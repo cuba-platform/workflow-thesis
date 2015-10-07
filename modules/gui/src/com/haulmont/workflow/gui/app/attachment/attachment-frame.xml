@@ -11,7 +11,7 @@
             <query>
                 select att from wf$AttachmentType att where att.deleteTs is null order by att.isDefault
                 <filter>
-                    <c>att.code not in (:param$exclTypes)</c>
+                    <c>att.code not in :param$exclTypes</c>
                 </filter>
             </query>
         </collectionDatasource>
