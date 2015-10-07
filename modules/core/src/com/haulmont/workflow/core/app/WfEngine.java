@@ -76,7 +76,7 @@ public class WfEngine implements WfEngineAPI {
     private Metadata metadata;
 
     static {
-        System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.cuba.core.global.ScriptingProvider#getClassLoader");
+        System.setProperty("cuba.jbpm.classLoaderFactory", "com.haulmont.workflow.core.global.JbpmClassLoaderFactory#getClassLoader");
     }
 
     @Resource(name = "jbpmSpringHelper")
