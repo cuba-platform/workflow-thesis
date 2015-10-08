@@ -170,7 +170,7 @@ public class ActionController {
         }
     }
 
-    private List<String> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
+    protected List<String> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         Class clazz = StringUtils.isBlank(propertyPath) ? metaClass.getJavaClass() : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
         List<String> paths = new ArrayList<>();
@@ -313,7 +313,7 @@ public class ActionController {
         }
     }
 
-    private Collection<MetaClass> findClasses() {
+    protected Collection<MetaClass> findClasses() {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         Metadata metadata = AppBeans.get(Metadata.NAME);
         List<MetaClass> cardInheritors = new ArrayList<>();
