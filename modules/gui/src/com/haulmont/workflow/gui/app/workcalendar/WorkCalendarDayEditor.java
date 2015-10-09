@@ -76,7 +76,7 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
         WorkCalendarEntity item = getItem();
         LoadContext loadContext = new LoadContext(item.getClass());
         loadContext.setView(View.LOCAL);
-        if (isWorkDayEditor) {
+        if (isWorkDayEditor && item.getDayOfWeek() != null) {
             loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
                     .setParameter("workDay", item.getDayOfWeek().getId());
         } else {
