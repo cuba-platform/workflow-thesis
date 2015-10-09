@@ -9,6 +9,7 @@ var i18nDict = {
     "Help": "Помощь",
     "align": "Выровнять",
     "Common": "Общее",
+    "eventProcess": "Действия с карточкой",
     "Process": "Процесс",
     "Module": "Модуль",
     "Minimap": "Карта",

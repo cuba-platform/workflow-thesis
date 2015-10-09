@@ -7,6 +7,7 @@ var i18nDict = {
     "Save": "Save",
     "Help": "Help",
     "align": "Align",
+    "eventProcess": "Actions with card",
 
     "name": "Name",
     "description": "Description",
