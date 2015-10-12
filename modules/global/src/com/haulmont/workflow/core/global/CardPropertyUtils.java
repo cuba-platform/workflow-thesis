@@ -104,6 +104,7 @@ public final class CardPropertyUtils {
     }
 
     public static boolean compareValue(OperationsType operationsType, Object targetValue, Object value) {
+        if (targetValue == null) return operationsType.equals(OperationsType.DOES_NOT_CONTAIN);
         switch (operationsType) {
             case EQUAL:
                 return value.equals(targetValue);
