@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -76,9 +77,14 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
         WorkCalendarEntity item = getItem();
         LoadContext loadContext = new LoadContext(item.getClass());
         loadContext.setView(View.LOCAL);
-        if (isWorkDayEditor && item.getDayOfWeek() != null) {
-            loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
-                    .setParameter("workDay", item.getDayOfWeek().getId());
+        if (isWorkDayEditor) {
+            if(item.getDayOfWeek() != null){
+                loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
+                        .setParameter("workDay", item.getDayOfWeek().getId());
+            } else {
+                return Collections.EMPTY_LIST;
+            }
+
         } else {
             loadContext.setQueryString("select c from wf$Calendar c where c.day = :day")
                     .setParameter("day", item.getDay());
