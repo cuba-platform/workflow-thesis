@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.global.WfEntityDescriptor;
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -38,11 +38,11 @@ public class WfEntityDescriptorTools {
         String stringValue = null;
         if (value != null)
             if (value instanceof Integer)
-                stringValue = Datatypes.get(Integer.class).format((Integer) value);
+                stringValue = Datatypes.getNN(Integer.class).format(value);
             else if (value instanceof BigDecimal)
-                stringValue = Datatypes.get(BigDecimal.class).format((BigDecimal) value);
+                stringValue = Datatypes.getNN(BigDecimal.class).format(value);
             else if (value instanceof Double)
-                stringValue = Datatypes.get(Double.class).format((Double) value);
+                stringValue = Datatypes.getNN(Double.class).format(value);
             else if (value instanceof Date)
                 stringValue = Long.valueOf(((Date) value).getTime()).toString();
             else if (value instanceof Entity)
@@ -134,7 +134,7 @@ public class WfEntityDescriptorTools {
                 switch (wfEntityDescriptor.getAttributeType()) {
                     case DATE:
                     case DATE_TIME:
-                        value = Datatypes.get(Date.class).format((Date) object);
+                        value = Datatypes.getNN(Date.class).format(object);
                         break;
 
                     case BOOLEAN:
