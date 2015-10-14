@@ -53,8 +53,8 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
         }
 
         var formChoices = [{value: null, label: ""}];
-        for (var name in Wf.FormSelect.forms) {
-            var form = Wf.FormSelect.forms[name];
+        for (var name in this.getForms()) {
+            var form = this.getForm(name);
             formChoices.push({value: name, label: form.label});
         }
 
@@ -91,7 +91,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
                 this.fieldset.removeChild(this.formParamsGroup.getEl());
                 this.formParamsGroup = undefined;
             }
-            var form = Wf.FormSelect.forms[this.formName];
+            var form = this.getForm(this.formName);
             if (form) {
                 this.formParamsGroup = inputEx({type: "group", fields: form.fields}, this);
                 this.fieldset.appendChild(this.formParamsGroup.getEl());
@@ -122,7 +122,7 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
         if (!val || !val.name)
             return;
 
-        var form = Wf.FormSelect.forms[val.name];
+        var form = this.getForm(val.name);
         if (!form)
             return;
 
@@ -140,6 +140,14 @@ YAHOO.lang.extend(Wf.FormSelect, inputEx.Field, {
         this.renderFormParams();
 
         this.formParamsGroup.setValue(val.properties,false);
+    },
+
+    getForms: function() {
+        return Wf.FormSelect.forms;
+    },
+
+    getForm: function(formName) {
+        return this.getForms()[formName];
     }
 
 });
