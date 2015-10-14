@@ -86,8 +86,13 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
             }
 
         } else {
-            loadContext.setQueryString("select c from wf$Calendar c where c.day = :day")
-                    .setParameter("day", item.getDay());
+            if(item.getDay() != null){
+                loadContext.setQueryString("select c from wf$Calendar c where c.day = :day")
+                        .setParameter("day", item.getDay());
+            } else {
+                return Collections.EMPTY_LIST;
+            }
+
         }
         return dataManager.loadList(loadContext);
     }
