@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
@@ -253,13 +254,14 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     }
 
     public Card getFamilyTop() {
-        if (procFamily == null)
+        if (!PersistenceHelper.isLoaded(this, "procFamily") || procFamily == null)
             return this;
         return procFamily.getCard() != null ? procFamily.getCard() : this;
     }
 
     public boolean isSubProcCard() {
-        return procFamily != null && procFamily.getCard() != null;
+        return PersistenceHelper.isLoaded(this, "procFamily")
+                && procFamily != null && procFamily.getCard() != null;
     }
 
     public Set<Card> getSubCards() {
