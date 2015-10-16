@@ -8,8 +8,10 @@ package com.haulmont.workflow.core.global;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.enums.AttributeType;
@@ -17,7 +19,8 @@ import com.haulmont.workflow.core.enums.OperationsType;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * @author zaharchenko
@@ -101,6 +104,52 @@ public final class CardPropertyUtils {
         }
         MetaClass newMetaClass = ((Metadata) AppBeans.get(Metadata.NAME)).getSession().getClass(metaProperty.getJavaType());
         return getClassByMetaProperty(newMetaClass, newPath);
+    }
+
+    public static String getSystemPathByMetaProperty(MetaClass metaClass, String path) {
+        String propertyPathName = StringUtils.substringBefore(path, ".");
+        String propertyPath = propertyPathName;
+        MetaProperty metaProperty = metaClass.getProperty(propertyPathName);
+        if (metaProperty == null) {
+            propertyPath = findPropertyPath(metaClass, propertyPathName);
+            if (propertyPath != null) {
+                metaProperty = metaClass.getProperty(propertyPath);
+            }
+        }
+        if (metaProperty == null) {
+            return null;
+        }
+        String newPath = StringUtils.substringAfter(path, ".");
+        if (propertyPathName.equals(path) || Arrays.asList(MetaProperty.Type.ENUM, MetaProperty.Type.DATATYPE).contains(metaProperty.getType())) {
+            return propertyPath;
+        }
+        MetaClass newMetaClass = ((Metadata) AppBeans.get(Metadata.NAME)).getSession().getClass(metaProperty.getJavaType());
+        String append = getSystemPathByMetaProperty(newMetaClass, newPath);
+        if (append != null) {
+            return propertyPath + "." + append;
+        }
+        return null;
+    }
+
+    public static String findPropertyPath(MetaClass metaClass, String propertyPath) {
+        String formattedPropertyPath = propertyPath.replace(".", "");
+        Messages messages = AppBeans.get(Messages.NAME);
+        for (MetaProperty property : metaClass.getProperties()) {
+            String propertyName = property.getName();
+            Class declaringClass = property.getDeclaringClass();
+            String localizePropertyName = propertyName;
+            if (declaringClass != null) {
+                localizePropertyName = messages.getMessage(declaringClass.getPackage().getName(),
+                        declaringClass.getSimpleName() + "." + propertyName)
+                        .replace(".", "");
+            }
+            if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
+                if (formattedPropertyPath.equals(localizePropertyName)) {
+                    return propertyName;
+                }
+            }
+        }
+        return null;
     }
 
     public static boolean compareValue(OperationsType operationsType, Object targetValue, Object value) {

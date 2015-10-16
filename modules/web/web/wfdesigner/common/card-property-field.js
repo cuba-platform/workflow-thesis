@@ -12,7 +12,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
         oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSARRAY;
             // Define the schema of the delimited results
         oDS.responseSchema = {
-            fields : ["path"]
+            fields : ["path", "property", "locProperty", "isEntity"]
         };
 
         oDS.maxCacheEntries = 20;
@@ -33,9 +33,40 @@ YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
 
     },
 
+    buildAutocomplete: function() {
+        Wf.CardPropertyField.superclass.buildAutocomplete.call(this);
+
+        if (this.oAutoComp) {
+            this.baseFormatResult = this.oAutoComp.formatResult;
+            this.oAutoComp.formatResult = this.formatResult;
+        }
+    },
+
+    formatResult: function(oResultData, sQuery, sResultMatch) {
+        var sMarkup = (oResultData && oResultData[2]) ? oResultData[2] : sResultMatch;
+        if (sMarkup && oResultData[3]) {
+            sMarkup = '* ' + sMarkup;
+        }
+        return sMarkup ? sMarkup : "";
+    },
+
+    itemSelectHandler: function(sType, aArgs) {
+        var aData = aArgs[2];
+        if (this.options.returnValue) {
+            this.setValue(this.options.returnValue(aData));
+        } else {
+            var value = {};
+            var path = (aData[0] && aData[0] != "") ? (aData[0] + ".") : "";
+            value.systemPropertyValue = path + aData[1];
+            value.fieldValue = path + aData[2];
+            this.setValue(value);
+        }
+    },
+
     updateContainer: function(result){
         if (result.responseText!=""){
             var result = YAHOO.lang.JSON.parse(result.responseText);
+            this.systemPropertyPath = result[0].systemPropertyPath;
             if (this.options.container instanceof Wf.CardPropertyContainer){
                 this.options.container.updateContainer(result[0]);
             }
@@ -44,6 +75,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
             this.options.container.hideAllFields();
             this.options.container.activeField = null;
             this.options.container.redrawAllContainerWires();
+            this.systemPropertyPath = null;
         }
     },
 
@@ -72,10 +104,35 @@ YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
     },
 
     setValue: function(val, sendUpdatedEvt) {
-        Wf.CardPropertyField.superclass.setValue.call(this, val, sendUpdatedEvt);
-        this.requestAttributeType(val);
-
+        var fieldValue = val;
+        var systemPropertyPath;
+        if (val.fieldValue) {
+            fieldValue = val.fieldValue;
+            systemPropertyPath = fieldValue;
+        }
+        if (val.systemPropertyValue) {
+            systemPropertyPath = val.systemPropertyValue;
+        } else {
+            systemPropertyPath = fieldValue;
+        }
+        Wf.CardPropertyField.superclass.setValue.call(this, fieldValue, sendUpdatedEvt);
+        this.requestAttributeType(systemPropertyPath);
     },
+
+    getValue: function() {
+        var fieldValue = Wf.CardPropertyField.superclass.getValue.call(this);
+        var propertyValues = {};
+        propertyValues.fieldValue = fieldValue;
+        if (this.systemPropertyPath) {
+            propertyValues.systemPropertyValue = this.systemPropertyPath;
+        } else {
+            propertyValues.systemPropertyValue = fieldValue;
+        }
+        propertyValues.toString = function() {
+            return this.systemPropertyValue;
+        };
+        return propertyValues;
+    }
 
 });
 
