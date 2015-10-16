@@ -119,6 +119,7 @@
 
     <view class="com.haulmont.workflow.core.entity.Card" name="w-attachments" extends="_local">
         <property name="attachments" view="card-edit"/>
+        <property name="procFamily" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.CardRole" name="card-edit" extends="_local">
