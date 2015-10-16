@@ -37,14 +37,23 @@ class DefaultProcActorEditor extends AbstractEditor{
     super.setItem(item);
     DefaultProcActor dpa = (DefaultProcActor)getItem()
     Role secRole = dpa.procRole.role
+    String query
     if (secRole) {
-      usersDs.setQuery('select u from sec$User u join u.userRoles ur where (ur.role.id = :custom$secRole) ' +
-              'and (u.id not in :custom$userIds) ' +
-              'and (u.active = true) order by u.name')
+        query = 'select u from sec$User u join u.userRoles ur where (ur.role.id = :custom$secRole)'
+        if (userIds) query += ' and (u.id not in :custom$userIds)'
+        query += ' and (u.active = true) order by u.name'
     } else {
-      usersDs.setQuery('select u from sec$User u where (u.id not in :custom$userIds) and (u.active = true) order by u.name')
+        query = 'select u from sec$User u where (u.active = true)'
+        if (userIds) query += ' and (u.id not in :custom$userIds) '
+        query += ' order by u.name'
     }
-    usersDs.refresh(['secRole': secRole, 'userIds':userIds])
+    usersDs.setQuery(query)
+
+    def params = ['secRole': secRole]
+    if (usersDs)
+        params.put('userIds', userIds)
+    usersDs.refresh(params)
+
     if (dpa.procRole.multiUser) {
         initDpaSortOrder()
     } else {
