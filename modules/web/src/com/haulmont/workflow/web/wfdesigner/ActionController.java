@@ -19,6 +19,7 @@ import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.enums.OperationsType;
 import com.haulmont.workflow.core.global.CardPropertyUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -145,15 +146,10 @@ public class ActionController {
                     }
                     Metadata metadata = AppBeans.get(Metadata.NAME);
                     MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
-                    List<String> propertyPaths = getPropertyPaths(metaClass, propertyPath, start);
+                    List<PropertyPath> propertyPaths = getPropertyPaths(metaClass, propertyPath, start);
                     JSONWriter json = new JSONStringer().array();
-                    for (String path : propertyPaths) {
-                        String value = propertyPath;
-                        if (StringUtils.isNotBlank(propertyPath)) {
-                            value = value + ".";
-                        }
-                        value = value + path;
-                        json.value(value);
+                    for (PropertyPath path : propertyPaths) {
+                        path.toJsonWriter(json);
                     }
                     json.endArray();
                     printJson(response, json.toString());
@@ -169,19 +165,34 @@ public class ActionController {
         }
     }
 
-    protected List<String> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
+    protected List<PropertyPath> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
+        CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
         Class clazz = StringUtils.isBlank(propertyPath) ? metaClass.getJavaClass() : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
-        List<String> paths = new ArrayList<>();
+        List<PropertyPath> paths = new ArrayList<>();
         if (clazz == null) {
-            return paths;
+            String systemPropertyPath = CardPropertyUtils.getSystemPathByMetaProperty(metaClass, propertyPath);
+            clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, systemPropertyPath);
+            if (clazz == null) {
+                return paths;
+            }
         }
         metaClass = metadata.getSession().getClass(clazz);
         for (MetaProperty property : metaClass.getProperties()) {
             String propertyName = property.getName();
+            Class declaringClazz = property.getDeclaringClass();
+            String localizePropertyName = propertyName;
+            boolean isEntity = AttributeType.ENTITY.equals(workflowSettingsService.getAttributeType(property.getJavaType(), false));
+            if (declaringClazz != null) {
+                localizePropertyName = messages.getMessage(declaringClazz.getPackage().getName(),
+                        declaringClazz.getSimpleName() + "." + propertyName)
+                        .replace(".", "");
+            }
             if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
-                if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(propertyName, start)) {
-                    paths.add(propertyName);
+                if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(localizePropertyName, start)) {
+                    paths.add(new PropertyPath(propertyPath, propertyName, localizePropertyName, isEntity));
+                } else if (StringUtils.containsIgnoreCase(propertyName, start)) {
+                    paths.add(new PropertyPath(propertyPath, propertyName, propertyName, isEntity));
                 }
             }
         }
@@ -202,12 +213,13 @@ public class ActionController {
                     if (StringUtils.isNotBlank(propertyPath) && StringUtils.isNotBlank(className)) {
                         Metadata metadata = AppBeans.get(Metadata.NAME);
                         MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
-                        Class clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+                        String systemPropertyPath = CardPropertyUtils.getSystemPathByMetaProperty(metaClass, propertyPath);
+                        Class clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, systemPropertyPath);
                         if (clazz == null) {
                             response.sendError(HttpServletResponse.SC_NO_CONTENT, "Unreachable property path");
                             return null;
                         }
-                        String data = loadAttributeType(clazz);
+                        String data = loadAttributeType(clazz, systemPropertyPath);
                         printJson(response, data);
                     }
                 } finally {
@@ -397,7 +409,7 @@ public class ActionController {
         return dataService.loadList(ctx);
     }
 
-    private String loadAttributeType(Class clazz) throws JSONException {
+    protected String loadAttributeType(Class clazz, String systemPropertyPath) throws JSONException {
         Messages messages = AppBeans.get(Messages.NAME);
         CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
         AttributeType attributeType = workflowSettingsService.getAttributeType(clazz, false);
@@ -419,12 +431,77 @@ public class ActionController {
         for (String key : map.keySet()) {
             json.object()
                     .key("value").value(key)
-                    .key("label").value(StringEscapeUtils.escapeJavaScript(map.get(key).toString()))
+                    .key("label").value(StringEscapeUtils.escapeHtml(map.get(key).toString()))
                     .endObject();
         }
         json.endArray();
+        if (systemPropertyPath != null) {
+            json.key("systemPropertyPath").value(systemPropertyPath);
+        }
         json.endObject();
         json.endArray();
         return json.toString();
+    }
+
+    protected static class PropertyPath implements Comparable<PropertyPath> {
+
+        protected String path;
+        protected String property;
+        protected String locProperty;
+        protected Boolean entity;
+
+        public PropertyPath(String path, String property, String locProperty, Boolean isEntity) {
+            this.path = path;
+            this.property = property;
+            this.locProperty = locProperty;
+            this.entity = isEntity;
+        }
+
+        @Override
+        public int compareTo(PropertyPath o) {
+            if (o == null) return 1;
+            return ObjectUtils.compare(this.property, o.property);
+        }
+
+        public JSONWriter toJsonWriter(JSONWriter json) throws JSONException {
+            return json.object()
+                    .key("path").value(this.path)
+                    .key("property").value(this.property)
+                    .key("locProperty").value(this.locProperty)
+                    .key("isEntity").value(this.entity)
+                    .endObject();
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
+
+        public String getLocProperty() {
+            return locProperty;
+        }
+
+        public void setLocProperty(String locProperty) {
+            this.locProperty = locProperty;
+        }
+
+        public Boolean isEntity() {
+            return entity;
+        }
+
+        public void setEntity(Boolean isEntity) {
+            this.entity = isEntity;
+        }
     }
 }

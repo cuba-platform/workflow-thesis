@@ -34,7 +34,7 @@ public class ReadCardPropertyModule extends CardPropertyModule {
     @Override
     protected void initOptions() {
         super.initOptions();
-        operationType = jsOptions.optString("operationType");
+        operationType = jsValue.optString("operationType");
     }
 
     @Override

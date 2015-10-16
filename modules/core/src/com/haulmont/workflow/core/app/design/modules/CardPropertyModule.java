@@ -63,10 +63,15 @@ public abstract class CardPropertyModule extends Module {
     }
 
     protected void initOptions() {
-        propertyPath = jsOptions.optString("propertyPath");
-        value = jsOptions.optString("value");
-        useExpression = jsOptions.optBoolean("useExpresssion", false);
-        cardClass = jsOptions.optString("cardClass");
+        JSONObject propertyPathValues = jsValue.optJSONObject("propertyPath");
+        if (propertyPathValues == null) {
+            propertyPath = jsValue.optString("propertyPath");
+        } else {
+            propertyPath = propertyPathValues.optString("systemPropertyValue");
+        }
+        value = jsValue.optString("value");
+        useExpression = jsValue.optBoolean("useExpresssion", false);
+        cardClass = jsValue.optString("cardClass");
     }
 
     protected void checkProperties() throws DesignCompilationException {
