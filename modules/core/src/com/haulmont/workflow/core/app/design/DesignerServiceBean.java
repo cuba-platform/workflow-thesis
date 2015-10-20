@@ -18,7 +18,6 @@ import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
-import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
@@ -51,6 +50,7 @@ public class DesignerServiceBean implements DesignerService {
             Design design = new Design();
             String name = AppBeans.get(Messages.class).getMessage(getClass(), "copyPrefix") + " " + src.getName();
             design.setName(name);
+            design.setType(src.getType());
 
             if (!StringUtils.isBlank(src.getSrc())) {
                 JSONObject json = new JSONObject(src.getSrc());
