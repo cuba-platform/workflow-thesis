@@ -2,7 +2,7 @@ Wf.CardPropertyField = function(options) {
     Wf.CardPropertyField.superclass.constructor.call(this, options);
 };
 
-YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
+YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
 
     clazz: null,
 
@@ -39,6 +39,20 @@ YAHOO.lang.extend(Wf.CardPropertyField, inputEx.AutoComplete, {
         if (this.oAutoComp) {
             this.baseFormatResult = this.oAutoComp.formatResult;
             this.oAutoComp.formatResult = this.formatResult;
+        }
+    },
+
+    onClickPopup: function() {
+        if (this.oAutoComp._elContent && this.oAutoComp._elContent.style["display"] != "none") {
+            this.oAutoComp._toggleContainer(false);
+        } else {
+            var fieldValue = this.el.value;
+            if (/\./.test(fieldValue)) {
+                var path = fieldValue.slice(0,fieldValue.lastIndexOf(".") + 1);
+                this.oAutoComp.sendQuery(path);
+            } else {
+                this.oAutoComp.sendQuery("");
+            }
         }
     },
 

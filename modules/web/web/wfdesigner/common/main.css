@@ -138,6 +138,28 @@ div.Wf-Container-change {
     width: 140px;
 }
 
+.yui-skin-sam .yui-sac-input {
+    width: 124px;
+    height: 14px;
+    position: relative;
+    float: left;
+    border-width: 1px 0 1px 1px;
+    border-color: #bbbbbb;
+    border-style: solid;
+}
+
+.yui-skin-sam .yui-sac-popup {
+    width: 19px;
+    height: 16px;
+    font-size: 9px;
+    position: relative;
+    float: left;
+    background-color: white;
+    border-color: #bbbbbb;
+    border-style: solid;
+    border-width: 1px 1px 1px 0;
+}
+
 div.inputEx-PickerField .yui-overlay{
     width: 176px;
     z-index: 10;

@@ -85,7 +85,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           initialParams.label = i18nDict.value;
           initialParams.name = "lookupValue";
           initialParams.type = "string";
-          this.lookupField = new inputEx.SelectField(initialParams);
+          this.lookupField = new Wf.CardEntityField(initialParams);
           this.addCustomFields(this.lookupField);
       },
 
@@ -272,11 +272,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                     var i;
 
                     this.lookupField.clear();
-                    for (i = 0; i < this.lookupField.choicesList.length; i++) {
-                        var choice = this.lookupField.choicesList[i];
-                        this.lookupField.removeChoiceNode(choice.node);
-                    }
-                    this.lookupField.choicesList = [];
+                    this.lookupField.setClazz(result.clazz);
                     for (var j = 0; j < result.values.length; j++) {
                         var s = result.values[j];
                         if (this.lookupField.getChoicePosition(s) == -1)

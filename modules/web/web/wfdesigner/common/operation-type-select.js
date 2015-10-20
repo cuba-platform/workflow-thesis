@@ -5,6 +5,7 @@ Wf.OperationTypeSelect = function(options) {
 
 YAHOO.lang.extend(Wf.OperationTypeSelect, inputEx.SelectField, {
 
+    allowVariable: false,
     customChoises: false,
 
     setOptions: function(options) {

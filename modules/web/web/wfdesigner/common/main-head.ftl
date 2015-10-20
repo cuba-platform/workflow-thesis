@@ -110,7 +110,9 @@
 <script type="text/javascript" src="../common/design-select.js"></script>
 <script type="text/javascript" src="../common/operation-type-select.js"></script>
 <script type="text/javascript" src="../common/wf-date-time-field.js"></script>
+<script type="text/javascript" src="../common/select-autocomplete.js"></script>
 <script type="text/javascript" src="../common/card-property-field.js"></script>
+<script type="text/javascript" src="../common/card-entity-field.js"></script>
 <script type="text/javascript" src="../common/card-property-container.js"></script>
 <script type="text/javascript" src="../common/card-inheritor-select.js"></script>
 

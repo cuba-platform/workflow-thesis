@@ -8,6 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -233,6 +234,49 @@ public class ActionController {
         }
     }
 
+    @RequestMapping(value = "/wfdesigner/*/action/loadEntity.json", method = RequestMethod.GET)
+    public String handleLoadEntityGetRequest(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value = "id") String entityId,
+            @RequestParam(value = "class") String className
+    ) {
+        try {
+            if (auth(request, response)) {
+                try {
+                    if (StringUtils.isNotBlank(entityId) && StringUtils.isNotBlank(className)) {
+
+                        Entity entity = findEntityFromId(entityId, className);
+                        JSONWriter json = new JSONStringer().array();
+                        json.object()
+                                .key("value").value(entity.getId())
+                                .key("label").value(StringEscapeUtils.escapeHtml(entity.getInstanceName()))
+                                .endObject();
+                        json.endArray();
+                        printJson(response, json.toString());
+                    }
+                } finally {
+                    AppContext.setSecurityContext(null);
+                }
+            }
+            return null;
+        } catch (Throwable t) {
+            log.error("Error on load entity attributes GET", t);
+            throw new RuntimeException("Error on load entity attributes GET", t);
+        }
+    }
+
+    protected Entity findEntityFromId(String entityId, String className) {
+        try {
+            Class clazz = Class.forName(className);
+            UUID id = null;
+            id = UUID.fromString(entityId);
+            return dataService.load(new LoadContext(clazz).setId(id));
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public String handleGetRequest(
             HttpServletRequest request,
@@ -435,6 +479,7 @@ public class ActionController {
                     .endObject();
         }
         json.endArray();
+        json.key("clazz").value(clazz.getName());
         if (systemPropertyPath != null) {
             json.key("systemPropertyPath").value(systemPropertyPath);
         }
