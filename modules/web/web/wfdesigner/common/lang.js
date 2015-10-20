@@ -554,7 +554,7 @@ var wfLanguage = {
             "container": {
                 "xtype":"Wf.CardPropertyContainer",
                 "icon":"../common/res/icons/card_state_icon.png",
-                "width":250,
+                "width":260,
                 "optFields": [
                     {
                         "type":"string",
