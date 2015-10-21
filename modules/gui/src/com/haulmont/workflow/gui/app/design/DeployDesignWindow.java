@@ -24,11 +24,11 @@ import java.util.UUID;
  */
 public class DeployDesignWindow extends AbstractWindow {
 
-    private Design design;
+    protected Design design;
     private LookupField procField;
     private LookupField roleField;
     private CheckBox newProcField;
-    private String errorMsg;
+    protected String errorMsg;
 
     @Inject
     protected DesignerService service;
@@ -110,7 +110,7 @@ public class DeployDesignWindow extends AbstractWindow {
         );
     }
 
-    void deploy(Proc proc, Role role) {
+    protected void deploy(Proc proc, Role role) {
         try {
             service.deployDesign(design.getId(), proc == null ? null : proc.getId(), role);
             close("ok");
