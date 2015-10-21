@@ -354,8 +354,6 @@ public class DesignBrowser extends AbstractWindow {
                 }
                 result.append("<br>");
             }
-            String afterCompileResult = afterCompile();
-            result.append(afterCompileResult);
             showMessageDialog(getMessage("compilationResult"), result.toString(), MessageType.CONFIRMATION_HTML);
         }
 
@@ -375,10 +373,6 @@ public class DesignBrowser extends AbstractWindow {
             } catch (DesignCompilationException e) {
                 return new Pair<>(getMessage("notification.compileFailed"), e.getMessage());
             }
-        }
-
-        protected String afterCompile() {
-            return "";
         }
 
         private String prepareCompilationMessage(CompilationMessage message) {
