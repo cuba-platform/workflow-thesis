@@ -303,7 +303,7 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
             for (var i = 0; i < fields.length; i++) {
                 if (fields[i].required == true) {
                     var fieldValue = module.value[fields[i].name];
-                    if (fieldValue === null || fieldValue == "") {
+                    if (fieldValue === undefined || fieldValue === null || fieldValue === "") {
                         return false;
                     }
                 }
@@ -315,7 +315,7 @@ YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
             for (var i = 0; i < optFields.length; i++) {
                 if (optFields[i].required == true) {
                     var optFieldValue = module.value.options[optFields[i].name];
-                    if (optFieldValue === null || optFieldValue == "") {
+                    if (optFieldValue === undefined || optFieldValue === null || optFieldValue === "") {
                         return false;
                     }
                 }
