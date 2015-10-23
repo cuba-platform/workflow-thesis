@@ -152,6 +152,14 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
         this.oDS.liveData.push(element);
     },
 
+    doSortChoice: function() {
+        if (this.oDS.liveData.length > 0) {
+            this.oDS.liveData.sort(function(a, b) {
+                return (a.label > b.label) - (b.label > a.label);
+            })
+        }
+    },
+
     setClazz: function(clazz) {
         this.clazz = clazz;
     },

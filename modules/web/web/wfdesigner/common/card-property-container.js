@@ -287,6 +287,10 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                         if (this.lookupField.getChoicePosition(s) == -1)
                             this.lookupField.addChoice(s);
                     }
+
+                    if (typeof(this.lookupField.doSortChoice) == 'function') {
+                        this.lookupField.doSortChoice();
+                    }
                     this.lookupField.setValue(this.valueField.getValue(),true);
           } else if ("DATE_TIME"==result.attributeType||"DATE"==result.attributeType){
                 this.dateField.show();
