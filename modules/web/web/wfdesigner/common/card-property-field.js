@@ -119,15 +119,17 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
 
     setValue: function(val, sendUpdatedEvt) {
         var fieldValue = val;
-        var systemPropertyPath;
-        if (val.fieldValue) {
-            fieldValue = val.fieldValue;
-            systemPropertyPath = fieldValue;
-        }
-        if (val.systemPropertyValue) {
-            systemPropertyPath = val.systemPropertyValue;
-        } else {
-            systemPropertyPath = fieldValue;
+        var systemPropertyPath = val;
+        if (val) {
+            if (val.fieldValue) {
+                fieldValue = val.fieldValue;
+                systemPropertyPath = fieldValue;
+            }
+            if (val.systemPropertyValue) {
+                systemPropertyPath = val.systemPropertyValue;
+            } else {
+                systemPropertyPath = fieldValue;
+            }
         }
         Wf.CardPropertyField.superclass.setValue.call(this, fieldValue, sendUpdatedEvt);
         this.requestAttributeType(systemPropertyPath);
