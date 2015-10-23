@@ -17,7 +17,6 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
 
     setOptions: function(options) {
         this.oDS = new YAHOO.util.LocalDataSource([]);
-        this.oDS.responseType =
         this.oDS.responseSchema = {fields : ["value", "label"]};
         options.datasource = this.oDS;
 
@@ -58,16 +57,15 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
     },
 
     updateValue: function(result){
+        var value;
         if (result.responseText!=""){
             var result = YAHOO.lang.JSON.parse(result.responseText);
-            var value = {};
-            value.entityId = result[0].value;
-            value.fieldValue = result[0].label;
-            this.setValue(value);
-        }
-        else {
+            value = this.createValue(result[0].value, result[0].label);
+        } else {
             this.entityId = null;
+            value = this.createValue(null, this.el.value);
         }
+        this.setValue(value);
     },
 
     setContainer: function(container) {
@@ -99,34 +97,44 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
             this.requestAttributeType(val);
         } else {
             var fieldValue = val;
-            this.entityId = "";
-            if (val.fieldValue !== undefined) {
-                fieldValue = Wf.parseHtmlEntities(val.fieldValue);
-            }
-            if (val.entityId !== undefined) {
-                this.entityId = val.entityId;
+            this.entityId = null;
+            if (val) {
+                if (val.fieldValue !== undefined) {
+                    fieldValue = Wf.parseHtmlEntities(val.fieldValue);
+                }
+                if (val.entityId !== undefined) {
+                    this.entityId = val.entityId;
+                }
             }
             Wf.CardEntityField.superclass.setValue.call(this, fieldValue, sendUpdatedEvt);
+
+            if (val && sendUpdatedEvt == false && this.options.container) {
+                var value = this.createValue(this.entityId, fieldValue);
+                this.options.container.updateValue(value);
+            }
         }
     },
 
     getValue: function() {
         var fieldValue = Wf.CardEntityField.superclass.getValue.call(this);
-        var propertyValues = {};
-        propertyValues.fieldValue = fieldValue;
-        if (this.entityId) {
-            propertyValues.entityId = this.entityId;
-        } else {
-            propertyValues.entityId = "";
-        }
-        propertyValues.toString = function() {
-            return this.entityId;
-        };
+        var propertyValues = this.createValue(this.entityId, fieldValue);
         return propertyValues;
     },
 
+    createValue: function(entityId, fieldValue) {
+        if (!entityId && !fieldValue)
+            return "";
+        var value = {};
+        value.entityId = entityId ? entityId : null;
+        value.fieldValue = fieldValue ? fieldValue : "";
+        value.toString = function() {
+            return value.entityId ? value.entityId : value.fieldValue;
+        };
+        return value;
+    },
+
     clear: function() {
-        while(this.choicesList.length > 0) {
+        while(this.oDS.liveData.length > 0) {
             this.oDS.liveData.pop();
         }
     },
