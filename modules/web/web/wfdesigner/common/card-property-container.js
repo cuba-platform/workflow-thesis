@@ -85,6 +85,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           initialParams.label = i18nDict.value;
           initialParams.name = "lookupValue";
           initialParams.type = "string";
+          initialParams.container = this;
           this.lookupField = new Wf.CardEntityField(initialParams);
           this.addCustomFields(this.lookupField);
       },
@@ -172,8 +173,16 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
 
                 }
                 this.activeField.show();
-          }
-          else {
+          } else if (this.expressionField.getValue()) {
+               this.isExpression = true;
+               if (this.activeField)
+                    this.activeField.hide();
+               this.activeField = this.stringField;
+               this.activeField.show();
+               this.updateValue(value);
+               this.activeField.setValue(value,true);
+          } else {
+               this.isExpression = false;
                this.updateValue("");
           }
 
@@ -278,6 +287,10 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                         if (this.lookupField.getChoicePosition(s) == -1)
                             this.lookupField.addChoice(s);
                     }
+
+                    if (typeof(this.lookupField.doSortChoice) == 'function') {
+                        this.lookupField.doSortChoice();
+                    }
                     this.lookupField.setValue(this.valueField.getValue(),true);
           } else if ("DATE_TIME"==result.attributeType||"DATE"==result.attributeType){
                 this.dateField.show();
@@ -298,6 +311,13 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                 this.activeField = this.stringField;
                 this.stringField.setValue(this.valueField.getValue(),true);
                 this.expressionField.show();
+          }
+          if (this.activeField && this.operationsField) {
+                if (this.operationsField.isVisibleActiveField()) {
+                    this.activeField.show();
+                } else {
+                    this.activeField.hide();
+                }
           }
           }
           this.redrawAllContainerWires();

@@ -21,13 +21,21 @@ YAHOO.lang.extend(Wf.OperationTypeSelect, inputEx.SelectField, {
         this.refresh(true);
         Wf.OperationTypeSelect.superclass.setValue.call(this, val, sendUpdatedEvt);
         if (this.options.container instanceof Wf.CardPropertyContainer){
-            if ("is null"==val || "is not null"==val){
-                this.options.container.setVisibleActiveField(false);
-            }  else {
+            if (this.isVisibleActiveField()) {
                 this.options.container.setVisibleActiveField(true);
+            } else {
+                this.options.container.setVisibleActiveField(false);
             }
         }
 
+    },
+
+    isVisibleActiveField: function() {
+        if (this.divEl.style.display == 'none')
+            return true;
+
+        var val = this.getValue();
+        return "is null" != val && "is not null" != val;
     },
 
     setCustomChoises: function(customChoises){

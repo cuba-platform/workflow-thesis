@@ -181,20 +181,22 @@ public class ActionController {
         }
         metaClass = metadata.getSession().getClass(clazz);
         for (MetaProperty property : metaClass.getProperties()) {
-            String propertyName = property.getName();
-            Class declaringClazz = property.getDeclaringClass();
-            String localizePropertyName = propertyName;
-            boolean isEntity = AttributeType.ENTITY.equals(workflowSettingsService.getAttributeType(property.getJavaType(), false));
-            if (declaringClazz != null) {
-                localizePropertyName = messages.getMessage(declaringClazz.getPackage().getName(),
-                        declaringClazz.getSimpleName() + "." + propertyName)
-                        .replace(".", "");
-            }
-            if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
-                if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(localizePropertyName, start)) {
-                    paths.add(new PropertyPath(propertyPath, propertyName, localizePropertyName, isEntity));
-                } else if (StringUtils.containsIgnoreCase(propertyName, start)) {
-                    paths.add(new PropertyPath(propertyPath, propertyName, propertyName, isEntity));
+            if (!property.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
+                String propertyName = property.getName();
+                Class declaringClazz = property.getDeclaringClass();
+                String localizePropertyName = propertyName;
+                boolean isEntity = AttributeType.ENTITY.equals(workflowSettingsService.getAttributeType(property.getJavaType(), false));
+                if (declaringClazz != null) {
+                    localizePropertyName = messages.getMessage(declaringClazz.getPackage().getName(),
+                            declaringClazz.getSimpleName() + "." + propertyName)
+                            .replace(".", "");
+                }
+                if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
+                    if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(localizePropertyName, start)) {
+                        paths.add(new PropertyPath(property, propertyPath, localizePropertyName, isEntity));
+                    } else if (StringUtils.containsIgnoreCase(propertyName, start)) {
+                        paths.add(new PropertyPath(property, propertyPath, propertyName, isEntity));
+                    }
                 }
             }
         }
@@ -248,6 +250,8 @@ public class ActionController {
                     if (StringUtils.isNotBlank(entityId) && StringUtils.isNotBlank(className)) {
 
                         Entity entity = findEntityFromId(entityId, className);
+                        if (entity == null) return null;
+
                         JSONWriter json = new JSONStringer().array();
                         json.object()
                                 .key("value").value(entity.getId())
@@ -491,13 +495,15 @@ public class ActionController {
     protected static class PropertyPath implements Comparable<PropertyPath> {
 
         protected String path;
-        protected String property;
+        protected MetaProperty property;
+        protected String propertyName;
         protected String locProperty;
         protected Boolean entity;
 
-        public PropertyPath(String path, String property, String locProperty, Boolean isEntity) {
+        public PropertyPath(MetaProperty property, String path, String locProperty, Boolean isEntity) {
             this.path = path;
             this.property = property;
+            this.propertyName = property.getName();
             this.locProperty = locProperty;
             this.entity = isEntity;
         }
@@ -505,13 +511,13 @@ public class ActionController {
         @Override
         public int compareTo(PropertyPath o) {
             if (o == null) return 1;
-            return ObjectUtils.compare(this.property, o.property);
+            return ObjectUtils.compare(this.propertyName, o.propertyName);
         }
 
         public JSONWriter toJsonWriter(JSONWriter json) throws JSONException {
             return json.object()
                     .key("path").value(this.path)
-                    .key("property").value(this.property)
+                    .key("property").value(this.propertyName)
                     .key("locProperty").value(this.locProperty)
                     .key("isEntity").value(this.entity)
                     .endObject();
@@ -525,12 +531,20 @@ public class ActionController {
             this.path = path;
         }
 
-        public String getProperty() {
+        public MetaProperty getProperty() {
             return property;
         }
 
-        public void setProperty(String property) {
+        public void setProperty(MetaProperty property) {
             this.property = property;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public void setPropertyName(String propertyName) {
+            this.propertyName = propertyName;
         }
 
         public String getLocProperty() {
