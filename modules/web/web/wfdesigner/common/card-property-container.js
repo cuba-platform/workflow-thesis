@@ -305,7 +305,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                     this.dateField.setValue(new Date(this.valueField.getValue()*1), !this.isLoadEvent);
                 }
                 else {
-                    this.dateField.setValue(new Date(),isLoadEvent !== false);
+                    this.dateField.setValue(new Date(), !this.isLoadEvent);
                 }
                 this.expressionField.show();
           } else if ("BOOLEAN"==result.attributeType){

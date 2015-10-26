@@ -109,7 +109,8 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
             }
             Wf.CardEntityField.superclass.setValue.call(this, fieldValue, sendUpdatedEvt);
 
-            if (val && sendUpdatedEvt == false && this.options.container) {
+            var update = sendUpdatedEvt == false && !(Wf.editor && Wf.editor.preventLayerChangedEvent);
+            if (val && update && this.options.container) {
                 var value = this.createValue(this.entityId, fieldValue);
                 this.options.container.updateValue(value, sendUpdatedEvt);
             }
