@@ -77,12 +77,12 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
         }
     },
 
-    updateContainer: function(result){
+    updateContainer: function(result, isLoadEvent){
         if (result.responseText!=""){
             var result = YAHOO.lang.JSON.parse(result.responseText);
             this.systemPropertyPath = result[0].systemPropertyPath;
             if (this.options.container instanceof Wf.CardPropertyContainer){
-                this.options.container.updateContainer(result[0]);
+                this.options.container.updateContainer(result[0], isLoadEvent);
             }
         }
         else {
@@ -104,11 +104,12 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
 	    Wf.CardPropertyField.superclass.onChange.call(this, e);
     },
 
-    requestAttributeType: function(val){
+    requestAttributeType: function(val, sendUpdatedEvt){
+        var isLoadEvent = !sendUpdatedEvt || (Wf.editor && Wf.editor.preventLayerChangedEvent);
         if (this.clazz!=null){
             var callback = {
                 success: function(o) {
-                    this.argument[0].updateContainer(o);
+                    this.argument[0].updateContainer(o, isLoadEvent);
                 },
                 failure: function(o) {/*failure handler code*/},
                 argument: [this]
@@ -132,7 +133,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
             }
         }
         Wf.CardPropertyField.superclass.setValue.call(this, fieldValue, sendUpdatedEvt);
-        this.requestAttributeType(systemPropertyPath);
+        this.requestAttributeType(systemPropertyPath, sendUpdatedEvt);
     },
 
     getValue: function() {

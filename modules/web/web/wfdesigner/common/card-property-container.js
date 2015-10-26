@@ -28,6 +28,8 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
 
       valueWasUpdated:false,
 
+      isLoadEvent:false,
+
       render: function() {
           Wf.CardPropertyContainer.superclass.render.call(this);
           for(var i = 0 ; i < this.form.inputs.length ; i++) {
@@ -129,7 +131,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
       addCustomFields:function(field){
           this.form.inputs[this.form.inputs.length]=field;
           this.form.fieldset.appendChild(field.getEl());
-          field.updatedEvt.subscribe(this.setValueToValueField, this, true);
+          field.updatedEvt.subscribe(this.setValueToValueField, this, !this.isLoadEvent);
       },
 
       prepareStringField:function() {
@@ -158,7 +160,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                    this.activeField = this.stringField;
                    this.dateField.hide();
                    this.updateValue(value);
-                   this.activeField.setValue(value,true);
+                   this.activeField.setValue(value, !this.isLoadEvent);
                 } else {
                    this.isExpression = false;
                    this.stringField.hide();
@@ -180,7 +182,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                this.activeField = this.stringField;
                this.activeField.show();
                this.updateValue(value);
-               this.activeField.setValue(value,true);
+               this.activeField.setValue(value, !this.isLoadEvent);
           } else {
                this.isExpression = false;
                this.updateValue("");
@@ -198,8 +200,8 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           this.addCustomFields(this.booleanField);
       },
 
-      updateValue: function(value){
-          this.valueField.setValue(value,true);
+      updateValue: function(value, sendUpdatedEvt){
+          this.valueField.setValue(value, !this.isLoadEvent && sendUpdatedEvt);
           if (this.isExpression){
              var value_to_send = encodeURIComponent(value);
              YAHOO.util.Connect.asyncRequest(
@@ -208,7 +210,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                 {
                     success: function(o) {
                          var r = o.responseText;
-                         o.argument[0].expressionTestField.setValue(r,true);
+                         o.argument[0].expressionTestField.setValue(r, !this.isLoadEvent && sendUpdatedEvt);
                     },
                     failure: function(o) {
                          var error = o.status + " " + o.statusText;
@@ -229,10 +231,14 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           this.updateValue(value);
       },
 
-      updateContainer: function(result){
-          this.updateOperationsField(result.ops);
+      updateContainer: function(result, isLoadEvent){
+          this.isLoadEvent = isLoadEvent;
+          this.updateOperationsField(result.ops, isLoadEvent);
           this.hideAllFields();
-          this.updateValuefields(result);
+          this.updateValuefields(result, isLoadEvent);
+          if (this.isLoadEvent) {
+                this.isLoadEvent = false;
+          }
       },
 
       updateOperationsField: function(ops){
@@ -240,7 +246,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
               var value = this.operationsField.getValue();
               if (!this.compareArrays(this.operationsField.choicesList,ops)){
                     this.operationsField.setCustomChoises(ops);
-                    this.operationsField.setValue(value,false);
+                    this.operationsField.setValue(value,!this.isLoadEvent);
               }
           }
       },
@@ -263,11 +269,11 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
               this.valueWasUpdated = this.selectedAttributeType != result.attributeType;
           }
           this.selectedAttributeType = result.attributeType;
-          this.expressionTestField.setValue("",true)
+          this.expressionTestField.setValue("", !this.isLoadEvent)
           if (this.valueWasUpdated){
-                this.expressionField.setValue(false,true);
+                this.expressionField.setValue(false, !this.isLoadEvent);
                 this.isExpression = false;
-                this.updateValue(null,true);
+                this.updateValue(null, !this.isLoadEvent);
                 this.expressionField.hide();
           }
           if (this.expressionField.getValue()){
@@ -291,25 +297,25 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                     if (typeof(this.lookupField.doSortChoice) == 'function') {
                         this.lookupField.doSortChoice();
                     }
-                    this.lookupField.setValue(this.valueField.getValue(),true);
+                    this.lookupField.setValue(this.valueField.getValue(), !this.isLoadEvent);
           } else if ("DATE_TIME"==result.attributeType||"DATE"==result.attributeType){
                 this.dateField.show();
                 this.activeField = this.dateField;
                 if (this.valueField.getValue()!=""){
-                    this.dateField.setValue(new Date(this.valueField.getValue()*1),true);
+                    this.dateField.setValue(new Date(this.valueField.getValue()*1), !this.isLoadEvent);
                 }
                 else {
-                    this.dateField.setValue(new Date(),true);
+                    this.dateField.setValue(new Date(),isLoadEvent !== false);
                 }
                 this.expressionField.show();
           } else if ("BOOLEAN"==result.attributeType){
                 this.booleanField.show();
                 this.activeField = this.booleanField;
-                this.booleanField.setValue(this.valueField.getValue(),true);
+                this.booleanField.setValue(this.valueField.getValue(), !this.isLoadEvent);
           } else {
                 this.stringField.show();
                 this.activeField = this.stringField;
-                this.stringField.setValue(this.valueField.getValue(),true);
+                this.stringField.setValue(this.valueField.getValue(), !this.isLoadEvent);
                 this.expressionField.show();
           }
           if (this.activeField && this.operationsField) {

@@ -15,6 +15,7 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
 
         this.options.className = options.className || 'Wf-CardInheritorSelect';
         this.options.container = options.container;
+        this.isLoaded = !Wf.editor.preventLayerChangedEvent;
     },
 
     setValue: function(val, sendUpdatedEvt) {
@@ -68,12 +69,15 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
         }
         //set value executed early then choice list arrived from server
         if (this.newVal) {
-            Wf.CardInheritorSelect.superclass.setValue.call(this, this.newVal, this.sendUpdatedEvt);
+            Wf.CardInheritorSelect.superclass.setValue.call(this, this.newVal, this.isLoaded && this.sendUpdatedEvt);
             this.options.container.previousValue = this.newVal;
             this.newVal = null;
         }
         if(cardInheritors.length>0){
             this.setDefaultClassForPropertyPathField(cardInheritors[0].key);
+        }
+        if (this.isLoaded) {
+            this.isLoaded = true;
         }
     },
 

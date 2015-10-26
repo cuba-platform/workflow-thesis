@@ -56,7 +56,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
         }
     },
 
-    updateValue: function(result){
+    updateValue: function(result, isLoadEvent){
         var value;
         if (result.responseText!=""){
             var result = YAHOO.lang.JSON.parse(result.responseText);
@@ -65,7 +65,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
             this.entityId = null;
             value = this.createValue(null, this.el.value);
         }
-        this.setValue(value);
+        this.setValue(value, !isLoadEvent);
     },
 
     setContainer: function(container) {
@@ -79,11 +79,12 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
 	    Wf.CardEntityField.superclass.onChange.call(this, e);
     },
 
-    requestAttributeType: function(val){
+    requestAttributeType: function(val, sendUpdatedEvt){
+        var isLoadEvent = !sendUpdatedEvt || (Wf.editor && Wf.editor.preventLayerChangedEvent);
         if (this.clazz != null){
             var callback = {
                 success: function(o) {
-                    this.argument[0].updateValue(o);
+                    this.argument[0].updateValue(o, isLoadEvent);
                 },
                 failure: function(o) {/*failure handler code*/},
                 argument: [this]
@@ -94,7 +95,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
 
     setValue: function(val, sendUpdatedEvt) {
         if (val && !(val instanceof Object)) {
-            this.requestAttributeType(val);
+            this.requestAttributeType(val, sendUpdatedEvt);
         } else {
             var fieldValue = val;
             this.entityId = null;
@@ -110,7 +111,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
 
             if (val && sendUpdatedEvt == false && this.options.container) {
                 var value = this.createValue(this.entityId, fieldValue);
-                this.options.container.updateValue(value);
+                this.options.container.updateValue(value, sendUpdatedEvt);
             }
         }
     },
