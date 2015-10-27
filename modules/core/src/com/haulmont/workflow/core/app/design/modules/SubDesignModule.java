@@ -97,6 +97,20 @@ public class SubDesignModule extends Module {
     }
 
     @Override
+    public void writeFormsXml(Element rootEl) throws DesignCompilationException {
+        DesignFile designFile = getDesignFile("forms", "");
+        Document document = Dom4j.readDocument(designFile.getContent());
+        Element subDesign = document.getRootElement();
+        processSubDesignXml(rootEl, subDesign);
+    }
+
+    protected void processSubDesignXml(Element parentEl, Element subDesign) {
+        for (Element node : (List<Element>) subDesign.elements("activity")) {
+            parentEl.elements().add(processNode(node));
+        }
+    }
+
+    @Override
     public void writeMessages(Properties properties, String lang) {
         super.writeMessages(properties, lang);
 
