@@ -204,13 +204,15 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           this.valueField.setValue(value, !this.isLoadEvent && sendUpdatedEvt);
           if (this.isExpression){
              var value_to_send = encodeURIComponent(value);
+             var isLoadEvent = this.isLoadEvent;
              YAHOO.util.Connect.asyncRequest(
                 'GET',
                 'action/checkExpression.json?value=' + value_to_send+'&type='+this.selectedAttributeType,
                 {
                     success: function(o) {
                          var r = o.responseText;
-                         o.argument[0].expressionTestField.setValue(r, !this.isLoadEvent && sendUpdatedEvt);
+                         o.argument[0].expressionTestField.setValue(r, !isLoadEvent && sendUpdatedEvt);
+                         o.argument[0].optionsValue[o.argument[0].expressionTestField.options.name] = o.argument[0].expressionTestField.getValue();
                     },
                     failure: function(o) {
                          var error = o.status + " " + o.statusText;
