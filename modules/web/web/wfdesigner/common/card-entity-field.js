@@ -80,7 +80,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
     },
 
     requestAttributeType: function(val, sendUpdatedEvt){
-        var isLoadEvent = !sendUpdatedEvt || (Wf.editor && Wf.editor.preventLayerChangedEvent);
+        var isLoadEvent = sendUpdatedEvt === false || (Wf.editor && Wf.editor.preventLayerChangedEvent);
         if (this.clazz != null){
             var callback = {
                 success: function(o) {
@@ -143,7 +143,7 @@ YAHOO.lang.extend(Wf.CardEntityField, Wf.SelectAutoComplete, {
 
     getChoicePosition: function(element) {
         for(var i = 0; i < this.oDS.liveData.length; i++) {
-            if (element == this.oDS.liveData[i]) {
+            if (element == this.oDS.liveData[i] || element == this.oDS.liveData[i].value) {
                 return i;
             }
         }

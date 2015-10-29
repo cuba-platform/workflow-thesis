@@ -185,7 +185,11 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                this.activeField.setValue(value, !this.isLoadEvent);
           } else {
                this.isExpression = false;
-               this.updateValue("");
+               if (this.activeField === this.booleanField) {
+                    this.updateValue(false);
+               } else {
+                    this.updateValue("");
+               }
           }
 
       },
@@ -201,7 +205,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
       },
 
       updateValue: function(value, sendUpdatedEvt){
-          this.valueField.setValue(value, !this.isLoadEvent && sendUpdatedEvt);
+          this.valueField.setValue(value, !this.isLoadEvent && sendUpdatedEvt !== false);
           if (this.isExpression){
              var value_to_send = encodeURIComponent(value);
              var isLoadEvent = this.isLoadEvent;
@@ -235,11 +239,14 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
 
       updateContainer: function(result, isLoadEvent){
           this.isLoadEvent = isLoadEvent;
-          this.updateOperationsField(result.ops, isLoadEvent);
-          this.hideAllFields();
-          this.updateValuefields(result, isLoadEvent);
-          if (this.isLoadEvent) {
-                this.isLoadEvent = false;
+          try {
+              this.updateOperationsField(result.ops, isLoadEvent);
+              this.hideAllFields();
+              this.updateValuefields(result, isLoadEvent);
+          } finally {
+              if (this.isLoadEvent) {
+                    this.isLoadEvent = false;
+              }
           }
       },
 
@@ -299,7 +306,11 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
                     if (typeof(this.lookupField.doSortChoice) == 'function') {
                         this.lookupField.doSortChoice();
                     }
-                    this.lookupField.setValue(this.valueField.getValue(), !this.isLoadEvent);
+                    if (this.isLoadEvent || this.lookupField.containsChoice(this.valueField.getValue())) {
+                        this.lookupField.setValue(this.valueField.getValue(), !this.isLoadEvent);
+                    } else {
+                        this.activeField.setValue('', true);
+                    }
           } else if ("DATE_TIME"==result.attributeType||"DATE"==result.attributeType){
                 this.dateField.show();
                 this.activeField = this.dateField;
@@ -313,7 +324,7 @@ YAHOO.lang.extend(Wf.CardPropertyContainer, Wf.Container, {
           } else if ("BOOLEAN"==result.attributeType){
                 this.booleanField.show();
                 this.activeField = this.booleanField;
-                this.booleanField.setValue(this.valueField.getValue(), !this.isLoadEvent);
+                this.booleanField.setValue(this.valueField.getValue() ? this.valueField.getValue() : false, !this.isLoadEvent);
           } else {
                 this.stringField.show();
                 this.activeField = this.stringField;
