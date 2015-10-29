@@ -129,6 +129,25 @@ public class TimerManager implements TimerManagerAPI {
     }
 
     @Override
+    public void removeTimers(String jbpmExecutionId) {
+        checkNotNull(jbpmExecutionId, "jbpmExecutionId is null");
+
+        EntityManager em = persistence.getEntityManager();
+        TypedQuery<TimerEntity> q = em.createQuery(
+                "select t from wf$Timer t where t.jbpmExecutionId = ?1",
+                TimerEntity.class
+        );
+        q.setParameter(1, jbpmExecutionId);
+        List<TimerEntity> timers = q.getResultList();
+
+        for (TimerEntity timerEntity : timers) {
+            Query query = em.createQuery("delete from wf$Timer t where t.id = ?1");
+            query.setParameter(1, timerEntity.getId());
+            query.executeUpdate();
+        }
+    }
+
+    @Override
     public void processTimers() {
         if (!AppContext.isStarted() || !clusterManager.isMaster())
             return;

@@ -901,6 +901,7 @@ public class DesignCompiler {
 
         addEndProcessListener(rootEl);
         addStartProcessListener(rootEl);
+        addRemoveTimersEventListenerOnEndProcess(rootEl);
 
         processSubdesignJpdl(rootEl);
         postProcessor.processJpdl(rootEl, compileErrors);
@@ -925,6 +926,13 @@ public class DesignCompiler {
                 }
             }
         }
+    }
+
+    protected void addRemoveTimersEventListenerOnEndProcess(Element rootEl) {
+        Element endEl = rootEl.addElement("on");
+        endEl.addAttribute("event", "end");
+        Element endListenerEl = endEl.addElement("event-listener");
+        endListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.RemoveTimersEventListener");
     }
 
     protected void addStartProcessListener(Element rootEl) {

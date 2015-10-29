@@ -24,6 +24,8 @@ public interface TimerManagerAPI {
 
     void removeTimers(ActivityExecution execution, Assignment assignment);
 
+    void removeTimers(String jbpmExecutionId);
+
     void processTimers();
 
     void processTimer(TimerEntity timer);
