@@ -59,7 +59,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
     formatResult: function(oResultData, sQuery, sResultMatch) {
         var sMarkup = (oResultData && oResultData[2]) ? oResultData[2] : sResultMatch;
         if (sMarkup && oResultData[3]) {
-            sMarkup = '> ' + sMarkup;
+            sMarkup = '\u25B6 ' + sMarkup;
         }
         return sMarkup ? sMarkup : "";
     },
