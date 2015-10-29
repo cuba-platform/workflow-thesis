@@ -179,6 +179,9 @@ public class ActionController {
             return paths;
         }
         metaClass = metadata.getSession().getClass(clazz);
+        if (metaClass == null) {
+            return paths;
+        }
         for (MetaProperty property : metaClass.getProperties()) {
             if (!property.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
                 String propertyName = property.getName();
