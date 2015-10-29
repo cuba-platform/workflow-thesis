@@ -8,6 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -54,6 +55,9 @@ public class ActionController {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected MessageTools messageTools;
 
     @RequestMapping(method = RequestMethod.POST)
     public String handlePostRequest(
@@ -170,16 +174,15 @@ public class ActionController {
     protected List<PropertyPath> getPropertyPaths(MetaClass metaClass, String propertyPath, String start) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         CardPropertyHandlerLoaderService workflowSettingsService = AppBeans.get(CardPropertyHandlerLoaderService.NAME);
-        Class clazz = StringUtils.isBlank(propertyPath) ? metaClass.getJavaClass() : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+        Class clazz = getClassByMetaPropertyPath(metaClass, propertyPath);
         List<PropertyPath> paths = new ArrayList<>();
         if (clazz == null) {
-            String systemPropertyPath = CardPropertyUtils.getSystemPathByMetaProperty(metaClass, propertyPath);
-            clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, systemPropertyPath);
-            if (clazz == null) {
-                return paths;
-            }
+            return paths;
         }
         metaClass = metadata.getSession().getClass(clazz);
+        if (metaClass == null) {
+            return paths;
+        }
         for (MetaProperty property : metaClass.getProperties()) {
             if (!property.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class)) {
                 String propertyName = property.getName();
@@ -187,11 +190,10 @@ public class ActionController {
                 String localizePropertyName = propertyName;
                 boolean isEntity = AttributeType.ENTITY.equals(workflowSettingsService.getAttributeType(property.getJavaType(), false));
                 if (declaringClazz != null) {
-                    localizePropertyName = messages.getMessage(declaringClazz.getPackage().getName(),
-                            declaringClazz.getSimpleName() + "." + propertyName)
-                            .replace(".", "");
+                    localizePropertyName = messageTools.getPropertyCaption(metaClass, propertyName).replace(".", "");
                 }
-                if (!Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
+                if (!BaseUuidEntity.class.equals(declaringClazz) &&
+                        !Arrays.asList(Range.Cardinality.MANY_TO_MANY, Range.Cardinality.ONE_TO_MANY).contains(property.getRange().getCardinality())) {
                     if (StringUtils.isBlank(start) || StringUtils.containsIgnoreCase(localizePropertyName, start)) {
                         paths.add(new PropertyPath(property, propertyPath, localizePropertyName, isEntity));
                     } else if (StringUtils.containsIgnoreCase(propertyName, start)) {
@@ -202,6 +204,15 @@ public class ActionController {
         }
         Collections.sort(paths);
         return paths;
+    }
+
+    protected Class getClassByMetaPropertyPath(MetaClass metaClass, String propertyPath) {
+        Class clazz = StringUtils.isBlank(propertyPath) ? metaClass.getJavaClass() : CardPropertyUtils.getClassByMetaProperty(metaClass, propertyPath);
+        if (clazz == null) {
+            String systemPropertyPath = CardPropertyUtils.getSystemPathByMetaProperty(metaClass, propertyPath);
+            clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, systemPropertyPath);
+        }
+        return clazz;
     }
 
     @RequestMapping(value = "/wfdesigner/*/action/loadAttributeType.json", method = RequestMethod.GET)
@@ -219,7 +230,7 @@ public class ActionController {
                         MetaClass metaClass = metadata.getSession().getClass(Class.forName(className));
                         String systemPropertyPath = CardPropertyUtils.getSystemPathByMetaProperty(metaClass, propertyPath);
                         Class clazz = CardPropertyUtils.getClassByMetaProperty(metaClass, systemPropertyPath);
-                        if (clazz == null) {
+                        if (clazz == null || clazz.isAnnotationPresent(com.haulmont.chile.core.annotations.MetaClass.class)) {
                             response.sendError(HttpServletResponse.SC_NO_CONTENT, "Unreachable property path");
                             return null;
                         }
@@ -511,7 +522,7 @@ public class ActionController {
         @Override
         public int compareTo(PropertyPath o) {
             if (o == null) return 1;
-            return ObjectUtils.compare(this.propertyName, o.propertyName);
+            return ObjectUtils.compare(this.locProperty, o.locProperty);
         }
 
         public JSONWriter toJsonWriter(JSONWriter json) throws JSONException {

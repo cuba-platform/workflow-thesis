@@ -31,6 +31,10 @@ public class WriteCardPropertyActivity extends CardPropertyActivity {
         if (value != null && targetValue == null) {
             throw new RuntimeException("Unsupported value '" + value + "' for property '" + propertyPath + "'");
         }
+        if (targetValue instanceof Double &&
+                BigDecimal.class.isAssignableFrom(eventCard.getMetaClass().getProperty(propertyPath).getJavaType())) {
+            targetValue = new BigDecimal((Double) targetValue)
+        }
         InstanceUtils.setValueEx(eventCard, propertyPath, targetValue);
         Persistence persistence = AppBeans.get(Persistence.NAME);
         Transaction tx = persistence.getTransaction();

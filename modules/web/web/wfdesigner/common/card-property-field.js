@@ -59,7 +59,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
     formatResult: function(oResultData, sQuery, sResultMatch) {
         var sMarkup = (oResultData && oResultData[2]) ? oResultData[2] : sResultMatch;
         if (sMarkup && oResultData[3]) {
-            sMarkup = '* ' + sMarkup;
+            sMarkup = '> ' + sMarkup;
         }
         return sMarkup ? sMarkup : "";
     },
@@ -105,7 +105,7 @@ YAHOO.lang.extend(Wf.CardPropertyField, Wf.SelectAutoComplete, {
     },
 
     requestAttributeType: function(val, sendUpdatedEvt){
-        var isLoadEvent = !sendUpdatedEvt || (Wf.editor && Wf.editor.preventLayerChangedEvent);
+        var isLoadEvent = sendUpdatedEvt === false || (Wf.editor && Wf.editor.preventLayerChangedEvent);
         if (this.clazz!=null){
             var callback = {
                 success: function(o) {

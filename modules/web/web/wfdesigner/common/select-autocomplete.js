@@ -87,6 +87,10 @@ YAHOO.lang.extend(Wf.SelectAutoComplete, inputEx.AutoComplete, {
             }
         }
         return -1;
+    },
+
+    containsChoice: function(s) {
+        return this.getChoicePosition(s) >= 0;
     }
 
 });
