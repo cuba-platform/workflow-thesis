@@ -31,7 +31,7 @@ public class ReadCardPropertyActivity extends CardPropertyActivity {
 
     public void execute(ActivityExecution execution) throws Exception {
         super.execute(execution)
-        propertyValueObjectLoader = AppBeans.get(CardPropertyHandlerLoader.NAME,CardPropertyHandlerLoader.class).loadHandler(propertyClass, card, false);
+        propertyValueObjectLoader = AppBeans.get(CardPropertyHandlerLoader.NAME, CardPropertyHandlerLoader.class).loadHandler(propertyClass, card, false);
         compareCardProperty(card, execution);
     }
 
@@ -51,6 +51,9 @@ public class ReadCardPropertyActivity extends CardPropertyActivity {
             Object targetValue = objectLoader.getValue(value);
             if (value != null && targetValue == null) {
                 throw new RuntimeException("Unsupported value '" + value + "' for property '" + propertyPath + "'");
+            }
+            if (targetValue instanceof Double && cardValue instanceof BigDecimal) {
+                targetValue = new BigDecimal((Double) targetValue)
             }
             boolean checkResult = CardPropertyUtils.compareValue(operationsType, cardValue, targetValue);
 
