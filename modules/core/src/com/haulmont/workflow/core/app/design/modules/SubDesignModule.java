@@ -25,7 +25,6 @@ import org.dom4j.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
@@ -136,7 +135,7 @@ public class SubDesignModule extends Module {
         }
     }
 
-    private DesignFile getDesignFile(String type, String fileName) throws DesignCompilationException {
+    protected DesignFile getDesignFile(String type, String fileName) throws DesignCompilationException {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Query query = em.createQuery("select df from wf$DesignFile df where df.design.id = :subDesignId and df.type=:type and df.name = :fileName");
         query.setParameter("type", type);
@@ -151,7 +150,7 @@ public class SubDesignModule extends Module {
         return designFile;
     }
 
-    private void addSubDesignElement(Element parentEl, String startTransitionName) {
+    protected void addSubDesignElement(Element parentEl, String startTransitionName) {
         Element propEl = parentEl.addElement(SUBDESIGN_ELEMENT_NAME);
         propEl.addAttribute("name", name);
         propEl.addAttribute("subDesignId", subDesignId);
@@ -234,7 +233,7 @@ public class SubDesignModule extends Module {
         return sb.toString();
     }
 
-    private String getAttributeWithPrefix(Element node, String attribute) {
+    protected String getAttributeWithPrefix(Element node, String attribute) {
         return name + SUBDESIGN_SEPARATOR + node.attributeValue(attribute);
     }
 
