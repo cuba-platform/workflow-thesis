@@ -21,6 +21,7 @@ import com.haulmont.workflow.core.app.design.modules.SubDesignModule;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
+import com.haulmont.workflow.core.entity.DesignType;
 import com.haulmont.workflow.core.error.DesignCompilationError;
 import com.haulmont.workflow.core.error.DesignError;
 import com.haulmont.workflow.core.error.ModuleError;
@@ -131,7 +132,7 @@ public class DesignCompiler {
 
             saveParameters(design, designProcessVariables);
 
-            String jpdl = compileJpdl(modules, errors);
+            String jpdl = compileJpdl(design, modules, errors);
 
             if (BooleanUtils.isFalse(checkEndReachable(jpdl))) {
                 errors.add(new DesignError(AppBeans.get(Messages.class).getMessage(getClass(), "exception.unreachableEndOfTheProcess")));
@@ -887,7 +888,7 @@ public class DesignCompiler {
         em.persist(df);
     }
 
-    protected String compileJpdl(List<Module> modules, List<DesignCompilationError> compileErrors) throws DesignCompilationException {
+    protected String compileJpdl(Design design, List<Module> modules, List<DesignCompilationError> compileErrors) throws DesignCompilationException {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("process", "http://jbpm.org/4.2/jpdl");
 
@@ -899,9 +900,11 @@ public class DesignCompiler {
             }
         }
 
-        addEndProcessListener(rootEl);
-        addStartProcessListener(rootEl);
-        addRemoveTimersEventListenerOnEndProcess(rootEl);
+        if (!DesignType.SUBDESIGN.equals(design.getType())) {
+            addEndProcessListener(rootEl);
+            addStartProcessListener(rootEl);
+            addRemoveTimersEventListenerOnEndProcess(rootEl);
+        }
 
         processSubdesignJpdl(rootEl);
         postProcessor.processJpdl(rootEl, compileErrors);
