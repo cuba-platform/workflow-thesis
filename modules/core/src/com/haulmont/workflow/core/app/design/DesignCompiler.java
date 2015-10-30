@@ -302,9 +302,22 @@ public class DesignCompiler {
             modulesNames.remove(startElement.attributeValue("name"));
             modulesByName.remove(startElement.attributeValue("name"));
             findNext(startElement, modulesByName, modulesNames);
+            excludeUsedSubdesigns(modulesByName, modulesNames);
             errors.putAll(modulesNames);
         }
         return errors;
+    }
+
+    protected void excludeUsedSubdesigns(Map<String, Element> modulesByName, Map<String, String> modulesNames) {
+        if (modulesByName.isEmpty()) return;
+        List<Map.Entry<String, Element>> moduleEntries = new ArrayList<>(modulesByName.entrySet());
+        for (Map.Entry<String, Element> module : moduleEntries) {
+            boolean used = Boolean.parseBoolean(module.getValue().attributeValue("usedTransition"));
+            if (used) {
+                modulesNames.remove(module.getKey());
+                modulesByName.remove(module.getKey());
+            }
+        }
     }
 
     protected void findNext(Element element, Map<String, Element> modulesByName, Map<String, String> modulesNames) {
@@ -953,6 +966,8 @@ public class DesignCompiler {
             for (Element element : subDesign) {
                 subDesigns.put(element.attributeValue("name"), element.attributeValue("startTransitionName"));
             }
+            Set<String> usedSubdesigns = new HashSet<>();
+
             for (Element element : (List<Element>) rootElement.elements()) {
                 List<Element> transitions = element.elements("transition");
                 if (!transitions.isEmpty()) {
@@ -962,8 +977,17 @@ public class DesignCompiler {
                             String newDest = subDesigns.get(to);
                             if (newDest != null) {
                                 transition.addAttribute("to", newDest);
+                                usedSubdesigns.add(to);
                             }
                         }
+                    }
+                }
+            }
+
+            if (!usedSubdesigns.isEmpty()) {
+                for (Element element : subDesign) {
+                    if (usedSubdesigns.contains(element.attributeValue("name"))) {
+                        element.addAttribute("usedTransition", "true");
                     }
                 }
             }
