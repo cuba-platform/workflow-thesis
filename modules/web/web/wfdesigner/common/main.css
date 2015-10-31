@@ -26,8 +26,38 @@ div.inputEx-Group div input[type="checkbox"]  {
     width : auto;
 }
 
-div.inputEx-Group div select,div.inputEx-Group div input {
-    width : 140px;
+div.inputEx-Group div select {
+    width : 162px;
+	border: none;
+	height: 16px;
+	position: relative;
+	background: none;
+	z-index: 100;
+}
+
+div.inputEx-Group div .select-wrap {
+    background: #fff;
+	overflow: hidden;
+	display: inline-block;
+	position: relative;
+}
+
+div.inputEx-Group div .select-wrap::after {
+    content: "\25bc";
+    position: absolute;
+    right: 4px;
+    top: 0;
+    line-height: 16px;
+    font-size: 9px;
+}
+
+div.inputEx-Group div .select-wrap, div.inputEx-Group div input {
+    width : 142px;
+    height: 16px;
+    box-sizing: content-box;
+    border-color: #bbbbbb;
+    border-width: 1px;
+    border-style: solid;
 }
 
 #optionsForm div.inputEx-Group div.inputEx-label {
@@ -140,7 +170,7 @@ div.Wf-Container-change {
 
 .yui-skin-sam .yui-sac-input {
     width: 124px;
-    height: 14px;
+    height: 16px;
     position: relative;
     float: left;
     border-width: 1px 0 1px 1px;
@@ -149,7 +179,7 @@ div.Wf-Container-change {
 }
 
 .yui-skin-sam .yui-sac-popup {
-    width: 19px;
+    width: 18px;
     height: 16px;
     font-size: 9px;
     position: relative;
@@ -165,8 +195,12 @@ div.inputEx-PickerField .yui-overlay{
     z-index: 10;
 }
 
-.Wf-DateTimeField .inputEx-CombineField .inputEx-Field select{
-    width: 40px;
+.Wf-DateTimeField .inputEx-CombineField .inputEx-Field select {
+    width : 60px;
+}
+
+.Wf-DateTimeField .inputEx-CombineField .inputEx-Field .select-wrap {
+    width : 40px;
 }
 
 .Wf-DateTimeField .inputEx-DatePickerField .inputEx-StringField-wrapper input{
@@ -178,7 +212,7 @@ div.inputEx-PickerField .yui-overlay{
 }
 
 div.inputEx-Group div select{
-    width: 144px;
+    width: 162px;
 }
 
 .yui-skin-sam .yui-ac-content{

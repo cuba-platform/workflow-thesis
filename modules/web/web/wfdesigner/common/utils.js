@@ -703,3 +703,37 @@ inputEx.ListField.prototype.onDelete = function(e) {
 	   this.fireUpdatedEvt();
 };
 
+//add wrapper to "select" element
+inputEx.SelectField.prototype.renderComponent = function () {
+
+    var i, length;
+
+    // create DOM <select> node
+    this.elWrap = inputEx.cn('div', {
+
+        id: this.divEl.id ? this.divEl.id + '-field-wrap' : YAHOO.util.Dom.generateId(),
+        name: this.options.wrapName || '',
+        class: this.options.wrapClass || 'select-wrap'
+
+    });
+    this.el = inputEx.cn('select', {
+
+        id: this.divEl.id ? this.divEl.id + '-field' : YAHOO.util.Dom.generateId(),
+        name: this.options.name || ''
+
+    });
+    this.elWrap.appendChild(this.el);
+
+    if(this.options.disabled) { this.el.disabled = 'disabled'; }
+
+    // list of choices (e.g. [{ label: "France", value:"fr", node:<DOM-node>, visible:true }, {...}, ...])
+    this.choicesList = [];
+
+    // add choices
+    for (i = 0, length = this.options.choices.length; i < length; i += 1) {
+        this.addChoice(this.options.choices[i]);
+    }
+
+    // append <select> to DOM tree
+    this.fieldContainer.appendChild(this.elWrap);
+};
