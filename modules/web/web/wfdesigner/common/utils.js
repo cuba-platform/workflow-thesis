@@ -159,6 +159,8 @@ Wf.Editor = function(options) {
 
 YAHOO.lang.extend(Wf.Editor, WireIt.WiringEditor,{
 
+    allowVariable: true,
+
     render: function() {
         WireIt.WiringEditor.superclass.render.call(this);
 	    this.layer = new Wf.Layer(this.options.layerOptions);
@@ -451,10 +453,11 @@ Wf.OptionFieldsHelper.showOptions = function(container) {
         for(var i = 0 ; i < container.optionsForm.inputs.length ; i++) {
             var field = container.optionsForm.inputs[i];
             field.setContainer(container);
-            if ("name" != container.optFields[i].name){
-                field.initVariableButtons();
+            if (Wf.editor.allowVariable) {
+                if ("name" != container.optFields[i].name){
+                    field.initVariableButtons();
+                }
             }
-
         }
 
         if (container.optionsValue) {
