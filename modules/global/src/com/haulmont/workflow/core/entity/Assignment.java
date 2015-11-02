@@ -9,11 +9,9 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.workflow.core.global.WfConstants;
+import com.haulmont.workflow.core.app.AssignmentLocalizationTools;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -238,53 +236,29 @@ public class Assignment extends StandardEntity {
 
     @MetaProperty
     public String getLocName() {
-        return getLocalizedAttribute(name);
+        return getLocTools().getLocalizedAttribute(this, name);
     }
 
     @MetaProperty
     public String getLocDescription() {
-        return getLocalizedAttribute(description);
+        return getLocTools().getLocalizedAttribute(this, description);
     }
 
     @MetaProperty
     public String getLocOutcome() {
-        return outcome == null ? null : getLocalizedAttribute(name + "." + outcome);
+        return getLocTools().getLocOutcome(this);
     }
 
     @MetaProperty
     public String getLocOutcomeResult() {
-        if (outcome == null)
-            return null;
-        else {
-            if (WfConstants.ACTION_REASSIGN.equals(outcome)) {
-                String key = WfConstants.ACTION_REASSIGN + ".Result";
-                String locValue = getLocalizedAttribute(key);
-                if (key.equals(locValue)) {
-                    return AppBeans.get(Messages.class).getMessage(Assignment.class, key);
-                } else {
-                    return locValue;
-                }
-            }
-            String key = name + "." + outcome + ".Result";
-            String value = getLocalizedAttribute(key);
-            if (key.equals(value)) {
-                key = name + "." + outcome + "Result"; // try old style
-                return getLocalizedAttribute(key);
-            } else
-                return value;
-        }
+        return getLocTools().getLocOutcomeResult(this);
     }
 
     private String getLocalizedAttribute(String value) {
-        if (value == null)
-            return "";
+        return getLocTools().getLocalizedAttribute(this, value);
+    }
 
-        if (proc != null) {
-            String messagesPack = proc.getMessagesPack();
-            if (!value.startsWith(MessageTools.MARK))
-                value = MessageTools.MARK + value;
-            return AppBeans.get(MessageTools.class).loadString(messagesPack, value);
-        }
-        return value;
+    protected AssignmentLocalizationTools getLocTools() {
+        return AppBeans.get(AssignmentLocalizationTools.class);
     }
 }
