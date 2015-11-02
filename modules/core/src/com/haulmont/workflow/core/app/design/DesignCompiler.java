@@ -238,6 +238,8 @@ public class DesignCompiler {
             return false;
         visitedModules.add(moduleName);
         Element el = modulesByName.get(moduleName);
+        if (el == null)
+            return false;
         if ("end".equals(el.getName())) {
             return true;
         }
