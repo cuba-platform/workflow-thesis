@@ -5,17 +5,19 @@
 
 package com.haulmont.workflow.core.app;
 
+import com.google.common.collect.Lists;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author chekashkin
@@ -29,7 +31,16 @@ public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTo
     @Inject
     protected Messages messages;
 
-    protected static final String SYSTEM_ASSIGNMENT_OUTCOMES = "workflow.systemAssignmentOutcomes";
+    protected List<String> systemAssignmentOutcomes;
+
+    @PostConstruct
+    public void init() {
+        String systemOutcomesParam = configuration.getConfig(WfConfig.class).getSystemAssignmentOutcomes();
+        if (StringUtils.isBlank(systemOutcomesParam))
+            systemAssignmentOutcomes = Lists.newArrayList();
+        else
+            systemAssignmentOutcomes = Lists.newArrayList(systemOutcomesParam.split(","));
+    }
 
     public String getLocalizedAttribute(Assignment assignment, String value) {
         if (value == null)
@@ -87,11 +98,6 @@ public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTo
      * For system assignments localization main message pack is used
      */
     protected boolean isSystemOutcome(String outcome) {
-        String systemOutcomes = AppContext.getProperty(SYSTEM_ASSIGNMENT_OUTCOMES);
-        if (StringUtils.isBlank(systemOutcomes))
-            return false;
-
-        String[] split = systemOutcomes.split(",");
-        return ArrayUtils.contains(split, outcome);
+        return systemAssignmentOutcomes.contains(outcome);
     }
 }

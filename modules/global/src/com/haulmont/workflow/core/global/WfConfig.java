@@ -21,13 +21,17 @@ public interface WfConfig extends Config {
     @Property("workflow.defaultAttachmentType")
     @Default("AttachmentType.attachment")
     String getDefaultAttachmentType();
-    
+
     @Property("workflow.notificationTemplatePath")
     @Default("/com/haulmont/workflow/core/NotificationMatrixTemplate.xls")
     String getNotificationTemplatePath();
 
+    @Property("workflow.systemAssignmentOutcomes")
+    String getSystemAssignmentOutcomes();
+
     @Property("workflow.oneAttachmentUploaderEnabled")
     @DefaultBoolean(false)
     boolean getOneAttachmentUploaderEnabled();
+
     void setOneAttachmentUploaderEnabled(boolean value);
 }
