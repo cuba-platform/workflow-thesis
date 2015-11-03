@@ -139,7 +139,6 @@ public class Assignment extends StandardEntity {
         this.masterAssignment = masterAssignment;
     }
 
-
     public Assignment getFamilyAssignment() {
         return familyAssignment;
     }
@@ -252,10 +251,6 @@ public class Assignment extends StandardEntity {
     @MetaProperty
     public String getLocOutcomeResult() {
         return getLocTools().getLocOutcomeResult(this);
-    }
-
-    private String getLocalizedAttribute(String value) {
-        return getLocTools().getLocalizedAttribute(this, value);
     }
 
     protected AssignmentLocalizationTools getLocTools() {

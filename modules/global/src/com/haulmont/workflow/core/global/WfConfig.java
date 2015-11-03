@@ -26,9 +26,6 @@ public interface WfConfig extends Config {
     @Default("/com/haulmont/workflow/core/NotificationMatrixTemplate.xls")
     String getNotificationTemplatePath();
 
-    @Property("workflow.systemAssignmentOutcomes")
-    String getSystemAssignmentOutcomes();
-
     @Property("workflow.oneAttachmentUploaderEnabled")
     @DefaultBoolean(false)
     boolean getOneAttachmentUploaderEnabled();
