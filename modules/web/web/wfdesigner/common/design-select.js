@@ -12,6 +12,7 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
 
     allowVariable: false,
     designLink: null,
+    isLoaded: true,
 
     render: function () {
         Wf.DesignSelect.superclass.render.call(this)
@@ -96,10 +97,13 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
             this.removeChoiceNode(choice.node);
         }
         this.choicesList = [];
+        this.isLoaded = !(Wf.editor && Wf.editor.preventLayerChangedEvent);
         Wf.loadSubDesigns(this.addDesigns, this);
     },
 
     addDesigns: function(designs) {
+        var isLoaded = this.isLoaded;
+        this.isLoaded = true;
         for (var i = 0; i < designs.length; i++) {
             var v = {value:designs[i].value, label:designs[i].label};
             if (this.getChoicePosition(v) == -1)
@@ -107,14 +111,14 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
         }
         //set value executed early then choice list arrived from server
         if (this.newVal) {
-            Wf.DesignSelect.superclass.setValue.call(this, this.newVal, this.sendUpdatedEvt);
+            Wf.DesignSelect.superclass.setValue.call(this, this.newVal, isLoaded && this.sendUpdatedEvt);
             this.options.container.previousValue = this.newVal;
             this.newVal = null;
         }
         else {
             if (designs.length>0 && this.options.container.previousValue == null){
                var firstDesign = {value:designs[0].value, label:designs[0].label};
-               Wf.DesignSelect.superclass.setValue.call(this, firstDesign, this.sendUpdatedEvt);
+               Wf.DesignSelect.superclass.setValue.call(this, firstDesign, isLoaded && this.sendUpdatedEvt);
                this.options.container.previousValue = firstDesign;
                this.newVal = null;
                this.createOutputs(this.options.container,firstDesign.value);
