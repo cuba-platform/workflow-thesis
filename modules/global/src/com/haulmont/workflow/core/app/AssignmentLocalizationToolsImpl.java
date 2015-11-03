@@ -8,8 +8,8 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,12 +24,12 @@ import javax.inject.Inject;
 
 @ManagedBean(AssignmentLocalizationTools.NAME)
 public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTools {
-
     @Inject
     protected Configuration configuration;
-
     @Inject
     protected Messages messages;
+
+    protected static final String SYSTEM_ASSIGNMENT_OUTCOMES = "workflow.systemAssignmentOutcomes";
 
     public String getLocalizedAttribute(Assignment assignment, String value) {
         if (value == null)
@@ -87,10 +87,11 @@ public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTo
      * For system assignments localization main message pack is used
      */
     protected boolean isSystemOutcome(String outcome) {
-        WfConfig wfConfig = configuration.getConfig(WfConfig.class);
-        if (StringUtils.isBlank(wfConfig.getSystemAssignmentOutcomes()))
+        String systemOutcomes = AppContext.getProperty(SYSTEM_ASSIGNMENT_OUTCOMES);
+        if (StringUtils.isBlank(systemOutcomes))
             return false;
-        String[] split = wfConfig.getSystemAssignmentOutcomes().split(",");
+
+        String[] split = systemOutcomes.split(",");
         return ArrayUtils.contains(split, outcome);
     }
 }
