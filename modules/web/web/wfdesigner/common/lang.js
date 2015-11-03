@@ -554,7 +554,7 @@ var wfLanguage = {
             "container": {
                 "xtype":"Wf.CardPropertyContainer",
                 "icon":"../common/res/icons/card_state_icon.png",
-                "width":260,
+                "width":264,
                 "optFields": [
                     {
                         "type":"string",
@@ -692,7 +692,7 @@ var wfLanguage = {
             "container": {
                 "xtype":"Wf.CardPropertyContainer",
                 "icon":"../common/res/icons/card_state_icon.png",
-                "width":250,
+                "width":251,
                 "optFields": [
                     {
                         "type":"string",
