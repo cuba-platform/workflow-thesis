@@ -499,7 +499,7 @@ public class TransitionForm extends AbstractForm {
 
         if (!missingAttachments.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<ul>");
+            sb.append("<ul style=\"text-align:left;\">");
             for (String attachmentTypeCode : missingAttachments) {
                 final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
                 String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
