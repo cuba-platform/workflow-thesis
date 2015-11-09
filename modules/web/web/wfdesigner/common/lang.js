@@ -510,7 +510,7 @@ var wfLanguage = {
                           "name": "design",
                           "label": "msg://SubDesign",
                           "required": false,
-                          "readonly":"true"
+                          "disabled": true
                      }
                  ],
                  "fields": [
