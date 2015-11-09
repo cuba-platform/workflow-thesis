@@ -9,6 +9,7 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
     allowVariable: false,
     initiated: false,
     prevVal: null,
+    isLoadedCardInheritors: false,
 
     setOptions: function(options) {
         Wf.OutputSelect.superclass.setOptions.call(this, options);
@@ -60,6 +61,8 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
     },
 
     addCardInheritors: function(cardInheritors) {
+        var isLoadedCardInheritors = this.isLoadedCardInheritors;
+        this.isLoadedCardInheritors = true;
         Wf.cardInheritorsCache = cardInheritors;
         for (var i = 0; i < cardInheritors.length; i++) {
             var s = cardInheritors[i];
@@ -69,7 +72,8 @@ YAHOO.lang.extend(Wf.CardInheritorSelect, inputEx.SelectField, {
         }
         //set value executed early then choice list arrived from server
         if (this.newVal) {
-            Wf.CardInheritorSelect.superclass.setValue.call(this, this.newVal, this.isLoaded && this.sendUpdatedEvt);
+            Wf.CardInheritorSelect.superclass.setValue.call(this, this.newVal,
+                this.isLoaded && this.sendUpdatedEvt !== false && isLoadedCardInheritors);
             this.options.container.previousValue = this.newVal;
             this.newVal = null;
         }

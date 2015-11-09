@@ -13,6 +13,7 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
     allowVariable: false,
     designLink: null,
     isLoaded: true,
+    isLoadedDesigns: false,
 
     render: function () {
         Wf.DesignSelect.superclass.render.call(this)
@@ -102,6 +103,8 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
     },
 
     addDesigns: function(designs) {
+        var isLoadedDesigns = this.isLoadedDesigns;
+        this.isLoadedDesigns = true;
         var isLoaded = this.isLoaded;
         this.isLoaded = true;
         for (var i = 0; i < designs.length; i++) {
@@ -111,14 +114,15 @@ YAHOO.lang.extend(Wf.DesignSelect, inputEx.SelectField, {
         }
         //set value executed early then choice list arrived from server
         if (this.newVal) {
-            Wf.DesignSelect.superclass.setValue.call(this, this.newVal, isLoaded && this.sendUpdatedEvt);
+            Wf.DesignSelect.superclass.setValue.call(this, this.newVal,
+                isLoaded && this.sendUpdatedEvt !== false && isLoadedDesigns);
             this.options.container.previousValue = this.newVal;
             this.newVal = null;
         }
         else {
             if (designs.length>0 && this.options.container.previousValue == null){
                var firstDesign = {value:designs[0].value, label:designs[0].label};
-               Wf.DesignSelect.superclass.setValue.call(this, firstDesign, isLoaded && this.sendUpdatedEvt);
+               Wf.DesignSelect.superclass.setValue.call(this, firstDesign, isLoaded && this.sendUpdatedEvt && isLoadedDesigns);
                this.options.container.previousValue = firstDesign;
                this.newVal = null;
                this.createOutputs(this.options.container,firstDesign.value);
