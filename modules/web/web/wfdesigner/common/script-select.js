@@ -12,6 +12,7 @@ Wf.ScriptSelect = function(options) {
 YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
 
     allowVariable: false,
+    scriptsLoaded: false,
 
     setOptions: function(options) {
         Wf.OutputSelect.superclass.setOptions.call(this, options);
@@ -52,6 +53,8 @@ YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
     },
 
     addScripts: function(scripts) {
+        var scriptsLoaded = this.scriptsLoaded;
+        this.scriptsLoaded = true;
         Wf.scriptsCache = scripts;
         for (var i = 0; i < scripts.length; i++) {
             var v = {value: scripts[i]};
@@ -60,7 +63,7 @@ YAHOO.lang.extend(Wf.ScriptSelect, inputEx.SelectField, {
         }
         //set value executed early then choice list arrived from server
         if (this.newVal) {
-            Wf.ScriptSelect.superclass.setValue.call(this, this.newVal, this.sendUpdatedEvt);
+            Wf.ScriptSelect.superclass.setValue.call(this, this.newVal, scriptsLoaded && this.sendUpdatedEvt);
             this.options.container.previousValue = this.newVal;
             this.newVal = null;
         }
