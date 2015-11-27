@@ -7,7 +7,6 @@ package com.haulmont.workflow.gui.app.base;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
@@ -99,7 +98,7 @@ public class ReassignForm extends AbstractWindow {
             params.put("procContextCard", procContextCard);
         }
 
-        cardDs.setItem((Card) InstanceUtils.copy(card));
+        cardDs.setItem((Card) metadata.getTools().copy(card));
 
         if (commentText != null)
             commentText.setRequired(reassignmentInfo.isCommentRequired());
