@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.IOUtils;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +26,9 @@ import java.util.Map;
 public class ImportDialog extends AbstractWindow {
     protected byte[] bytes;
 
+    @Inject
+    protected FileUploadField fileUpload;
+
     public byte[] getBytes() {
         return bytes;
     }
@@ -32,23 +36,25 @@ public class ImportDialog extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        final FileUploadField fileUploadField = (FileUploadField) getComponentNN("fileUpload");
 
-        fileUploadField.addFileUploadSucceedListener(e -> {
-            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-            File file = fileUploading.getFile(fileUploadField.getFileId());
+        fileUpload.addListener(new FileUploadField.ListenerAdapter() {
+            @Override
+            public void uploadSucceeded(Event event) {
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+                File file = fileUploading.getFile(fileUpload.getFileId());
 
-            InputStream fileInput = null;
-            try {
-                fileInput = new FileInputStream(file);
-                bytes = IOUtils.toByteArray(fileInput);
-                fileInput.close();
-                fileUploading.deleteFile(fileUploadField.getFileId());
-            } catch (IOException | FileStorageException ex) {
-                throw new RuntimeException("Import failed", ex);
+                InputStream fileInput;
+                try {
+                    fileInput = new FileInputStream(file);
+                    bytes = IOUtils.toByteArray(fileInput);
+                    fileInput.close();
+                    fileUploading.deleteFile(fileUpload.getFileId());
+                } catch (IOException | FileStorageException e) {
+                    throw new RuntimeException("Unable to import file", e);
+                }
+
+                close(Window.COMMIT_ACTION_ID);
             }
-
-            close(Window.COMMIT_ACTION_ID);
         });
     }
 }
