@@ -200,8 +200,11 @@ public class SubDesignModule extends Module {
     public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
         super.generateDesignProcessVariables();
         Map<String, String> paramsMap = parseParamsString(params);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+
         for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
-            DesignProcessVariable newDesignParameter = (DesignProcessVariable) designProcessVariable.copyTo(new DesignProcessVariable());
+            DesignProcessVariable newDesignParameter =
+                    (DesignProcessVariable) designProcessVariable.copyTo(metadata.create(DesignProcessVariable.class));
             newDesignParameter.setModuleName(prepareModuleNames(designProcessVariable.getModuleName()));
             newDesignParameter.setAlias(designProcessVariable.getAlias());
             if (paramsMap.containsKey(designProcessVariable.getAlias())) {

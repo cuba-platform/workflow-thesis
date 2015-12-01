@@ -8,6 +8,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -22,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.jbpm.api.activity.ActivityExecution;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
@@ -61,6 +62,9 @@ public class TimerManager implements TimerManagerAPI {
     @Inject
     protected Authentication authentication;
 
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
                          Class<? extends TimerAction> taskClass, Map<String, String> taskParams) {
@@ -69,7 +73,7 @@ public class TimerManager implements TimerManagerAPI {
 
         EntityManager em = persistence.getEntityManager();
 
-        TimerEntity timer = new TimerEntity();
+        TimerEntity timer = metadata.create(TimerEntity.class);
         timer.setCard(card);
         if (execution != null) {
             timer.setJbpmExecutionId(execution.getId());

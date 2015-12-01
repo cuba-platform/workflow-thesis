@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -205,10 +206,9 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
      * Notification by card role don't executed
      *
      * @param code - process role code
-     * @return
      */
     protected CardRole createDummyCardRole(Assignment assignment, String code) {
-        CardRole cr = new CardRole();
+        CardRole cr = metadata.create(CardRole.class);
         cr.setDeletedBy(userSessionSource.getUserSession().getUser().getLogin());
         cr.setDeleteTs(timeSource.currentTimestamp());
         cr.setNotifyByCardInfo(false);
@@ -274,7 +274,8 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     protected void deleteNotification(Assignment assignment) {
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = :card and ci.user.id = :user");
+        TypedQuery<CardInfo> query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = :card and ci.user.id = :user",
+                CardInfo.class);
         query.setParameter("card", assignment.getCard());
         query.setParameter("user", assignment.getUser());
         List<CardInfo> cardInfoList = query.getResultList();

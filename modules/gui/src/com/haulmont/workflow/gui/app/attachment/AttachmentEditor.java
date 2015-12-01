@@ -51,7 +51,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     protected TimeSource timeSource;
 
     @Inject
-    protected Messages messages;
+    protected Metadata metadata;
 
     @Inject
     protected Configuration configuration;
@@ -131,7 +131,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                 }
             } else {
                 Attachment attachItem = attachmentDs.getItem();
-                attachItem.setFile(new FileDescriptor());
+                attachItem.setFile(metadata.create(FileDescriptor.class));
                 attachItem.setCreateTs(timeSource.currentTimestamp());
                 attachItem.setCreatedBy(userSession.getCurrentOrSubstitutedUser().getLogin());
                 attachItem.setSubstitutedCreator(userSession.getCurrentOrSubstitutedUser());

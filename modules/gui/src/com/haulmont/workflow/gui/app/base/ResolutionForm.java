@@ -13,9 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
@@ -84,14 +82,14 @@ public class ResolutionForm extends AbstractForm {
         String activity = (String) params.get("activity");
         String transition = (String) params.get("transition");
 
-        TextField outcomeText = (TextField) getComponent("outcomeText");
+        TextField outcomeText = (TextField) getComponentNN("outcomeText");
         outcomeText.setValue(messages.getMessage(messagesPack, activity + (transition != null ? "." + transition : "")));
         outcomeText.setEditable(false);
 
         String commentRequired = (String) params.get("commentRequired");
         commentText.setRequired(commentRequired == null || Boolean.valueOf(commentRequired).equals(Boolean.TRUE));
 
-        Component attachmentsPane = getComponent("attachmentsPane");
+        Component attachmentsPane = getComponentNN("attachmentsPane");
         String attachmentsVisible = (String) params.get("attachmentsVisible");
         attachmentsPane.setVisible(attachmentsVisible == null || Boolean.valueOf(attachmentsVisible).equals(Boolean.TRUE));
 
@@ -119,11 +117,11 @@ public class ResolutionForm extends AbstractForm {
         applyToCards();
 
         // Add attachments handler
-        Button copyAttachBtn = (Button) getComponent("copyAttach");
+        Button copyAttachBtn = (Button) getComponentNN("copyAttach");
         copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Copy"));
 
-        Button pasteAttachBtn = (Button) getComponent("pasteAttach");
+        Button pasteAttachBtn = (Button) getComponentNN("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
             public Attachment createObject() {
                 CardAttachment attachment = metadata.create(CardAttachment.class);
@@ -136,7 +134,7 @@ public class ResolutionForm extends AbstractForm {
                 AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
-        PopupButton createPopup = (PopupButton) getComponent("createAttachBtn");
+        PopupButton createPopup = (PopupButton) getComponentNN("createAttachBtn");
         WfConfig wfConfig = AppBeans.get(Configuration.class).getConfig(WfConfig.class);
         if (wfConfig.getOneAttachmentUploaderEnabled()) {
             createPopup.addAction(new CreateAction(attachmentsTable, WindowManager.OpenType.DIALOG, "actions.New") {
@@ -144,7 +142,7 @@ public class ResolutionForm extends AbstractForm {
                 public Map<String, Object> getInitialValues() {
                     Map<String, Object> values = new HashMap<>();
                     values.put("assignment", assignmentDs.getItem());
-                    values.put("file", new FileDescriptor());
+                    values.put("file", metadata.create(FileDescriptor.class));
                     values.put("card", card);
                     if (attachmentType != null) {
                         values.put("attachType", attachmentType);
@@ -179,7 +177,7 @@ public class ResolutionForm extends AbstractForm {
 
     @Override
     protected void onWindowCommit() {
-        if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
+        if (commentText.isRequired() && StringUtils.isBlank(commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {
             commitAttachments();

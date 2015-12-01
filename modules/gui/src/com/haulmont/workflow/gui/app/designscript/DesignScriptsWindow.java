@@ -4,6 +4,7 @@
  */
 package com.haulmont.workflow.gui.app.designscript;
 
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -32,6 +33,9 @@ public class DesignScriptsWindow extends AbstractWindow {
 
     @Inject
     protected TextArea contentField;
+
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -81,7 +85,7 @@ public class DesignScriptsWindow extends AbstractWindow {
                 }
             }
 
-            DesignScript designScript = new DesignScript();
+            DesignScript designScript = metadata.create(DesignScript.class);
             designScript.setDesign(design);
 
             ds.addItem(designScript);
@@ -113,7 +117,7 @@ public class DesignScriptsWindow extends AbstractWindow {
         @Override
         public void actionPerform(Component component) {
             Collection<UUID> designIds = ds.getItemIds();
-            Set<String> designScriptNames = new HashSet<String>();
+            Set<String> designScriptNames = new HashSet<>();
             for (UUID id : designIds) {
                 DesignScript designScript = ds.getItem(id);
                 if (StringUtils.trimToNull(designScript.getName()) == null) {

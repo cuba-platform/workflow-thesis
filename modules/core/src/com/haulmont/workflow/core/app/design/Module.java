@@ -6,6 +6,7 @@ package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.entity.Design;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
@@ -259,11 +260,13 @@ public abstract class Module {
             JSONObject variables = jsValue.getJSONObject("variables");
             JSONObject options = jsValue.getJSONObject("options");
             Iterator keys = variables.keys();
+
+            Metadata metadata = AppBeans.get(Metadata.NAME);
             while (keys.hasNext()) {
                 String key = (String) keys.next();
                 String alias = variables.getString(key);
                 if (StringUtils.isNotBlank(alias)) {
-                    DesignProcessVariable variable = new DesignProcessVariable();
+                    DesignProcessVariable variable = metadata.create(DesignProcessVariable.class);
                     variable.setAlias(alias);
                     variable.setName(alias);
                     variable.setPropertyName(key);

@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authenticated;
@@ -42,6 +43,9 @@ public class WorkCalendar implements WorkCalendarMBean {
 
     @Inject
     protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected Resources resources;
@@ -117,7 +121,7 @@ public class WorkCalendar implements WorkCalendarMBean {
     }
 
     private WorkCalendarEntity createWorkCalendarEntity(Date day, String start, String end, Integer dayOfWeek) {
-        WorkCalendarEntity calendarEntity = new WorkCalendarEntity();
+        WorkCalendarEntity calendarEntity = metadata.create(WorkCalendarEntity.class);
         calendarEntity.setDay(day);
         SimpleDateFormat format = new SimpleDateFormat("hh:mm");
         try {

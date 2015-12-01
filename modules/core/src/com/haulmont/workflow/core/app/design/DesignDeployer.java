@@ -221,8 +221,9 @@ public class DesignDeployer {
             }
         }
 
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         for (DesignProcessVariable designProcessVariable : designProcessVariables) {
-            ProcVariable procVariable = (ProcVariable) designProcessVariable.copyTo(new ProcVariable());
+            ProcVariable procVariable = (ProcVariable) designProcessVariable.copyTo(metadata.create(ProcVariable.class));
             procVariable.setProc(proc);
             em.persist(procVariable);
             procVariables.add(procVariable);

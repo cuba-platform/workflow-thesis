@@ -8,6 +8,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -29,6 +30,9 @@ public class WorkCalendarBrowser extends AbstractWindow {
     private static final String CREATE_ACTION_CAPTION = "actions.Create";
     private static final String EDIT_ACTION_ID = "edit";
     private static final String EDIT_ACTION_CAPTION = "actions.Edit";
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected Table workDaysTable;
@@ -89,7 +93,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
         AbstractAction createAction = new AbstractAction(CREATE_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
-                Window window = openEditor("wf$WorkCalendarExceptionDay.edit", new WorkCalendarEntity(), OpenType.DIALOG);
+                Window window = openEditor("wf$WorkCalendarExceptionDay.edit", metadata.create(WorkCalendarEntity.class), OpenType.DIALOG);
                 window.addCloseListener(actionId -> {
                     exceptionDaysDs.refresh();
 
@@ -112,7 +116,7 @@ public class WorkCalendarBrowser extends AbstractWindow {
         AbstractAction createAction = new AbstractAction(CREATE_ACTION_ID) {
             @Override
             public void actionPerform(Component component) {
-                Window window = openEditor("wf$WorkCalendarWorkDay.edit", new WorkCalendarEntity(), OpenType.DIALOG);
+                Window window = openEditor("wf$WorkCalendarWorkDay.edit", metadata.create(WorkCalendarEntity.class), OpenType.DIALOG);
                 window.addCloseListener(actionId -> {
                     workDaysDs.refresh();
                 });

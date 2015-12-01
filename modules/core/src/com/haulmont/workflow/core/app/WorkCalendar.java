@@ -4,10 +4,8 @@
  */
 package com.haulmont.workflow.core.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
@@ -31,14 +29,19 @@ public class WorkCalendar implements WorkCalendarAPI {
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected Metadata metadata;
+
     protected synchronized void loadCaches() {
         if (exceptionDays == null) {
             exceptionDays = new HashMap<>();
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-                Query q = em.createQuery("select c from wf$Calendar c where c.day is not null " +
-                        "order by c.day, c.start");
+                TypedQuery<WorkCalendarEntity> q = em.createQuery(
+                        "select c from wf$Calendar c where c.day is not null order by c.day, c.start",
+                        WorkCalendarEntity.class);
+
                 List<WorkCalendarEntity> list = q.getResultList();
                 for (WorkCalendarEntity c : list) {
                     CalendarItem ci = new CalendarItem(c);
@@ -78,7 +81,7 @@ public class WorkCalendar implements WorkCalendarAPI {
             }
             for (DayOfWeek dow : DayOfWeek.values()) {
                 if (defaultDays.get(dow.getId()) == null) {
-                    WorkCalendarEntity wce = new WorkCalendarEntity();
+                    WorkCalendarEntity wce = metadata.create(WorkCalendarEntity.class);
                     wce.setDayOfWeek(dow);
                     CalendarItem ci = new CalendarItem(wce);
                     List<CalendarItem> mapValue = new LinkedList<>();
@@ -100,12 +103,14 @@ public class WorkCalendar implements WorkCalendarAPI {
         defaultDays = null;
     }
 
+    @Override
     public Long getAbsoluteMillis(Date date, int qty, TimeUnit unit) {
         loadCaches();
         Date endDate = addInterval(date, qty, unit);
         return endDate.getTime() - date.getTime();
     }
 
+    @Override
     public Long getWorkDayLengthInMillis() {
         loadCaches();
         Long workDayLength = new Long(0);
@@ -442,9 +447,6 @@ public class WorkCalendar implements WorkCalendarAPI {
 
     /**
      * Creates deep copy of defaultDays map and exceptionDays map
-     * @param mapToClone
-     * @param <T>
-     * @return
      */
     private <T extends Map> T dayMapDeepCopy(T mapToClone) {
         T result = null;
@@ -455,7 +457,7 @@ public class WorkCalendar implements WorkCalendarAPI {
         }
         for (Object key : mapToClone.keySet()) {
             Object value = mapToClone.get(key);
-            LinkedList<CalendarItem> valueCopy = new LinkedList<CalendarItem>((Collection) value);
+            LinkedList<CalendarItem> valueCopy = new LinkedList<>((Collection) value);
             result.put(key, valueCopy);
         }
         return result;
@@ -644,7 +646,5 @@ public class WorkCalendar implements WorkCalendarAPI {
 
             return cal;
         }
-
     }
-
 }

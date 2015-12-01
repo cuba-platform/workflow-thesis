@@ -128,7 +128,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
             public Map<String, Object> getInitialValues() {
                 Map<String, Object> initialValues = new HashMap<>();
                 initialValues.put("card", cardDs.getItem());
-                initialValues.put("file", new FileDescriptor());
+                initialValues.put("file", metadata.create(FileDescriptor.class));
                 return initialValues;
             }
         };

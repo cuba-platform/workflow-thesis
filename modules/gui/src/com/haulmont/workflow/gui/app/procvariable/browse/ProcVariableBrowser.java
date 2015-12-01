@@ -5,33 +5,31 @@
 
 package com.haulmont.workflow.gui.app.procvariable.browse;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcVariable;
 import com.haulmont.workflow.gui.app.designprocessvariables.browse.AbstractProcVariableBrowser;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>$Id: ProcVariableBrowser.java 10560 2013-02-13 08:20:22Z zaharchenko $</p>
- *
  * @author Zaharchenko
+ * @version $Id$
  */
 public class ProcVariableBrowser extends AbstractProcVariableBrowser {
 
     private Proc proc;
 
-    private static final long serialVersionUID = 4880567976812400606L;
-
-    public ProcVariableBrowser() {
-        super();
-    }
+    @Inject
+    private Metadata metadata;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -41,18 +39,19 @@ public class ProcVariableBrowser extends AbstractProcVariableBrowser {
             @Override
             public void actionPerform(Component component) {
                 getDialogParams().setHeight(300);
-                openLookup("wf$DesignProcessVariable.browse", new Window.Lookup.Handler() {
+                openLookup("wf$DesignProcessVariable.browse", new Handler() {
                     @Override
                     public void handleLookup(Collection items) {
                         for (Object item : items) {
-                            ProcVariable processVariable = (ProcVariable) ((DesignProcessVariable) item).copyTo(new ProcVariable());
+                            ProcVariable processVariable = (ProcVariable)
+                                    ((DesignProcessVariable) item).copyTo(metadata.create(ProcVariable.class));
                             processVariable.setProc(proc);
                             processVariable.setOverridden(true);
                             table.getDatasource().addItem(processVariable);
                         }
                         table.getDatasource().commit();
                     }
-                }, WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("design", proc.getDesign()));
+                }, WindowManager.OpenType.DIALOG, ParamsMap.of("design", proc.getDesign()));
             }
         });
         if (proc.getDesign() == null) table.getAction("override").setEnabled(false);

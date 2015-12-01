@@ -73,8 +73,8 @@ public class NotificationMatrix implements NotificationMatrixAPI {
      */
     protected boolean sendNotificationToBlankEmail = false;
 
-    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<String, Map<String, String>>();
-    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<String, Map<String, NotificationMessageBuilder>>();
+    protected Map<String, Map<String, String>> cache = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, NotificationMessageBuilder>> messageCache = new ConcurrentHashMap<>();
 
     public void setSendNotificationToBlankEmail(boolean sendNotificationToBlankEmail) {
         this.sendNotificationToBlankEmail = sendNotificationToBlankEmail;
@@ -603,8 +603,6 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     /**
      * Simple Factory for create MessageInstance of concreete type,such as FreeMarkerNotificationMessage
      *
-     * @param templateType
-     * @param text
      * @return new NotificationMessage
      */
     protected NotificationMessageBuilder getNotificationMessageBuilder(String templateType, String text) {
@@ -650,7 +648,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     protected void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
-        CardInfo ci = new CardInfo();
+        CardInfo ci = metadata.create(CardInfo.class);
         ci.setType(cardInfoType);
         if (card.isSubProcCard()) {
             ci.setCard(card.getFamilyTop());

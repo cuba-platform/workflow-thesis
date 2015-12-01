@@ -894,7 +894,9 @@ public class DesignCompiler {
     protected void saveDesignFile(Design design, String name, String type, String content, byte[] binaryContent) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
-        DesignFile df = new DesignFile();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+
+        DesignFile df = metadata.create(DesignFile.class);
         df.setDesign(design);
         df.setContent(content);
         df.setBinaryContent(binaryContent);

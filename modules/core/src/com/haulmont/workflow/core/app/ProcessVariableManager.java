@@ -8,6 +8,7 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -16,15 +17,17 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author Zaharchenko
+ * @version $Id$
  */
 @Component(ProcessVariableAPI.NAME)
 public class ProcessVariableManager implements ProcessVariableAPI {
 
     @Inject
     private WfEntityDescriptorTools wfEntityDescriptorTools;
+
+    @Inject
+    protected Metadata metadata;
 
     public String getStringValue(Object value) {
         return wfEntityDescriptorTools.getStringValue(value);
@@ -49,9 +52,10 @@ public class ProcessVariableManager implements ProcessVariableAPI {
         return processVariableMap;
     }
 
+    @Override
     public void createVariablesForCard(Card card) {
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-        List<CardVariable> cardVariables = new ArrayList<CardVariable>();
+        List<CardVariable> cardVariables = new ArrayList<>();
         Map<String, AbstractProcessVariable> variableMap = collectVariablesForCard(card);
         List<String> errors = checkVariables(variableMap.values());
         if (!errors.isEmpty()) {
@@ -63,10 +67,10 @@ public class ProcessVariableManager implements ProcessVariableAPI {
             throw new IllegalStateException(sb.toString());
         }
 
-        Map<String, AbstractProcessVariable> designVariables = getDesignVariables(card, new HashMap<String, AbstractProcessVariable>());
+        Map<String, AbstractProcessVariable> designVariables = getDesignVariables(card, new HashMap<>());
 
         for (String key : variableMap.keySet()) {
-            CardVariable cardVariable = (CardVariable) variableMap.get(key).copyTo(new CardVariable());
+            CardVariable cardVariable = (CardVariable) variableMap.get(key).copyTo(metadata.create(CardVariable.class));
             cardVariable.setCard(card);
             if (designVariables.containsKey(key)) {
                 DesignProcessVariable designProcessVariable = (DesignProcessVariable) designVariables.get(key);
@@ -79,8 +83,9 @@ public class ProcessVariableManager implements ProcessVariableAPI {
         card.setCardVariables(cardVariables);
     }
 
+    @Override
     public List<String> checkVariables(Collection<AbstractProcessVariable> variablesForCard) {
-        List<String> errorsList = new ArrayList<String>();
+        List<String> errorsList = new ArrayList<>();
         for (AbstractProcessVariable processVariable : variablesForCard) {
             if (processVariable instanceof DesignProcessVariable) {
                 DesignProcessVariable designProcessVariable = (DesignProcessVariable) processVariable;

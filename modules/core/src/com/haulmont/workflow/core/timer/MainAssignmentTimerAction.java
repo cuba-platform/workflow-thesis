@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.timer;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -45,7 +46,9 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
     }
 
     protected CardInfo createCardInfo(TimerActionContext context, User user, int type, String subject) {
-        CardInfo ci = new CardInfo();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+
+        CardInfo ci = metadata.create(CardInfo.class);
         ci.setCard(context.getCard());
         ci.setType(type);
         ci.setUser(user);
@@ -87,7 +90,7 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
             subject = binding.getVariable("subject").toString();
             body = binding.getVariable("body").toString();
         } catch (Exception e) {
-            log.error("Unable eveluate groovy script " + script, e);
+            log.error("Unable to evaluate groovy script " + script, e);
             Proc proc = context.getCard().getProc();
             String procStr = proc == null ? null : " of process " + proc.getName();
             subject = "Stage " + context.getActivity() + procStr + " is overdue";
