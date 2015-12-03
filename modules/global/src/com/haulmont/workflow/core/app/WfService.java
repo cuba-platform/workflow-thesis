@@ -42,6 +42,8 @@ public interface WfService {
      */
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
+    List<AssignmentInfo> getAssignmentInfos(Card card);
+
     /**
      * Starts a workflow process for a given card.
      *

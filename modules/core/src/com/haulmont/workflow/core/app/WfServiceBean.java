@@ -58,6 +58,11 @@ public class WfServiceBean implements WfService {
     }
 
     @Override
+    public List<AssignmentInfo> getAssignmentInfos(Card card) {
+        return wfWorkerAPI.getAssignmentInfos(card);
+    }
+
+    @Override
     public void cancelProcess(Card card) {
         Transaction tx = persistence.createTransaction();
         try {
