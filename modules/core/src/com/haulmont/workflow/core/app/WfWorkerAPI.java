@@ -35,6 +35,8 @@ public interface WfWorkerAPI {
 
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
+    List<AssignmentInfo> getAssignmentInfos(Card card);
+
     Map<String, Object> getProcessVariables(Card card);
 
     void setProcessVariables(Card card, Map<String, Object> variables);

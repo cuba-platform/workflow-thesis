@@ -47,6 +47,31 @@ public class WfWorkerBean implements WfWorkerAPI {
     private Log log = LogFactory.getLog(WfWorkerBean.class);
 
     @Override
+    public List<AssignmentInfo> getAssignmentInfos(Card card) {
+        List<AssignmentInfo> infos = new ArrayList<>();
+        Transaction tx = persistence.createTransaction();
+        try {
+            String processId = card.getJbpmProcessId();
+            if (processId != null) {
+                List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(
+                        userSessionSource.currentOrSubstitutedUserId(), card);
+                if (!assignments.isEmpty()) {
+                    for (Assignment assignment : assignments) {
+                        if (!card.equals(assignment.getCard()))
+                            processId = assignment.getCard().getJbpmProcessId();
+                        AssignmentInfo info = getAssignmentInfo(assignment, processId, card);
+                        infos.add(info);
+                    }
+                }
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return infos;
+    }
+
+    @Override
     public AssignmentInfo getAssignmentInfo(Card card) {
         AssignmentInfo info = null;
         Transaction tx = persistence.createTransaction();
