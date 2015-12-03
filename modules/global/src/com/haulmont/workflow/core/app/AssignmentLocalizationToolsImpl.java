@@ -13,8 +13,8 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
@@ -23,8 +23,7 @@ import java.util.List;
  * @author chekashkin
  * @version $Id$
  */
-
-@ManagedBean(AssignmentLocalizationTools.NAME)
+@Component(AssignmentLocalizationTools.NAME)
 public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTools {
     @Inject
     protected Configuration configuration;
@@ -42,6 +41,7 @@ public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTo
             systemAssignmentOutcomes = Lists.newArrayList(systemOutcomesParam.split(","));
     }
 
+    @Override
     public String getLocalizedAttribute(Assignment assignment, String value) {
         if (value == null)
             return "";
