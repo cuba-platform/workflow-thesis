@@ -60,7 +60,10 @@
                         <row>
                             <label value="msg://cardTypes"/>
                             <textField id="cardTypes" datasource="procDs" property="cardTypes"
-                                       width="${width}"/>
+                                       width="${width}">
+                                <validator class="com.haulmont.cuba.gui.components.validators.PatternValidator"
+                                           pattern="\S+" message="msg://invalidCardTypes"/>
+                            </textField>
                         </row>
                         <row>
                             <label value="msg://states"/>
