@@ -39,7 +39,7 @@ public class ReassignForm extends AbstractWindow {
     @Inject
     protected BoxLayout commentTextPane;
     @Inject
-    private CollectionDatasource<CardRole, UUID> cardRolesDs;
+    protected CollectionDatasource<CardRole, UUID> cardRolesDs;
     @Inject
     protected Datasource<Card> cardDs;
     @Inject
