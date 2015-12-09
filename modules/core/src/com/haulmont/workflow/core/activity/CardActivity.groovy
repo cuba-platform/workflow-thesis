@@ -12,60 +12,64 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.Execution
 import org.jbpm.api.activity.ActivityExecution
+import org.jbpm.jpdl.internal.activity.ForkActivity
+import org.jbpm.pvm.internal.model.ActivityImpl
 
 public class CardActivity extends ProcessVariableActivity {
 
-  public static String PREV_ACTIVITY_VAR_NAME = 'prevActivityName';
-  String observers
-  String notificationState
+    public static String PREV_ACTIVITY_VAR_NAME = 'prevActivityName';
+    String observers
+    String notificationState
 
-  boolean delayedNotify = false
+    boolean delayedNotify = false
 
-  NotificationMatrixAPI notificationMatrix;
+    NotificationMatrixAPI notificationMatrix;
 
-  private Log log = LogFactory.getLog(CardActivity.class)
+    private Log log = LogFactory.getLog(CardActivity.class)
 
-  public void execute(ActivityExecution execution) throws Exception {
-    super.execute(execution);
+    public void execute(ActivityExecution execution) throws Exception {
+        super.execute(execution);
 
-    notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
+        notificationMatrix = AppBeans.get(NotificationMatrixAPI.NAME);
 
-    Card card = findCard(execution)
-    initializeNotificationState(execution);
-    StringBuilder sb = new StringBuilder(',')
-    //find all current executions
-    def executions = execution.getIsProcessInstance() ? [execution] : execution.getProcessInstance().getExecutions()
-    executions.each{ActivityExecution childExecution ->
-      if ((childExecution.state == Execution.STATE_ACTIVE_CONCURRENT)
-        || (childExecution.state == Execution.STATE_ACTIVE_ROOT))
-      sb.append(childExecution.getActivityName()).append(',')
+        Card card = findCard(execution)
+        initializeNotificationState(execution);
+        StringBuilder sb = new StringBuilder(',')
+        //find all current executions
+        def executions = execution.getIsProcessInstance() ? [execution] : execution.getProcessInstance().getExecutions()
+        executions.each { ActivityExecution childExecution ->
+            def activityBehaviour = ((ActivityImpl) childExecution.getActivity()).getActivityBehaviour()
+            if (!(activityBehaviour instanceof ForkActivity) &&
+                    (childExecution.state == Execution.STATE_ACTIVE_CONCURRENT)
+                    || (childExecution.state == Execution.STATE_ACTIVE_ROOT))
+                sb.append(childExecution.getActivityName()).append(',')
+        }
+        card.state = sb.toString()
+
+        CardProc cp = card.procs.find { it.proc == card.proc }
+        cp?.setState(card.state)
+        if (!delayedNotify)
+            notificationMatrix.notifyByCard(card, getNotificationState(execution))
     }
-    card.state = sb.toString()
 
-    CardProc cp = card.procs.find { it.proc == card.proc }
-    cp?.setState(card.state)
-    if (!delayedNotify)
-      notificationMatrix.notifyByCard(card, getNotificationState(execution))
-  }
+    protected String getNotificationState(ActivityExecution execution) {
+        if (!notificationState)
+            initializeNotificationState(execution)
+        return notificationState
+    }
 
-  protected String getNotificationState(ActivityExecution execution) {
-      if (!notificationState)
-          initializeNotificationState(execution)
-      return notificationState
-  }
+    protected void initializeNotificationState(ActivityExecution execution) {
+        def prevActivityName = execution.getVariable(PREV_ACTIVITY_VAR_NAME)
+        notificationState = (prevActivityName ? prevActivityName + '.' : '') + execution.getActivityName()
+    }
 
-  protected void initializeNotificationState(ActivityExecution execution) {
-      def prevActivityName = execution.getVariable(PREV_ACTIVITY_VAR_NAME)
-      notificationState = (prevActivityName ? prevActivityName + '.' :'') + execution.getActivityName()
-  }
+    protected Card findCard(ActivityExecution execution) {
+        return ActivityHelper.findCard(execution)
+    }
 
-  protected Card findCard(ActivityExecution execution) {
-    return ActivityHelper.findCard(execution)
-  }
-
-  protected void afterSignal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
-    Card card = findCard(execution);
-    card.state = card.state - "${execution.getActivityName()},"
-    execution.createVariable(PREV_ACTIVITY_VAR_NAME, execution.getActivityName())
-  }
+    protected void afterSignal(ActivityExecution execution, String signalName, Map<String, ?> parameters) {
+        Card card = findCard(execution);
+        card.state = card.state - "${execution.getActivityName()},"
+        execution.createVariable(PREV_ACTIVITY_VAR_NAME, execution.getActivityName())
+    }
 }
