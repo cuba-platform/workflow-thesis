@@ -15,6 +15,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface WfService {
@@ -42,7 +43,7 @@ public interface WfService {
      */
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
-    List<AssignmentInfo> getAssignmentInfos(Card card);
+    Set<AssignmentInfo> getAssignmentInfos(Card card);
 
     /**
      * Starts a workflow process for a given card.

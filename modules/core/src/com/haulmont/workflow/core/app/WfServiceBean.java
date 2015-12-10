@@ -22,10 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service(WfService.NAME)
 public class WfServiceBean implements WfService {
@@ -58,7 +55,7 @@ public class WfServiceBean implements WfService {
     }
 
     @Override
-    public List<AssignmentInfo> getAssignmentInfos(Card card) {
+    public Set<AssignmentInfo> getAssignmentInfos(Card card) {
         return wfWorkerAPI.getAssignmentInfos(card);
     }
 

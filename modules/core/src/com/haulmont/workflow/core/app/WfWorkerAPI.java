@@ -13,6 +13,7 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Sergey Saiyan
@@ -35,7 +36,7 @@ public interface WfWorkerAPI {
 
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
-    List<AssignmentInfo> getAssignmentInfos(Card card);
+    Set<AssignmentInfo> getAssignmentInfos(Card card);
 
     Map<String, Object> getProcessVariables(Card card);
 
