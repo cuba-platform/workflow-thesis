@@ -53,4 +53,20 @@ public class AssignmentInfo implements Serializable {
         return card;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AssignmentInfo info = (AssignmentInfo) o;
+
+        if (assignmentId != null ? !assignmentId.equals(info.assignmentId) : info.assignmentId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return assignmentId != null ? assignmentId.hashCode() : 0;
+    }
 }

@@ -47,8 +47,8 @@ public class WfWorkerBean implements WfWorkerAPI {
     private Log log = LogFactory.getLog(WfWorkerBean.class);
 
     @Override
-    public List<AssignmentInfo> getAssignmentInfos(Card card) {
-        List<AssignmentInfo> infos = new ArrayList<>();
+    public Set<AssignmentInfo> getAssignmentInfos(Card card) {
+        Set<AssignmentInfo> infos = new HashSet<>();
         Transaction tx = persistence.createTransaction();
         try {
             String processId = card.getJbpmProcessId();
