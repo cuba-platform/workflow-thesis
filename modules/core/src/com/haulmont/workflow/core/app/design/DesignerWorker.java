@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -32,9 +33,11 @@ import org.apache.commons.io.IOUtils;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
+import javax.persistence.Transient;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
@@ -243,12 +246,27 @@ public class DesignerWorker implements DesignerWorkerAPI {
 
     protected String toXML(Object o) {
         XStream xStream = createXStream();
+        excludeTransientFields(o.getClass(), xStream);
         return xStream.toXML(o);
+    }
+
+    protected void excludeTransientFields(Class clazz, XStream xStream) {
+        for (Field field : clazz.getDeclaredFields()) {
+            Transient annotation = field.getAnnotation(Transient.class);
+            if (annotation != null)
+                xStream.omitField(clazz, field.getName());
+        }
+        if (clazz.getSuperclass() != null) {
+            excludeTransientFields(clazz.getSuperclass(), xStream);
+        }
     }
 
     protected <T> T fromXML(Class clazz, String xml) {
         XStream xStream = createXStream();
         Object o = xStream.fromXML(xml);
+        if (o instanceof BaseGenericIdEntity) {
+            ((BaseGenericIdEntity) o).__new(true);
+        }
         return (T) o;
     }
 
@@ -278,7 +296,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
         for (MetaProperty metaProperty : metaProperties) {
             final String propertyName = metaProperty.getName();
             if ((MetaProperty.Type.DATATYPE.equals(metaProperty.getType()) || MetaProperty.Type.ENUM.equals(metaProperty.getType()))
-                    && !metaProperty.isReadOnly()) {
+                    && !metaProperty.isReadOnly() && !"version".equals(metaProperty.getName())) {
                 Object value = design.getValue(propertyName);
                 existsDesign.setValue(propertyName, value);
             }

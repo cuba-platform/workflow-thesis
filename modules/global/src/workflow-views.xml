@@ -21,7 +21,7 @@
         <property name="designProcessVariables" view="_local"/>
     </view>
 
-    <view class="com.haulmont.workflow.core.entity.Design" name="remove" extends="_minimal">
+    <view class="com.haulmont.workflow.core.entity.Design" name="remove" extends="_local">
         <property name="scripts" view="_minimal"/>
         <property name="designProcessVariables" view="_minimal"/>
         <property name="designFiles" view="_minimal"/>
