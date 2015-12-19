@@ -43,7 +43,7 @@
             <tab id="mainTab" caption="msg://mainTab" expand="mainPane">
                 <vbox id="mainPane" spacing="true" margin="true" expand="cardRolesFrame">
                     <hbox id="outcomeTextBox">
-                        <label value="msg://transition" width="${labelWidth}"/>
+                        <label id="outcomeTextLabel" value="msg://transition" width="${labelWidth}"/>
                         <textField id="outcomeText" width="${width}"/>
                     </hbox>
 
@@ -58,7 +58,7 @@
                     </hbox>
 
                     <hbox id="commentTextPane" expand="commentText" width="100%" height="50px">
-                        <label value="msg://comment" width="${labelWidth}"/>
+                        <label id="commentTextLabel" value="msg://comment" width="${labelWidth}"/>
                         <textArea id="commentText" height="100%" maxLength="4000"/>
                     </hbox>
                 </vbox>
