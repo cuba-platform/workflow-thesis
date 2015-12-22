@@ -56,6 +56,8 @@ public class CubaJbpmSpringHelper extends SpringHelper {
                 return "org.hibernate.dialect.SQLServerDialect";
             case "oracle":
                 return "org.hibernate.dialect.Oracle10gDialect";
+            case "mysql":
+                return "org.hibernate.dialect.MySQLDialect";
             default:
                 throw new UnsupportedOperationException("Unknown DBMS type: " + DbmsType.getType());
         }
