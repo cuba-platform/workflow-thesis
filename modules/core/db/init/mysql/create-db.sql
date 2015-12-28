@@ -1,11 +1,11 @@
 create table WF_DESIGN (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     NAME varchar(100),
     SRC text,
@@ -13,7 +13,7 @@ create table WF_DESIGN (
     NOTIFICATION_MATRIX_UPLOADED boolean,
     LOCALIZATION text,
     DESIGN_TYPE varchar(50),
-    COMPILE_TS datetime,
+    COMPILE_TS datetime(3),
     primary key (ID)
 )^
 
@@ -21,12 +21,12 @@ create table WF_DESIGN (
 
 create table WF_DESIGN_SCRIPT (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     DESIGN_ID varchar(32),
     NAME varchar(100),
@@ -42,7 +42,7 @@ create index IDX_WF_DESIGN_SCRIPT_DESIGN on WF_DESIGN_SCRIPT (DESIGN_ID)^
 
 create table WF_DESIGN_FILE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     DESIGN_ID varchar(32),
     NAME varchar(100),
@@ -60,14 +60,14 @@ create index IDX_WF_DESIGN_FILE_DESIGN on WF_DESIGN_FILE (DESIGN_ID)^
 
 create table WF_PROC (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
-    IS_DELETED boolean not null default 0,
+    DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     NAME varchar(255),
     JBPM_PROCESS_KEY varchar(255),
     CODE varchar(255) ,
@@ -85,20 +85,23 @@ create table WF_PROC (
 alter table WF_PROC add constraint FK_WF_PROC_DESIGN foreign key (DESIGN_ID) references WF_DESIGN (ID)^
 alter table WF_PROC add constraint WF_PROC_AVAILABLE_ROLE_ID foreign key (AVAILABLE_ROLE_ID) references SEC_ROLE(ID)^
 
-create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC (CODE, IS_DELETED)^
+create unique index IDX_WF_PROC_UNIQ_CODE on WF_PROC (CODE, DELETE_TS_NN)^
 
-create trigger WF_PROC_IS_DELETED_TRIGGER before update on WF_PROC
-	for each row set NEW.IS_DELETED = if (NEW.DELETE_TS is null, 0, 1)^
+create trigger WF_PROC_DELETE_TS_NN_TRIGGER before update on WF_PROC
+for each row
+	if not(NEW.DELETE_TS <=> OLD.DELETE_TS) then
+		set NEW.DELETE_TS_NN = if (NEW.DELETE_TS is null, '1000-01-01 00:00:00.000', NEW.DELETE_TS);
+	end if^
 
 /**********************************************************************************************/
 
 create table WF_CARD (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     VERSION integer,
     CARD_TYPE integer,
@@ -130,12 +133,12 @@ create index IDX_WF_CARD_FAMILY_CARD on WF_CARD(FAMILY_CARD_ID)^
 
 create table WF_CARD_COMMENT (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     CARD_COMMENT text,
     USER_ID varchar(32),
@@ -167,11 +170,11 @@ alter table WF_CARD_COMMENT_USER add constraint FK_WF_CCU_USER foreign key (USER
 
 create table WF_CARD_RELATION (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     CARD_ID varchar(32),
     RELATED_CARD_ID varchar(32),
@@ -190,9 +193,9 @@ create index IDX_WF_CARD_RELATION_RELATED_CARD on WF_CARD_RELATION (RELATED_CARD
 create table WF_CARD_INFO (
     ID varchar(32),
     NAME varchar(50),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     CARD_ID varchar(32),
     CARD_INFO_TYPE integer,
@@ -214,12 +217,12 @@ create index IDX_WF_CARD_INFO_USER on WF_CARD_INFO (USER_ID, DELETE_TS)^
 
 create table WF_ASSIGNMENT (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     USER_ID varchar(32),
     CARD_ID varchar(32),
@@ -228,8 +231,8 @@ create table WF_ASSIGNMENT (
     NAME varchar(255),
     DESCRIPTION varchar(1000),
     JBPM_PROCESS_ID varchar(255),
-    DUE_DATE datetime,
-    FINISHED datetime,
+    DUE_DATE datetime(3),
+    FINISHED datetime(3),
     FINISHED_BY varchar(36),
     OUTCOME varchar(255),
     ASSIGNMENT_COMMENT text,
@@ -261,13 +264,13 @@ alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_SUBPROC_CARD foreign key 
 
 create table WF_ATTACHMENTTYPE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
-    IS_DELETED boolean not null default 0,
+    DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     VERSION integer,
     NAME varchar(500),
     ATTACHMENTTYPE_COMMENT varchar(1000),
@@ -277,22 +280,24 @@ create table WF_ATTACHMENTTYPE (
     primary key (ID)
 )^
 
-create unique index IDX_WF_ATTACHMENTTYPE_UNIQ_CODE on WF_ATTACHMENTTYPE (CODE, IS_DELETED)^
+create unique index IDX_WF_ATTACHMENTTYPE_UNIQ_CODE on WF_ATTACHMENTTYPE (CODE, DELETE_TS_NN)^
 
-create trigger WF_ATTACHMENTTYPE_IS_DELETED_TRIGGER before update on WF_ATTACHMENTTYPE
-	for each row set NEW.IS_DELETED = if (NEW.DELETE_TS is null, 0, 1)^
-
+create trigger WF_ATTACHMENTTYPE_DELETE_TS_NN_TRIGGER before update on WF_ATTACHMENTTYPE
+for each row
+	if not(NEW.DELETE_TS <=> OLD.DELETE_TS) then
+		set NEW.DELETE_TS_NN = if (NEW.DELETE_TS is null, '1000-01-01 00:00:00.000', NEW.DELETE_TS);
+	end if^
 
 /**********************************************************************************************/
 
 create table WF_ATTACHMENT (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     ATTACHMENT_TYPE char(1),
     FILE_ID varchar(32),
@@ -331,12 +336,12 @@ create index IDX_WF_ATTACHMENT_ASSIGNMENT on WF_ATTACHMENT (ASSIGNMENT_ID)^
 
 create table WF_PROC_ROLE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     PROC_ID varchar(32),
     CODE varchar(50),
@@ -359,12 +364,12 @@ create index IDX_WF_PROC_ROLE_PROC on WF_PROC_ROLE (PROC_ID)^
 
 create table WF_CARD_ROLE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     CARD_ID varchar(32),
     PROC_ROLE_ID varchar(32),
@@ -392,12 +397,12 @@ create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE (USER_ID, CODE)^
 
 create table WF_CARD_PROC (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     CARD_ID varchar(32),
     PROC_ID varchar(32),
@@ -419,12 +424,12 @@ create index IDX_WF_CARD_PROC_CARD on WF_CARD_PROC (CARD_ID)^
 
 create table WF_DEFAULT_PROC_ACTOR (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     PROC_ROLE_ID varchar(32),
     USER_ID varchar(32),
@@ -443,9 +448,9 @@ create index IDX_WF_DEFAULT_PROC_ACTOR_PROC_ROLE on WF_DEFAULT_PROC_ACTOR (PROC_
 
 create table WF_TIMER (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    DUE_DATE datetime,
+    DUE_DATE datetime(3),
     CARD_ID varchar(32),
     JBPM_EXECUTION_ID varchar(255),
     ACTIVITY varchar(255),
@@ -466,9 +471,9 @@ create index IDX_WF_TIMER_EXECUTION_ACTIVITY on WF_TIMER (JBPM_EXECUTION_ID, ACT
 
 create table WF_CALENDAR (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
     WORK_DAY date,
     WORK_DAY_OF_WEEK numeric(1),
@@ -484,11 +489,11 @@ create index IDX_WF_CALENDAR_WORK_DAY on WF_CALENDAR (WORK_DAY)^
 
 create table WF_USER_GROUP (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     VERSION integer,
     NAME varchar(255),
@@ -514,12 +519,12 @@ alter table WF_USER_GROUP_USER add constraint FK_WF_UGU_USER foreign key (USER_I
 
 create table WF_PROC_STATE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
 
     NAME varchar(200),
@@ -547,7 +552,7 @@ alter table WF_PROC_APP_FOLDER add constraint FK_WF_PROC_APP_FOLDER_APP_FOL fore
 create table WF_SENDING_SMS
 (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
 
     SMS_ID varchar(255),
@@ -555,10 +560,10 @@ create table WF_SENDING_SMS
     MESSAGE varchar(255),
     ERROR_CODE integer,
     STATUS integer,
-    LAST_CHANGE_DATE datetime,
+    LAST_CHANGE_DATE datetime(3),
     ATTEMPTS_COUNT integer,
     ADDRESSEE varchar(200),
-    START_SENDING_DATE datetime,
+    START_SENDING_DATE datetime(3),
     primary key (ID)
 )^
 /**********************************************************************************************/
@@ -566,7 +571,7 @@ create table WF_SENDING_SMS
 create table WF_USER_NOTIFIED_BY_SMS
 (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
 
     USER_ID varchar(32) not null,
@@ -582,12 +587,12 @@ values ('6c9c8ccce76111df94cb6f884bc56e70', 'AttachmentType.attachment', true)^
 /**********************************************************************************************/
 create table WF_DESIGN_PROCESS_VARIABLE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     DESIGN_ID varchar(32),
     NAME varchar(100),
@@ -609,12 +614,12 @@ foreign key (DESIGN_ID) references WF_DESIGN(ID)^
 /**********************************************************************************************/
 create table WF_PROC_VARIABLE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     NAME varchar(100),
     ALIAS varchar(100),
@@ -635,12 +640,12 @@ foreign key (PROC_ID) references WF_PROC(ID)^
 /**********************************************************************************************/
 create table WF_CARD_VARIABLE (
     ID varchar(32),
-    CREATE_TS datetime,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS datetime,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS datetime,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     NAME varchar(100),
     MODULE_NAME varchar(255),
