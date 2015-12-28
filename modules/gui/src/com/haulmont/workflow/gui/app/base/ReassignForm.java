@@ -91,11 +91,10 @@ public class ReassignForm extends AbstractWindow {
             throw new DevelopmentException("Correct reassignment info must be present in parameters map");
 
         reassignmentInfo = (ReassignInfo) params.get("reassignmentInfo");
-        card = reassignmentInfo.getCard();
-        procContextCard = (Card) params.get("procContextCard");
+        card = (Card) params.get("card");
+        procContextCard = reassignmentInfo.getCard();
         if (procContextCard == null) {
             procContextCard = card;
-            params.put("procContextCard", procContextCard);
         }
 
         cardDs.setItem((Card) metadata.getTools().copy(card));
@@ -147,7 +146,7 @@ public class ReassignForm extends AbstractWindow {
 
     protected boolean commit() {
         if (__validate()) {
-            Card reloadedCard = getDsContext().getDataSupplier().reload(card, metadata.getViewRepository()
+            Card reloadedCard = getDsContext().getDataSupplier().reload(procContextCard, metadata.getViewRepository()
                     .getView(Card.class, "with-roles"));
             if (cardRolesFrame != null)
                 cardRolesDs.commit();
@@ -161,7 +160,7 @@ public class ReassignForm extends AbstractWindow {
     protected void doReassign(Card reloadedCard) {
         List<CardRole> rolesToReassign = getCardRoles();
         if(CollectionUtils.isNotEmpty(rolesToReassign))
-            assignmentEngine.reassign(card, reassignmentInfo.getState(), rolesToReassign, reloadedCard.getRoles(), getComment());
+            assignmentEngine.reassign(procContextCard, reassignmentInfo.getState(), rolesToReassign, reloadedCard.getRoles(), getComment());
     }
 
     protected boolean __validate() {
