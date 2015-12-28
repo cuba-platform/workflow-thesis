@@ -5,7 +5,6 @@
 package com.haulmont.workflow.gui.app.base;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -355,7 +354,7 @@ public class CardRolesFrame extends AbstractFrame {
         return params;
     }
 
-    protected Set<User> getSelectedUsers(Window window) {
+    protected Set<User> getSelectedUsers(CardRole cardRole, Window window) {
         try {
             UserGroupAdd userGroup = (UserGroupAdd) window;
             return userGroup.getSelectedUsers();
@@ -1243,19 +1242,9 @@ public class CardRolesFrame extends AbstractFrame {
                 Set<User> validUsers = new HashSet<>();
                 Set<User> invalidUsers = new HashSet<>();
 
-                Set<User> selectedUsers = getSelectedUsers(window);
+                Set<User> selectedUsers = getSelectedUsers(cardRole, window);
 
                 User oldUser = cardRole.getUser();
-                //if code is right worked, then this comment need to REMOVE
-                            /*cardRole.setUser(null);
-                            tmpCardRolesDs.updateItem(cardRole);
-                            for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
-                                CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                                if (cr.getCode().equals(cardRole.getCode()) && !cardRole.getId().equals(cr.getId())) {
-                                    tmpCardRolesDs.removeItem(cr);
-                                }
-                            }*/
-
                 Role secRole = cardRole.getProcRole().getRole();
                 for (User user : selectedUsers) {
                     if (!procActorExists(cardRole.getProcRole(), user)
@@ -1273,7 +1262,7 @@ public class CardRolesFrame extends AbstractFrame {
 
                 for (Object o : new ArrayList(tmpCardRolesDs.getItemIds())) {
                     CardRole cr = tmpCardRolesDs.getItem((UUID) o);
-                    if (isNeedRemoveCardRole(cr))
+                    if (isNeedRemoveCardRole(cr, selectedUsers))
                         tmpCardRolesDs.removeItem(cr);
                 }
 
@@ -1291,7 +1280,7 @@ public class CardRolesFrame extends AbstractFrame {
                         }
                     }
                 } else {
-                    if (isNeedCreateEmptyCardRole()) {
+                    if (isNeedCreateEmptyCardRole(selectedUsers)) {
                         tmpCardRolesDs.addItem(createCardRole(procRole, null, true, true));
                     }
                 }
@@ -1318,13 +1307,13 @@ public class CardRolesFrame extends AbstractFrame {
             return usersList.substring(0, usersList.length() - 2);
         }
 
-        protected boolean isNeedRemoveCardRole(CardRole cr) {
+        protected boolean isNeedRemoveCardRole(CardRole cr, Set<User> selectedUsers) {
             return cr.getCode().equals(cardRole.getCode()) && cr.getProcRole().getMultiUser()
-                    && !getSelectedUsers(window).contains(cr.getUser());
+                    && !selectedUsers.contains(cr.getUser());
         }
 
-        protected boolean isNeedCreateEmptyCardRole() {
-            return getSelectedUsers(window).size() == 0;
+        protected boolean isNeedCreateEmptyCardRole(Set<User> selectedUsers) {
+            return selectedUsers.size() == 0;
         }
     }
 
