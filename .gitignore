@@ -1,0 +1,14 @@
+.gradle
+out
+*.iml
+*.ipr
+*.iws
+*.ids
+
+modules/core/build/*
+modules/global/build/*
+modules/gui/build/*
+modules/web/build/*
+modules/shared-lib/build/*
+
+modules/web/web/wfdesigner/lib/yui/
