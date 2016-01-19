@@ -124,14 +124,14 @@ public class TransitionForm extends AbstractForm {
         cardDs.setItem(dataSupplier.reload(card, cardDs.getView()));
 
         String formHeightStr = (String) params.get("formHeight");
-        Integer formHeight = DEFAULT_FORM_HEIGHT;
+        Integer formHeight = Boolean.valueOf((String) params.get("cardRolesVisible")) ? DEFAULT_FORM_HEIGHT : noCardRolesHeight;
         try {
             formHeight = Integer.valueOf(formHeightStr);
         } catch (NumberFormatException ignored) {
         }
 
         getDialogParams().setHeight(formHeight);
-        if (Boolean.valueOf((String) params.get("cardRolesVisible")) || StringUtils.isNotBlank(formHeightStr)) {
+        if (Boolean.valueOf((String) params.get("cardRolesVisible"))) {
             if (cardRolesFrame != null) {
                 initCardRolesFrame(params);
             }
@@ -173,7 +173,6 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected void collapseFormWithoutRoles() {
-        getDialogParams().setHeight(noCardRolesHeight);
         if (commentTextPane != null) {
             mainPane.expand(commentTextPane);
         }
