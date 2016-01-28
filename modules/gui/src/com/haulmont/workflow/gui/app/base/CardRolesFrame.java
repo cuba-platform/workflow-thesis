@@ -248,7 +248,7 @@ public class CardRolesFrame extends AbstractFrame {
                     for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                         CardRole cr = tmpCardRolesDs.getItem(uuid);
                         if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
-                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
+                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole()) && isDurationEditable(cr)) {
                             cr.setDuration(source.getDuration());
                         }
                     }
@@ -256,7 +256,7 @@ public class CardRolesFrame extends AbstractFrame {
                     for (UUID uuid : tmpCardRolesDs.getItemIds()) {
                         CardRole cr = tmpCardRolesDs.getItem(uuid);
                         if (cr.getSortOrder() != null && cr.getSortOrder().equals(source.getSortOrder())
-                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole())) {
+                                && cr.getProcRole() != null && cr.getProcRole().equals(source.getProcRole()) && isTimeUnitEditable(cr)) {
                             TimeUnit timeUnit = source.getTimeUnit();
                             if (timeUnit != null)
                                 cr.setTimeUnit(timeUnit);
@@ -770,10 +770,14 @@ public class CardRolesFrame extends AbstractFrame {
             CardRole cr = tmpCardRolesDs.getItem(uuid);
             if (!cr.equals(cardRole) && cr.getSortOrder() != null && cr.getSortOrder().equals(cardRole.getSortOrder())
                     && cr.getProcRole() != null && cr.getProcRole().equals(cardRole.getProcRole())) {
-                cardRole.setDuration(cr.getDuration());
-                TimeUnit timeUnit = cr.getTimeUnit();
-                if (timeUnit != null)
-                    cardRole.setTimeUnit(timeUnit);
+                if (isDurationEditable(cardRole)) {
+                    cardRole.setDuration(cr.getDuration());
+                }
+                if (isTimeUnitEditable(cardRole)) {
+                    TimeUnit timeUnit = cr.getTimeUnit();
+                    if (timeUnit != null)
+                        cardRole.setTimeUnit(timeUnit);
+                }
                 break;
             }
         }
@@ -943,6 +947,14 @@ public class CardRolesFrame extends AbstractFrame {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    protected boolean isDurationEditable(CardRole cardRole) {
+        return true;
+    }
+
+    protected boolean isTimeUnitEditable(CardRole cardRole) {
+        return true;
     }
 
     @Override
