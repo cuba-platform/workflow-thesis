@@ -21,9 +21,9 @@ import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.app.attachment.ProcessAttachmentsManager;
-import com.haulmont.workflow.gui.app.base.attachments.AttachmentActionsHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentCreator;
+import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 import com.haulmont.workflow.gui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
 
@@ -59,6 +59,7 @@ public class ResolutionForm extends AbstractForm {
     protected UserSession userSession;
 
     @Inject
+    protected AttachmentActionTools attachmentActionTools;
     protected ProcessAttachmentsManager processAttachments;
 
     @WindowParam
@@ -119,7 +120,7 @@ public class ResolutionForm extends AbstractForm {
 
         // Add attachments handler
         Button copyAttachBtn = getComponent("copyAttach");
-        copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
+        copyAttachBtn.setAction(attachmentActionTools.createCopyAction(attachmentsTable));
         copyAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = getComponent("pasteAttach");
@@ -132,7 +133,7 @@ public class ResolutionForm extends AbstractForm {
             }
         };
         pasteAttachBtn.setAction(
-                AttachmentActionsHelper.createPasteAction(attachmentsTable, creator));
+                attachmentActionTools.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
         PopupButton createPopup = getComponent("createAttachBtn");
@@ -157,11 +158,11 @@ public class ResolutionForm extends AbstractForm {
         if (attachmentType != null) {
             map.put("attachType", attachmentType);
         }
-        createPopup.addAction(AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG, map));
+        createPopup.addAction(attachmentActionTools.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG, map));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
-        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
+        attachmentActionTools.createLoadAction(attachmentsTable, this);
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
     }

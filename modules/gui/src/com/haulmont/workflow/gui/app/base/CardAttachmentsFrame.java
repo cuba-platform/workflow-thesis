@@ -19,6 +19,7 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
+import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 import com.haulmont.workflow.gui.app.base.attachments.*;
 
 import javax.annotation.Nullable;
@@ -45,6 +46,9 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected AttachmentActionTools attachmentActionTools;
 
     protected Datasource<Card> cardDs;
     protected Table attachmentsTable;
@@ -112,11 +116,11 @@ public class CardAttachmentsFrame extends AbstractFrame {
         initEditAction(params);
         initRemoveAction(params);
         initCopyPasteActions(params);
-        AttachmentActionsHelper.createLoadAction(attachmentsTable, this);
+        attachmentActionTools.createLoadAction(attachmentsTable, this);
     }
 
     protected void initMultiUploadAction(Map<String, Object> params) {
-        Action multiUploadAction = AttachmentActionsHelper.createMultiUploadAction(attachmentsTable, this,
+        Action multiUploadAction = attachmentActionTools.createMultiUploadAction(attachmentsTable, this,
                 attachmentCreator, WindowManager.OpenType.DIALOG, params);
 
         createAttachBtn.addAction(multiUploadAction);
@@ -163,14 +167,14 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     protected void initCopyPasteActions(Map<String, Object> params) {
         Button copyAttachBtn = getComponentNN("copyAttach");
-        copyAttachBtn.setAction(AttachmentActionsHelper.createCopyAction(attachmentsTable));
-        copyAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.COPY_ACTION_ID));
+        copyAttachBtn.setAction(attachmentActionTools.createCopyAction(attachmentsTable));
+        copyAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionTools.COPY_ACTION_ID));
 
         Button pasteAttachBtn = getComponentNN("pasteAttach");
-        Action pasteAction = AttachmentActionsHelper.createPasteAction(attachmentsTable, attachmentCreator, params);
+        Action pasteAction = attachmentActionTools.createPasteAction(attachmentsTable, attachmentCreator, params);
         pasteAttachBtn.setAction(pasteAction);
 //        pasteAttachBtn.setAction(new CommitCardAction(pasteAction.getId(), pasteAction));
-        pasteAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionsHelper.PASTE_ACTION_ID));
+        pasteAttachBtn.setCaption(messages.getMessage(getClass(), AttachmentActionTools.PASTE_ACTION_ID));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
@@ -180,7 +184,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         Label fastUpload = getComponent("fastUpload");
         BoxLayout fastUploadBox = getComponent("fastUploadBox");
 
-        fastUploadButton = AttachmentActionsHelper.createFastUploadButton(attachmentsTable,
+        fastUploadButton = attachmentActionTools.createFastUploadButton(attachmentsTable,
                 attachmentCreator, "wf$CardAttachment.edit", excludedAttachTypes, WindowManager.OpenType.DIALOG);
         if (fastUploadBox != null) {
             fastUploadBox.remove(createAttachBtn);
