@@ -59,6 +59,8 @@ public class ResolutionForm extends AbstractForm {
 
     @Inject
     protected AttachmentActionTools attachmentActionTools;
+
+    @Inject
     protected ProcessAttachmentsManager processAttachments;
 
     @WindowParam
