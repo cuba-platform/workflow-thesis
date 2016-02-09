@@ -212,8 +212,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     }
 
     protected void internalCommitAndClose(Attachment attachment) {
-        if (attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null
-                && attachmentDs.getCommitMode().equals(Datasource.CommitMode.DATASTORE)) {
+        if (isAttachmentCanBeCommitted(attachment)) {
             if (needSave) {
                 Set<Entity> committedEntities = getDsContext().getDataSupplier().commit(new CommitContext(
                         Collections.singletonList(fileDs.getItem())));
@@ -222,6 +221,11 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
             super.close(COMMIT_ACTION_ID, true);
         } else
             super.commitAndClose();
+    }
+
+    protected boolean isAttachmentCanBeCommitted(Attachment attachment) {
+        return attachment instanceof CardAttachment && PersistenceHelper.isNew(attachment) && ((CardAttachment) attachment).getCard() != null
+                && attachmentDs.getCommitMode().equals(Datasource.CommitMode.DATASTORE);
     }
 
     protected String formatSize(long longSize, int decimalPos) {
