@@ -59,6 +59,9 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
     @Inject
     protected FileUploadingAPI fileUploading;
 
+    @Inject
+    protected Metadata metadata;
+
     @Named("windowActions.windowCommit")
     protected Button okBtn;
 
@@ -131,7 +134,7 @@ public class AttachmentEditor extends AbstractEditor<Attachment> {
                 }
             } else {
                 Attachment attachItem = attachmentDs.getItem();
-                attachItem.setFile(new FileDescriptor());
+                attachItem.setFile(metadata.create(FileDescriptor.class));
                 attachItem.setCreateTs(timeSource.currentTimestamp());
                 attachItem.setCreatedBy(userSession.getCurrentOrSubstitutedUser().getLogin());
                 attachItem.setSubstitutedCreator(userSession.getCurrentOrSubstitutedUser());
