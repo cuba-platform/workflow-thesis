@@ -186,7 +186,7 @@ configure(guiModule) {
 
 configure(webModule) {
     configurations {
-        webcontent
+        yui
     }
 
     dependencies {
@@ -195,25 +195,18 @@ configure(webModule) {
         compile(guiModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: baseVersion)
         compile(json)
+
         provided(servletApi)
-        webcontent(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
+
+        yui(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
     }
 
     task setupYui(description: 'Sets up YUI library') << {
-        configurations.webcontent.files.each { dep ->
+        configurations.yui.files.each { dep ->
             copy {
                 from zipTree(dep.absolutePath)
                 into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
             }
         }
-    }
-
-    task webArchive(dependsOn: setupYui, type: Zip) {
-        from file('web')
-        classifier = 'web'
-    }
-
-    artifacts {
-        archives webArchive
     }
 }
