@@ -209,4 +209,13 @@ configure(webModule) {
             }
         }
     }
+
+    task webArchive(dependsOn: setupYui, type: Zip) {
+        from file('web')
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
 }
