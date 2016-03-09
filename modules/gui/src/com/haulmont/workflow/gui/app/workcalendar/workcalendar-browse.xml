@@ -71,7 +71,7 @@
                         </column>
                         <column id="start" caption="msg://WorkCalendar.start"/>
                         <column id="end" caption="msg://WorkCalendar.end"/>
-                        <column id="comment" caption="msg://WorkCalendar.comment"/>
+                        <column id="comment" caption="msg://WorkCalendar.comment" maxTextLength="40"/>
                     </columns>
                     <rows datasource="exceptionDaysDs"/>
                 </table>
