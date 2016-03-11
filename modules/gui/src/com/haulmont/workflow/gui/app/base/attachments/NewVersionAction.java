@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author pavlov
  */
 public class NewVersionAction extends CreateAction {
@@ -45,6 +43,10 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public void actionPerform(Component component) {
+        if (beforeActionPerformedHandler != null) {
+            beforeActionPerformedHandler.run();
+        }
+
         prevVersion = (Attachment) target.getSingleSelected();
         Collection<Attachment> attachments = target.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
@@ -72,6 +74,10 @@ public class NewVersionAction extends CreateAction {
 
         super.actionPerform(component);
         target.getFrame().getContext().getParams().remove("prevVersion");
+
+        if (afterActionPerformedHandler != null) {
+            afterActionPerformedHandler.run();
+        }
     }
 
     @Override
