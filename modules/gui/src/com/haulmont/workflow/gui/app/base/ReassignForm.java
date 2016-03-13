@@ -97,7 +97,7 @@ public class ReassignForm extends AbstractWindow {
             procContextCard = card;
         }
 
-        cardDs.setItem((Card) metadata.getTools().copy(card));
+        cardDs.setItem(metadata.getTools().copy(card));
 
         if (commentText != null)
             commentText.setRequired(reassignmentInfo.isCommentRequired());
