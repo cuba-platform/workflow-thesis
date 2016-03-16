@@ -1,3 +1,2 @@
---$Id$
 --Description:
 ALTER TABLE WF_SENDING_SMS ADD DATE_START_SENDING datetime^

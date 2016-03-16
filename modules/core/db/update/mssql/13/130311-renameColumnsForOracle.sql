@@ -1,4 +1,3 @@
---$Id$
 
 {call sp_rename 'WF_ASSIGNMENT.COMMENT', 'ASSIGNMENT_COMMENT', 'column'};
 

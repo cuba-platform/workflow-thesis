@@ -1,4 +1,3 @@
---$Id$
 
 alter table WF_USER_GROUP add column GLOBAL boolean, add column SUBSTITUTED_CREATOR_ID uuid
 ^

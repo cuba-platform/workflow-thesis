@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 DECLARE @max_dbid integer;

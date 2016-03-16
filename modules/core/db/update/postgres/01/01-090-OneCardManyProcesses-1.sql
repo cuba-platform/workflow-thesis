@@ -1,4 +1,3 @@
--- $Id$
 -- Description: One Card - Many Processes enhancement (continues)
 
 alter table WF_CARD_PROC add START_COUNT integer

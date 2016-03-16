@@ -1,4 +1,3 @@
---$Id$
 --#Description : add missing scripts for ms sql
 
 ----- WF_DESIGN_PROCESS_VARIABLE creation -----

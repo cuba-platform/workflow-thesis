@@ -3,8 +3,6 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * @author mishunin
- * @version $Id$
  */
 
 var forEachUserModule = {

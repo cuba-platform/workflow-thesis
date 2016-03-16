@@ -1,4 +1,3 @@
--- $Id$
 -- Description: One Card - Many Processes enhancement (continues)
 
 alter table WF_CARD add SUBSTITUTED_CREATOR_ID uuid;

@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 alter table WF_PROC add column AVAILABLE_ROLE_ID uuid^

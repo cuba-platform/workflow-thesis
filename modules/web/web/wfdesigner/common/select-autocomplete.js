@@ -3,8 +3,6 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * @author mishunin
- * @version $Id$
  */
 
 Wf.SelectAutoComplete = function(options) {

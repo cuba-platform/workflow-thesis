@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 alter table WF_PROC add column CODE varchar(255)^

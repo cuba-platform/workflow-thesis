@@ -1,4 +1,3 @@
--- $Id$
 -- Description: Adding WF_ASSIGNMENT.FINISHED_BY field
 
 alter table WF_ASSIGNMENT add FINISHED_BY uuid;

@@ -6,7 +6,6 @@
  * Author: Konstantin Devyatkin
  * Created: 28.01.11 12:08
  *
- * $Id$
  */
 
 // InputEx Russian localization

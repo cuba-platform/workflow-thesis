@@ -1,4 +1,3 @@
--- $Id$
 -- Description: index on CardInfo
 
 drop index if exists IDX_WF_CARD_INFO_CARD^

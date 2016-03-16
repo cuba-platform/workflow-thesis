@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 create table WF_SENDING_SMS

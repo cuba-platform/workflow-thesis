@@ -1,4 +1,3 @@
--- $Id$
 -- Description: WF_CARD_COMMENT, WF_CARD_COMMENT_USER
 create table WF_CARD_COMMENT (
     ID uuid,

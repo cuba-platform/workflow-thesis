@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 alter table WF_ATTACHMENTTYPE add ISSYSTEM boolean^
 alter table WF_ATTACHMENTTYPE add constraint WF_ATTACHMENTTYPE_UNIQ_CODE unique (CODE, DELETE_TS)^

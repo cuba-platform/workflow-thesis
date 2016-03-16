@@ -1,4 +1,3 @@
---$Id$
 
 alter table wf_assignment rename column COMMENT to ASSIGNMENT_COMMENT;
 alter table wf_attachment rename column TYPE to ATTACHMENT_TYPE;

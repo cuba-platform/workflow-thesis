@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ * Copyright (c) 2008-2016 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 package com.haulmont.workflow.gui.app.usergroup;
 
@@ -28,8 +28,6 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * @author Gorbunkov
- * @version $Id$
  */
 public class UserGroupBrowser extends AbstractWindow {
 

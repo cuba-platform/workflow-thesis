@@ -1,4 +1,3 @@
--- $Id$
 -- Description: Creating Card Relation Table
 
 create table WF_CARD_RELATION (

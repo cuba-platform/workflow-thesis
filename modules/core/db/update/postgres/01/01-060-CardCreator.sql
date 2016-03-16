@@ -1,4 +1,3 @@
--- $Id$
 -- Description: Creating property creator in card
 
 alter table WF_CARD add column CREATOR_ID uuid;

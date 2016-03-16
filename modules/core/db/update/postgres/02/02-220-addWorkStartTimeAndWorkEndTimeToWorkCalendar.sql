@@ -1,4 +1,3 @@
---$Id$--
 --
 alter table WF_CALENDAR add column WORK_START_TIME time^
 alter table WF_CALENDAR add column WORK_END_TIME time^

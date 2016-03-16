@@ -1,4 +1,3 @@
---$Id$
 --$Description: add @Version column to wf_card
 
 alter table WF_CARD add VERSION integer ^

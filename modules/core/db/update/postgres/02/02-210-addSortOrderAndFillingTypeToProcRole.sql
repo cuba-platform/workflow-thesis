@@ -1,4 +1,3 @@
--- $Id$
 -- Description: add fields: SORT_ORDER, ORDER_FILLING_TYPE to WF_PROC_ROLE
 
 alter table WF_PROC_ROLE add column SORT_ORDER integer;

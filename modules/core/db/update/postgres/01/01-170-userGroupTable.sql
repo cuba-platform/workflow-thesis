@@ -1,4 +1,3 @@
--- $Id$
 -- Description: WF_USER_GROUP table
 
 create table WF_USER_GROUP (

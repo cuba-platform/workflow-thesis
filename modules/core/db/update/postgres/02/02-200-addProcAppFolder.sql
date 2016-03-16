@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 CREATE TABLE WF_PROC_APP_FOLDER

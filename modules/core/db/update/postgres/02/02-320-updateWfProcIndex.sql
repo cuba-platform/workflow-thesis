@@ -1,4 +1,3 @@
---$Id$--
 --
 CREATE OR REPLACE FUNCTION create_constraint_if_not_exists (
     t_name text, c_name text, constraint_sql text)

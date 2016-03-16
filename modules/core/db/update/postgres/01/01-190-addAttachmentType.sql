@@ -1,4 +1,3 @@
--- $Id$
 -- Description: WF_ATTACHMENTTYPE created
 create table WF_ATTACHMENTTYPE (
     ID uuid,

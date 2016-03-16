@@ -1,4 +1,3 @@
--- $Id$
 -- Description: initialize column WF_CARD_ROLE.SORT_ORDER
 
 create or replace function wf_init_cr_sort_order() returns void as $$

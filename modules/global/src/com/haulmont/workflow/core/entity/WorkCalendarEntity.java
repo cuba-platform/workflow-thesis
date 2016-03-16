@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ * Copyright (c) 2008-2016 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 package com.haulmont.workflow.core.entity;
 
@@ -12,8 +12,6 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @author krivopustov
- * @version $Id$
  */
 @Entity(name = "wf$Calendar")
 @Table(name = "WF_CALENDAR")

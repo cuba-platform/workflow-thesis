@@ -1,4 +1,3 @@
--- $Id$
 -- Description: Change fields length in WF_CALENDAR
 
 ALTER TABLE WF_CALENDAR

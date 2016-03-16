@@ -1,4 +1,3 @@
--- $Id$
 -- Description: replace all the constraints with an identifier more than 30 characters long
 
 if exists (SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME ='FK_WF_CARD_COMMENT_SUBSTITUTED_USER')

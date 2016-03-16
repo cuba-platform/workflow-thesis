@@ -1,4 +1,3 @@
--- $Id$
 -- Description: Creating CardInfo table
 
 create table WF_CARD_INFO (

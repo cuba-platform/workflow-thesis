@@ -1,4 +1,3 @@
--- $Id$
 
 create table WF_CARD_COMMENT_USER (
     CARD_COMMENT_ID varchar(36),

@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 create index idx_wf_attachment_card on wf_attachment (card_id)^

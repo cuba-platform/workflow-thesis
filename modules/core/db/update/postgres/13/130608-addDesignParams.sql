@@ -1,4 +1,3 @@
---$Id$
 
 ----- WF_DESIGN_PROCESS_VARIABLE creation -----
 create table WF_DESIGN_PROCESS_VARIABLE (

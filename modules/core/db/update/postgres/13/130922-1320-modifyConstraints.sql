@@ -1,4 +1,3 @@
--- $Id$
 -- Description: replace all the constraints with an identifier more than 30 characters long
 
 alter table WF_CARD_COMMENT drop constraint FK_WF_CARD_COMMENT_SUBSTITUTED_USER^

@@ -1,4 +1,3 @@
--- $Id$
 -- Description: One Card - Many Processes enhancement
 
 create table WF_CARD_PROC (

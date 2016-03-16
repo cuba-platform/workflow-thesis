@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 alter table WF_PROC_STAGE

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ * Copyright (c) 2008-2016 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
 package com.haulmont.workflow.gui.components;
@@ -21,8 +21,6 @@ import java.util.*;
  * Create one action class both for table and editor screen, entity will be reloaded automatically after the action is
  * performed.
  *
- * @author Zaharchenko
- * @version $Id$
  */
 public abstract class AbstractEntityAction<T extends Entity> extends AbstractAction {
 

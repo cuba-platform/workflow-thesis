@@ -1,4 +1,3 @@
--- $Id$
 -- Description: WfDesigner support
 
 create table WF_DESIGN (

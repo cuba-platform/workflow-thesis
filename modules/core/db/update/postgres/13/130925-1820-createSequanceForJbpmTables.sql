@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 CREATE OR REPLACE FUNCTION createSequence()

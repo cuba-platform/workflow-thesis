@@ -1,4 +1,3 @@
--- $Id$
 -- Description: adding fields required for notifications
 
 alter table WF_CARD_INFO add DELETE_TS timestamp

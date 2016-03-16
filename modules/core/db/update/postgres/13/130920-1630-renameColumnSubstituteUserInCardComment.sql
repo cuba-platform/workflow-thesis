@@ -1,4 +1,3 @@
--- $Id$
 -- Description: rename column SUBSTITUTE_USER_ID to SUBSTITUTED_USER_ID and add constraint
 
 alter table WF_CARD_COMMENT rename column SUBSTITUTE_USER_ID to SUBSTITUTED_USER_ID^

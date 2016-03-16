@@ -1,5 +1,4 @@
--- $Id$
--- Description: create WF_PROC_ROLE_PERMISSION table 
+-- Description: create WF_PROC_ROLE_PERMISSION table
 
 create table WF_PROC_ROLE_PERMISSION (
     ID uuid,

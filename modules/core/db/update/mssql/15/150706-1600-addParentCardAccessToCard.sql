@@ -1,4 +1,3 @@
--- $Id$
 -- Description:
 
 alter table WF_CARD add PARENT_CARD_ACCESS tinyint^
