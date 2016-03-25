@@ -5,17 +5,16 @@
 
 package com.haulmont.workflow.web.app.design;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.workflow.gui.app.design.DesignBrowser;
-
-import java.util.Collections;
 
 public class WebDesignBrowserCompanion implements DesignBrowser.Companion {
     @Override
     public void openDesigner(String modelerUrl) {
         String webAppUrl = ControllerUtils.getLocationWithoutParams();
         String url = webAppUrl + modelerUrl;
-        App.getInstance().getWindowManager().showWebPage(url, Collections.<String, Object>singletonMap("tryToOpenAsPopup", Boolean.TRUE));
+        App.getInstance().getWindowManager().showWebPage(url, ParamsMap.of("tryToOpenAsPopup", Boolean.TRUE));
     }
 }
