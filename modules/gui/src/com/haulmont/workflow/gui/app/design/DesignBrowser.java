@@ -63,6 +63,13 @@ public class DesignBrowser extends AbstractWindow {
     @Inject
     protected DataSupplier dataSupplier;
 
+    @Inject
+    protected Companion companion;
+
+    public interface Companion {
+        void openDesigner(String modelerUrl);
+    }
+
     @Override
     public void init(Map<String, Object> params) {
         ds = getDsContext().get("designDs");
@@ -232,17 +239,8 @@ public class DesignBrowser extends AbstractWindow {
     }
 
     protected void openDesigner(String id) {
-        String webAppUrl = configuration.getConfig(GlobalConfig.class).getWebAppUrl();
         String designerUrl = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getDesignerUrl();
-        StringBuilder url = new StringBuilder();
-        url.append(webAppUrl)
-                .append("/dispatch/")
-                .append(designerUrl)
-                .append("?id=")
-                .append(id)
-                .append("&s=")
-                .append(AppBeans.get(UserSessionSource.class).getUserSession().getId());
-        showWebPage(url.toString(), Collections.<String, Object>singletonMap("tryToOpenAsPopup", Boolean.TRUE));
+        companion.openDesigner(designerUrl);
     }
 
     protected class CopyAction extends ItemTrackingAction {
