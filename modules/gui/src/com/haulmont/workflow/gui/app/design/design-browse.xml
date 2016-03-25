@@ -10,7 +10,9 @@
         caption="msg://browser.caption"
         focusComponent="designTable"
         >
-
+    <companions>
+        <web class="com.haulmont.workflow.web.app.design.WebDesignBrowserCompanion"/>
+    </companions>
     <dsContext>
         <groupDatasource id="designDs" class="com.haulmont.workflow.core.entity.Design" view="browse">
             <query>
