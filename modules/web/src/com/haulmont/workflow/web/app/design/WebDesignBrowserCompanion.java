@@ -12,9 +12,9 @@ import com.haulmont.workflow.gui.app.design.DesignBrowser;
 
 public class WebDesignBrowserCompanion implements DesignBrowser.Companion {
     @Override
-    public void openDesigner(String modelerUrl) {
+    public void openDesigner(String designerUrl) {
         String webAppUrl = ControllerUtils.getLocationWithoutParams();
-        String url = webAppUrl + modelerUrl;
+        String url = String.format("%sdispatch/%s", webAppUrl, designerUrl);
         App.getInstance().getWindowManager().showWebPage(url, ParamsMap.of("tryToOpenAsPopup", Boolean.TRUE));
     }
 }
