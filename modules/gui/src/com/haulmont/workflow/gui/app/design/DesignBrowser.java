@@ -236,6 +236,8 @@ public class DesignBrowser extends AbstractWindow {
 
     protected void openDesigner(String id) {
         String designerUrl = AppBeans.get(Configuration.class).getConfig(WfConfig.class).getDesignerUrl();
+        UUID userSessionId = AppBeans.get(UserSessionSource.class).getUserSession().getId();
+        designerUrl = String.format("%s?id=%s&s=%s", designerUrl, id, userSessionId);
         companion.openDesigner(designerUrl);
     }
 
