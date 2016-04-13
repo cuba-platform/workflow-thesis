@@ -4,6 +4,7 @@
  */
 package com.haulmont.workflow.gui.app.base;
 
+import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.gui.data.ProcessVariablesDatasource;
 
 import java.util.Date;
@@ -16,9 +17,17 @@ public class TransitionProcessVariablesDatasource extends ProcessVariablesDataso
 
     @Override
     protected Map<String, Class> getVariableTypes() {
-        Map<String, Class> map = new HashMap<String, Class>();
+        Map<String, Class> map = new HashMap<>();
         map.put("dueDate", Date.class);
         map.put("refusedOnly", Boolean.class);
         return map;
+    }
+
+    @Override
+    protected Card resolveCard(Map<String, Object> params) {
+        Card card = (Card) params.get("procContextCard");
+        if (card == null)
+            return super.resolveCard(params);
+        return card;
     }
 }

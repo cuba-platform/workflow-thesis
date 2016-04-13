@@ -307,7 +307,7 @@ public class TransitionForm extends AbstractForm {
     }
 
     protected Set<String> getPresentAttachmentTypes() {
-        Set<String> presentAttachmentTypes = new HashSet<String>();
+        Set<String> presentAttachmentTypes = new HashSet<>();
         for (UUID itemId : attachmentsDs.getItemIds()) {
             Attachment attachment = attachmentsDs.getItem(itemId);
             if (attachment != null && attachment.getAttachType() != null
@@ -388,10 +388,10 @@ public class TransitionForm extends AbstractForm {
             if (Datasource.State.VALID.equals(assignmentDs.getState()))
                 assignmentDs.commit();
             else {
-                if (card.getInitialProcessVariables() == null) {
-                    card.setInitialProcessVariables(new HashMap<String, Object>(1));
+                if (procContextCard.getInitialProcessVariables() == null) {
+                    procContextCard.setInitialProcessVariables(new HashMap<>(1));
                 }
-                card.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
+                procContextCard.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
             }
         }
 
