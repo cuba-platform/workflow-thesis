@@ -56,10 +56,15 @@ public abstract class ProcessVariablesDatasource extends AbstractDatasource<Proc
                 throw new IllegalStateException("WindowContext is null");
 
             Map<String, Object> params = dsContext.getFrameContext().getParams();
-            card = (Card) params.get("card");
-            if (card == null)
-                throw new IllegalStateException("No Card instance in the form parameters");
+            card = resolveCard(params);
         }
+        return card;
+    }
+
+    protected Card resolveCard(Map<String, Object> params) {
+        Card card = (Card) params.get("card");
+        if (card == null)
+            throw new IllegalStateException("No Card instance in the form parameters");
         return card;
     }
 
