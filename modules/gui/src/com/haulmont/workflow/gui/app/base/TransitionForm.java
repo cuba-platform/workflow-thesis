@@ -397,7 +397,7 @@ public class TransitionForm extends AbstractForm {
                 assignmentDs.commit();
             else {
                 if (procContextCard.getInitialProcessVariables() == null) {
-                    procContextCard.setInitialProcessVariables(new HashMap<>(1));
+                    procContextCard.setInitialProcessVariables(new HashMap<String, Object>(1));
                 }
                 procContextCard.getInitialProcessVariables().put("startProcessComment", commentText.getValue());
             }
