@@ -105,7 +105,7 @@ public class ReassignForm extends AbstractWindow {
         if (commentText != null)
             commentText.setRequired(reassignmentInfo.isCommentRequired());
 
-        commentTextPane.setVisible(reassignmentInfo.isCommentRequired());
+        commentTextPane.setVisible(reassignmentInfo.isCommentVisible());
     }
 
     protected void doAfterCardRolesDsInitialization() {
