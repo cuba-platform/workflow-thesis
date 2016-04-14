@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Role;
@@ -45,8 +46,6 @@ import java.util.LinkedList;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
-/**
- */
 @Component(DesignerWorkerAPI.NAME)
 public class DesignerWorker implements DesignerWorkerAPI {
 
@@ -263,7 +262,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
         XStream xStream = createXStream();
         Object o = xStream.fromXML(xml);
         if (o instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) o).__new(true);
+            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) o, true);
         }
         return (T) o;
     }
