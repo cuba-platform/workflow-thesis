@@ -73,7 +73,7 @@
                                 <column id="type"/>
                                 <column id="createTs"/>
                                 <column id="compileTs"/>
-                                <column id="notificationMatrix"/>
+                                <column id="notificationMatrix" sortable="false"/>
                             </columns>
                             <rows datasource="designDs"/>
                         </groupTable>
