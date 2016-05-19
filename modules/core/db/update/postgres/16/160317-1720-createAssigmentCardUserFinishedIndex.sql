@@ -1,6 +1,3 @@
--- $Id$
--- Description:
-
 create or replace function insertIndexCurrency()
 returns void
 as $$
