@@ -61,8 +61,9 @@ public class ReassignForm extends AbstractWindow {
         super.init(params);
         initStandardComponents();
         initReassignmentInfo(params);
-        getDialogParams().setWidth(DEFAULT_FORM_WIDTH);
-        getDialogParams().setHeight(DEFAULT_FORM_HEIGHT);
+        getDialogOptions()
+                .setWidth(DEFAULT_FORM_WIDTH)
+                .setHeight(DEFAULT_FORM_HEIGHT);
         initCardRolesFrame();
         initFormActions();
     }

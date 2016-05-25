@@ -36,7 +36,7 @@ public class DeployDesignWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
 
         design = (Design) params.get("design");
         procDs.refresh();

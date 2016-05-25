@@ -27,7 +27,7 @@ public class DesignEditor extends AbstractEditor {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
+        getDialogOptions().setWidthAuto();
 
         designDs.addItemPropertyChangeListener(e -> {
             Design design = (Design) getItem();
