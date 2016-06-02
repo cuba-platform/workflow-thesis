@@ -8,8 +8,7 @@ package com.haulmont.workflow.gui.app.base.attachments;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -21,8 +20,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
 
-/**
- */
 public class RemoveAttachmentAction extends RemoveAction {
 
     protected AttachmentCreator.CardGetter cardGetter;
@@ -63,8 +60,8 @@ public class RemoveAttachmentAction extends RemoveAction {
             super.confirmAndRemove(selected);
         } else {
             if (userIsCreatorAllAttachments(selected)) {
-                target.getFrame().getDialogParams().setWidth(500);
-                Window window = target.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog", WindowManager.OpenType.DIALOG);
+                Window window = target.getFrame().openWindow("wf$RemoveAttachmentConfirmDialog",
+                        OpenType.DIALOG.width(500));
 
                 window.addCloseListener(actionId -> {
                     if (actionId.equals(RemoveAttachmentConfirmDialog.OPTION_LAST_VERSION)) {
@@ -78,10 +75,9 @@ public class RemoveAttachmentAction extends RemoveAction {
                     target.requestFocus();
                 });
             } else {
-                final String messagesPackage = AppConfig.getMessagesPack();
                 target.getFrame().showOptionDialog(
-                        getConfirmationTitle(messagesPackage),
-                        getConfirmationMessage(messagesPackage),
+                        getConfirmationTitle(),
+                        getConfirmationMessage(),
                         Frame.MessageType.CONFIRMATION,
                         new Action[]{
                                 new DialogAction(Type.OK) {
@@ -157,13 +153,13 @@ public class RemoveAttachmentAction extends RemoveAction {
         return map;
     }
 
-    protected void migrateToNewLastVersion(Set<Attachment> oldLastVesrions) {
+    protected void migrateToNewLastVersion(Set<Attachment> oldLastVersions) {
         Map<Attachment, List<Attachment>> map = new HashMap<>();
         CollectionDatasource datasource = target.getDatasource();
         for (Object id : datasource.getItemIds()) {
             Attachment attachment = (Attachment) datasource.getItem(id);
             Attachment versionOf = attachment.getVersionOf();
-            if (versionOf != null && oldLastVesrions.contains(versionOf)) {
+            if (versionOf != null && oldLastVersions.contains(versionOf)) {
                 java.util.List<Attachment> versions = map.get(versionOf);
                 if (versions == null) {
                     versions = new ArrayList<>();
@@ -181,7 +177,7 @@ public class RemoveAttachmentAction extends RemoveAction {
                 }
             });
 
-            list.removeAll(oldLastVesrions);
+            list.removeAll(oldLastVersions);
             if (!list.isEmpty()) {
                 Attachment newVersion = list.get(0);
                 newVersion.setVersionOf(null);

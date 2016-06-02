@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class NewVersionAction extends CreateAction {
 
     protected Attachment prevVersion;
@@ -42,10 +40,6 @@ public class NewVersionAction extends CreateAction {
 
     @Override
     public void actionPerform(Component component) {
-        if (beforeActionPerformedHandler != null) {
-            beforeActionPerformedHandler.run();
-        }
-
         prevVersion = (Attachment) target.getSingleSelected();
         Collection<Attachment> attachments = target.getSelected();
         if (prevVersion == null || attachments.size() > 1) {
@@ -73,10 +67,6 @@ public class NewVersionAction extends CreateAction {
 
         super.actionPerform(component);
         target.getFrame().getContext().getParams().remove("prevVersion");
-
-        if (afterActionPerformedHandler != null) {
-            afterActionPerformedHandler.run();
-        }
     }
 
     @Override
