@@ -14,7 +14,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
@@ -58,7 +60,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     protected static final String FIND_ASSIGNMENTS_BY_STATE_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state";
     protected static final String FIND_MASTER_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.card.id = :card and a.name = :state " +
-            "and a.finished is null and a.masterAssignment is null order by a.createTs desc";
+            "and a.finished is null and a.masterAssignment is null and a.user is null order by a.createTs desc";
     protected static final String FIND_FAMILY_ASSIGNMENT_QUERY = "select a from wf$Assignment a where a.subProcCard.id = :card";
 
     protected static Comparator<Assignment> BY_CREATE_TS_COMPARATOR = new Comparator<Assignment>() {
@@ -123,7 +125,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         if (assignmentsMap.containsKey(cr.getUser())) {
             if (needCreateAssignmentForCardRole(cr, assignmentsMap, oldRoles))
                 createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
-        } else if(cr.getUser() != null) {
+        } else if (cr.getUser() != null) {
             createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
         }
     }
@@ -160,8 +162,8 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     protected Assignment createAssignment(Card card, CardRole cr, String state) {
         List<Assignment> assignments = getAssignmentsByState(card, state);
         Date dueDate = null;
-        for(Assignment assignment : assignments){
-            if(assignment.getDueDate() != null){
+        for (Assignment assignment : assignments) {
+            if (assignment.getDueDate() != null) {
                 dueDate = assignment.getDueDate();
                 break;
             }
@@ -177,7 +179,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         assignment.setIteration(1);
         assignment.setMasterAssignment(master);
         assignment.setFamilyAssignment(getFamilyAssignment(card));
-        if(dueDate != null){
+        if (dueDate != null) {
             assignment.setDueDate(dueDate);
         }
         persistence.getEntityManager().persist(assignment);
