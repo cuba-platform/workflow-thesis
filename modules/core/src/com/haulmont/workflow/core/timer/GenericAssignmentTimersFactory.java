@@ -54,10 +54,10 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
             Map<String, String> params = new HashMap<String, String>();
             params.put("user", userLoadInfo.toString());
 
-            if (!StringUtils.isBlank(transitionsArr[i])) {
+            if (transitionsArr.length > i && !StringUtils.isBlank(transitionsArr[i])) {
                 params.put("transition", transitionsArr[i]);
                 assignment.setDueDate(d);
-            } else if (!StringUtils.isBlank(scriptsArr[i])) {
+            } else if (scriptsArr.length > i && !StringUtils.isBlank(scriptsArr[i])) {
                 params.put("script", scriptsArr[i]);
                 if ("process".equals(StringUtils.trimToNull(dueDate)))
                     assignment.setDueDate(d);
