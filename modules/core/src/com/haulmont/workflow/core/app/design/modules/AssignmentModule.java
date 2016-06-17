@@ -6,10 +6,12 @@ package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
+import com.haulmont.workflow.core.global.WfConfig;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -38,8 +40,6 @@ public class AssignmentModule extends Module {
 
     protected Messages messages = AppBeans.get(Messages.class);
 
-    private static final String TIMERS_FACTORY = "com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory";
-    
     public AssignmentModule() {
         activityClassName = "com.haulmont.workflow.core.activity.Assigner";
     }
@@ -185,6 +185,6 @@ public class AssignmentModule extends Module {
     }
 
     protected String getTimersFactory() {
-        return TIMERS_FACTORY;
+        return AppBeans.get(Configuration.class).getConfig(WfConfig.class).getDefaultTimersFactory();
     }
 }

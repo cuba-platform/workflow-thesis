@@ -211,7 +211,7 @@ public abstract class Module {
                         throw new DesignCompilationException("Unable to compile timers for module " + caption
                                 + ": script '" + script + "' not found");
                     scripts.append(fileName);
-                } else {
+                } else if (type.equals("transision")) {
                     String transition = WfUtils.encodeKey(jsProps.getString("name"));
                     transitions.append(transition);
                 }

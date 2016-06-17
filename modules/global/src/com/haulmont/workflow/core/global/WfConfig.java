@@ -33,5 +33,9 @@ public interface WfConfig extends Config {
     @DefaultBoolean(false)
     boolean getOneAttachmentUploaderEnabled();
 
+    @Property("workflow.defaultTimersFactory")
+    @Default("com.haulmont.workflow.core.timer.GenericAssignmentTimersFactory")
+    String getDefaultTimersFactory();
+
     void setOneAttachmentUploaderEnabled(boolean value);
 }
