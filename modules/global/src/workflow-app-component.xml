@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+  -->
+
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               id="workflow"
+               dependsOn="cuba">
+
+    <module name="global" blocks="*">
+        <artifact name="workflow-global" appJar="true"/>
+
+        <property name="cuba.persistenceConfig" value="workflow-persistence.xml"/>
+        <property name="cuba.metadataConfig" value="workflow-metadata.xml"/>
+        <property name="cuba.viewsConfig" value="workflow-views.xml"/>
+        <property name="cuba.creditsConfig" value="workflow-credits.xml"/>
+    </module>
+
+    <module name="core" dependsOn="global" blocks="core">
+        <artifact name="workflow-core" appJar="true"/>
+        <artifact name="workflow-core" classifier="db" ext="zip" configuration="dbscripts"/>
+
+        <property name="cuba.springContextConfig" value="workflow-spring.xml"/>
+    </module>
+
+    <module name="gui" dependsOn="global" blocks="web">
+        <artifact name="workflow-gui" appJar="true"/>
+    </module>
+
+    <module name="web" dependsOn="gui" blocks="web">
+        <artifact name="workflow-web" appJar="true"/>
+        <artifact name="workflow-web" classifier="web" ext="zip" configuration="webcontent"/>
+
+        <property name="cuba.springContextConfig" value="workflow-web-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="com.haulmont.workflow.web"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="workflow-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig" value="workflow-web-screens.xml"/>
+        <property name="cuba.menuConfig" value="workflow-web-menu.xml"/>
+    </module>
+
+</app-component>
