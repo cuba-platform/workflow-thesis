@@ -52,7 +52,7 @@ public class ProcessVariablesMetaClass extends MetadataObjectImpl implements Met
 
     @Override
     public Class getJavaClass() {
-        throw new UnsupportedOperationException();
+        return Object.class;
     }
 
     @Override
