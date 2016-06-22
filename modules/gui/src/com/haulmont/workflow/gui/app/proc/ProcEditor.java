@@ -5,7 +5,6 @@
 
 package com.haulmont.workflow.gui.app.proc;
 
-import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -176,21 +175,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
         final CreateAction createDpaAction = new CreateAction(dpaTable) {
             @Override
             public Map<String, Object> getWindowParams() {
-                List<UUID> userIds = new LinkedList<>();
-                for (UUID uuid : dpaDs.getItemIds()) {
-                    DefaultProcActor dpa = dpaDs.getItem(uuid);
-                    User user = null;
-                    if (dpa != null) {
-                        user = dpa.getUser();
-                    }
-                    if (user != null) {
-                        userIds.add(user.getId());
-                    }
-                }
-                Map<String, Object> values = new HashMap<>();
-                values.put("userIds", userIds);
-                values.put("isMulti", rolesDs.getItem().getMultiUser());
-                return values;
+                return getDefaultProcActorEditorScreenParams();
             }
 
             @Override
@@ -238,6 +223,24 @@ public class ProcEditor extends AbstractEditor<Proc> {
                 createDpaAction.refreshState();
             }
         });
+    }
+
+    protected Map<String, Object> getDefaultProcActorEditorScreenParams() {
+        List<UUID> userIds = new LinkedList<>();
+        for (UUID uuid : dpaDs.getItemIds()) {
+            DefaultProcActor dpa = dpaDs.getItem(uuid);
+            User user = null;
+            if (dpa != null) {
+                user = dpa.getUser();
+            }
+            if (user != null) {
+                userIds.add(user.getId());
+            }
+        }
+        Map<String, Object> values = new HashMap<>();
+        values.put("userIds", userIds);
+        values.put("isMulti", rolesDs.getItem().getMultiUser());
+        return values;
     }
 
 
