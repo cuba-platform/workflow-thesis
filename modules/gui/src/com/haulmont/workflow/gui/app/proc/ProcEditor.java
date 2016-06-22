@@ -166,21 +166,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
         final CreateAction createDpaAction = new CreateAction(dpaTable) {
             @Override
             public Map<String, Object> getWindowParams() {
-                List<UUID> userIds = new LinkedList<>();
-                for (UUID uuid : dpaDs.getItemIds()) {
-                    DefaultProcActor dpa = dpaDs.getItem(uuid);
-                    User user = null;
-                    if (dpa != null) {
-                        user = dpa.getUser();
-                    }
-                    if (user != null) {
-                        userIds.add(user.getId());
-                    }
-                }
-                Map<String, Object> values = new HashMap<>();
-                values.put("userIds", userIds);
-                values.put("isMulti", rolesDs.getItem().getMultiUser());
-                return values;
+                return getDefaultProcActorEditorScreenParams();
             }
 
             @Override
@@ -223,6 +209,24 @@ public class ProcEditor extends AbstractEditor<Proc> {
         dpaTable.addAction(dpaRemoveAction);
 
         rolesDs.addItemPropertyChangeListener(e -> createDpaAction.refreshState());
+    }
+
+    protected Map<String, Object> getDefaultProcActorEditorScreenParams() {
+        List<UUID> userIds = new LinkedList<>();
+        for (UUID uuid : dpaDs.getItemIds()) {
+            DefaultProcActor dpa = dpaDs.getItem(uuid);
+            User user = null;
+            if (dpa != null) {
+                user = dpa.getUser();
+            }
+            if (user != null) {
+                userIds.add(user.getId());
+            }
+        }
+        Map<String, Object> values = new HashMap<>();
+        values.put("userIds", userIds);
+        values.put("isMulti", rolesDs.getItem().getMultiUser());
+        return values;
     }
 
     protected void sortRolesDs(String property) {

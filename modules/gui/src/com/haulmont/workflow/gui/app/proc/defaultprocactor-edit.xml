@@ -18,31 +18,40 @@
                 view="edit">
         </datasource>
 
-        <!--todo Prevent duplicate procActors-->
-        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_minimal"/>
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User">
+            <query>
+                select u from sec$User u join u.userRoles ur
+                where u.id not in (:param$userIds) and u.active = true order by u.name
+                <filter>
+                    <c>
+                        ur.role.id = :custom$secRole
+                    </c>
+                </filter>
+            </query>
+        </collectionDatasource>
     </dsContext>
 
     <assign name="width" value="400"/>
 
     <layout expand="windowActions" spacing="true">
-        <grid spacing="true" width="100%">
+        <grid id="mainGrid" spacing="true" width="100%">
             <columns>
                 <column flex="1"/>
                 <column flex="1"/>
                 <column flex="1"/>
             </columns>
             <rows>
-                <row>
+                <row id="userRow">
                     <label value="msg://user"/>
                     <lookupField id="userLookup" datasource="dpaDs" property="user"
                                optionsDatasource="usersDs" width="${width}"
                                required="true" requiredMessage="msg://userMsg"/>
                 </row>
-                <row>
+                <row id="orderRow">
                     <label value="msg://dpa.sortOrder"/>
                     <lookupField id="sortOrderField" width="${width}"/>
                 </row>
-                <row>
+                <row id="notificationsRow">
                     <label value="msg://notifyByEmail"/>
                     <checkBox id="notifyByEmail" datasource="dpaDs" property="notifyByEmail"/>
                 </row>
