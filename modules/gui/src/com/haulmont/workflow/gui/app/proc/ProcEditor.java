@@ -196,20 +196,7 @@ public class ProcEditor extends AbstractEditor<Proc> {
         EditAction dpaEditAction = new EditAction(dpaTable, WindowManager.OpenType.DIALOG) {
             @Override
             public Map<String, Object> getWindowParams() {
-                List<UUID> userIds = new LinkedList<>();
-                for (UUID uuid : dpaDs.getItemIds()) {
-                    DefaultProcActor dpa = dpaDs.getItem(uuid);
-                    User user = null;
-                    if (dpa != null) {
-                        user = dpa.getUser();
-                    }
-                    if (user != null && !dpa.equals(dpaDs.getItem()))
-                        userIds.add(user.getId());
-                }
-                Map<String, Object> values = new HashMap<>();
-                values.put("userIds", userIds);
-                values.put("isMulti", rolesDs.getItem().getMultiUser());
-                return values;
+                return getDefaultProcActorEditorScreenParams();
             }
         };
         dpaTable.addAction(dpaEditAction);
