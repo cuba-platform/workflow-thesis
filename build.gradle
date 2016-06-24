@@ -125,8 +125,7 @@ configure(globalModule) {
 
     jar {
         manifest {
-            attributes('App-Component-Descriptor': 'workflow-app-component.xml')
-            attributes('App-Component-Artifact-Group': cuba.artifact.group)
+            attributes('App-Component-Id': cuba.artifact.group)
             attributes('App-Component-Version': cubaVersion)
         }
     }
