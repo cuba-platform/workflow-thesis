@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- */
 public class ImportDialog extends AbstractWindow {
     protected byte[] bytes;
 

@@ -7,9 +7,6 @@ package com.haulmont.workflow.core.jmx;
 
 import com.haulmont.workflow.core.exception.SmsException;
 
-/**
- *
- */
 public interface SmsSenderMBean {
     String sendSms(String phone, String addressee, String message);
 

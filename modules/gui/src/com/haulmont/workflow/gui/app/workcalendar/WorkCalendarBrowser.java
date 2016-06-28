@@ -20,8 +20,6 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class WorkCalendarBrowser extends AbstractWindow {
 
     private static final String CREATE_ACTION_ID = "create";

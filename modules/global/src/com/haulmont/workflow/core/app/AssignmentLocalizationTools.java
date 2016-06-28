@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Assignment;
 
-/**
- */
 public interface AssignmentLocalizationTools {
 
     String NAME = "workflow_AssignmentLocalizationTools";

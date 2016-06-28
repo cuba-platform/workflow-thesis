@@ -18,8 +18,6 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class DeployDesignWindow extends AbstractWindow {
 
     protected Design design;
@@ -101,6 +99,7 @@ public class DeployDesignWindow extends AbstractWindow {
         Button cancelBtn = (Button) getComponentNN("cancelBtn");
         cancelBtn.setAction(
                 new AbstractAction("cancelBtn") {
+                    @Override
                     public void actionPerform(Component component) {
                         close("cancel");
                     }

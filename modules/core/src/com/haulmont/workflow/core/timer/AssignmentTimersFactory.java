@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.timer;
 import com.haulmont.workflow.core.entity.Assignment;
 import org.jbpm.api.activity.ActivityExecution;
 
-/**
- */
 public interface AssignmentTimersFactory {
 
     void createTimers(ActivityExecution execution, Assignment assignment);

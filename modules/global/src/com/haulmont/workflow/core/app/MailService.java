@@ -11,8 +11,6 @@ import com.haulmont.workflow.core.entity.Card;
 
 import java.util.List;
 
-/**
- */
 public interface MailService {
 
     String NAME = "workflow_MailService";

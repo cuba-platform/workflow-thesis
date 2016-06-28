@@ -10,8 +10,6 @@ import com.haulmont.workflow.core.entity.Attachment;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class AttachmentsDataSource extends CollectionDatasourceImpl {
 
     @Override

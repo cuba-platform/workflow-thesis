@@ -12,8 +12,6 @@ import com.haulmont.workflow.core.app.SmsSenderConfig;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("workflow_SmsManagerMBean")
 public class SmsManager implements SmsManagerMBean {
 

@@ -10,9 +10,6 @@ import com.haulmont.workflow.core.entity.SendingSms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- *
- */
 public class SmsCheckStatusTask implements Runnable {
 
     private SendingSms sendingSms;

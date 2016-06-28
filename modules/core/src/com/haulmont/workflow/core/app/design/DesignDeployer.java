@@ -29,8 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- */
 public class DesignDeployer {
 
     public static final String SCRIPTS_DIR = "scripts";

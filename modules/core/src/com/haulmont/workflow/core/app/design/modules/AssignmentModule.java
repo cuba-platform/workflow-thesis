@@ -22,8 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- */
 public class AssignmentModule extends Module {
 
     protected String role;

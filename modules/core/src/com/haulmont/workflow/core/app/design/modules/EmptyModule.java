@@ -11,8 +11,6 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
-/**
- */
 public class EmptyModule extends Module {
     public EmptyModule(){
         activityClassName="com.haulmont.workflow.core.activity.EmptyModule";

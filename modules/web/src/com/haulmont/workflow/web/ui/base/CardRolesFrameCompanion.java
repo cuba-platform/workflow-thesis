@@ -11,8 +11,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.workflow.gui.app.base.CardRolesFrame;
 import com.vaadin.ui.AbstractSelect;
 
-/**
- */
 public class CardRolesFrameCompanion implements CardRolesFrame.Companion {
     @Override
     public void setTableColumnHeader(Table table, Object columnId, String header) {

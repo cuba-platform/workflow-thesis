@@ -8,8 +8,6 @@ package com.haulmont.workflow.gui.base.action;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 @SuppressWarnings("unused")
 public class FormResult {
 

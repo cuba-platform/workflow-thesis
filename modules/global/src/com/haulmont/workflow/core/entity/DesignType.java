@@ -7,10 +7,6 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- *
- *
- */
 public enum DesignType implements EnumClass<String> {
     COMMON("COMMON"),
     SUBDESIGN("SUBDESIGN");
@@ -21,6 +17,7 @@ public enum DesignType implements EnumClass<String> {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

@@ -30,8 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class TransitionForm extends AbstractForm {
 
     protected static final int DEFAULT_FORM_HEIGHT = 500;

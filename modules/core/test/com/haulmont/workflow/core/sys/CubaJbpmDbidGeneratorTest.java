@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.sys;
 
 import com.haulmont.workflow.core.WfTestCase;
 
-/**
- */
 public class CubaJbpmDbidGeneratorTest extends WfTestCase {
 
     CubaJbpmDbidGenerator generator;

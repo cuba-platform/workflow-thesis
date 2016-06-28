@@ -197,6 +197,7 @@ public class WorkCalendar implements WorkCalendarAPI {
         return ciIterator;
     }
 
+    @Override
     public Double getIntervalDuration(Date startTime, Date endTime, TimeUnit timeUnit) {
         if (startTime.after(endTime))
             throw new IllegalStateException("Start time cannot be after end time!");
@@ -274,6 +275,7 @@ public class WorkCalendar implements WorkCalendarAPI {
         return duration / timeUnitDuaration;
     }
 
+    @Override
     public Date addInterval(Date date, int qty, TimeUnit unit) {
         Date startTime = date;
         Calendar startTimeCalendar = Calendar.getInstance();
@@ -369,12 +371,14 @@ public class WorkCalendar implements WorkCalendarAPI {
 //        return workIntervalDuration;
 //    }
 
+    @Override
     public boolean isDateWorkDay(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return isDateWorkDay(calendar);
     }
 
+    @Override
     public boolean isDateWorkDay(Calendar day) {
         day = DateUtils.truncate(day, Calendar.DATE);
         loadCaches();
@@ -422,6 +426,7 @@ public class WorkCalendar implements WorkCalendarAPI {
         return false;
     }
 
+    @Override
     public Long getWorkPeriodDurationInDays(Date startTime, Date endTime) {
         if ((startTime == null) || (endTime == null)) return 0L;
         if (startTime.compareTo(endTime) >= 0) return 0L;

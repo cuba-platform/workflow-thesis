@@ -137,38 +137,47 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
         this.version = version;
     }
 
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
         this.updateTs = updateTs;
     }
 
+    @Override
     public String getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
+    @Override
     public Boolean isDeleted() {
         return deleteTs != null;
     }
 
+    @Override
     public Date getDeleteTs() {
         return deleteTs;
     }
 
+    @Override
     public void setDeleteTs(Date deleteTs) {
         this.deleteTs = deleteTs;
     }
 
+    @Override
     public String getDeletedBy() {
         return deletedBy;
     }
 
+    @Override
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }

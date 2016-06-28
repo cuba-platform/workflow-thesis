@@ -10,8 +10,6 @@ import com.haulmont.workflow.core.app.TimerManagerAPI;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("workflow_TimerManagerMBean")
 public class TimerManager implements TimerManagerMBean {
 

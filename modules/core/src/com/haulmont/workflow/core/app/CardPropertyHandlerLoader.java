@@ -18,8 +18,6 @@ import com.haulmont.workflow.core.app.valuehandler.CardPropertyHandler;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 
-/**
- */
 @Component(CardPropertyHandlerLoader.NAME)
 public class CardPropertyHandlerLoader {
 

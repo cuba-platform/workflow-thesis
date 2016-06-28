@@ -9,8 +9,6 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-/**
- */
 @MetaClass(name = "wf$DesignLocValue")
 @SystemLevel
 public class DesignLocValue extends AbstractNotPersistentEntity implements Comparable<DesignLocValue> {
@@ -50,6 +48,7 @@ public class DesignLocValue extends AbstractNotPersistentEntity implements Compa
         this.fakeProperty = property;
     }
 
+    @Override
     public int compareTo(DesignLocValue o) {
         if (lang == null)
             return -1;

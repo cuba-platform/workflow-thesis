@@ -13,8 +13,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.workflow.core.entity.Attachment;
 
-/**
- */
 public class AttachmentColumnGeneratorHelper {
 
     public static void addSizeGeneratedColumn(final Table attachmentsTable) {

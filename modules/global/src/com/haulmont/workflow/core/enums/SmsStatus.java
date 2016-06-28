@@ -7,9 +7,6 @@ package com.haulmont.workflow.core.enums;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- *
- */
 public enum SmsStatus implements EnumClass<Integer> {
     IN_QUEUE(0),
     DELIVERED(100),

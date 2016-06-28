@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class FormCompiler {
 
     public enum TransitionStyle {

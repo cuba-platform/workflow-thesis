@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class DesignLocKeyDatasource extends HierarchicalDatasourceImpl<DesignLocKey, UUID> {
 
     @Override

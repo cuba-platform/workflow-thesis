@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class ReassignForm extends AbstractWindow {
     @Inject
     protected Messages messages;

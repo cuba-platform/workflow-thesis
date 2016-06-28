@@ -10,8 +10,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.security.entity.User;
 
-/**
- */
 public abstract class AssignmentTimerAction implements TimerAction {
 
     @Override

@@ -7,9 +7,6 @@ package com.haulmont.workflow.core.error;
 
 import java.io.Serializable;
 
-/**
- *
- */
 public interface DesignCompilationError extends Serializable{
     String getMessage();
 }

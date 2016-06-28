@@ -8,8 +8,6 @@ package com.haulmont.workflow.core.app.valuehandler;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.global.WfEntityDescriptor;
 
-/**
- */
 public class CardPropertyDescriptor implements WfEntityDescriptor {
 
     private String value;

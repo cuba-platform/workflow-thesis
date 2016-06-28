@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.global;
 
 import com.haulmont.workflow.core.enums.AttributeType;
 
-/**
- */
 public interface WfEntityDescriptor {
     String getValue();
     AttributeType getAttributeType();

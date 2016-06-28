@@ -4,8 +4,6 @@
  */
 package com.haulmont.workflow.core.global;
 
-/**
- */
 public class WfConstants {
 
     public static final String ACTION_SAVE = "SAVE_ACTION";

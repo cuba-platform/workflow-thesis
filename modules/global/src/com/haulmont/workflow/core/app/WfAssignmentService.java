@@ -10,8 +10,6 @@ import com.haulmont.workflow.core.entity.CardRole;
 
 import java.util.List;
 
-/**
- */
 public interface WfAssignmentService {
 
     String NAME = "workflow_WfAssignmentService";

@@ -20,8 +20,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class SendingSmsBrowser extends AbstractLookup {
 
     @Inject

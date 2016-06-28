@@ -13,8 +13,6 @@ import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/**
- */
 public class ProcessVariablesMetaClass extends MetadataObjectImpl implements MetaClass {
 
     private Map<String, MetaProperty> properties = new HashMap<>();

@@ -21,8 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
 
     protected String[] dueDatesArr;

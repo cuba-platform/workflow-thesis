@@ -10,8 +10,6 @@ import com.haulmont.cuba.gui.components.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- */
 public class RemoveAttachmentConfirmDialog extends AbstractWindow {
     public static final String OPTION_LAST_VERSION = "option.lastVersion";
     public static final String OPTION_ALL_VERSIONS = "option.allVersions";

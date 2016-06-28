@@ -27,9 +27,11 @@ public class TimerBrowser extends AbstractLookup {
         super();
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         table.addAction(new AbstractAction("fireTimer") {
+            @Override
             public void actionPerform(Component component) {
                 TimerEntity timer = table.getSingleSelected();
                 if (timer == null)

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public interface WfWorkerAPI {
 
     String NAME = "workflow_WfWorker";

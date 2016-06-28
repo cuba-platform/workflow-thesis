@@ -11,8 +11,6 @@ import com.haulmont.workflow.core.entity.Card;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- */
 public class ReassignInfo implements Serializable {
 
     private static final long serialVersionUID = -2178542775074131046L;

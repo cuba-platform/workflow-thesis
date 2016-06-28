@@ -9,8 +9,6 @@ import com.haulmont.workflow.core.enums.AttributeType;
 
 import java.util.Map;
 
-/**
- */
 public interface CardPropertyHandlerLoaderService {
 
     String NAME = "workflow_CardPropertyHandlerLoaderService";

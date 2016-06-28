@@ -34,6 +34,7 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
         this.sessionFactory = sessionFactory;
     }
 
+    @Override
     public Session currentSession() throws HibernateException {
         try {
             return (org.hibernate.classic.Session) doGetSession(this.sessionFactory);
@@ -69,8 +70,7 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
                         sessionHolder.setPreviousFlushMode(flushMode);
                     }
                 }
-            }
-            else {
+            } else {
                 // No Spring transaction management active -> try JTA transaction synchronization.
 //                session = getJtaSynchronizedSession(sessionHolder, sessionFactory, jdbcExceptionTranslator);
             }
@@ -120,6 +120,4 @@ public class CubaSpringSessionContext implements CurrentSessionContext {
 
         return session;
     }
-
-
 }

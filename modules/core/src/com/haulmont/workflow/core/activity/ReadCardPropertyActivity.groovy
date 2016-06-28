@@ -15,9 +15,6 @@ import com.haulmont.workflow.core.enums.OperationsType
 import com.haulmont.workflow.core.global.CardPropertyUtils
 import org.jbpm.api.activity.ActivityExecution
 
-/**
- *
- */
 public class ReadCardPropertyActivity extends CardPropertyActivity {
 
     String operationType

@@ -11,8 +11,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- */
 @Entity(name = "wf$Calendar")
 @Table(name = "WF_CALENDAR")
 @SystemLevel

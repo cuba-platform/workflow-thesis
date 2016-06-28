@@ -13,9 +13,6 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.entity.Card
 import org.jbpm.api.activity.ActivityExecution
 
-/**
- *
- */
 public class WriteCardPropertyActivity extends CardPropertyActivity {
 
     @Override

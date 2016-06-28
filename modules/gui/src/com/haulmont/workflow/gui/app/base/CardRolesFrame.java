@@ -34,8 +34,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class CardRolesFrame extends AbstractFrame {
 
     protected Map<ProcRole, CollectionDatasource> procRoleUsers = new HashMap<>();
@@ -1105,6 +1103,7 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         protected Comparator<CardRole> createEntityComparator() {
             return new Comparator<CardRole>() {
+                @Override
                 public int compare(CardRole cr1, CardRole cr2) {
                     int s1 = cr1.getProcRole().getSortOrder() == null ? 0 : cr1.getProcRole().getSortOrder();
                     int s2 = cr2.getProcRole().getSortOrder() == null ? 0 : cr2.getProcRole().getSortOrder();

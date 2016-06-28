@@ -29,8 +29,6 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- */
 @ManagedBean(AttachmentActionTools.NAME)
 public class AttachmentActionTools {
 

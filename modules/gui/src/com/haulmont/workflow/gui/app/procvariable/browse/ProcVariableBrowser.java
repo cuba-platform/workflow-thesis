@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- */
 public class ProcVariableBrowser extends AbstractProcVariableBrowser {
 
     private Proc proc;

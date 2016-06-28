@@ -29,8 +29,6 @@ import org.dom4j.Element;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class LocalizeDesignWindow extends AbstractEditor {
 
     private Properties properties;

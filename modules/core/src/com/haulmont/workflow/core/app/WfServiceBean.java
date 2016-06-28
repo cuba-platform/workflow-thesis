@@ -173,6 +173,7 @@ public class WfServiceBean implements WfService {
         }
     }
 
+    @Override
     public void processTimer(TimerEntity timer) {
         TimerManagerAPI timerManager = AppBeans.get(TimerManagerAPI.NAME);
         timerManager.processTimer(timer);

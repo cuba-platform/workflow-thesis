@@ -14,8 +14,6 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 
-/**
- */
 @Embeddable
 @MetaClass(name = "wf$ProcFamily")
 @SystemLevel

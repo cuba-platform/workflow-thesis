@@ -11,8 +11,6 @@ import org.dom4j.Element;
 
 import java.util.List;
 
-/**
- */
 public class DisableCachePostProcessor extends BaseDesignPostProcessor {
 
     @Override

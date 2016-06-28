@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class GenericAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(GenericAssignmentTimerAction.class);

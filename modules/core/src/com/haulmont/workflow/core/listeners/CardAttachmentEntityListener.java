@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.SQLException;
 
-/**
- */
 @Component("workflow_CardAttachmentEntityListener")
 public class CardAttachmentEntityListener implements
         AfterInsertEntityListener<CardAttachment>, AfterDeleteEntityListener<CardAttachment> {

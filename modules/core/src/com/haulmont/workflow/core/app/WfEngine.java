@@ -84,6 +84,7 @@ public class WfEngine implements WfEngineAPI {
         this.jbpmSpringHelper = jbpmSpringHelper;
     }
 
+    @Override
     public ProcessEngine getProcessEngine() {
         if (processEngine == null) {
             synchronized (this) {
@@ -103,6 +104,7 @@ public class WfEngine implements WfEngineAPI {
         return processEngine;
     }
 
+    @Override
     public Proc deployJpdlXml(String resourcePath, Proc proc) {
         RepositoryService rs = getProcessEngine().getRepositoryService();
 
@@ -153,6 +155,7 @@ public class WfEngine implements WfEngineAPI {
         return proc;
     }
 
+    @Override
     public Proc deployJpdlXml(String resourcePath) {
         return deployJpdlXml(resourcePath, null);
     }
@@ -318,10 +321,12 @@ public class WfEngine implements WfEngineAPI {
         return null;
     }
 
+    @Override
     public List<Assignment> getUserAssignments(UUID userId) {
         return getUserAssignments(userId, null);
     }
 
+    @Override
     public List<Assignment> getUserAssignments(String userLogin) {
         checkArgument(!StringUtils.isBlank(userLogin), "userLogin is blank");
 
@@ -343,6 +348,7 @@ public class WfEngine implements WfEngineAPI {
         return getUserAssignments(user.getId());
     }
 
+    @Override
     public List<Assignment> getUserAssignments(UUID userId, @Nullable Card card) {
         checkArgument(userId != null, "userId is null");
 
@@ -366,14 +372,17 @@ public class WfEngine implements WfEngineAPI {
         }
     }
 
+    @Override
     public void finishAssignment(UUID assignmentId) {
         finishAssignment(assignmentId, null, null);
     }
 
+    @Override
     public void finishAssignment(UUID assignmentId, String outcome, String comment) {
         finishAssignment(assignmentId, outcome, comment, null);
     }
 
+    @Override
     public void finishAssignment(UUID assignmentId, String outcome, String comment, Card subProcCard) {
         checkArgument(assignmentId != null, "assignmentId is null");
 
@@ -448,6 +457,7 @@ public class WfEngine implements WfEngineAPI {
         }
     }
 
+    @Override
     public void signalExecution(String jbpmExecutionId, String transition, Card card) {
         signalExecution(jbpmExecutionId, transition, card, null);
     }
@@ -468,10 +478,12 @@ public class WfEngine implements WfEngineAPI {
         }
     }
 
+    @Override
     public Card startProcess(Card card) {
         return startProcess(card, null);
     }
 
+    @Override
     public Card startProcess(Card card, Card subProcCard) {
         Map<String, Object> initialProcessVariables =
                 card.getInitialProcessVariables() != null ? card.getInitialProcessVariables() : new HashMap<String, Object>();
@@ -521,6 +533,7 @@ public class WfEngine implements WfEngineAPI {
         return card;
     }
 
+    @Override
     public void cancelProcess(Card card) {
         EntityManager em = persistence.getEntityManager();
         Card c = em.merge(card);
@@ -629,6 +642,7 @@ public class WfEngine implements WfEngineAPI {
         return resultState != null ? resultState : "";
     }
 
+    @Override
     public void addListener(Listener listener) {
         listeners.add(listener);
     }

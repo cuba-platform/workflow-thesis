@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class DesignLocValueDatasource extends CollectionDatasourceImpl<DesignLocValue, UUID> {
 
     @Override

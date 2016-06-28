@@ -20,8 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.activity.ActivityExecution;
 
-/**
- */
 public class OverdueAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(GenericAssignmentTimerAction.class);

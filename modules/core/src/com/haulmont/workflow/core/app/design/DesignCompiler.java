@@ -51,8 +51,6 @@ import java.util.*;
 
 import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
 
-/**
- */
 public class DesignCompiler {
 
     protected Map<String, String> moduleClassNames;

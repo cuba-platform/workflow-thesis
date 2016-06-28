@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- */
 public class NotificationMatrixWindow extends AbstractEditor {
 
     protected FileUploadField uploadField;

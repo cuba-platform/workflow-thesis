@@ -33,8 +33,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 @Component(NotificationMatrixAPI.NAME)
 public class NotificationMatrix implements NotificationMatrixAPI {
 
@@ -436,14 +434,17 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
+    @Override
     public void notifyByCard(Card card, String state) {
         notifyByCard(card, state, Collections.<String>emptyList());
     }
 
+    @Override
     public void notifyByCard(Card card, String state, List<String> excludedRoles) {
         notifyByCard(card, state, Collections.<String>emptyList(), new DefaultMessageGenerator());
     }
 
+    @Override
     public void notifyByCard(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
@@ -477,10 +478,12 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
+    @Override
     public void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state) {
         notifyByCardAndAssignments(card, assignmentsCardRoleMap, state, Lists.<String>newArrayList());
     }
 
+    @Override
     public void notifyByCardAndAssignments(Card card, Map<Assignment, CardRole> assignmentsCardRoleMap, String state,
                                            List<String> extraExcludedRoles) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
@@ -536,6 +539,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
+    @Override
     public void notifyUser(Card card, String state, User user) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
@@ -673,6 +677,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     private class DefaultMessageGenerator implements NotificationMatrixMessage.MessageGenerator {
+        @Override
         public NotificationMatrixMessage generateMessage(Map<String, Object> parameters) {
             NotificationMatrixMessage message = new NotificationMatrixMessage(null, null);
             Assignment assignment = (Assignment) parameters.get("assignment");

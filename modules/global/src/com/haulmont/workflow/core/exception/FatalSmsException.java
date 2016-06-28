@@ -5,9 +5,6 @@
 
 package com.haulmont.workflow.core.exception;
 
-/**
- *
- */
 public class FatalSmsException extends SmsException {
     public FatalSmsException(int code, String msg) {
         super(code, msg);

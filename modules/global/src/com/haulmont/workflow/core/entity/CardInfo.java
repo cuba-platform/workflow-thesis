@@ -26,19 +26,23 @@ public class CardInfo extends BaseUuidEntity implements Updatable, SoftDelete {
     public static final int TYPE_OVERDUE = 10;
     public static final int TYPE_NOTIFY_OVERDUE = 20;
 
+    @Override
     @MetaProperty
     public Date getUpdateTs() {
         return null;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
     }
 
+    @Override
     @MetaProperty
     public String getUpdatedBy() {
         return null;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
     }
 
@@ -68,22 +72,27 @@ public class CardInfo extends BaseUuidEntity implements Updatable, SoftDelete {
     @Column(name = "DESCRIPTION", length = 100000)
     protected String description;
 
+    @Override
     public String getDeletedBy() {
         return deletedBy;
     }
 
+    @Override
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }
 
+    @Override
     public Boolean isDeleted() {
         return deleteTs != null;
     }
 
+    @Override
     public Date getDeleteTs() {
         return deleteTs;
     }
 
+    @Override
     public void setDeleteTs(Date deleteTs) {
         this.deleteTs = deleteTs;
     }

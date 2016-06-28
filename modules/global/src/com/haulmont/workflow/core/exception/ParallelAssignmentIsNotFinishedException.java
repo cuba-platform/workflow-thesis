@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.exception;
 
 import java.util.UUID;
 
-/**
- */
 public class ParallelAssignmentIsNotFinishedException extends Exception {
     protected UUID assignmentId;
 

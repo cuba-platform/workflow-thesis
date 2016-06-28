@@ -38,8 +38,6 @@ import org.apache.commons.lang.BooleanUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class DesignBrowser extends AbstractWindow {
 
     @Inject

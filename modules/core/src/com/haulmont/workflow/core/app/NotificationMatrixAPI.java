@@ -12,8 +12,6 @@ import com.haulmont.workflow.core.entity.CardRole;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public interface NotificationMatrixAPI {
     String NAME = "workflow_NotificationMatrix";
 

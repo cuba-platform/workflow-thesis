@@ -112,6 +112,7 @@ public class WfWorkerBean implements WfWorkerAPI {
             Collections.sort(
                     pdList,
                     new Comparator<ProcessDefinition>() {
+                        @Override
                         public int compare(ProcessDefinition pd1, ProcessDefinition pd2) {
                             return pd1.getDeploymentId().compareTo(pd2.getDeploymentId());
                         }

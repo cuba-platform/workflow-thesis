@@ -31,8 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class ResolutionForm extends AbstractForm {
 
     @Inject
@@ -124,6 +122,7 @@ public class ResolutionForm extends AbstractForm {
 
         Button pasteAttachBtn = (Button) getComponentNN("pasteAttach");
         AttachmentCreator creator = new AttachmentCreator() {
+            @Override
             public Attachment createObject() {
                 CardAttachment attachment = metadata.create(CardAttachment.class);
                 attachment.setAssignment(assignmentDs.getItem());

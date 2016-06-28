@@ -11,8 +11,6 @@ import com.haulmont.workflow.core.entity.Assignment;
 import java.util.Collection;
 import java.util.List;
 
-/**
- */
 public interface ProcessAttachmentsAPI {
 
     String NAME = "workflow_ProcessAttachmentsManager";

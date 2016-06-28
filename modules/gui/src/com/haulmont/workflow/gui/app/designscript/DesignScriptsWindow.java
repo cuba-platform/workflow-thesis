@@ -15,8 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class DesignScriptsWindow extends AbstractWindow {
 
     private Design design;

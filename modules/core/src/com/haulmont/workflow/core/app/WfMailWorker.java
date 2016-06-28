@@ -19,8 +19,6 @@ import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- */
 @Component(WfMailWorker.NAME)
 public class WfMailWorker {
 

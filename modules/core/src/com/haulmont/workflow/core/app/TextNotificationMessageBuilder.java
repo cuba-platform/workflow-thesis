@@ -6,8 +6,6 @@ package com.haulmont.workflow.core.app;
 
 import java.util.Map;
 
-/**
- */
 public class TextNotificationMessageBuilder implements NotificationMessageBuilder {
     private String subject;
     private String body;

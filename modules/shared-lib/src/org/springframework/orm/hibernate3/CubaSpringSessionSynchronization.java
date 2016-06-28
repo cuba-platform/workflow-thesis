@@ -17,8 +17,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-/**
- */
 public class CubaSpringSessionSynchronization implements TransactionSynchronization, Ordered {
 
     private final SessionHolder sessionHolder;

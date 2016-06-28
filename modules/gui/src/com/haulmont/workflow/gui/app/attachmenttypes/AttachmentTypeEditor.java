@@ -7,8 +7,6 @@ package com.haulmont.workflow.gui.app.attachmenttypes;
 
 import com.haulmont.cuba.gui.components.AbstractEditor;
 
-/**
- */
 public class AttachmentTypeEditor extends AbstractEditor {
 
 }

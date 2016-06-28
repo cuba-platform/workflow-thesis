@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
-/**
- */
 public interface DesignerWorkerAPI {
     String NAME = "workflow_DesignerWorker";
 

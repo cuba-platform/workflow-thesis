@@ -10,8 +10,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
-/**
- */
 @Entity(name = "wf$DesignScript")
 @Table(name = "WF_DESIGN_SCRIPT")
 @NamePattern("%s|name")

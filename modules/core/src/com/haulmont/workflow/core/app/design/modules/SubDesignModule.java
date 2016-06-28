@@ -37,8 +37,6 @@ import java.util.regex.Pattern;
 import static com.haulmont.workflow.core.global.WfConstants.CARD_VARIABLES_SEPARATOR;
 import static com.haulmont.workflow.core.global.WfConstants.SUBDESIGN_SEPARATOR;
 
-/**
- */
 public class SubDesignModule extends Module {
 
     protected JSONObject jsOptions;

@@ -40,8 +40,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/**
- */
 @Controller
 @RequestMapping("/wfdesigner/*/action/*.json")
 public class ActionController {

@@ -9,9 +9,6 @@ import com.haulmont.workflow.core.exception.SmsException;
 
 import java.util.UUID;
 
-/**
- *
- */
 public class DefaultSmsProvider implements SmsProvider {
     @Override
     public String sendSms(String phone, String message) throws SmsException {

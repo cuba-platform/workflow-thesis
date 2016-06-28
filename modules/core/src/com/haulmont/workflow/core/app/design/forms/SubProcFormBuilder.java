@@ -11,8 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
-/**
- */
 public class SubProcFormBuilder extends FormBuilder {
     @Override
     public Element writeFormEl(Element parentEl, JSONObject jsProperties) throws DesignCompilationException {

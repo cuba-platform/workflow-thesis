@@ -13,8 +13,6 @@ import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
-/**
- */
 @Source(type = SourceType.DATABASE)
 public interface SmsSenderConfig extends Config {
 

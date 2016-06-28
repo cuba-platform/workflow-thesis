@@ -27,9 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- *
- */
 public class CardAttachmentsFrame extends AbstractFrame {
 
     @Inject
@@ -63,6 +60,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
         init(new HashMap<String, Object>());
     }
 
+    @Override
     public void init(@Nullable Map<String, Object> params) {
         cardDs = getDsContext().get("cardDs");
         attachmentsTable = (Table) getComponent("attachmentsTable");
@@ -77,6 +75,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     protected AttachmentCreator.CardAttachmentCreator createAttachmentsCreator() {
         return new AttachmentCreator.CardAttachmentCreator() {
+            @Override
             public Attachment createObject() {
                 CardAttachment attachment = metadata.create(CardAttachment.class);
                 Card card = cardDs.getItem();
@@ -101,6 +100,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
 
     protected void initAttachmentsTableStyleProvider() {
         attachmentsTable.setStyleProvider(new Table.StyleProvider<Attachment>() {
+            @Override
             public String getStyleName(Attachment entity, String property) {
                 return entity.getVersionOf() != null ? "grey" : null;
             }

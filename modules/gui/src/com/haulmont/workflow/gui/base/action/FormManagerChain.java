@@ -16,8 +16,6 @@ import org.dom4j.Element;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- */
 public class FormManagerChain {
 
     public interface Handler {

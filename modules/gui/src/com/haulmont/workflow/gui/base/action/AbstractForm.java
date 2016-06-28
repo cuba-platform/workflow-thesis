@@ -17,8 +17,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 public abstract class AbstractForm extends AbstractWindow implements WfForm {
 
     @Inject

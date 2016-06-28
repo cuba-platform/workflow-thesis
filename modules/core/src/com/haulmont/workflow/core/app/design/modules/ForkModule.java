@@ -11,8 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
-/**
- */
 public class ForkModule extends Module {
     @Override
     public void init(Context context) throws DesignCompilationException {

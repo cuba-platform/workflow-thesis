@@ -5,8 +5,6 @@
 
 package com.haulmont.workflow.core.app;
 
-/**
- */
 public interface SmsService {
 
     String NAME = "workflow_SmsService";

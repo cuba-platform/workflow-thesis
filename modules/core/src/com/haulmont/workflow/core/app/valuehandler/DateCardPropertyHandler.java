@@ -9,14 +9,13 @@ import com.haulmont.cuba.core.app.prettytime.CubaPrettyTimeParser;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.Card;
 
-/**
- */
 public class DateCardPropertyHandler extends BaseCardPropertyHandler {
 
     public DateCardPropertyHandler(Class clazz, Card card, Boolean useExpression) {
         super(clazz, card, useExpression);
     }
 
+    @Override
     protected Object evaluateExpression(String value) {
         CubaPrettyTimeParser prettyTimeParser = AppBeans.get(CubaPrettyTimeParser.NAME);
         return prettyTimeParser.parse(value);

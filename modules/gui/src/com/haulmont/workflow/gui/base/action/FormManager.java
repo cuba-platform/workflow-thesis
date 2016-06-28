@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-/**
- */
 public abstract class FormManager implements Serializable {
 
     protected Element element;

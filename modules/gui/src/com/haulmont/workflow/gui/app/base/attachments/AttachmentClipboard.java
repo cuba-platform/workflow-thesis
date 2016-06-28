@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- */
 public class AttachmentClipboard extends AbstractEditor {
 
     @Override
@@ -28,6 +26,7 @@ public class AttachmentClipboard extends AbstractEditor {
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
         removeAttachBtn.setAction(new AbstractAction("removeAttach") {
+            @Override
             public void actionPerform(Component component) {
                 Set selected = attachmentsTable.getSelected();
                 List<Attachment> buffer = AttachmentCopyHelper.get();
@@ -44,6 +43,7 @@ public class AttachmentClipboard extends AbstractEditor {
 
         Button clearAttachBtn = (Button) getComponent("clearAttach");
         clearAttachBtn.setAction(new AbstractAction("clearAttach") {
+            @Override
             public void actionPerform(Component component) {
                 Set selected = attachmentsTable.getSelected();
                 List<Attachment> buffer = AttachmentCopyHelper.get();
@@ -56,6 +56,7 @@ public class AttachmentClipboard extends AbstractEditor {
 
         Button refreshAttachBtn = (Button) getComponent("refreshAttach");
         refreshAttachBtn.setAction(new AbstractAction("refreshAttach") {
+            @Override
             public void actionPerform(Component component) {
                 attachmentsTable.refresh();
             }

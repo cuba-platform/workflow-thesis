@@ -14,8 +14,6 @@ import com.haulmont.workflow.core.entity.Assignment;
 
 import javax.inject.Inject;
 
-/**
- */
 public class ResolutionEditor extends AbstractEditor {
     @Inject
     protected UserSessionSource userSessionSource;

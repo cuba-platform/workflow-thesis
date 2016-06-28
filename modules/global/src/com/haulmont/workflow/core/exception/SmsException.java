@@ -5,9 +5,6 @@
 
 package com.haulmont.workflow.core.exception;
 
-/**
- *
- */
 public class SmsException extends Exception {
 
     private int code;

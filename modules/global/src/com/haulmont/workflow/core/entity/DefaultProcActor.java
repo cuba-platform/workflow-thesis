@@ -10,8 +10,6 @@ import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
 
-/**
- */
 @Entity(name = "wf$DefaultProcActor")
 @Table(name = "WF_DEFAULT_PROC_ACTOR")
 @SystemLevel

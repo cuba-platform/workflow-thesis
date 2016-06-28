@@ -19,6 +19,7 @@ public class NotificationForm implements Callable<Boolean> {
         message = params.get("message") == null ? "Fix parameters passing!" : params.get("message");
     }
 
+    @Override
     public Boolean call() throws Exception {
         AppBeans.get(WindowManagerProvider.class).get().showNotification(message, Frame.NotificationType.HUMANIZED);
         return null;

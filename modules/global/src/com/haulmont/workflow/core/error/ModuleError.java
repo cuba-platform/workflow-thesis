@@ -5,10 +5,6 @@
 
 package com.haulmont.workflow.core.error;
 
-
-/**
- *
- */
 public class ModuleError implements DesignCompilationError {
     private String message;
     private String moduleName;
@@ -18,6 +14,7 @@ public class ModuleError implements DesignCompilationError {
         this.message = message;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }

@@ -16,8 +16,6 @@ import org.jbpm.api.Execution;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- */
 public class WfOperations implements Serializable {
 
     /**

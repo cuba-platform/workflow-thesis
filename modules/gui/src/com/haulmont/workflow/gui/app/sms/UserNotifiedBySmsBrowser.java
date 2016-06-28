@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- */
 public class UserNotifiedBySmsBrowser extends AbstractLookup {
 
     @Inject
@@ -48,6 +46,7 @@ public class UserNotifiedBySmsBrowser extends AbstractLookup {
                     params.put("isLookup", true);
                     params.put("hasEmployees", true);
                     openLookup("sec$User.lookup", new Handler() {
+                        @Override
                         @SuppressWarnings("unchecked")
                         public void handleLookup(Collection items) {
                             if (items != null && items.size() > 0) {

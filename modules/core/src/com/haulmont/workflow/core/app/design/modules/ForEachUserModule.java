@@ -15,8 +15,6 @@ import org.json.JSONObject;
 
 import java.text.MessageFormat;
 
-/**
- */
 public class ForEachUserModule extends Module {
 
     protected String role;

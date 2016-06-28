@@ -8,15 +8,13 @@ package com.haulmont.workflow.gui.app.base;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.app.WfService;
 import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.gui.app.base.TransitionForm;
 import com.haulmont.workflow.gui.base.action.CardContext;
 
 import java.util.Map;
 
-/**
- */
 public class SubProcForm extends TransitionForm {
 
+    @Override
     public void init(Map<String, Object> params) {
         Card card = (Card) params.get("card");
         String subProcCode = (String) params.get("subProcCode");

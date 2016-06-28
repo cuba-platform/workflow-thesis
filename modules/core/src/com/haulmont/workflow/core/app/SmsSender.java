@@ -23,8 +23,6 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
-/**
- */
 @Component(SmsSenderAPI.NAME)
 public class SmsSender implements SmsSenderAPI {
 

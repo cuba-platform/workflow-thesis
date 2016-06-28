@@ -7,8 +7,6 @@ package com.haulmont.workflow.gui.base.action;
 
 import com.haulmont.workflow.core.entity.Card;
 
-/**
- */
 public class CardContext {
 
     private Card card;

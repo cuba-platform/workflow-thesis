@@ -14,8 +14,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
-/**
- */
 public class InvokeFormBuilder extends FormBuilder {
 
     @Override

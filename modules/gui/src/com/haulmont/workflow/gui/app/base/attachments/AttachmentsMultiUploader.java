@@ -20,8 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class AttachmentsMultiUploader extends AbstractEditor {
 
     private List<Attachment> attachments = new ArrayList<>();
@@ -102,6 +100,7 @@ public class AttachmentsMultiUploader extends AbstractEditor {
 
         delBtn = (Button) getComponent("removeAttachBtn");
         delBtn.setAction(new AbstractAction("actions.Remove") {
+            @Override
             public void actionPerform(Component component) {
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 for (Attachment item : uploadsTable.getSelected()) {

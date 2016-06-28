@@ -11,8 +11,6 @@ import groovy.lang.Binding;
 
 import java.util.Map;
 
-/**
- */
 public class GroovyNotificationMessage implements NotificationMessage {
     private Binding binding;
     private Map<String,Object> parameters;

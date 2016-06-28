@@ -16,8 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Set;
 
-/**
- */
 public class AssignmentBrowser extends AbstractWindow {
 
     @Named("aTable")

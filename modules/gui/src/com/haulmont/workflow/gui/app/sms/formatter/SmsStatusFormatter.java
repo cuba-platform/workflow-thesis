@@ -10,9 +10,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.workflow.core.enums.SmsStatus;
 
-/**
- *
- */
 public class SmsStatusFormatter implements Formatter {
     @Override
     public String format(Object value) {

@@ -27,8 +27,6 @@ import org.apache.commons.collections.CollectionUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 public class UserGroupBrowser extends AbstractWindow {
 
     @Inject

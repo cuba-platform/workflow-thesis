@@ -17,8 +17,6 @@ import org.jbpm.api.activity.ActivityExecution;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class MainAssignmentTimersFactory implements AssignmentTimersFactory{
     
     @Override

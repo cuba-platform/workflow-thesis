@@ -25,8 +25,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- */
 @Component(WfEntityDescriptorTools.NAME)
 public class WfEntityDescriptorTools {
 

@@ -14,8 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- */
 public class EnumCardPropertyHandler extends BaseCardPropertyHandler {
 
 

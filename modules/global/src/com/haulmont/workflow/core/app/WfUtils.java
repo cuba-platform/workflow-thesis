@@ -9,8 +9,6 @@ import com.haulmont.workflow.core.entity.Card;
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 
-/**
- */
 public class WfUtils {
 
     /**

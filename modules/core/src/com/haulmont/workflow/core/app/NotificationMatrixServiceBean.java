@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.List;
 
-/**
- */
 @Service(NotificationMatrixService.NAME)
 public class NotificationMatrixServiceBean implements NotificationMatrixService {
     @Inject

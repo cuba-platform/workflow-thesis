@@ -12,8 +12,6 @@ import com.haulmont.workflow.core.entity.Attachment;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("workflow_AttachmentEntityListener")
 public class AttachmentEntityListener implements BeforeInsertEntityListener<Attachment> {
 

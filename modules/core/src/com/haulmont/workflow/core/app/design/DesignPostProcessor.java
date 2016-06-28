@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-/**
- *
- */
 public class DesignPostProcessor {
 
     private List<BaseDesignPostProcessor> processors;

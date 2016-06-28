@@ -17,8 +17,6 @@ import org.apache.commons.lang.BooleanUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class BaseCardPropertyHandler extends CardPropertyHandler {
 
     protected WfEntityDescriptorTools wfEntityDescriptorTools;

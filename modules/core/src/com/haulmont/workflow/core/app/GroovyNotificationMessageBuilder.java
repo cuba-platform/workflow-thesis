@@ -10,8 +10,6 @@ import groovy.lang.Binding;
 
 import java.util.Map;
 
-/**
- */
 public class GroovyNotificationMessageBuilder implements NotificationMessageBuilder {
     private String script;
 

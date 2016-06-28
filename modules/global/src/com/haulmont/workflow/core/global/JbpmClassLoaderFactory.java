@@ -8,8 +8,6 @@ package com.haulmont.workflow.core.global;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 
-/**
- */
 public final class JbpmClassLoaderFactory {
     private JbpmClassLoaderFactory() {
     }

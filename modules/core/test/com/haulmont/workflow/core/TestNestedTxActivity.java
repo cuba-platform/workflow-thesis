@@ -16,6 +16,7 @@ import java.util.List;
 
 public class TestNestedTxActivity extends CardActivity {
 
+    @Override
     public void execute(ActivityExecution execution) throws Exception {
         super.execute(execution);
         Persistence persistence = AppBeans.get(Persistence.class);

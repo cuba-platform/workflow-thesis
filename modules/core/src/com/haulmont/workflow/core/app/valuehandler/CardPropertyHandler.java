@@ -11,8 +11,6 @@ import com.haulmont.workflow.core.enums.AttributeType;
 import java.io.Serializable;
 import java.util.Map;
 
-/**
- */
 public abstract class CardPropertyHandler implements Serializable {
 
     protected Class clazz;

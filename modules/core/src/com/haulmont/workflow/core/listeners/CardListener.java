@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 
-/**
- */
 @Component("workflow_CardListener")
 public class CardListener implements
         BeforeDeleteEntityListener<Card>,

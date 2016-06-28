@@ -14,8 +14,6 @@ import org.apache.commons.lang.ObjectUtils;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-/**
- */
 public class ProcessVariablesEntity implements Entity {
 
     private static final long serialVersionUID = -8913144744993978336L;

@@ -10,9 +10,6 @@ import com.haulmont.workflow.core.entity.SendingSms;
 
 import java.util.List;
 
-/**
- *
- */
 public interface SmsManagerAPI {
     String NAME = "workflow_SmsManager";
 

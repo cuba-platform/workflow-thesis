@@ -14,8 +14,6 @@ import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 
 import java.lang.reflect.AnnotatedElement;
 
-/**
- */
 public class ProcessVariableMetaProperty extends MetadataObjectImpl implements MetaProperty {
 
     private MetaClass metaClass;

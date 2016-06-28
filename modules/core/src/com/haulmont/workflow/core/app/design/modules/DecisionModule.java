@@ -19,8 +19,6 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-/**
- */
 public class DecisionModule extends Module {
 
     protected JSONObject jsOptions;

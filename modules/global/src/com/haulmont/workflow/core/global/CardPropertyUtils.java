@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
-/**
- */
 public final class CardPropertyUtils {
 
     private CardPropertyUtils() {

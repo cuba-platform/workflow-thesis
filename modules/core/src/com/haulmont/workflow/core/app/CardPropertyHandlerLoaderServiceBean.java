@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Map;
 
-/**
- */
 @Service(CardPropertyHandlerLoaderService.NAME)
 public class CardPropertyHandlerLoaderServiceBean implements CardPropertyHandlerLoaderService {
 

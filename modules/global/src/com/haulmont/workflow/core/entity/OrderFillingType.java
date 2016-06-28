@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum OrderFillingType implements EnumClass<String> {
     PARALLEL("P"),
     SEQUENTIAL("S");

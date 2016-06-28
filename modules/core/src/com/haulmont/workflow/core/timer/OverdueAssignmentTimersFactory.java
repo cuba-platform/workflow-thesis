@@ -18,8 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
 
     private Date dueDate;

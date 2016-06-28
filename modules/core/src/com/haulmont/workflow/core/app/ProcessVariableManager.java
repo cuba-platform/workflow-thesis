@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Component(ProcessVariableAPI.NAME)
 public class ProcessVariableManager implements ProcessVariableAPI {
 
@@ -27,10 +25,12 @@ public class ProcessVariableManager implements ProcessVariableAPI {
     @Inject
     protected Metadata metadata;
 
+    @Override
     public String getStringValue(Object value) {
         return wfEntityDescriptorTools.getStringValue(value);
     }
 
+    @Override
     public Object getValue(AbstractProcessVariable designProcessVariable) {
         return wfEntityDescriptorTools.getValue(designProcessVariable);
     }

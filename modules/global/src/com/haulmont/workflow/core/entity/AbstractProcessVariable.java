@@ -18,9 +18,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- */
 @MappedSuperclass
 public abstract class AbstractProcessVariable extends StandardEntity implements WfEntityDescriptor {
     private static final long serialVersionUID = -8393724105946755178L;
@@ -72,6 +69,7 @@ public abstract class AbstractProcessVariable extends StandardEntity implements 
         this.alias = alias;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
@@ -80,6 +78,7 @@ public abstract class AbstractProcessVariable extends StandardEntity implements 
         this.value = value;
     }
 
+    @Override
     public AttributeType getAttributeType() {
         return AttributeType.fromId(attributeType);
     }
@@ -88,6 +87,7 @@ public abstract class AbstractProcessVariable extends StandardEntity implements 
         this.attributeType = attributeType != null ? attributeType.getId() : null;
     }
 
+    @Override
     public String getMetaClassName() {
         return metaClassName;
     }
@@ -95,7 +95,6 @@ public abstract class AbstractProcessVariable extends StandardEntity implements 
     public void setMetaClassName(String metaClassName) {
         this.metaClassName = metaClassName;
     }
-
 
     public Boolean getOverridden() {
         return overridden;

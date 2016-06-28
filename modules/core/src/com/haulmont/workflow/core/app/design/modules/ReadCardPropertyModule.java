@@ -18,8 +18,6 @@ import org.dom4j.Element;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- */
 public class ReadCardPropertyModule extends CardPropertyModule {
 
     protected String operationType;

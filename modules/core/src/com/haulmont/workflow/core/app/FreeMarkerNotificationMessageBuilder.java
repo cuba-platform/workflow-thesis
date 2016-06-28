@@ -14,8 +14,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.*;
 
-/**
- */
 public class FreeMarkerNotificationMessageBuilder implements NotificationMessageBuilder {
     private Template templateSubject;
     private Template templateBody;

@@ -7,8 +7,6 @@ package com.haulmont.workflow.core.enums;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-/**
- */
 public enum AttributeType implements EnumClass<String> {
 
     STRING("STRING"),

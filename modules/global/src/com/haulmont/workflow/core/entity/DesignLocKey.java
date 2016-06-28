@@ -12,8 +12,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.Set;
 
-/**
- */
 @MetaClass(name = "wf$DesignLocKey")
 @NamePattern("%s|key")
 @SystemLevel
@@ -54,6 +52,7 @@ public class DesignLocKey extends AbstractNotPersistentEntity implements Compara
         this.parentKey = parentKey;
     }
 
+    @Override
     public int compareTo(DesignLocKey o) {
         if (getCaption() == null)
             return -1;

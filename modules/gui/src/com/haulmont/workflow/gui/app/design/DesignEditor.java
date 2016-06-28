@@ -18,8 +18,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- */
 public class DesignEditor extends AbstractEditor {
 
     @Inject

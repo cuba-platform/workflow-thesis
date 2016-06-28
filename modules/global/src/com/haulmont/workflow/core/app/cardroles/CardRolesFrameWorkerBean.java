@@ -17,11 +17,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
-/**
- */
 @Component(CardRolesFrameWorker.NAME)
 public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
 
+    @Override
     public Set<String> getEmptyRolesNames(Card card, Set<CardRole> cardRoles, String requiredRolesCodesStr,
                                           List<String> deletedEmptyRoleCodes) {
 
@@ -96,6 +95,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         return emptyRolesNames;
     }
 
+    @Override
     public void assignNextSortOrder(CardRole nextCardRole, Collection<CardRole> allCardRoles) {
         if (nextCardRole.getSortOrder() != null)
             return;
@@ -113,6 +113,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
     }
 
+    @Override
     public void normalizeSortOrders(Proc currentProcess, boolean combinedStagesEnabled,
                                     Collection<ProcRole> procRoles, Collection<CardRole> cardRoles) {
 
@@ -143,6 +144,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
     }
 
+    @Override
     public List<CardRole> getAllCardRolesWithProcRole(ProcRole procRole, Collection<CardRole> cardRoles) {
         List<CardRole> cardRolesWithProcRole = new ArrayList<>();
         for (CardRole cr : cardRoles) {
@@ -153,6 +155,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         return cardRolesWithProcRole;
     }
 
+    @Override
     public int getMaxSortOrderInCardRoles(List<CardRole> cardRoles) {
         int max = 0;
         for (CardRole role : cardRoles) {

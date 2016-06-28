@@ -11,9 +11,6 @@ import com.haulmont.workflow.core.error.DesignCompilationError;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- *
- */
 public class CompilationMessage implements Serializable {
 
     private List<DesignCompilationError> errors;

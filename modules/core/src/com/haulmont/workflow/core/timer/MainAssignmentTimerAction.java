@@ -22,8 +22,6 @@ import org.jbpm.api.Execution;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public class MainAssignmentTimerAction extends AssignmentTimerAction {
 
     private Log log = LogFactory.getLog(getClass());

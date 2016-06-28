@@ -25,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- */
 public class CubaJbpmDbidGenerator extends DbidGenerator {
 
     public static final String SEQ_NAME = "seq_jbpm_id_gen";

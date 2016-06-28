@@ -10,8 +10,6 @@ import com.haulmont.workflow.core.entity.Assignment;
 
 import java.util.UUID;
 
-/**
- */
 public class AssignmentCollectionDatasource extends CollectionDatasourceImpl<Assignment,UUID> {
 
     @Override

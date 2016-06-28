@@ -19,8 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
 
-/**
- */
 @Component(AssignmentLocalizationTools.NAME)
 public class AssignmentLocalizationToolsImpl implements AssignmentLocalizationTools {
     @Inject

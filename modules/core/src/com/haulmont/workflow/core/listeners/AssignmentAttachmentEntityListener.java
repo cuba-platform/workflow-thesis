@@ -11,14 +11,13 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.AssignmentAttachment;
 import com.haulmont.workflow.core.entity.Card;
 
-/**
- *
- */
 public class AssignmentAttachmentEntityListener implements BeforeInsertEntityListener<AssignmentAttachment>, BeforeDeleteEntityListener<AssignmentAttachment> {
+    @Override
     public void onBeforeInsert(AssignmentAttachment entity) {
         entity.getAssignment().getCard().setHasAttachments(true);
     }
 
+    @Override
     public void onBeforeDelete(AssignmentAttachment entity) {
         Card card = entity.getAssignment().getCard();
         Assignment assignment = entity.getAssignment();

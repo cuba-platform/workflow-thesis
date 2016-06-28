@@ -11,8 +11,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
-/**
- */
 @Component("workflow_NotificationMatrixMBean")
 public class NotificationMatrix implements NotificationMatrixMBean {
 

@@ -29,6 +29,7 @@ public class ProcessMigratorImpl implements ProcessMigrator {
 
     private Log log = LogFactory.getLog(ProcessMigratorImpl.class);
 
+    @Override
     public Result checkMigrationPossibility(UUID designId, UUID procId) {
         Preconditions.checkArgument(designId != null && procId != null, "designId or procId is null");
 
@@ -102,6 +103,7 @@ public class ProcessMigratorImpl implements ProcessMigrator {
         }
     }
 
+    @Override
     public void migrate(UUID designId, UUID procId, String oldJbpmProcessKey) {
         Preconditions.checkArgument(designId != null && procId != null, "designId or procId is null");
 

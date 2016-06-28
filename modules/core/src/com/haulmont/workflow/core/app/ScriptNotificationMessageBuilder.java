@@ -12,9 +12,6 @@ import groovy.lang.Binding;
 
 import java.util.Map;
 
-/**
- *
- */
 public class ScriptNotificationMessageBuilder implements NotificationMessageBuilder {
     private String script;
 

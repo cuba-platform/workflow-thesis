@@ -32,8 +32,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- */
 @Service(WfAssignmentService.NAME)
 public class WfAssignmentServiceBean implements WfAssignmentService {
 
