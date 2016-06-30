@@ -37,11 +37,6 @@ public class ProcessVariablesEntity implements Entity {
     }
 
     @Override
-    public UUID getUuid() {
-        return id;
-    }
-
-    @Override
     public MetaClass getMetaClass() {
         return metaClass;
     }

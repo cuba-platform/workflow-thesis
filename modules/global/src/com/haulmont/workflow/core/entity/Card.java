@@ -8,10 +8,7 @@ import com.google.common.base.Joiner;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
@@ -23,6 +20,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +33,7 @@ import java.util.regex.Pattern;
 @Listeners("workflow_CardListener")
 @NamePattern("%s|description")
 @SystemLevel
-public class Card extends CategorizedEntity implements Updatable, SoftDelete, Versioned {
+public class Card extends CategorizedEntity implements Creatable, Updatable, SoftDelete, Versioned {
 
     private static final long serialVersionUID = -6180254942462308853L;
 
@@ -44,6 +42,12 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     @Version
     @Column(name = "VERSION")
     protected Integer version;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -135,6 +139,26 @@ public class Card extends CategorizedEntity implements Updatable, SoftDelete, Ve
     @Override
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override

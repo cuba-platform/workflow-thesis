@@ -5,6 +5,7 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -15,7 +16,13 @@ import java.util.Date;
 @Entity(name = "wf$CardRelation")
 @Table(name = "WF_CARD_RELATION")
 @SystemLevel
-public class CardRelation extends BaseUuidEntity implements SoftDelete, Updatable {
+public class CardRelation extends BaseUuidEntity implements Creatable, SoftDelete, Updatable {
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -36,6 +43,26 @@ public class CardRelation extends BaseUuidEntity implements SoftDelete, Updatabl
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "RELATED_CARD_ID")
     protected Card relatedCard;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     @Override
     public Date getUpdateTs() {

@@ -41,9 +41,9 @@ public class UserGroupsDatasource extends CollectionDatasourceImpl<StandardEntit
         }
         if (list != null) {
             for (Object obj : list) {
-                UUID uuid = ((Entity)obj).getUuid();
-                if (!data.containsKey(uuid))
-                    data.put(uuid, obj);
+                Object id = ((Entity) obj).getId();
+                if (!data.containsKey(id))
+                    data.put(id, obj);
             }
         }
     }

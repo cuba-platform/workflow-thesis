@@ -5,6 +5,7 @@
 package com.haulmont.workflow.core.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Creatable;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
@@ -14,9 +15,15 @@ import java.util.Date;
 @Entity(name = "wf$Calendar")
 @Table(name = "WF_CALENDAR")
 @SystemLevel
-public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
+public class WorkCalendarEntity extends BaseUuidEntity implements Creatable, Updatable {
 
     private static final long serialVersionUID = 8935633783119746469L;
+
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
@@ -40,6 +47,26 @@ public class WorkCalendarEntity extends BaseUuidEntity implements Updatable {
 
     @Column(name = "CALENDAR_COMMENT")
     protected String comment;
+
+    @Override
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    @Override
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     @Override
     public String getUpdatedBy() {
