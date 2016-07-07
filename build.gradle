@@ -43,7 +43,7 @@ def coreModule = project(':workflow-core')
 def guiModule = project(':workflow-gui')
 def webModule = project(':workflow-web')
 
-def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
+def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.70']
 def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
