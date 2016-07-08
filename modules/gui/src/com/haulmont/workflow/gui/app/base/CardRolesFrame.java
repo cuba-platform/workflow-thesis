@@ -474,7 +474,7 @@ public class CardRolesFrame extends AbstractFrame {
                 List<ProcRole> roleList = card.getProc().getRoles();
                 if (roleList != null) {
                     for (ProcRole procRole : roleList) {
-                        if (!procRolesDs.containsItem(procRole.getUuid()) && (procRole.getInvisible() == null || !procRole.getInvisible())) {
+                        if (!procRolesDs.containsItem(procRole.getId()) && (procRole.getInvisible() == null || !procRole.getInvisible())) {
                             procRolesDs.addItem(procRole);
                         }
                     }
@@ -490,7 +490,7 @@ public class CardRolesFrame extends AbstractFrame {
 
     public void procChanged(Proc proc, Card card) {
         currentProcess = proc;
-        procRolesDs.refresh(Collections.<String, Object>singletonMap("procId", proc));
+        procRolesDs.refresh(Collections.singletonMap("procId", proc));
         initCreateRoleLookup();
         tmpCardRolesDs.fillForProc(proc);
 
