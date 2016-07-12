@@ -161,7 +161,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         List<Assignment> assignments = getAssignmentsByState(card, state);
         Date dueDate = null;
         for (Assignment assignment : assignments) {
-            if (assignment.getDueDate() != null) {
+            if (assignment.getDueDate() != null && assignment.getFinished() == null) {
                 dueDate = assignment.getDueDate();
                 break;
             }
