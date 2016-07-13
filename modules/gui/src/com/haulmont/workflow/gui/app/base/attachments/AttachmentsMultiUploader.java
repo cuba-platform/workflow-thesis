@@ -25,8 +25,8 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private List<Attachment> attachments = new ArrayList<>();
 
     private FileMultiUploadField uploadField;
-    private Button okBtn, cancelBtn, delBtn;
-    private boolean needSave;
+    protected Button okBtn, cancelBtn, delBtn;
+    protected boolean needSave;
     protected Table<Attachment> uploadsTable = null;
     protected Map<FileDescriptor, UUID> descriptors = new HashMap<>();
     protected AttachmentCreator creator;
