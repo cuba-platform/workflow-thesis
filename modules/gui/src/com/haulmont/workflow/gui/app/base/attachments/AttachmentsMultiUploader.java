@@ -30,15 +30,15 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
-    private Table uploadsTable = null;
-    private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
-    private AttachmentCreator creator;
-    private LookupField attachTypeCombo;
+    protected Table uploadsTable = null;
+    protected Map<FileDescriptor, UUID> descriptors = new HashMap<>();
+    protected AttachmentCreator creator;
+    protected LookupField attachTypeCombo;
 
     private boolean isUploading = false;
 
-    private CollectionDatasourceImpl attachDs, attachTypesDs, filesDs;
-    private AttachmentType defaultAttachType;
+    protected CollectionDatasourceImpl attachDs, attachTypesDs, filesDs;
+    protected AttachmentType defaultAttachType;
 
     @Override
     public void setItem(Entity item) {
