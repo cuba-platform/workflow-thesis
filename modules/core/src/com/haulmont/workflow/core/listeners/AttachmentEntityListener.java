@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.core.listeners;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.workflow.core.entity.Attachment;
@@ -19,7 +20,7 @@ public class AttachmentEntityListener implements BeforeInsertEntityListener<Atta
     protected UserSessionSource userSessionSource;
 
     @Override
-    public void onBeforeInsert(Attachment entity) {
+    public void onBeforeInsert(Attachment entity, EntityManager entityManager) {
         if (entity.getSubstitutedCreator() == null)
             entity.setSubstitutedCreator(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
     }

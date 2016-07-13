@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.core.listeners;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.workflow.core.entity.Assignment;
@@ -13,12 +14,12 @@ import com.haulmont.workflow.core.entity.Card;
 
 public class AssignmentAttachmentEntityListener implements BeforeInsertEntityListener<AssignmentAttachment>, BeforeDeleteEntityListener<AssignmentAttachment> {
     @Override
-    public void onBeforeInsert(AssignmentAttachment entity) {
+    public void onBeforeInsert(AssignmentAttachment entity, EntityManager entityManager) {
         entity.getAssignment().getCard().setHasAttachments(true);
     }
 
     @Override
-    public void onBeforeDelete(AssignmentAttachment entity) {
+    public void onBeforeDelete(AssignmentAttachment entity, EntityManager entityManager) {
         Card card = entity.getAssignment().getCard();
         Assignment assignment = entity.getAssignment();
         assignment.getAttachments().remove(entity);

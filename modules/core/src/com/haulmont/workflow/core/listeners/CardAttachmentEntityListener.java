@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @Component("workflow_CardAttachmentEntityListener")
@@ -31,30 +32,30 @@ public class CardAttachmentEntityListener implements
     protected static final String CARD_UPDATE_QUERY = "update WF_CARD set HAS_ATTACHMENTS = ? where ID = ?";
 
     @Override
-    public void onAfterInsert(CardAttachment entity) {
-        executeUpdate(entity.getCard(), Boolean.TRUE);
+    public void onAfterInsert(CardAttachment entity, Connection connection) {
+        executeUpdate(entity.getCard(), Boolean.TRUE, connection);
     }
 
     @Override
-    public void onAfterDelete(CardAttachment entity) {
+    public void onAfterDelete(CardAttachment entity, Connection connection) {
         Card card = entity.getCard();
 
         if (card.getAttachments().isEmpty()) {
-            executeUpdate(card, Boolean.FALSE);
+            executeUpdate(card, Boolean.FALSE, connection);
         }
     }
 
     /**
      * Use QueryRunner here to avoid OptimisticLocking exception
      */
-    protected void executeUpdate(Card card, Boolean hasAttachments) {
+    protected void executeUpdate(Card card, Boolean hasAttachments, Connection connection) {
         try {
             DbTypeConverter converter = persistence.getDbTypeConverter();
             Object hasAttachmentsParam = converter.getSqlObject(hasAttachments);
             Object idParam = converter.getSqlObject(card.getId());
 
             QueryRunner runner = new QueryRunner();
-            runner.update(persistence.getEntityManager().getConnection(),
+            runner.update(connection,
                     CARD_UPDATE_QUERY, new Object[]{hasAttachmentsParam, idParam});
         } catch (SQLException e) {
             log.error(ExceptionUtils.getStackTrace(e));

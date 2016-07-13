@@ -29,7 +29,7 @@ public class CardListener implements
     protected Persistence persistence;
 
     @Override
-    public void onBeforeDelete(Card card) {
+    public void onBeforeDelete(Card card, EntityManager entityManager) {
         EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery();
         query.setQueryString("select t from wf$Timer t where t.card.id=:id");
@@ -41,12 +41,12 @@ public class CardListener implements
     }
 
     @Override
-    public void onBeforeInsert(Card card) {
+    public void onBeforeInsert(Card card, EntityManager entityManager) {
         setHasAttributesForCard(card);
     }
 
     @Override
-    public void onBeforeUpdate(Card card) {
+    public void onBeforeUpdate(Card card, EntityManager entityManager) {
         setHasAttributesForCard(card);
     }
 
