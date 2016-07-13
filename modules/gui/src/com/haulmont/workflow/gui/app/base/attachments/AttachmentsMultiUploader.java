@@ -27,20 +27,20 @@ public class AttachmentsMultiUploader extends AbstractEditor {
     private FileMultiUploadField uploadField;
     private Button okBtn, cancelBtn, delBtn;
     private boolean needSave;
-    private Table<Attachment> uploadsTable = null;
-    private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
-    private AttachmentCreator creator;
-    private LookupField attachTypeCombo;
+    protected Table<Attachment> uploadsTable = null;
+    protected Map<FileDescriptor, UUID> descriptors = new HashMap<>();
+    protected AttachmentCreator creator;
+    protected LookupField attachTypeCombo;
 
     private boolean isUploading = false;
 
     @Inject
-    private CollectionDatasourceImpl attachDs;
+    protected CollectionDatasourceImpl attachDs;
     @Inject
     private CollectionDatasourceImpl attachTypesDs;
     @Inject
-    private CollectionDatasourceImpl filesDs;
-    private AttachmentType defaultAttachType;
+    protected CollectionDatasourceImpl filesDs;
+    protected AttachmentType defaultAttachType;
 
     @Override
     public void setItem(Entity item) {
