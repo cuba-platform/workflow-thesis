@@ -119,12 +119,15 @@ public class UniversalAssigner extends MultiAssigner {
                             .setParameter(3, successTransitions)
                             .getFirstResult();
                 }
-                Timestamp date = em.createQuery("select max(b.createTs) from wf\$Assignment b where b.card.id=?1 and b.proc.id=?2 " +
-                        "and b.name IN ('Started',?3) and b.createTs < (select max(c.createTs) from wf\$Assignment c " +
+                Timestamp date = em.createQuery("select max(b.createTs) from wf\$Assignment b " +
+                        "where b.card.id=?1 and b.proc.id=?2 " +
+                        "and b.name IN ('Started',?3) and b.outcome not in (?4) " +
+                        "and b.createTs < (select max(c.createTs) from wf\$Assignment c " +
                         "where c.card.id=?1 and c.proc.id=?2 and c.name = ?3)")
                         .setParameter(1, card)
                         .setParameter(2, card.proc)
                         .setParameter(3, state)
+                        .setParameter(4, getExcludedOutcomes())
                         .getFirstResult();
                 execution.createVariable("date", date)
             }
@@ -157,6 +160,11 @@ public class UniversalAssigner extends MultiAssigner {
             }
         }
         return cardRoles
+    }
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected Collection<String> getExcludedOutcomes() {
+        return [WfConstants.ACTION_REASSIGN];
     }
 
     @Override
