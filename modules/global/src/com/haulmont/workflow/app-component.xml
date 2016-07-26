@@ -5,21 +5,20 @@
 
 <app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
                dependsOn="com.haulmont.cuba">
-
     <module name="global" blocks="*">
         <artifact name="workflow-global" appJar="true"/>
 
-        <property name="cuba.persistenceConfig" value="workflow-persistence.xml"/>
-        <property name="cuba.metadataConfig" value="workflow-metadata.xml"/>
-        <property name="cuba.viewsConfig" value="workflow-views.xml"/>
-        <property name="cuba.creditsConfig" value="workflow-credits.xml"/>
+        <property name="cuba.persistenceConfig" value="+workflow-persistence.xml"/>
+        <property name="cuba.metadataConfig" value="+workflow-metadata.xml"/>
+        <property name="cuba.viewsConfig" value="+workflow-views.xml"/>
+        <property name="cuba.creditsConfig" value="+workflow-credits.xml"/>
     </module>
 
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="workflow-core" appJar="true"/>
         <artifact name="workflow-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
-        <property name="cuba.springContextConfig" value="workflow-spring.xml"/>
+        <property name="cuba.springContextConfig" value="+workflow-spring.xml"/>
     </module>
 
     <module name="gui" dependsOn="global" blocks="web">
@@ -30,11 +29,11 @@
         <artifact name="workflow-web" appJar="true"/>
         <artifact name="workflow-web" classifier="web" ext="zip" configuration="webcontent"/>
 
-        <property name="cuba.springContextConfig" value="workflow-web-spring.xml"/>
-        <property name="cuba.mainMessagePack" value="com.haulmont.workflow.web"/>
-        <property name="cuba.dispatcherSpringContextConfig" value="workflow-dispatcher-spring.xml"/>
-        <property name="cuba.windowConfig" value="workflow-web-screens.xml"/>
-        <property name="cuba.menuConfig" value="workflow-web-menu.xml"/>
+        <property name="cuba.springContextConfig" value="+workflow-web-spring.xml"/>
+        <property name="cuba.mainMessagePack" value="+com.haulmont.workflow.web"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="+workflow-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig" value="+workflow-web-screens.xml"/>
+        <property name="cuba.menuConfig" value="+workflow-web-menu.xml"/>
     </module>
 
 </app-component>
