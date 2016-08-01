@@ -570,7 +570,7 @@ Wf.OptionFieldsHelper.setVariables = function(container, val) {
 
 Wf.OptionFieldsHelper.getValue = function(container) {
     var optValue;
-    var lang = YAHOO.lang, Event = YAHOO.util.Event, Dom = YAHOO.util.Dom;
+    var lang = YAHOO.lang;
     if (container.optionsForm) {
         optValue = container.optionsForm.getValue();
     } else if (container.optionsValue) {
