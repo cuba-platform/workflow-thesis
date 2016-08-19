@@ -197,7 +197,10 @@ public class SubDesignModule extends Module {
         super.generateDesignProcessVariables();
         Map<String, String> paramsMap = parseParamsString(params);
         Metadata metadata = AppBeans.get(Metadata.NAME);
-
+        if (design == null) {
+            throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class,
+                    "exception.noSubDesign"), StringEscapeUtils.escapeHtml(caption)));
+        }
         for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
             DesignProcessVariable newDesignParameter =
                     (DesignProcessVariable) designProcessVariable.copyTo(metadata.create(DesignProcessVariable.class));

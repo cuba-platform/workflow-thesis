@@ -192,6 +192,10 @@ public class DesignCompiler {
 
             log.info("Design " + designId + " succesfully compiled");
             return new CompilationMessage(errors, warnings);
+        } catch (DesignCompilationException e) {
+            List<DesignCompilationError> errorList = new LinkedList<>();
+            errorList.add(new DesignError(e.getMessage()));
+            return new CompilationMessage(errorList, Collections.<String>emptyList());
         } catch (JSONException e) {
             errors.add(new DesignError(e.getMessage()));
             return new CompilationMessage(errors, warnings);
