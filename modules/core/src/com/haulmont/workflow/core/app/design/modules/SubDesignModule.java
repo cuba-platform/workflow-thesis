@@ -10,7 +10,10 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.app.ProcessVariableAPI;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
@@ -195,6 +198,10 @@ public class SubDesignModule extends Module {
     @Override
     public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
         super.generateDesignProcessVariables();
+        if (design == null) {
+            throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class,
+                    "exception.noSubDesign"), StringEscapeUtils.escapeHtml(caption)));
+        }
         Map<String, String> paramsMap = parseParamsString(params);
         for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
             DesignProcessVariable newDesignParameter = (DesignProcessVariable) designProcessVariable.copyTo(new DesignProcessVariable());
