@@ -143,11 +143,12 @@ public class SubDesignModule extends Module {
         query.setParameter("subDesignId", UUID.fromString(subDesignId));
         query.setView(AppBeans.get(Metadata.class).getViewRepository().getView(DesignFile.class, View.LOCAL));
         query.setMaxResults(1);
-        DesignFile designFile = (DesignFile) query.getSingleResult();
-        if (designFile == null) {
-            throw new DesignCompilationException("Module : " + caption + ". Subdesign not compiled");
+        List<DesignFile> designFiles = query.getResultList();
+        if (designFiles.isEmpty()) {
+            throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class,
+                    "exception.noSubDesign"), StringEscapeUtils.escapeHtml(caption)));
         }
-        return designFile;
+        return designFiles.get(0);
     }
 
     protected void addSubDesignElement(Element parentEl, String startTransitionName) {
