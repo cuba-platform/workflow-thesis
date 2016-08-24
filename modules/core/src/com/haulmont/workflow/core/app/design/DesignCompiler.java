@@ -161,6 +161,10 @@ public class DesignCompiler {
                         "warning.unusedModules", modulesList.toString()));
             }
 
+            if (errors.size() > 0) {
+                return new CompilationMessage(errors, warnings);
+            }
+
             String forms = compileForms(modules, errors);
 
             if (errors.size() > 0) {
