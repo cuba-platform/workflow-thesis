@@ -87,7 +87,7 @@ public class DesignDeployer {
 
             tx.commit();
 
-            log.info("Design " + designId + " deployed succesfully");
+            log.info("Design " + designId + " deployed successfully");
 
             return proc;
         } catch (IOException e) {

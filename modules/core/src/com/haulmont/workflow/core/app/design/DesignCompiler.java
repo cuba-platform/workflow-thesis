@@ -194,7 +194,7 @@ public class DesignCompiler {
 
             tx.commit();
 
-            log.info("Design " + designId + " succesfully compiled");
+            log.info("Design " + designId + " successfully compiled");
             return new CompilationMessage(errors, warnings);
         } catch (DesignCompilationException e) {
             List<DesignCompilationError> errorList = new LinkedList<>();

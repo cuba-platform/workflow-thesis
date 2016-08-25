@@ -122,7 +122,7 @@ public class ProcessMigratorImpl implements ProcessMigrator {
 
             tx.commit();
 
-            log.info("Migration from " + oldJbpmProcessKey + " to " + proc.getJbpmProcessKey() + " has been completed succesfully");
+            log.info("Migration from " + oldJbpmProcessKey + " to " + proc.getJbpmProcessKey() + " has been completed successfully");
         } finally {
             tx.end();
         }
