@@ -109,49 +109,17 @@ public class WfServiceBean implements WfService {
 
     @Override
     public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
-        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
-        return isUserInProcRole(card, currentUser, procRoleCode);
+        return wfWorkerAPI.isCurrentUserInProcRole(card, procRoleCode);
     }
 
     @Override
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
-        CardRole appropCardRole = null;
-        if (card.getRoles() == null) {
-            Transaction tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                card = em.find(Card.class, card.getId(), "with-roles");
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        }
-        if (card.getRoles() != null) {
-            for (CardRole cardRole : card.getRoles()) {
-                if (cardRole.getCode().equals(procRoleCode) && cardRole.getUser() != null && cardRole.getUser().equals(user)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return isUserInProcRole(card, user, procRoleCode);
     }
 
     @Override
     public int deleteNotifications(Card card, User user) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = ?1 and ci.user.id = ?2");
-            query.setParameter(1, card.getId());
-            query.setParameter(2, user.getId());
-            List<CardInfo> cardInfoList = query.getResultList();
-            for (CardInfo ci : cardInfoList)
-                em.remove(ci);
-            tx.commit();
-            return cardInfoList.size();
-        } finally {
-            tx.end();
-        }
+        return wfWorkerAPI.deleteNotifications(card, user);
     }
 
     @Override
