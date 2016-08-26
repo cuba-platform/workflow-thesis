@@ -114,7 +114,7 @@ public class WfServiceBean implements WfService {
 
     @Override
     public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
-        return isUserInProcRole(card, user, procRoleCode);
+        return wfWorkerAPI.isUserInProcRole(card, user, procRoleCode);
     }
 
     @Override
