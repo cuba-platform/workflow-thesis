@@ -9,11 +9,14 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.core.entity.CardInfo;
+import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +43,9 @@ public class WfWorkerBean implements WfWorkerAPI {
 
     @Inject
     protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -203,5 +209,53 @@ public class WfWorkerBean implements WfWorkerAPI {
             tx.end();
         }
         return result;
+    }
+
+    @Override
+    public boolean isCurrentUserInProcRole(Card card, String procRoleCode) {
+        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
+        return isUserInProcRole(card, currentUser, procRoleCode);
+    }
+
+    @Override
+    public boolean isUserInProcRole(Card card, User user, String procRoleCode) {
+        CardRole appropCardRole = null;
+        if (card.getRoles() == null) {
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                em.setView(metadata.getViewRepository().getView(Card.class, "with-roles"));
+                card = em.find(Card.class, card.getId());
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
+        if (card.getRoles() != null) {
+            for (CardRole cardRole : card.getRoles()) {
+                if (cardRole.getCode().equals(procRoleCode) && cardRole.getUser() != null && cardRole.getUser().equals(user)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int deleteNotifications(Card card, User user) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            Query query = em.createQuery("select ci from wf$CardInfo ci where ci.card.id = ?1 and ci.user.id = ?2");
+            query.setParameter(1, card.getId());
+            query.setParameter(2, user.getId());
+            List<CardInfo> cardInfoList = query.getResultList();
+            for (CardInfo ci : cardInfoList)
+                em.remove(ci);
+            tx.commit();
+            return cardInfoList.size();
+        } finally {
+            tx.end();
+        }
     }
 }

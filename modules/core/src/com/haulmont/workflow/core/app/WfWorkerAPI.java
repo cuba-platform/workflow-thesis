@@ -45,4 +45,33 @@ public interface WfWorkerAPI {
     void setHasAttachmentsInCard(Card card, Boolean hasAttachments);
 
     List<User> getProcessActors(Card card, String procCode, String cardRoleCode);
+
+    /**
+     * Checks if specified user is a process actor, defined by
+     * process role code in a card process.
+     *
+     * @param card         card in a workflow process
+     * @param user         user
+     * @param procRoleCode process role code
+     * @return true is user is a process actor
+     */
+    boolean isUserInProcRole(Card card, User user, String procRoleCode);
+
+    /**
+     * Do the same as <code>WfService.isUserInProcRole(Card card, User user, String procRoleCode)</code>
+     * but takes a user from a current user session.
+     *
+     * @param card         card in a workflow process
+     * @param procRoleCode process role code
+     * @return true is user is a process actor
+     */
+    boolean isCurrentUserInProcRole(Card card, String procRoleCode);
+
+    /**
+     * Deletes all process notifications about the card for a user
+     *
+     * @param card card in a workflow process
+     * @param user user
+     */
+    int deleteNotifications(Card card, User user);
 }
