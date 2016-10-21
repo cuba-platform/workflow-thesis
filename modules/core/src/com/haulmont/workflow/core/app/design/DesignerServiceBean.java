@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.CompilationMessage;
 import com.haulmont.workflow.core.app.DesignerService;
@@ -47,7 +48,9 @@ public class DesignerServiceBean implements DesignerService {
             EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design src = em.find(Design.class, srcId);
 
-            Design design = new Design();
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+
+            Design design = metadata.create(Design.class);
             String name = AppBeans.get(Messages.class).getMessage(getClass(), "copyPrefix") + " " + src.getName();
             design.setName(name);
             design.setType(src.getType());
@@ -71,19 +74,21 @@ public class DesignerServiceBean implements DesignerService {
             em.persist(design);
 
             for (DesignScript srcScript : src.getScripts()) {
-                DesignScript designScript = new DesignScript();
+                DesignScript designScript = metadata.create(DesignScript.class);
                 designScript.setDesign(design);
                 designScript.setName(srcScript.getName());
                 designScript.setContent(srcScript.getContent());
                 em.persist(designScript);
             }
 
-            for (DesignProcessVariable variable : src.getDesignProcessVariables()) {
-                DesignProcessVariable processVariable = new DesignProcessVariable();
-                processVariable.setDesign(design);
-                processVariable.setShouldBeOverridden(variable.getShouldBeOverridden());
-                processVariable = (DesignProcessVariable) variable.copyTo(processVariable);
-                em.persist(processVariable);
+            if (design.getDesignProcessVariables() != null) {
+                for (DesignProcessVariable variable : src.getDesignProcessVariables()) {
+                    DesignProcessVariable processVariable = metadata.create(DesignProcessVariable.class);
+                    processVariable.setDesign(design);
+                    processVariable.setShouldBeOverridden(variable.getShouldBeOverridden());
+                    processVariable = (DesignProcessVariable) variable.copyTo(processVariable);
+                    em.persist(processVariable);
+                }
             }
 
             tx.commit();
@@ -150,7 +155,9 @@ public class DesignerServiceBean implements DesignerService {
                 query.setParameter("design", design);
                 query.executeUpdate();
 
-                DesignFile df = new DesignFile();
+                Metadata metadata = AppBeans.get(Metadata.NAME);
+
+                DesignFile df = metadata.create(DesignFile.class);
                 df.setDesign(design);
                 df.setContent(null);
                 df.setBinaryContent(design.getNotificationMatrix());

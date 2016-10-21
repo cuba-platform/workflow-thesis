@@ -297,10 +297,12 @@ public class DesignerWorker implements DesignerWorkerAPI {
         for (DesignScript script : design.getScripts()) {
             em.persist(script);
         }
-        if (CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
-            for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
-                em.persist(variable);
-            }
+        if (design.getDesignProcessVariables() != null) {
+            if (CollectionUtils.isNotEmpty(design.getDesignProcessVariables()))
+                for (DesignProcessVariable variable : design.getDesignProcessVariables()) {
+                    em.persist(variable);
+                }
+        }
         return design;
     }
 
@@ -312,8 +314,10 @@ public class DesignerWorker implements DesignerWorkerAPI {
         for (DesignScript script : existsDesign.getScripts()) {
             em.remove(script);
         }
-        for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
-            em.remove(variable);
+        if (existsDesign.getDesignProcessVariables() != null) {
+            for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
+                em.remove(variable);
+            }
         }
         for (DesignFile designFile : existsDesign.getDesignFiles()) {
             em.remove(designFile);

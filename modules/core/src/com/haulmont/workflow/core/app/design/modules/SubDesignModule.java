@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.core.app.design.modules;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -21,6 +22,8 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +58,7 @@ public class SubDesignModule extends Module {
     public static final String SUBDESIGN_ELEMENT_NAME = "subdesign";
     protected Pattern variablePattern = Pattern.compile("^\\$\\{([a-zA-Z0-9]*)\\}.*$");
 
+    @Override
     public void init(Module.Context context) throws DesignCompilationException {
         super.init(context);
         Transaction tx = AppBeans.get(Persistence.class).getTransaction();
@@ -80,6 +84,7 @@ public class SubDesignModule extends Module {
         }
     }
 
+    @Override
     public Element writeJpdlXml(Element parentEl) throws DesignCompilationException {
         DesignFile designFile = getDesignFile("jpdl", "");
         Document document = Dom4j.readDocument(designFile.getContent());
@@ -90,8 +95,50 @@ public class SubDesignModule extends Module {
     }
 
     protected void processSubDesignJpdl(Element parentEl, Element subDesign) {
-        for (Element node : (List<Element>) subDesign.elements("custom")) {
+        subDesign = replaceOverridenVariables(subDesign);
+        addElementsFromSubdesign(parentEl, subDesign);
+    }
+
+    protected void addElementsFromSubdesign(Element parentEl, Element subDesign) {
+        addElementsFromSubDesignByName(parentEl, subDesign, "activity");
+        addElementsFromSubDesignByName(parentEl, subDesign, "custom");
+        addElementsFromSubDesignByName(parentEl, subDesign, "fork");
+        addElementsFromSubDesignByName(parentEl, subDesign, "join");
+        addElementsFromSubDesignByName(parentEl, subDesign, "foreach");
+    }
+
+    protected void addElementsFromSubDesignByName(Element parentEl, Element subDesign,String name) {
+        for (Element node : (List<Element>) subDesign.elements(name)) {
             parentEl.elements().add(processNode(node));
+        }
+    }
+
+    private Element replaceOverridenVariables(Element subDesign) {
+        try {
+            Set<Pair<String, String>> replacePairs = new HashSet<>();
+            Map<String, String> paramsMap = parseParamsString(params);
+            if (design.getDesignProcessVariables() != null) {
+                for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
+                    if (paramsMap.containsKey(designProcessVariable.getAlias())) {
+                        String value = paramsMap.get(designProcessVariable.getAlias());
+                        Matcher matcher = variablePattern.matcher(value);
+                        if (matcher.find()) {
+                            String alias = matcher.group(1);
+                            replacePairs.add(new Pair("${" + designProcessVariable.getAlias() + "}", "${" + alias + "}"));
+                        } else {
+                            replacePairs.add(new Pair("${" + designProcessVariable.getAlias() + "}", value));
+                        }
+                    }
+                }
+            }
+            String subProcXML = subDesign.asXML();
+            for (Pair<String, String> replacement : replacePairs) {
+                subProcXML = subProcXML.replace(replacement.getFirst(), replacement.getSecond());
+            }
+            Document doc = DocumentHelper.parseText(subProcXML);
+            return doc.getRootElement();
+        } catch (DesignCompilationException | DocumentException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -104,9 +151,7 @@ public class SubDesignModule extends Module {
     }
 
     protected void processSubDesignXml(Element parentEl, Element subDesign) {
-        for (Element node : (List<Element>) subDesign.elements("activity")) {
-            parentEl.elements().add(processNode(node));
-        }
+        addElementsFromSubdesign(parentEl, subDesign);
     }
 
     @Override
@@ -196,33 +241,41 @@ public class SubDesignModule extends Module {
     @Override
     public List<DesignProcessVariable> generateDesignProcessVariables() throws DesignCompilationException {
         super.generateDesignProcessVariables();
+        Map<String, String> paramsMap = parseParamsString(params);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         if (design == null) {
             throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class,
                     "exception.noSubDesign"), StringEscapeUtils.escapeHtml(caption)));
         }
-        Map<String, String> paramsMap = parseParamsString(params);
-        for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
-            DesignProcessVariable newDesignParameter = (DesignProcessVariable) designProcessVariable.copyTo(new DesignProcessVariable());
-            newDesignParameter.setModuleName(prepareModuleNames(designProcessVariable.getModuleName()));
-            newDesignParameter.setAlias(designProcessVariable.getAlias());
-            if (paramsMap.containsKey(designProcessVariable.getAlias())) {
-                String value = paramsMap.get(designProcessVariable.getAlias());
-                Matcher matcher = variablePattern.matcher(value);
-                if (matcher.find()) {
-                    String alias = matcher.group(1);
-                    newDesignParameter.setAlias(alias);
-                } else {
-                    newDesignParameter.setValue(value);
-                    newDesignParameter.setAlias(name + "_" + designProcessVariable.getAlias());
-                    try {
-                        Object varValue = processVariableAPI.getValue(newDesignParameter);
-                    } catch (IllegalStateException e) {
-                        throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class, "incorrectValueInSubprocessParams"), value, designProcessVariable.getAlias(), MessageProvider.getMessage(designProcessVariable.getAttributeType())));
+        if (design.getDesignProcessVariables() != null) {
+            for (DesignProcessVariable designProcessVariable : design.getDesignProcessVariables()) {
+                DesignProcessVariable newDesignParameter =
+                        (DesignProcessVariable) designProcessVariable.copyTo(metadata.create(DesignProcessVariable.class));
+                newDesignParameter.setModuleName(prepareModuleNames(designProcessVariable.getModuleName()));
+                newDesignParameter.setAlias(designProcessVariable.getAlias());
+                if (paramsMap.containsKey(designProcessVariable.getAlias())) {
+                    String value = paramsMap.get(designProcessVariable.getAlias());
+                    Matcher matcher = variablePattern.matcher(value);
+                    if (matcher.find()) {
+                        String alias = matcher.group(1);
+                        newDesignParameter.setAlias(alias);
+                    } else {
+                        newDesignParameter.setValue(value);
+                        newDesignParameter.setAlias(name + "_" + designProcessVariable.getAlias());
+                        try {
+                            Object varValue = processVariableAPI.getValue(newDesignParameter);
+                        } catch (IllegalStateException e) {
+                            throw new DesignCompilationException(String.format(
+                                    messages.getMessage(SubDesignModule.class, "incorrectValueInSubprocessParams"),
+                                    value,
+                                    designProcessVariable.getAlias(),
+                                    AppBeans.get(Messages.class).getMessage(designProcessVariable.getAttributeType())));
+                        }
                     }
                 }
+                newDesignParameter.setShouldBeOverridden(designProcessVariable.getShouldBeOverridden());
+                designProcessVariables.add(newDesignParameter);
             }
-            newDesignParameter.setShouldBeOverridden(designProcessVariable.getShouldBeOverridden());
-            designProcessVariables.add(newDesignParameter);
         }
         return designProcessVariables;
     }
@@ -244,7 +297,7 @@ public class SubDesignModule extends Module {
 
     private Map<String, String> getTransitionsMap() {
         if (transitionsMap == null) {
-            transitionsMap = new HashMap<String, String>();
+            transitionsMap = new HashMap<>();
             for (Module.Transition transition : transitions) {
                 transitionsMap.put(WfUtils.encodeKey(transition.srcTerminal), transition.dstName);
             }

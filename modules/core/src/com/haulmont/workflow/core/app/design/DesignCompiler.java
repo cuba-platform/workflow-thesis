@@ -936,23 +936,10 @@ public class DesignCompiler {
     }
 
     protected void addEndProcessListener(Element rootEl) {
-        List<Element> endElements = rootEl.elements("end");
-        List<String> endModuleNames = new ArrayList<>();
-        for (Element element : endElements) {
-            endModuleNames.add(element.attributeValue("name"));
-        }
-
-        List<Element> customElements = rootEl.elements("custom");
-        for (Element customElement : customElements) {
-            List<Element> transitionEls = customElement.elements("transition");
-            for (Element transitionEl : transitionEls) {
-                String to = transitionEl.attributeValue("to");
-                if (endModuleNames.contains(to)) {
-                    Element eventListener = transitionEl.addElement("event-listener");
-                    eventListener.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
-                }
-            }
-        }
+        Element startEl = rootEl.addElement("on");
+        startEl.addAttribute("event", "end");
+        Element startListenerEl = startEl.addElement("event-listener");
+        startListenerEl.addAttribute("class", "com.haulmont.workflow.core.activity.EndProcessListener");
     }
 
     protected void addRemoveTimersEventListenerOnEndProcess(Element rootEl) {
