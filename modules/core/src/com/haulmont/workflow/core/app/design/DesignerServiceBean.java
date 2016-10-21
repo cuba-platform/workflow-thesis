@@ -81,12 +81,14 @@ public class DesignerServiceBean implements DesignerService {
                 em.persist(designScript);
             }
 
-            for (DesignProcessVariable variable : src.getDesignProcessVariables()) {
-                DesignProcessVariable processVariable = metadata.create(DesignProcessVariable.class);
-                processVariable.setDesign(design);
-                processVariable.setShouldBeOverridden(variable.getShouldBeOverridden());
-                processVariable = (DesignProcessVariable) variable.copyTo(processVariable);
-                em.persist(processVariable);
+            if (design.getDesignProcessVariables() != null) {
+                for (DesignProcessVariable variable : src.getDesignProcessVariables()) {
+                    DesignProcessVariable processVariable = metadata.create(DesignProcessVariable.class);
+                    processVariable.setDesign(design);
+                    processVariable.setShouldBeOverridden(variable.getShouldBeOverridden());
+                    processVariable = (DesignProcessVariable) variable.copyTo(processVariable);
+                    em.persist(processVariable);
+                }
             }
 
             tx.commit();
