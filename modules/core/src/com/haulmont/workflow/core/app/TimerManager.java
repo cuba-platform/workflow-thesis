@@ -191,7 +191,7 @@ public class TimerManager implements TimerManagerAPI {
         }
     }
 
-    private List<TimerEntity> loadTimers(Date currentTime) {
+    protected List<TimerEntity> loadTimers(Date currentTime) {
         List<TimerEntity> timers;
 
         Transaction tx = persistence.createTransaction();
