@@ -48,10 +48,8 @@ def coreModule = project(':workflow-core')
 def guiModule = project(':workflow-gui')
 def webModule = project(':workflow-web')
 
-def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
-def json = [group: 'org.json', name: 'json', version: '20090211']
-def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
-def hsqldb = 'org.hsqldb:hsqldb:2.3.3'
+def hibernate = [group: 'org.hibernate', name: 'hibernate-core',
+                 version: bom.getVersion('org.hibernate', 'hibernate-core'), transitive: false]
 
 def baseVersion = cuba.artifact.version + (cuba.artifact.isSnapshot ? '-SNAPSHOT' : '')
 
@@ -73,10 +71,10 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
     }
 
     dependencies {
-        compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.4')
+        compile(bom['org.codehaus.groovy:groovy-all'])
 
         compile(group: 'com.haulmont.cuba', name: 'cuba-global', version: baseVersion)
-        testCompile('junit:junit:4.12')
+        testCompile(bom['junit:junit'])
     }
 
     task sourceJar(type: Jar) {
@@ -114,9 +112,9 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
 configure(sharedLibModule) {
     dependencies {
         compile(hibernate)
-        compile(group: 'org.springframework', name: 'spring-tx', version: '4.3.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-jdbc', version: '4.3.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '4.3.1.RELEASE')
+        compile(bom['org.springframework:spring-tx'])
+        compile(bom['org.springframework:spring-jdbc'])
+        compile(bom['org.springframework:spring-orm'])
     }
 }
 
@@ -142,14 +140,15 @@ configure(coreModule) {
         compile(sharedLibModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core-tests', version: baseVersion)
-        compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
-        compile(json)
-        runtime(group: 'de.odysseus.juel', name: 'juel', version: '2.1.0')
-        compile('org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final')
+
+        compile(bom['com.haulmont.thirdparty:jbpm'])
+        compile(bom['org.json:json'])
+        runtime(bom['de.odysseus.juel:juel'])
+        compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(hibernate)
-        runtime('org.javassist:javassist:3.20.0-GA')
-        provided(servletApi)
-        jdbc(hsqldb)
+        runtime(bom['org.javassist:javassist'])
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
+        jdbc(bom['org.hsqldb:hsqldb'])
         dbscripts(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'db', ext: 'zip')
     }
 
@@ -202,11 +201,11 @@ configure(webModule) {
         compile(globalModule)
         compile(guiModule)
         compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: baseVersion)
-        compile(json)
+        compile(bom['org.json:json'])
 
-        provided(servletApi)
+        provided(bom['org.apache.tomcat:tomcat-servlet-api'])
 
-        yui(group: 'com.haulmont.thirdparty', name: 'yui', version: '2.8.1')
+        yui(bom['com.haulmont.thirdparty:yui'])
     }
 
     task setupYui(description: 'Sets up YUI library') << {
