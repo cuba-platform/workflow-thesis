@@ -143,7 +143,7 @@ configure(coreModule) {
 
         compile(bom['com.haulmont.thirdparty:jbpm'])
         compile(bom['org.json:json'])
-        runtime(bom['de.odysseus.juel:juel'])
+        runtime(bom['org.glassfish.web:javax.el'])
         compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(hibernate)
         runtime(bom['org.javassist:javassist'])
