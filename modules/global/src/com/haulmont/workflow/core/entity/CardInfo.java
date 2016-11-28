@@ -27,36 +27,16 @@ public class CardInfo extends BaseUuidEntity implements Creatable, Updatable, So
     public static final int TYPE_OVERDUE = 10;
     public static final int TYPE_NOTIFY_OVERDUE = 20;
 
-    @Override
-    @MetaProperty
-    public Date getUpdateTs() {
-        return null;
-    }
-
-    @Override
-    public void setUpdateTs(Date updateTs) {
-    }
-
-    @Override
-    @MetaProperty
-    public String getUpdatedBy() {
-        return null;
-    }
-
-    @Override
-    public void setUpdatedBy(String updatedBy) {
-    }
-
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
+    @Column(name = "DELETED_BY", length = 50)
     protected String deletedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -97,6 +77,26 @@ public class CardInfo extends BaseUuidEntity implements Creatable, Updatable, So
     @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    @Override
+    @MetaProperty
+    public Date getUpdateTs() {
+        return null;
+    }
+
+    @Override
+    public void setUpdateTs(Date updateTs) {
+    }
+
+    @Override
+    @MetaProperty
+    public String getUpdatedBy() {
+        return null;
+    }
+
+    @Override
+    public void setUpdatedBy(String updatedBy) {
     }
 
     @Override
