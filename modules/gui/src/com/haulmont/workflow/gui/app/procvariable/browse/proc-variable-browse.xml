@@ -21,7 +21,7 @@
 
 
     <layout expand="table">
-        <groupTable id="table" multiselect="true" height="100%" width="100%">
+        <groupTable id="table" multiselect="true" width="100%">
             <buttonsPanel>
                 <button action="table.create" icon="icons/create.png"/>
                 <button action="table.override" icon="icons/wf-exchange.png"/>
@@ -37,10 +37,14 @@
                 <action id="override"/>
             </actions>
             <columns>
+                <column id="moduleName" visible="false"/>
                 <column id="name"/>
+                <column id="propertyName" visible="false"/>
+                <column id="attributeType" visible="false"/>
                 <column id="alias"/>
                 <column id="value"/>
                 <column id="overridden"/>
+                <column id="comment"/>
             </columns>
             <rows datasource="procVariableDs"/>
         </groupTable>

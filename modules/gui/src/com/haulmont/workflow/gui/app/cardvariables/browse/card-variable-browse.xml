@@ -20,21 +20,28 @@
     </dsContext>
 
     <layout expand="table">
-        <groupTable id="table">
+        <groupTable id="table" multiselect="true" width="100%">
             <buttonsPanel>
                 <button action="table.create" icon="icons/create.png"/>
                 <button action="table.edit" icon="icons/edit.png"/>
                 <button action="table.remove" icon="icons/remove.png"/>
                 <button action="table.refresh" icon="icons/refresh.png"/>
             </buttonsPanel>
-
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+            </actions>
             <columns>
-                <column id="moduleName"/>
                 <column id="name"/>
-                <column id="propertyName"/>
                 <column id="alias"/>
                 <column id="value"/>
                 <column id="overridden"/>
+                <column id="comment"/>
+                <column id="propertyName" visible="false"/>
+                <column id="attributeType" visible="false"/>
+                <column id="moduleName" visible="false"/>
             </columns>
             <rows datasource="designProcessVariableDs"/>
         </groupTable>
