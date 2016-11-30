@@ -34,15 +34,15 @@
                 <action id="refresh"/>
             </actions>
             <columns>
-                <column id="moduleName"/>
                 <column id="name"/>
-                <column id="propertyName"/>
                 <column id="alias"/>
-                <column id="attributeType"/>
                 <column id="value"/>
                 <column id="shouldBeOverridden"/>
                 <column id="overridden"/>
                 <column id="comment"/>
+                <column id="moduleName" visible="false"/>
+                <column id="propertyName" visible="false"/>
+                <column id="attributeType" visible="false"/>
             </columns>
             <rows datasource="designProcessVariableDs"/>
         </groupTable>
