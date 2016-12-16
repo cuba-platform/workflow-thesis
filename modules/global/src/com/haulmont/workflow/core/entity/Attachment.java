@@ -22,7 +22,7 @@ import javax.persistence.*;
 @DiscriminatorColumn(name = "ATTACHMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("-")
 @Listeners("workflow_AttachmentEntityListener")
-@SystemLevel(propagate = true)
+@SystemLevel
 public class Attachment extends StandardEntity {
 
     private static final long serialVersionUID = 8954537950047549199L;
