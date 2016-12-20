@@ -17,7 +17,6 @@ import java.util.Set;
 @Entity(name = "wf$UserGroup")
 @NamePattern("%s|name")
 @SystemLevel
-@EnableRestore
 public class UserGroup extends StandardEntity {
 
     @Column(name = "NAME")

@@ -19,7 +19,6 @@ import java.util.Set;
 @Entity(name = "wf$Proc")
 @Table(name = "WF_PROC")
 @NamePattern("%s|name,messagesPack")
-@EnableRestore
 public class Proc extends StandardEntity {
 
     private static final long serialVersionUID = 7588775221603325166L;
