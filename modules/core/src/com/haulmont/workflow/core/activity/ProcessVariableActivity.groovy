@@ -50,7 +50,7 @@ public class ProcessVariableActivity implements ActivityBehaviour {
         variable.setValue(processVariableAPI.getStringValue(value));
     }
 
-    private void injectCardVariables() {
+    protected void injectCardVariables() {
         for (CardVariable cardVariable : cardVariables.values()) {
             injectValue(WfConstants.VARIABLE_PREFIX + cardVariable.getAlias(), cardVariable);
             int moduleIndex = ActivityHelper.searchInStringWithSplit(activityName,
@@ -82,7 +82,7 @@ public class ProcessVariableActivity implements ActivityBehaviour {
         }
     }
 
-    private void initCardVariables(Card card) {
+    protected void initCardVariables(Card card) {
         cardVariables = new HashMap<String, CardVariable>()
         for (CardVariable cardVariable : card.getCardVariables()) {
             cardVariables.put(cardVariable.getAlias(), cardVariable);
