@@ -26,7 +26,7 @@
             <textField id="searchText" width="${width}"/>
             <button id="searchButton"/>
         </hbox>
-        <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="19" columns="32"/>
+        <twinColumn id="twinColumn" optionsDatasource="userGroupsDs" rows="19" columns="32" />
         <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>
