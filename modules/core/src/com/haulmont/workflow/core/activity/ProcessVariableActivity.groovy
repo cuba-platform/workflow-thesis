@@ -23,14 +23,13 @@ import java.lang.reflect.Method
  */
 public class ProcessVariableActivity implements ActivityBehaviour {
 
-    private ProcessVariableAPI processVariableAPI;
+    private ProcessVariableAPI processVariableAPI = AppBeans.get(ProcessVariableAPI.NAME);
 
     private Map<String, CardVariable> cardVariables;
 
     private String activityName;
 
     void execute(ActivityExecution execution) throws Exception {
-        processVariableAPI = AppBeans.get(ProcessVariableAPI.NAME);
         activityName = execution.getActivityName();
         Card card = ActivityHelper.findCard(execution);
         initCardVariables(card);
