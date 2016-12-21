@@ -9,7 +9,10 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.ClusterListenerAdapter;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.*;
@@ -24,6 +27,7 @@ import org.dom4j.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -37,15 +41,45 @@ public class DesignDeployer {
 
     private DeployPostProcessor postProcessor;
 
+    private ClusterManagerAPI clusterManager;
+
     //set from spring.xml
     public void setPostProcessor(DeployPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
+    }
+
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+        this.clusterManager.addListener(DesignDeployMsg.class, new ClusterListenerAdapter<DesignDeployMsg>() {
+            @Override
+            public void receive(DesignDeployMsg message) {
+                Authentication authentication = AppBeans.get(Authentication.NAME);
+                Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+                try {
+                    authentication.begin();
+                    EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+                    Proc proc = message.procId != null ? em.find(Proc.class, message.procId) : null;
+                    Design design = message.designId != null ? em.find(Design.class, message.designId) : null;
+
+                    deployDesignInternal(message.designKey, design, proc);
+
+                    tx.commit();
+                } catch (IOException e) {
+                    log.error(e);
+                } finally {
+                    tx.end();
+                    authentication.end();
+                }
+            }
+        });
     }
 
     public Proc deployDesign(UUID designId, UUID procId, Role role) {
         Preconditions.checkArgument(designId != null, "designId is null");
 
         log.info("Deploying design " + designId + " into process " + procId);
+
+        String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(AppBeans.get(TimeSource.class).currentTimestamp());
 
         Transaction tx = AppBeans.get(Persistence.class).getTransaction();
         try {
@@ -54,40 +88,25 @@ public class DesignDeployer {
             if (design.getCompileTs() == null)
                 throw new IllegalStateException("Design is not compiled");
 
-            String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(AppBeans.get(TimeSource.class).currentTimestamp());
-
             Proc proc = procId != null ? em.find(Proc.class, procId) : null;
+            deployDesignInternal(procKey, design, proc);
 
-            File dir = new File(AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getConfDir(), "process/" + procKey);
-            if (dir.exists()) {
-                backupExisting(dir);
-            }
+            WfEngineAPI wfEngine = AppBeans.get(WfEngineAPI.NAME);
+            proc = wfEngine.deployJpdlXml("/process/" + procKey + "/" + procKey + ".jpdl.xml", proc);
 
-            if (!dir.mkdirs())
-                throw new RuntimeException("Unable to create directory " + dir.getAbsolutePath());
+            proc.setDesign(design);
 
-            List<DesignFile> designFiles = em.createQuery("select df from wf$DesignFile df where df.design.id = ?1", DesignFile.class)
-                    .setParameter(1, designId)
-                    .getResultList();
-
-            proc = deployJpdl(design, designFiles, procKey, proc, dir);
+            if (proc.getName().equals(proc.getJbpmProcessKey()))
+                proc.setName(design.getName());
 
             if (role != null)
                 proc.setAvailableRole(role);
 
-            deployMessages(designFiles, dir);
-
-            deployForms(designFiles, dir);
-
-            deployScripts(design, dir);
-
-            deployNotificationMatrix(designFiles, dir);
-
-            postProcessor.doAfterDeploy(design, dir, designFiles, proc);
-
             tx.commit();
 
-            log.info("Design " + designId + " deployed successfully");
+            sendDeployDesignMessage(procKey, designId, procId);
+
+            log.info("Design " + designId + " deployed succesfully");
 
             return proc;
         } catch (IOException e) {
@@ -95,6 +114,33 @@ public class DesignDeployer {
         } finally {
             tx.end();
         }
+    }
+
+    protected void deployDesignInternal(String procKey, Design design, Proc proc) throws IOException {
+        File dir = new File(AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getConfDir(), "process/" + procKey);
+        if (dir.exists()) {
+            backupExisting(dir);
+        }
+
+        if (!dir.mkdirs())
+            throw new RuntimeException("Unable to create directory " + dir.getAbsolutePath());
+
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        List<DesignFile> designFiles = em.createQuery("select df from wf$DesignFile df where df.design.id = ?1", DesignFile.class)
+                .setParameter(1, design)
+                .getResultList();
+
+        proc = deployJpdl(design, designFiles, procKey, proc, dir);
+
+        deployMessages(designFiles, dir);
+
+        deployForms(designFiles, dir);
+
+        deployScripts(design, dir);
+
+        deployNotificationMatrix(designFiles, dir);
+
+        postProcessor.doAfterDeploy(design, dir, designFiles, proc);
     }
 
     private Proc deployJpdl(Design design, List<DesignFile> designFiles, String procKey, Proc proc, File dir) throws IOException {
@@ -118,13 +164,6 @@ public class DesignDeployer {
 
         FileUtils.writeStringToFile(jpdlFile, Dom4j.writeDocument(document, true), StandardCharsets.UTF_8);
 
-        WfEngineAPI wfEngine = AppBeans.get(WfEngineAPI.NAME);
-        proc = wfEngine.deployJpdlXml("/process/" + procKey + "/" + jpdlFile.getName(), proc);
-
-        proc.setDesign(design);
-        if (proc.getName().equals(proc.getJbpmProcessKey())) {
-            proc.setName(design.getName());
-        }
         return proc;
     }
 
@@ -249,5 +288,21 @@ public class DesignDeployer {
         }
         FileUtils.moveDirectory(dir, backupDir);
         log.info("Directory " + dir.getAbsolutePath() + " moved to " + backupDir.getAbsolutePath());
+    }
+
+    private void sendDeployDesignMessage(String designKey, UUID designId, UUID procId) {
+        clusterManager.send(new DesignDeployMsg(designKey, designId, procId));
+    }
+
+    private static class DesignDeployMsg implements Serializable {
+        private String designKey;
+        private UUID procId;
+        private UUID designId;
+
+        public DesignDeployMsg(String designKey, UUID designId, UUID procId) {
+            this.designKey = designKey;
+            this.designId = designId;
+            this.procId = procId;
+        }
     }
 }

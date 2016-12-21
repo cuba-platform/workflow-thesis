@@ -81,6 +81,7 @@
 
     <bean id="workflow_DesignDeployer" class="com.haulmont.workflow.core.app.design.DesignDeployer">
         <property name="postProcessor" ref="workflow_DeployPostProcessor"/>
+        <property name="clusterManager" ref="cuba_ClusterManager"/>
     </bean>
 
     <!-- Annotation-based beans -->
