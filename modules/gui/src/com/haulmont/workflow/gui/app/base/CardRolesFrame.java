@@ -415,7 +415,7 @@ public class CardRolesFrame extends AbstractFrame {
         CollectionDatasource usersDs = procRoleUsers.get(cardRole.getProcRole());
         if (usersDs == null) {
             MetaClass metaClass = metadata.getSession().getClass(User.class);
-            usersDs = new DsBuilder(getDsContext())
+            usersDs = DsBuilder.create(getDsContext())
                     .setMetaClass(metaClass)
                     .setId("usersDs")
                     .setViewName("_minimal")
@@ -1164,7 +1164,7 @@ public class CardRolesFrame extends AbstractFrame {
         protected CollectionDatasource<CardRole, UUID> getDsInternal(Card card) {
             CollectionDatasource<CardRole, UUID> ds = dsRegistry.get(card.getId());
             if (ds == null) {
-                DsBuilder dsBuilder = new DsBuilder(cardRolesDs.getDsContext())
+                DsBuilder dsBuilder = DsBuilder.create(cardRolesDs.getDsContext())
                         .setJavaClass(CardRole.class)
                         .setViewName("transition-form")
                         .setId("cardRoles" + card.getId().toString() + "Ds");
