@@ -4,11 +4,9 @@
  */
 package com.haulmont.workflow.core.app;
 
+import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -35,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.haulmont.workflow.core.global.WfConstants.CARD_STATE_CANCELED;
 
 @Component(WfEngineAPI.NAME)
 public class WfEngine implements WfEngineAPI {
@@ -261,23 +260,32 @@ public class WfEngine implements WfEngineAPI {
         }
 
         if (!states.isEmpty()) {
-            Query query = em.createQuery("delete from wf$ProcState p where p.proc.id = ?1");
-            query.setParameter(1, proc.getId());
-            query.executeUpdate();
+            if (!states.contains(CARD_STATE_CANCELED))
+                states.add(CARD_STATE_CANCELED);
 
-            for (String state : states) {
-                ProcState procState = metadata.create(ProcState.class);
-                procState.setName(state);
-                procState.setProc(proc);
-                em.persist(procState);
+            TypedQuery<ProcState> querySelect = em.createQuery("select p from wf$ProcState p where p.proc.id = ?1",
+                    ProcState.class);
+            querySelect.setParameter(1, proc.getId());
+            List<ProcState> existingProcStates = querySelect.getResultList();
+
+            Set<String> procStateNames = Sets.newHashSet();
+            if (CollectionUtils.isNotEmpty(existingProcStates)) {
+                for (ProcState procState : existingProcStates)
+                    procStateNames.add(procState.getName());
             }
 
-            if (!states.contains(WfConstants.CARD_STATE_CANCELED)) {
-                ProcState procState = metadata.create(ProcState.class);
-                procState.setName(WfConstants.CARD_STATE_CANCELED);
-                procState.setProc(proc);
-                em.persist(procState);
+            for (final String state : states) {
+                if (CollectionUtils.isEmpty(procStateNames) || !procStateNames.contains(state)) {
+                    ProcState procState = metadata.create(ProcState.class);
+                    procState.setName(state);
+                    procState.setProc(proc);
+                    em.persist(procState);
+                }
             }
+
+            for (ProcState procState : existingProcStates)
+                if (!states.contains(procState.getName()) && !CARD_STATE_CANCELED.equals(procState.getName()))
+                    em.remove(procState);
 
             String statesStr = states.toString();
             proc.setStates(statesStr.substring(1, statesStr.length() - 1));
@@ -544,7 +552,7 @@ public class WfEngine implements WfEngineAPI {
         else {
             for (Card subProcCard : findFamilyCards(c))
                 cancelProcessInternal(subProcCard, Execution.STATE_ENDED);
-            cancelProcessInternal(c, WfConstants.CARD_STATE_CANCELED);
+            cancelProcessInternal(c, CARD_STATE_CANCELED);
         }
         deleteNotifications(card, CardInfo.TYPE_NOTIFICATION);
     }
@@ -573,7 +581,7 @@ public class WfEngine implements WfEngineAPI {
             listener.onProcessCancel(card);
         }
 
-        notificationBean.notifyByCard(card, WfConstants.CARD_STATE_CANCELED);
+        notificationBean.notifyByCard(card, CARD_STATE_CANCELED);
     }
 
     protected void setCanceledState(Card card) {
@@ -581,18 +589,18 @@ public class WfEngine implements WfEngineAPI {
         for (CardProc cp : card.getProcs()) {
             if (cp.getProc().equals(proc)) {
                 cp.setActive(false);
-                cp.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
+                cp.setState("," + CARD_STATE_CANCELED + ",");
                 break;
             }
         }
-        card.setState("," + WfConstants.CARD_STATE_CANCELED + ",");
+        card.setState("," + CARD_STATE_CANCELED + ",");
     }
 
     protected void cancelAssignments(Card card) {
         List<Assignment> assignments = findCardAssignments(card);
         if (CollectionUtils.isNotEmpty(assignments))
             for (Assignment assignment : assignments) {
-                if (!WfConstants.CARD_STATE_CANCELED.equals(assignment.getName())) {
+                if (!CARD_STATE_CANCELED.equals(assignment.getName())) {
                     assignment.setComment(messages.getMessage(card.getProc().getMessagesPack(), "canceledCard.msg"));
                 }
                 assignment.setFinished(timeSource.currentTimestamp());
