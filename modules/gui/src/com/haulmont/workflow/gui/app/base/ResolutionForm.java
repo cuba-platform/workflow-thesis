@@ -61,7 +61,7 @@ public class ResolutionForm extends AbstractForm {
 
     @WindowParam
     protected String initHeight;
-    protected int defaultInitHeight = 400;
+    protected int defaultInitHeight = 420;
 
     protected Assignment assignment;
 
