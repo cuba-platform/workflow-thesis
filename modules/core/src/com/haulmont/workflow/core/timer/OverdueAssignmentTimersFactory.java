@@ -12,10 +12,12 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.CardInfo;
 import org.jbpm.api.activity.ActivityExecution;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
@@ -74,7 +76,7 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
 
     @Override
     public void removeTimers(ActivityExecution execution, Assignment assignment) {
-        String queryStr = "delete from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2";
+        String queryStr = "select ci from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2";
         if (assignment == null) {
             WfHelper.getTimerManager().removeTimers(execution);
         } else {
@@ -90,6 +92,9 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
         if (assignment != null) {
             query.setParameter(3, assignment.getUser());
         }
-        query.executeUpdate();
+        List<CardInfo> cardInfos = query.getResultList();
+        for (CardInfo cardInfo : cardInfos) {
+            em.remove(cardInfo);
+        }
     }
 }
