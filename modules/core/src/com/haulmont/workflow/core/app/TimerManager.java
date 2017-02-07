@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
@@ -122,9 +121,10 @@ public class TimerManager implements TimerManagerAPI {
             if (entityLoadInfo == null)
                 throw new IllegalStateException("No user load info in the parameters map");
             if (entityLoadInfo.getId().equals(assignment.getUser().getId())) {
-                Query query = em.createQuery("delete from wf$Timer t where t.id = ?1");
+                Query query = em.createQuery("select t  from wf$Timer t where t.id = ?1");
                 query.setParameter(1, timerEntity.getId());
-                query.executeUpdate();
+                TimerEntity timer = (TimerEntity) query.getFirstResult();
+                em.remove(timer);
             }
         }
     }
@@ -142,9 +142,10 @@ public class TimerManager implements TimerManagerAPI {
         List<TimerEntity> timers = q.getResultList();
 
         for (TimerEntity timerEntity : timers) {
-            Query query = em.createQuery("delete from wf$Timer t where t.id = ?1");
+            Query query = em.createQuery("select t from wf$Timer t where t.id = ?1");
             query.setParameter(1, timerEntity.getId());
-            query.executeUpdate();
+            TimerEntity timer = (TimerEntity) query.getFirstResult();
+            em.remove(timer);
         }
     }
 

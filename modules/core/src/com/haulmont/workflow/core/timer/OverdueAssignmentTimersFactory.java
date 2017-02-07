@@ -6,15 +6,18 @@
 package com.haulmont.workflow.core.timer;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.CardInfo;
 import org.jbpm.api.activity.ActivityExecution;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,7 +80,7 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
 
     @Override
     public void removeTimers(ActivityExecution execution, Assignment assignment) {
-        String queryStr = "delete from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2";
+        String queryStr = "select ci from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2";
         if (assignment == null) {
             WfHelper.getTimerManager().removeTimers(execution);
         } else {
@@ -85,7 +88,7 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
             queryStr += " and ci.user.id = ?3";
         }
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
         Query query = em.createQuery(queryStr);
         query.setParameter(1, execution.getId());
         query.setParameter(2, execution.getActivityName());
@@ -93,6 +96,9 @@ public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
         if (assignment != null) {
             query.setParameter(3, assignment.getUser());
         }
-        query.executeUpdate();
+        List<CardInfo> cardInfos = query.getResultList();
+        for (CardInfo cardInfo : cardInfos) {
+            em.remove(cardInfo);
+        }
     }
 }
