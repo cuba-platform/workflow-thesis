@@ -375,9 +375,9 @@ public class UniversalAssigner extends MultiAssigner {
                                                                               Collection<CardRole> cardRoles) {
         Map<Assignment, CardRole> assignmentCardRoleMap = new HashMap<Assignment, CardRole>();
         Persistence persistence = AppBeans.get(Persistence.NAME);
+        Assignment familyAssignment = findFamilyAssignment(card)
         for (CardRole cr : cardRoles) {
             EntityManager em = persistence.entityManager;
-            Assignment familyAssignment = findFamilyAssignment(card)
             Assignment assignment = metadata.create(Assignment.class)
             assignment.setName(execution.getActivityName())
 
