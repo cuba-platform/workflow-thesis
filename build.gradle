@@ -25,6 +25,13 @@ buildscript {
     }
 }
 
+configurations {
+    bom
+}
+dependencies {
+    bom("com.haulmont.cuba:cuba-global:$cubaVersion")
+}
+
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
