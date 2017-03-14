@@ -302,4 +302,8 @@
             <property name="description"/>
         </property>
     </view>
+	
+	<view class="com.haulmont.workflow.core.entity.Card" name="v-jbpmProcessId" extends="_minimal">
+        <property name="jbpmProcessId"/>
+    </view>
 </views>

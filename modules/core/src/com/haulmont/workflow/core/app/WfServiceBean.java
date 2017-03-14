@@ -99,7 +99,19 @@ public class WfServiceBean implements WfService {
 
     @Override
     public Map<String, Object> getProcessVariables(Card card) {
-        return wfWorkerAPI.getProcessVariables(card);
+        return wfWorkerAPI.getProcessVariables(reload(card));
+    }
+
+    protected Card reload(Card card) {
+        Card result = card;
+        Transaction transaction = persistence.createTransaction();
+        try {
+            result = persistence.getEntityManager().find(Card.class, card.getId(), "v-jbpmProcessId");
+            transaction.commit();
+        } finally {
+            transaction.end();
+        }
+        return result;
     }
 
     @Override
