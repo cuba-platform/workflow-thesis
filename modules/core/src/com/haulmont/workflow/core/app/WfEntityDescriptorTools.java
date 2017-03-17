@@ -11,8 +11,8 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -21,6 +21,7 @@ import com.haulmont.workflow.core.global.WfEntityDescriptor;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -33,6 +34,13 @@ import java.util.UUID;
 public class WfEntityDescriptorTools {
 
     public static final String NAME = "workflow_WfDynamicEntityProvider";
+
+    @Inject
+    protected Persistence persistence;
+    @Inject
+    protected Metadata metadata;
+    @Inject
+    protected Messages messages;
 
     public String getStringValue(Object value) {
         String stringValue = null;
@@ -94,10 +102,17 @@ public class WfEntityDescriptorTools {
                     break;
 
                 case ENTITY:
-                    Class entityClass = AppBeans.get(Metadata.class).getSession()
+                    Class entityClass = metadata.getSession()
                             .getClass(wfEntityDescriptor.getMetaClassName()).getJavaClass();
-                    EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-                    Entity entity = em.find(entityClass, UUID.fromString(stringValue));
+                    Transaction transaction = persistence.createTransaction();
+                    Entity entity = null;
+                    try {
+                        EntityManager em = persistence.getEntityManager();
+                        entity = em.find(entityClass, UUID.fromString(stringValue));
+                        transaction.commit();
+                    } finally {
+                        transaction.end();
+                    }
                     if (entity != null) {
                         InstanceUtils.getInstanceName(entity);
                         value = entity;
@@ -138,7 +153,7 @@ public class WfEntityDescriptorTools {
                         break;
 
                     case BOOLEAN:
-                        value = AppBeans.get(Messages.class).getMessage(WfEntityDescriptorTools.class, value);
+                        value = messages.getMessage(WfEntityDescriptorTools.class, value);
                         break;
 
                     case ENTITY:
@@ -146,7 +161,7 @@ public class WfEntityDescriptorTools {
                         break;
 
                     case ENUM:
-                        value = AppBeans.get(Messages.class).getMessage((Enum) object);
+                        value = messages.getMessage((Enum) object);
                         break;
 
                     default:
