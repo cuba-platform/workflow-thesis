@@ -125,9 +125,8 @@ class SequentialAssigner extends MultiAssigner {
     assignment.setMasterAssignment(master)
     assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
 
-    if (timersFactory) {
-      timersFactory.createTimers(execution, assignment)
-    }
+    createTimers(execution, assignment, cr)
+
     em.persist(assignment)
 
     notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
