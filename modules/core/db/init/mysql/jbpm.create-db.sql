@@ -26,7 +26,7 @@ create table JBPM4_EXECUTION (
     HASVARS_ tinyint,
     NAME_ varchar(255),
     KEY_ varchar(255),
-    ID_ varchar(255) unique,
+    ID_ varchar(190) unique,
     STATE_ varchar(255),
     SUSPHISTSTATE_ varchar(255),
     PRIORITY_ int,
@@ -196,7 +196,7 @@ create table JBPM4_PARTICIPATION (
 )^
 
 create table JBPM4_PROPERTY (
-    KEY_ varchar(255) not null,
+    KEY_ varchar(190) not null,
     VERSION_ int not null,
     VALUE_ varchar(255),
     primary key (KEY_)
@@ -239,7 +239,7 @@ create table JBPM4_TASK (
 
 create table JBPM4_VARIABLE (
     DBID_ bigint not null,
-    CLASS_ varchar(255) not null,
+    CLASS_ varchar(190) not null,
     DBVERSION_ int not null,
     KEY_ varchar(255),
     CONVERTER_ varchar(255),
