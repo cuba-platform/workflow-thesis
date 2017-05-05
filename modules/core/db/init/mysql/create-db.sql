@@ -70,7 +70,7 @@ create table WF_PROC (
     DELETE_TS_NN datetime(3) not null default '1000-01-01 00:00:00.000',
     NAME varchar(255),
     JBPM_PROCESS_KEY varchar(255),
-    CODE varchar(255) ,
+    CODE varchar(190) ,
     MESSAGES_PACK varchar(200),
     CARD_TYPES varchar(500),
     STATES varchar(1500),
@@ -275,7 +275,7 @@ create table WF_ATTACHMENTTYPE (
     NAME varchar(500),
     ATTACHMENTTYPE_COMMENT varchar(1000),
     ISDEFAULT boolean,
-    CODE varchar(200),
+    CODE varchar(190),
     ISSYSTEM boolean,
     primary key (ID)
 )^
@@ -452,8 +452,8 @@ create table WF_TIMER (
     CREATED_BY varchar(50),
     DUE_DATE datetime(3),
     CARD_ID varchar(32),
-    JBPM_EXECUTION_ID varchar(255),
-    ACTIVITY varchar(255),
+    JBPM_EXECUTION_ID varchar(190),
+    ACTIVITY varchar(190),
     ACTION_CLASS varchar(200),
     ACTION_PARAMS varchar(2000),
     primary key (ID)
@@ -465,7 +465,7 @@ create index IDX_WF_TIMER_DUE_DATE on WF_TIMER (DUE_DATE)^
 
 create index IDX_WF_TIMER_CARD on WF_TIMER (CARD_ID)^
 
-create index IDX_WF_TIMER_EXECUTION_ACTIVITY on WF_TIMER (JBPM_EXECUTION_ID, ACTIVITY)^
+-- create index IDX_WF_TIMER_EXECUTION_ACTIVITY on WF_TIMER (JBPM_EXECUTION_ID, ACTIVITY)^
 
 /**********************************************************************************************/
 

@@ -4,7 +4,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '6.5-SNAPSHOT'
+    ext.cubaVersion = '6.6-SNAPSHOT'
     ext.cubaVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : cubaVersion
     
     println("CUBA Platform - Workflow Version ${ext.cubaVersion}")
@@ -23,6 +23,13 @@ buildscript {
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaVersion
     }
+}
+
+configurations {
+    bom
+}
+dependencies {
+    bom("com.haulmont.cuba:cuba-global:$cubaVersion")
 }
 
 apply(plugin: 'idea')
@@ -57,7 +64,6 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
-    apply(plugin: 'checkstyle')
     apply(plugin: 'cuba')
     apply(plugin: 'groovy')
 
@@ -84,22 +90,6 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
 
     artifacts {
         archives sourceJar
-    }
-
-    String checkstyleConfigDir = "${rootProject.projectDir}/config/checkstyle"
-    checkstyle {
-        configFile = new File("${checkstyleConfigDir}/checkstyle.xml".toString())
-        configProperties = [
-                'checkstyleConfigDir' : checkstyleConfigDir
-        ]
-        reportsDir = new File("${buildDir}/checkstyle".toString())
-    }
-
-    checkstyleMain << {
-        def checkstyleDir = "${project.buildDir}/checkstyle".toString()
-        ant.xslt('in': "$checkstyleDir/main.xml",
-                out: "$checkstyleDir/$project.name-checkstyle.html",
-                style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 
     jar {
@@ -208,11 +198,13 @@ configure(webModule) {
         yui(bom['com.haulmont.thirdparty:yui'])
     }
 
-    task setupYui(description: 'Sets up YUI library') << {
-        configurations.yui.files.each { dep ->
-            copy {
-                from zipTree(dep.absolutePath)
-                into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
+    task setupYui(description: 'Sets up YUI library') {
+        doLast {
+            configurations.yui.files.each { dep ->
+                copy {
+                    from zipTree(dep.absolutePath)
+                    into new File(webModule.projectDir, 'web/wfdesigner/lib/yui')
+                }
             }
         }
     }

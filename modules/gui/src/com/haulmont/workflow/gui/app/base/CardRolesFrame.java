@@ -172,7 +172,7 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    protected CardRole createCardRole(ProcRole procRole, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
+    public CardRole createCardRole(ProcRole procRole, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
         CardRole cardRole = metadata.create(CardRole.class);
         cardRole.setProcRole(procRole);
         cardRole.setCode(procRole.getCode());
