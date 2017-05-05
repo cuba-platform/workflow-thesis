@@ -446,8 +446,10 @@ public class WfEngine implements WfEngineAPI {
                     assignmentToFinish.setFinished(currentTs);
                 }
 
-                String cardStateAfter = assignment.getCard().getState();
+                String cardStateAfter = ",".equals(assignment.getCard().getState()) ?
+                        ",ProcessCompleted," : assignment.getCard().getState();
                 assignment.getCard().setState(extractChangedState(cardStateBefore, cardStateAfter));
+                em.merge(assignment.getCard());
             }
 
             tx.commit();

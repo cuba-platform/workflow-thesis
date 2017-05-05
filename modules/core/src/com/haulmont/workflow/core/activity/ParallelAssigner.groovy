@@ -71,9 +71,8 @@ public class ParallelAssigner extends MultiAssigner {
       assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
       assignment.setFamilyAssignment(familyAssignment)
 
-      if (timersFactory) {
-        timersFactory.createTimers(execution, assignment)
-      }
+      createTimers(execution, assignment, cr)
+
       em.persist(assignment)
 
       afterCreateAssignment(assignment)
