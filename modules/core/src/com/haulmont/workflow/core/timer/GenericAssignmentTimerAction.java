@@ -4,10 +4,11 @@
  */
 package com.haulmont.workflow.core.timer;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.app.design.DesignDeployer;
@@ -63,9 +64,11 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
     protected void takeTransition(TimerActionContext context, User user, String transition) {
         Assignment assignment = null;
 
-        EntityManager em = AppBeans.get(Persistence.NAME,Persistence.class).getEntityManager();
-        Query query = em.createQuery("select a from wf$Assignment a where a.card.id = ?1 and a.finished is null");
+        EntityManager em = AppBeans.get(Persistence.NAME, Persistence.class).getEntityManager();
+        Query query = em.createQuery("select a from wf$Assignment a " +
+                "where a.card.id = ?1 and a.user is not null  and a.user.id = ?2 and a.finished is null");
         query.setParameter(1, context.getCard());
+        query.setParameter(2, user);
         List<Assignment> assignments = query.getResultList();
         if (!assignments.isEmpty())
             assignment = assignments.get(0);
@@ -90,6 +93,6 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
             fileName = "process/" + processKey + "/" + DesignDeployer.SCRIPTS_DIR + "/" + script;
         }
         debug("Running script " + fileName, user);
-        AppBeans.get(Scripting.NAME,Scripting.class).runGroovyScript(fileName, params);
+        AppBeans.get(Scripting.NAME, Scripting.class).runGroovyScript(fileName, params);
     }
 }
