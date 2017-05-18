@@ -193,6 +193,7 @@
         <property name="file" view="_local"/>
         <property name="attachType" view="_local"/>
         <property name="versionOf" view="_minimal"/>
+        <property name="recognizedFile" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.workflow.core.entity.AssignmentAttachment" name="assignment-edit" extends="_local">
