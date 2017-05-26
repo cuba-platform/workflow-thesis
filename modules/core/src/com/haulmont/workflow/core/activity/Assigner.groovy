@@ -190,15 +190,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         }
 
         if (cardRole != null && cardRole.duration && cardRole.timeUnit && assignment.proc.durationEnabled) {
-            WorkCalendarAPI workCalendar = AppBeans.get(WorkCalendarAPI.NAME);
-            def dueDate = workCalendar.addInterval(timeSource.currentTimestamp(), cardRole.duration, cardRole.timeUnit)
-            dueDate = AppBeans.get(DateHelperBean.class).prepareAssignmentDueDate(assignment, cardRole, dueDate)
-            def overdueAssignmentTimersFactory = new OverdueAssignmentTimersFactory(dueDate)
-            overdueAssignmentTimersFactory.setDueDate(dueDate)
-            assignment.dueDate = dueDate
-
-            EntityLoadInfo crLoadInfo = EntityLoadInfo.create(cardRole);
-            overdueAssignmentTimersFactory.createTimers(execution, assignment, ['cardRole': crLoadInfo.toString()])
+            AppBeans.get(DateHelperBean.class).createOverdueTimers(execution, assignment, cardRole)
         }
     }
 
