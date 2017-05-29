@@ -1068,15 +1068,21 @@ public class DesignCompiler {
             throw new DesignCompilationException(e);
         }
 
-        for (String lang : languages) {
-            String messagesStr = compileMessages(modules, lang, null);
-            Properties messages = new Properties();
-            try {
-                messages.load(new StringReader(messagesStr));
-            } catch (IOException e) {
-                throw new DesignCompilationException(e);
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
+        try {
+            for (String lang : languages) {
+                String messagesStr = compileMessages(modules, lang, null);
+                Properties messages = new Properties();
+                try {
+                    messages.load(new StringReader(messagesStr));
+                } catch (IOException e) {
+                    throw new DesignCompilationException(e);
+                }
+                result.put(lang, messages);
             }
-            result.put(lang, messages);
+            tx.commit();
+        } finally {
+            tx.end();
         }
 
         return result;
