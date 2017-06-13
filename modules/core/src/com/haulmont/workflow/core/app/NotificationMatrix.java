@@ -363,30 +363,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         variables.put("cardRole", cardRole);
 
         //email
-        boolean notifyByEmail = StringUtils.isNotBlank(user.getEmail()) || sendNotificationToBlankEmail;
-        if (notifyByEmail && !mailList.contains(user) &&
-                BooleanUtils.isTrue(cardRole.getNotifyByEmail()) &&
-                ((type = matrix.get(key + "_" + MAIL_SHEET)) != null)) {
-            NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
-            if (notificationMessage != null) {
-                variables.put("messagetemplate", notificationMessage);
-            } else {
-                variables.put("script", getScriptByNotificationType(processPath, type));
-            }
-            final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
-            if (message.getSubject().length() > 500) {
-                message.setSubject(message.getSubject().substring(0, 500));
-            }
-
-            WfMailWorker wfMailWorker = AppBeans.get(WfMailWorker.NAME);
-            try {
-                wfMailWorker.sendEmail(user, message.getSubject(), message.getBody());
-            } catch (EmailException e) {
-                log.warn(e);
-            }
-
-            mailList.add(user);
-        }
+        notifyUserByEmail(cardRole, mailList, matrix, processPath, key, variables, messageGenerator);
 
         //tray && notificationPanel
         if (!trayList.contains(user) && BooleanUtils.isTrue(cardRole.getNotifyByCardInfo()) &&
@@ -415,6 +392,37 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             smsSenderAPI.sendSmsAsync(message.getSubject(), user.getName(), message.getBody());
 
             smsList.add(user);
+        }
+    }
+
+    protected void notifyUserByEmail(CardRole cardRole, List<User> mailList, Map<String, String> matrix,
+                                     String processPath, String key, Map<String, Object> variables,
+                                     NotificationMatrixMessage.MessageGenerator messageGenerator){
+        String type = matrix.get(key + "_" + MAIL_SHEET);
+        User user = cardRole.getUser();
+
+        boolean notifyByEmail = StringUtils.isNotBlank(user.getEmail()) || sendNotificationToBlankEmail;
+        if (notifyByEmail && !mailList.contains(user) &&
+                BooleanUtils.isTrue(cardRole.getNotifyByEmail()) && (type != null)) {
+            NotificationMessageBuilder notificationMessage = messageCache.get(processPath).get(type);
+            if (notificationMessage != null) {
+                variables.put("messagetemplate", notificationMessage);
+            } else {
+                variables.put("script", getScriptByNotificationType(processPath, type));
+            }
+            final NotificationMatrixMessage message = messageGenerator.generateMessage(variables);
+            if (message.getSubject().length() > 500) {
+                message.setSubject(message.getSubject().substring(0, 500));
+            }
+
+            WfMailWorker wfMailWorker = AppBeans.get(WfMailWorker.NAME);
+            try {
+                wfMailWorker.sendEmail(user, message.getSubject(), message.getBody());
+            } catch (EmailException e) {
+                log.warn(e);
+            }
+
+            mailList.add(user);
         }
     }
 
