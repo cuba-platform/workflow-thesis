@@ -19,10 +19,10 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
-import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 import com.haulmont.workflow.gui.app.attachment.ProcessAttachmentsManager;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentCreator;
+import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 import com.haulmont.workflow.gui.base.action.AbstractForm;
 import org.apache.commons.lang.StringUtils;
 
@@ -177,6 +177,13 @@ public class ResolutionForm extends AbstractForm {
 
     @Override
     protected void onWindowCommit() {
+        Card card = getDsContext().getDataSupplier().reload(assignment.getCard(),
+                metadata.getViewRepository().getView(Card.class, View.MINIMAL),
+                metadata.getClass(Card.class), false);
+        /* If card was modified, initiate Optimistic Lock */
+        if (card.getVersion().compareTo(assignment.getCard().getVersion()) != 0) {
+            getDsContext().getDataSupplier().commit(new CommitContext(assignment.getCard()));
+        }
         if (commentText.isRequired() && StringUtils.isBlank(commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {

@@ -63,11 +63,11 @@ public class GenericAssignmentTimerAction extends AssignmentTimerAction {
     protected void takeTransition(TimerActionContext context, User user, String transition) {
         Assignment assignment = null;
 
-        EntityManager em = AppBeans.get(Persistence.NAME,Persistence.class).getEntityManager();
-        TypedQuery<Assignment> query = em.createQuery(
-                "select a from wf$Assignment a where a.card.id = ?1 and a.finished is null",
-                Assignment.class);
+        EntityManager em = AppBeans.get(Persistence.NAME, Persistence.class).getEntityManager();
+        TypedQuery<Assignment> query = em.createQuery("select a from wf$Assignment a " +
+                "where a.card.id = ?1 and a.user is not null  and a.user.id = ?2 and a.finished is null", Assignment.class);
         query.setParameter(1, context.getCard());
+        query.setParameter(2, user);
         List<Assignment> assignments = query.getResultList();
         if (!assignments.isEmpty())
             assignment = assignments.get(0);

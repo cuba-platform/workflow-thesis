@@ -12,8 +12,11 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -173,6 +176,11 @@ public class CardRolesFrame extends AbstractFrame {
     }
 
     public CardRole createCardRole(ProcRole procRole, User user, boolean notifyByEmail, boolean notifyByCardInfo) {
+        return createCardRole(procRole, user, null, notifyByEmail, notifyByCardInfo);
+    }
+
+    public CardRole createCardRole(ProcRole procRole, User user, Integer sortOrder,
+                                   boolean notifyByEmail, boolean notifyByCardInfo) {
         CardRole cardRole = metadata.create(CardRole.class);
         cardRole.setProcRole(procRole);
         cardRole.setCode(procRole.getCode());
@@ -180,6 +188,7 @@ public class CardRolesFrame extends AbstractFrame {
         cardRole.setNotifyByCardInfo(notifyByCardInfo);
         cardRole.setCard(card);
         cardRole.setUser(user);
+        cardRole.setSortOrder(sortOrder);
         assignNextSortOrder(cardRole);
         assignDurationAndTimeUnit(cardRole);
         return cardRole;
@@ -847,7 +856,7 @@ public class CardRolesFrame extends AbstractFrame {
         if (procActorExists(procRole, user))
             removeProcActor(procRole.getCode(), user);
         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
-            tmpCardRolesDs.addItem(createCardRole(procRole, user, notifyByEmail, notifyByCardInfo));
+            tmpCardRolesDs.addItem(createCardRole(procRole, user, sortOrder, notifyByEmail, notifyByCardInfo));
         } else {
             setProcActor(proc, procRole, user, notifyByEmail, notifyByCardInfo);
         }
