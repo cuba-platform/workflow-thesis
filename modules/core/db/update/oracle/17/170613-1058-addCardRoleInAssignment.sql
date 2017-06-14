@@ -1,0 +1,3 @@
+
+alter table WF_ASSIGNMENT add CARD_ROLE_ID varchar2(32)^
+create index IDX_WF_ASSIGNMENT_CARD_ROLE on WF_ASSIGNMENT(CARD_ROLE_ID)^

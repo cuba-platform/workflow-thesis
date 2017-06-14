@@ -74,9 +74,7 @@ public class UniversalAssigner extends MultiAssigner {
     protected Assignment getMasterAssignment(ActivityExecution execution, Card card) {
         EntityManager em = persistence.getEntityManager()
 
-        Assignment master = metadata.create(Assignment.class)
-        master.setName(execution.getActivityName())
-        master.setJbpmProcessId(execution.getProcessInstance().getId())
+        Assignment master = createMasterAssignment(execution, card);
         master.setCard(card)
         em.persist(master)
 
@@ -377,23 +375,13 @@ public class UniversalAssigner extends MultiAssigner {
         Persistence persistence = AppBeans.get(Persistence.NAME);
         Assignment familyAssignment = findFamilyAssignment(card)
         for (CardRole cr : cardRoles) {
+
             EntityManager em = persistence.entityManager;
-            Assignment assignment = metadata.create(Assignment.class)
-            assignment.setName(execution.getActivityName())
-
-            if (StringUtils.isBlank(description))
-                assignment.setDescription('msg://' + execution.getActivityName())
-            else
-                assignment.setDescription(description)
-
-            assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-            assignment.setCard(card)
-            assignment.setProc(card.getProc())
-            assignment.setUser(cr.user)
-            assignment.setMasterAssignment(master)
-            assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
-            assignment.setFamilyAssignment(familyAssignment)
-
+            Assignment assignment = wfAssignmentWorker.createAssignment(execution.getActivityName(),
+                    cr, getDescription("${execution.getActivityName()}.description", description),
+                    execution.getProcessInstance().getId(),
+                    cr.user, card, card.getProc(), calcIteration(card, cr.user, execution.getActivityName()),
+                    familyAssignment, master)
             createTimers(execution, assignment, cr)
             em.persist(assignment)
 

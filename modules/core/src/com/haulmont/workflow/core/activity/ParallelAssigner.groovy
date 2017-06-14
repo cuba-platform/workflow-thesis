@@ -20,152 +20,128 @@ import org.jbpm.api.activity.ActivityExecution
 
 public class ParallelAssigner extends MultiAssigner {
 
-  private Log log = LogFactory.getLog(ParallelAssigner.class)
+    private Log log = LogFactory.getLog(ParallelAssigner.class)
 
-  Boolean finishBySingleUser
+    Boolean finishBySingleUser
 
-  @Override
-  protected boolean createAssignment(ActivityExecution execution) {
-    Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
+    @Override
+    protected boolean createAssignment(ActivityExecution execution) {
+        Preconditions.checkArgument(!StringUtils.isBlank(successTransition), 'successTransition is blank')
 
-    EntityManager em = persistence.getEntityManager()
+        EntityManager em = persistence.getEntityManager()
 
-    Card card = findCard(execution)
+        Card card = findCard(execution)
 
-    List<CardRole> cardRoles = getCardRoles(execution, card, true)
-    if (cardRoles.isEmpty()) {
-      if (forRefusedOnly(execution)) {
-        log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")
-        return false
-      } else {
-        def pr = getProcRoleByCode(card, role)
-        throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
-                "User not found: cardId=${card.getId()}, procRole=$role", pr?.name ? pr.name : role)
-      }
+        List<CardRole> cardRoles = getCardRoles(execution, card, true)
+        if (cardRoles.isEmpty()) {
+            if (forRefusedOnly(execution)) {
+                log.debug("No users to assign: cardId=${card.getId()}, procRole=$role")
+                return false
+            } else {
+                def pr = getProcRoleByCode(card, role)
+                throw new WorkflowException(WorkflowException.Type.NO_CARD_ROLE,
+                        "User not found: cardId=${card.getId()}, procRole=$role", pr?.name ? pr.name : role)
+            }
+        }
+
+        Assignment master = createMasterAssignment(execution, card);
+        em.persist(master)
+        afterCreateAssignment(master)
+
+        Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment, CardRole>();
+        Assignment familyAssignment = findFamilyAssignment(card)
+
+        for (CardRole cr : cardRoles) {
+            Assignment assignment = createUserAssignment(execution, card, cr, familyAssignment, master, false);
+            assignmentsCardRoleMap.put(assignment, cr)
+        }
+
+        notifyUser(execution, card, assignmentsCardRoleMap, getNotificationState(execution))
+        return true
     }
 
-    Assignment master = metadata.create(Assignment.class)
-    master.setName(execution.getActivityName())
-    master.setJbpmProcessId(execution.getProcessInstance().getId())
-    master.setCard(card)
-    em.persist(master)
-    afterCreateAssignment(master)
+    @Override
+    public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
+        if (parameters == null)
+            throw new RuntimeException('Assignment object expected')
+        Preconditions.checkState(persistence.isInTransaction(), 'An active transaction required')
 
-    Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment,CardRole>();
-    Assignment familyAssignment = findFamilyAssignment(card)
+        Assignment assignment = (Assignment) parameters.get("assignment")
 
-    for (CardRole cr: cardRoles) {
-      Assignment assignment = metadata.create(Assignment.class)
-      assignment.setName(execution.getActivityName())
+        if (assignment.getMasterAssignment() == null) {
+            log.debug("No master assignment, just taking $signalName")
+            assignment.setFinished(timeSource.currentTimestamp());
+            execution.take(signalName)
+            if (timersFactory) {
+                timersFactory.removeTimers(execution)
+            }
+        } else {
+            if (timersFactory) {
+                timersFactory.removeTimers(execution, assignment)
+            }
+            log.debug("Trying to finish assignment with success outcome")
 
-      if (StringUtils.isBlank(description))
-        assignment.setDescription('msg://' + execution.getActivityName())
-      else
-        assignment.setDescription(description)
+            onSuccess(execution, signalName, assignment)
 
-      assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-      assignment.setCard(card)
-      assignment.setProc(card.getProc())
-      assignment.setUser(cr.user)
-      assignment.setMasterAssignment(master)
-      assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
-      assignment.setFamilyAssignment(familyAssignment)
-
-      createTimers(execution, assignment, cr)
-
-      em.persist(assignment)
-
-      afterCreateAssignment(assignment)
-
-      assignmentsCardRoleMap.put(assignment, cr)
-    }
-
-    notifyUser(execution, card, assignmentsCardRoleMap, getNotificationState(execution))
-    return true
-  }
-
-  @Override
-  public void signal(ActivityExecution execution, String signalName, Map<String, ?> parameters) throws Exception {
-    if (parameters == null)
-      throw new RuntimeException('Assignment object expected')
-    Preconditions.checkState(persistence.isInTransaction(), 'An active transaction required')
-
-    Assignment assignment = (Assignment) parameters.get("assignment")
-
-    if (assignment.getMasterAssignment() == null) {
-      log.debug("No master assignment, just taking $signalName")
-      assignment.setFinished(timeSource.currentTimestamp());
-      execution.take(signalName)
-      if (timersFactory) {
-        timersFactory.removeTimers(execution)
-      }
-    } else {
-      if (timersFactory) {
-        timersFactory.removeTimers(execution, assignment)
-      }
-      log.debug("Trying to finish assignment with success outcome")
-
-      onSuccess(execution, signalName, assignment)
-
-      EntityManager em = persistence.getEntityManager()
-      Query q = em.createQuery('''
+            EntityManager em = persistence.getEntityManager()
+            Query q = em.createQuery('''
               select a from wf$Assignment a
               where a.masterAssignment.id = ?1 and a.id <> ?2
-            ''',  metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
-      q.setParameter(1, assignment.getMasterAssignment().getId())
-      q.setParameter(2, assignment.getId())
-      List<Assignment> siblings = q.getResultList()
+            ''', metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
+            q.setParameter(1, assignment.getMasterAssignment().getId())
+            q.setParameter(2, assignment.getId())
+            List<Assignment> siblings = q.getResultList()
 
-      if (finishBySingleUser)
-        finishSiblings(assignment, siblings)
+            if (finishBySingleUser)
+                finishSiblings(assignment, siblings)
 
-      String resultTransition = signalName
-      for (Assignment sibling: siblings) {
-        if (sibling.getFinished() == null) {
-          log.debug("Parallel assignment is not finished: assignment.id=${sibling.getId()}")
-          execution.waitForSignal()
-          return
+            String resultTransition = signalName
+            for (Assignment sibling : siblings) {
+                if (sibling.getFinished() == null) {
+                    log.debug("Parallel assignment is not finished: assignment.id=${sibling.getId()}")
+                    execution.waitForSignal()
+                    return
+                }
+                if (!successTransitions.contains(sibling.getOutcome()))
+                    resultTransition = sibling.getOutcome()
+            }
+
+            ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
+            Map<String, Object> params = new HashMap<String, Object>()
+            params.put("assignment", assignment.getMasterAssignment())
+
+            if (!successTransitions.contains(resultTransition))
+                log.debug("Some of parallel assignments have been finished unsuccessfully")
+            else {
+                log.debug("All of parallel assignments have been finished successfully")
+            }
+
+            es.signalExecutionById(execution.getId(), resultTransition, params)
+            afterSignal(execution, signalName, parameters)
         }
-        if (!successTransitions.contains(sibling.getOutcome()))
-          resultTransition = sibling.getOutcome()
-      }
-
-      ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
-      Map<String, Object> params = new HashMap<String, Object>()
-      params.put("assignment", assignment.getMasterAssignment())
-
-      if (!successTransitions.contains(resultTransition))
-        log.debug("Some of parallel assignments have been finished unsuccessfully")
-      else {
-        log.debug("All of parallel assignments have been finished successfully")
-      }
-
-      es.signalExecutionById(execution.getId(), resultTransition, params)
-      afterSignal(execution, signalName, parameters)
     }
-  }
 
-  protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
-    for (Assignment sibling: siblings) {
-        sibling.setFinished(assignment.getFinished())
-        sibling.setFinishedByUser(assignment.getFinishedByUser())
-        sibling.setOutcome(assignment.getOutcome())
+    protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
+        for (Assignment sibling : siblings) {
+            sibling.setFinished(assignment.getFinished())
+            sibling.setFinishedByUser(assignment.getFinishedByUser())
+            sibling.setOutcome(assignment.getOutcome())
 
-        deleteNotifications(sibling);
-      }
-  }
+            deleteNotifications(sibling);
+        }
+    }
 
-  protected void deleteNotifications(Assignment assignment) {
-    EntityManager em = persistence.getEntityManager();
-    Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
-            "where ci.card.id = ?3 and ci.user.id = ?4");
-    query.setParameter(1, assignment.finished);
-    query.setParameter(2, assignment.finishedByUser.login);
-    query.setParameter(3, assignment.card.id);
-    query.setParameter(4, assignment.user.id);
-    query.executeUpdate()
-  }
+    protected void deleteNotifications(Assignment assignment) {
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createQuery("update wf\$CardInfo ci set ci.deleteTs = ?1, ci.deletedBy = ?2 " +
+                "where ci.card.id = ?3 and ci.user.id = ?4");
+        query.setParameter(1, assignment.finished);
+        query.setParameter(2, assignment.finishedByUser.login);
+        query.setParameter(3, assignment.card.id);
+        query.setParameter(4, assignment.user.id);
+        query.executeUpdate()
+    }
 
-  protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
-  }
+    protected void onSuccess(ActivityExecution execution, String signalName, Assignment assignment) {
+    }
 }
