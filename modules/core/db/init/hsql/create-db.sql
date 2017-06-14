@@ -274,8 +274,11 @@ create table WF_ATTACHMENT (
     VERSION_NUM integer,
     RECOGNIZED_FILE_ID varchar(36),
     SUBSTITUTED_CREATOR_ID varchar(36),
+    CARD_ROLE_ID varchar(36),
     primary key (ID)
 )^
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE_ID) references SYS_FILE (ID)^
 

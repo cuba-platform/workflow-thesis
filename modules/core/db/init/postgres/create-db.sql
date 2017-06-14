@@ -232,9 +232,11 @@ create table WF_ASSIGNMENT (
     ITERATION integer,
     SUBPROC_CARD_ID uuid,
     FAMILY_ASSIGNMENT_ID uuid,
+    CARD_ROLE_ID uuid,
     primary key (ID)
 )^
 
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_USER foreign key (USER_ID) references SEC_USER (ID)^
 
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_FINISHED_BY foreign key (FINISHED_BY) references SEC_USER (ID)^

@@ -8,13 +8,12 @@ import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.EntityLoadInfo
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.TimeSource
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.workflow.core.app.DateHelperBean
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
-import com.haulmont.workflow.core.app.WorkCalendarAPI
+import com.haulmont.workflow.core.app.WfAssignmentWorker
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
@@ -44,6 +43,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     Metadata metadata = AppBeans.get(Metadata.NAME)
     Persistence persistence = AppBeans.get(Persistence.NAME)
     TimeSource timeSource = AppBeans.get(TimeSource.NAME)
+    WfAssignmentWorker wfAssignmentWorker = AppBeans.get(WfAssignmentWorker.NAME)
 
     public void execute(ActivityExecution execution) throws Exception {
         checkState(!(isBlank(assignee) && isBlank(role)), 'Both assignee and role are blank')
@@ -87,31 +87,11 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
                 user = cr.getUser()
             }
         }
-
         Assignment familyAssignment = findFamilyAssignment(card)
-        Assignment assignment = metadata.create(Assignment.class)
-        assignment.setName(execution.getActivityName())
-
-        if (StringUtils.isBlank(description))
-            assignment.setDescription("msg://${execution.getActivityName()}.description")
-        else
-            assignment.setDescription(description)
-
-        assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-        assignment.setUser(user)
-        assignment.setCard(card)
-        assignment.setProc(card.getProc())
-        assignment.setIteration(calcIteration(card, user, execution.getActivityName()))
-        assignment.setFamilyAssignment(familyAssignment)
-
-        createTimers(execution, assignment, cr)
-
-        em.persist(assignment)
-
-        notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
-
-        afterCreateAssignment(assignment)
-
+        createUserAssignment(execution, card, cr,
+                calcIteration(card, user, execution.getActivityName()),
+                getDescription("${execution.getActivityName()}.description", description),
+                familyAssignment, null, true);
         return true
     }
 
@@ -158,30 +138,55 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
     }
 
     protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr, Assignment master) {
+        createUserAssignment(execution, card, cr, null, master, true);
+    }
+
+    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+                                       Assignment familyAssignment, Assignment master) {
+        createUserAssignment(execution, card, cr, familyAssignment, master, true);
+    }
+
+    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+                                       Assignment familyAssignment, Assignment master, boolean isNotify) {
+        createUserAssignment(execution, card, cr,
+                calcIteration(card, cr.user, execution.getActivityName()),
+                getDescription(execution.getActivityName(), description), familyAssignment, master, isNotify);
+    }
+
+    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+                                       Integer iteration, String description, Assignment familyAssignment,
+                                       Assignment master, boolean isNotify) {
         EntityManager em = persistence.getEntityManager()
 
-        Assignment familyAssignment = findFamilyAssignment(card)
-
-        Assignment assignment = metadata.create(Assignment.class)
-        assignment.setName(execution.getActivityName())
-
-        if (StringUtils.isBlank(description))
-            assignment.setDescription('msg://' + execution.getActivityName())
-        else
-            assignment.setDescription(description)
-
-        assignment.setJbpmProcessId(execution.getProcessInstance().getId())
-        assignment.setCard(card)
-        assignment.setProc(card.getProc())
-        assignment.setUser(cr.user)
-        assignment.setMasterAssignment(master)
-        assignment.setIteration(calcIteration(card, cr.user, execution.getActivityName()))
-        assignment.setFamilyAssignment(familyAssignment)
-
+        Assignment assignment = createNewUserAssignment(execution, card, cr, iteration, description, familyAssignment, master);
         createTimers(execution, assignment, cr)
         em.persist(assignment)
+        afterCreateAssignment(assignment)
 
-        notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
+        if (isNotify) notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
+    }
+
+    protected def createNewUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+                                          Integer iteration, String description, Assignment familyAssignment, Assignment master) {
+        return wfAssignmentWorker.createAssignment(
+                execution.getActivityName(),
+                cr,
+                description,
+                execution.getProcessInstance().getId(),
+                cr.user,
+                card,
+                card.getProc(),
+                iteration,
+                familyAssignment,
+                master)
+    }
+
+    protected Assignment createMasterAssignment(ActivityExecution execution, Card card) {
+        Assignment master = metadata.create(Assignment.class)
+        master.setName(execution.getActivityName())
+        master.setJbpmProcessId(execution.getProcessInstance().getId())
+        master.setCard(card)
+        return master;
     }
 
     protected void createTimers(ActivityExecution execution, Assignment assignment, CardRole cardRole) {
@@ -215,5 +220,11 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
             List<Assignment> resultList = q.getResultList();
             return resultList.isEmpty() ? null : resultList.get(0);
         }
+    }
+
+    protected String getDescription(String messageName, String description) {
+        if (StringUtils.isBlank(description))
+            return ("msg://" + messageName);
+        return (description);
     }
 }
