@@ -239,6 +239,7 @@ create table WF_ASSIGNMENT (
     ITERATION integer,
     SUBPROC_CARD_ID varchar(32),
     FAMILY_ASSIGNMENT_ID varchar(32),
+    CARD_ROLE_ID varchar(32),
     primary key (ID)
 )^
 
@@ -392,6 +393,9 @@ alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_USER foreign key (USER_I
 create index IDX_WF_CARD_ROLE_CARD on WF_CARD_ROLE (CARD_ID)^
 
 create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE (USER_ID, CODE)^
+
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD_ROLE foreign key (USER_ID) references WF_CARD_ROLE (ID)^
+create index IDX_WF_ASSIGNMENT_CARD_ROLE  on WF_ASSIGNMENT (CARD_ROLE_ID)^
 
 /**********************************************************************************************/
 

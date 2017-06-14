@@ -278,8 +278,6 @@ create table WF_ATTACHMENT (
     primary key (ID)
 )^
 
-alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
-
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE_ID) references SYS_FILE (ID)^
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD foreign key (CARD_ID) references WF_CARD (ID)^
@@ -351,6 +349,8 @@ alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_CARD foreign key (CARD_I
 alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_PROC_ROLE foreign key (PROC_ROLE_ID) references WF_PROC_ROLE (ID)^
 
 alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_USER foreign key (USER_ID) references SEC_USER (ID)^
+
+alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
