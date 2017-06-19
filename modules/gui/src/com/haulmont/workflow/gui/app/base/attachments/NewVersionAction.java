@@ -17,10 +17,9 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
+import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -68,8 +67,6 @@ public class NewVersionAction extends CreateAction {
             }
         }
 
-        prevVersion = prevVersion.getVersionOf() == null ? prevVersion : prevVersion.getVersionOf();
-
         super.actionPerform(component);
         target.getFrame().getContext().getParams().remove("prevVersion");
     }
@@ -77,22 +74,17 @@ public class NewVersionAction extends CreateAction {
     @Override
     protected void afterCommit(Entity entity) {
         Attachment newVersion = (Attachment) entity;
-
-        prevVersion.setVersionOf(newVersion);
-        if (prevVersion.getVersionNum() == null) {
-            prevVersion.setVersionNum(1);
+        CollectionDatasource<Attachment, UUID> attachmentsDs = target.getDatasource();
+        AttachmentActionTools attachmentActionTools = AppBeans.get(AttachmentActionTools.class);
+        List<Attachment> prevVersions = attachmentActionTools.getPrevVersionOfAttachments(attachmentsDs.getItems(), prevVersion);
+        Map<String, Object> initialValues = getInitialValues();
+        Card card = (Card) initialValues.get("card");
+        if (!PersistenceHelper.isNew(card)) {
+            attachmentsDs.refresh();
         }
-        newVersion.setVersionNum(prevVersion.getVersionNum() + 1);
-
-        CollectionDatasource attachmentsDs = target.getDatasource();
-        for (Object id : attachmentsDs.getItemIds()) {
-            Attachment item = (Attachment) attachmentsDs.getItem(id);
-            if (prevVersion.equals(item.getVersionOf())) {
-                item.setVersionOf(newVersion);
-            }
-        }
-
-        attachmentsDs.updateItem(newVersion);
+        prevVersion = attachmentActionTools.findPrevVersion(attachmentsDs, prevVersion, prevVersions);
+        attachmentsDs.addItem(newVersion);
+        attachmentActionTools.updateAttachmentVersions(attachmentsDs, newVersion, prevVersion);
         commitNewVersion(newVersion);
     }
 
