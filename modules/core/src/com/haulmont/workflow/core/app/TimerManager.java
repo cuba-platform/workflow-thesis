@@ -173,13 +173,13 @@ public class TimerManager implements TimerManagerAPI {
     public void processTimer(TimerEntity timer) {
         Transaction tx = persistence.createTransaction();
         try {
-            Class<? extends TimerAction> taskClass = scripting.loadClass(timer.getActionClass());
+            Class<?> taskClass = scripting.loadClass(timer.getActionClass());
             if (taskClass == null) {
                 log.error(String.format("Can not find class %s for timer %s", timer.getActionClass(), timer));
                 return;
             }
 
-            TimerAction action = taskClass.newInstance();
+            TimerAction action = (TimerAction) taskClass.newInstance();
             EntityManager em = persistence.getEntityManager();
             TimerEntity t = em.find(TimerEntity.class, timer.getId());
 
