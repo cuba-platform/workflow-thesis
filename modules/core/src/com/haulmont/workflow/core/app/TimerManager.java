@@ -8,6 +8,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -47,13 +48,13 @@ public class TimerManager implements TimerManagerAPI {
     private ClusterManagerAPI clusterManager;
 
     @Inject
-    private WorkCalendarAPI workCalendarAPI;
-
-    @Inject
     private Persistence persistence;
 
     @Inject
     private TimeSource timeSource;
+
+    @Inject
+    private Metadata metadata;
 
     @Inject
     private Scripting scripting;
@@ -69,7 +70,7 @@ public class TimerManager implements TimerManagerAPI {
 
         EntityManager em = persistence.getEntityManager();
 
-        TimerEntity timer = new TimerEntity();
+        TimerEntity timer = metadata.create(TimerEntity.class);
         timer.setCard(card);
         if (execution != null) {
             timer.setJbpmExecutionId(execution.getId());
@@ -91,7 +92,8 @@ public class TimerManager implements TimerManagerAPI {
         checkNotNull(execution, "execution is null");
 
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery("select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2");
+        TypedQuery<TimerEntity> q = em.createQuery("select t from wf$Timer t " +
+                "where t.jbpmExecutionId = ?1 and t.activity = ?2", TimerEntity.class);
         q.setParameter(1, execution.getId());
         q.setParameter(2, execution.getActivityName());
         List<TimerEntity> timerEntities = q.getResultList();
@@ -176,20 +178,29 @@ public class TimerManager implements TimerManagerAPI {
         Transaction tx = persistence.createTransaction();
         try {
             Class<? extends TimerAction> taskClass = scripting.loadClass(timer.getActionClass());
-            TimerAction action = taskClass.newInstance();
+            if (taskClass == null) {
+                log.error(String.format("Can not find class %s for timer %s", timer.getActionClass(), timer));
+                return;
+            }
 
+            TimerAction action = taskClass.newInstance();
             EntityManager em = persistence.getEntityManager();
             TimerEntity t = em.find(TimerEntity.class, timer.getId());
 
-            TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
-                    t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
-            action.execute(context);
-            em.remove(t);
-            tx.commit();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            //The timer can be concurrently deleted so we need to check if it still exist in a db
+            if (t != null) {
+                TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
+                        t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
+                action.execute(context);
+                // Delete timer using native query to avoid optimistic lock
+                // if timer was deleted during timer action execution
+                em.createNativeQuery("delete from WF_TIMER t where t.ID = ?1")
+                        .setParameter(1, t.getId())
+                        .executeUpdate();
+                tx.commit();
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Timer action's class instantiation exception: ", e);
         } finally {
             tx.end();
         }
