@@ -141,19 +141,19 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         createUserAssignment(execution, card, cr, null, master, true);
     }
 
-    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+    protected Assignment createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
                                        Assignment familyAssignment, Assignment master) {
-        createUserAssignment(execution, card, cr, familyAssignment, master, true);
+        return createUserAssignment(execution, card, cr, familyAssignment, master, true);
     }
 
-    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+    protected Assignment createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
                                        Assignment familyAssignment, Assignment master, boolean isNotify) {
-        createUserAssignment(execution, card, cr,
+        return createUserAssignment(execution, card, cr,
                 calcIteration(card, cr.user, execution.getActivityName()),
                 getDescription(execution.getActivityName(), description), familyAssignment, master, isNotify);
     }
 
-    protected def createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
+    protected Assignment createUserAssignment(ActivityExecution execution, Card card, CardRole cr,
                                        Integer iteration, String description, Assignment familyAssignment,
                                        Assignment master, boolean isNotify) {
         EntityManager em = persistence.getEntityManager()
@@ -164,6 +164,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         afterCreateAssignment(assignment)
 
         if (isNotify) notifyUser(execution, card, [(assignment): cr], getNotificationState(execution))
+        return assignment;
     }
 
     protected def createNewUserAssignment(ActivityExecution execution, Card card, CardRole cr,

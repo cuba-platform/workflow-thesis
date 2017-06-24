@@ -51,13 +51,18 @@ public class ParallelAssigner extends MultiAssigner {
         Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment, CardRole>();
         Assignment familyAssignment = findFamilyAssignment(card)
 
+        createAssignmentsAndNotify(cardRoles, execution, card, familyAssignment, master, assignmentsCardRoleMap)
+        return true
+    }
+
+    protected void createAssignmentsAndNotify(List<CardRole> cardRoles, ActivityExecution execution, Card card,
+                                              Assignment familyAssignment, Assignment master, HashMap<Assignment, CardRole> assignmentsCardRoleMap) {
         for (CardRole cr : cardRoles) {
             Assignment assignment = createUserAssignment(execution, card, cr, familyAssignment, master, false);
             assignmentsCardRoleMap.put(assignment, cr)
         }
 
         notifyUser(execution, card, assignmentsCardRoleMap, getNotificationState(execution))
-        return true
     }
 
     @Override
