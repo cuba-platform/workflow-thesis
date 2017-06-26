@@ -190,7 +190,7 @@ public class TimerManager implements TimerManagerAPI {
                 action.execute(context);
                 // Delete timer using native query to avoid optimistic lock
                 // if timer was deleted during timer action execution
-                em.createNativeQuery("delete from WF_TIMER t where t.ID = ?1")
+                em.createNativeQuery("delete from WF_TIMER where ID = ?1")
                         .setParameter(1, t.getId())
                         .executeUpdate();
                 tx.commit();
