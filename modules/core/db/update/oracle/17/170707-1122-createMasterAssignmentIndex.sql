@@ -1,0 +1,4 @@
+-- $Id$
+-- Description:
+
+create index IDX_WF_ASSIGNMENT_MASTER on WF_ASSIGNMENT(MASTER_ASSIGNMENT_ID)^

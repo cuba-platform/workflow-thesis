@@ -256,6 +256,7 @@ create index IDX_WF_ASSIGNMENT_USER on WF_ASSIGNMENT (USER_ID)^
 
 create index IDX_WF_ASSIGNMENT_USER_FINISHED on WF_ASSIGNMENT (USER_ID, FINISHED)^
 
+create index IDX_WF_ASSIGNMENT_MASTER on WF_ASSIGNMENT(MASTER_ASSIGNMENT_ID)^
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_ATTACHMENTTYPE (
