@@ -115,17 +115,7 @@ public class UserGroupBrowser extends AbstractWindow {
                 openLookup("sec$User.lookup", new Lookup.Handler() {
                     @Override
                     public void handleLookup(Collection items) {
-                        UserGroup userGroup = userGroupsDs.getItem();
-                        Set<User> users = userGroup.getUsers();
-                        if (CollectionUtils.isEmpty(users)) {
-                            users = new HashSet<>();
-                        }
-                        for (Object user : items) {
-                            users.add((User) user);
-                        }
-                        userGroup.setUsers(users);
-                        getDsContext().getDataSupplier().commit(userGroup);
-                        userGroupsDs.refresh();
+                        addUsers(items);
                     }
                 }, WindowManager.OpenType.THIS_TAB, userBrowserParams);
             }
@@ -137,6 +127,20 @@ public class UserGroupBrowser extends AbstractWindow {
         });
 
         usersTable.addAction(new DeleteUserAction());
+    }
+
+    protected void addUsers(Collection selectedUsers) {
+        UserGroup userGroup = userGroupsDs.getItem();
+        Set<User> users = userGroup.getUsers();
+        if (CollectionUtils.isEmpty(users)) {
+            users = new HashSet<>();
+        }
+        for (Object user : selectedUsers) {
+            users.add((User) user);
+        }
+        userGroup.setUsers(users);
+        getDsContext().getDataSupplier().commit(userGroup);
+        userGroupsDs.refresh();
     }
 
 
