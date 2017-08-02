@@ -55,8 +55,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
 
         for (final CardRole cardRole : cardRoles) {
-            if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
-                    !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
+            if (isCardRoleEmpty(cardRole, deletedEmptyRoleCodes)) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
@@ -96,6 +95,11 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
 
         return emptyRolesNames;
+    }
+
+    protected boolean isCardRoleEmpty(CardRole cardRole, List<String> deletedEmptyRoleCodes) {
+        return cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
+                !deletedEmptyRoleCodes.contains(cardRole.getCode()));
     }
 
     public void assignNextSortOrder(CardRole nextCardRole, Collection<CardRole> allCardRoles) {
