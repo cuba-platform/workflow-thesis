@@ -35,6 +35,8 @@ dependencies {
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
+bom.load file('modules/global/src/com/haulmont/workflow/bom.properties')
+
 cuba {
     artifact {
         group = 'com.haulmont.workflow'
@@ -131,10 +133,10 @@ configure(coreModule) {
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core-tests', version: baseVersion)
 
+        compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(bom['com.haulmont.thirdparty:jbpm'])
         compile(bom['org.json:json'])
         runtime(bom['org.glassfish.web:javax.el'])
-        compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(hibernate)
         runtime(bom['org.javassist:javassist'])
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
