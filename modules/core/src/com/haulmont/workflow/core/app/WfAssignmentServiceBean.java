@@ -160,6 +160,14 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     }
 
     protected Assignment createAssignment(Card card, CardRole cr, String state) {
+        Assignment assignment = prepareAssignment(card, cr, state);
+
+        persistence.getEntityManager().persist(assignment);
+        fireCreateEvent(assignment, cr);
+        return assignment;
+    }
+
+    protected Assignment prepareAssignment(Card card, CardRole cr, String state) {
         List<Assignment> assignments = getAssignmentsByState(card, state);
         Date dueDate = null;
         for (Assignment assignment : assignments) {
@@ -177,8 +185,6 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         if (dueDate != null) {
             assignment.setDueDate(dueDate);
         }
-        persistence.getEntityManager().persist(assignment);
-        fireCreateEvent(assignment, cr);
         return assignment;
     }
 
