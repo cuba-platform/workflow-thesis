@@ -223,7 +223,7 @@ public class CardRolesFrame extends AbstractFrame {
         initDurationColumns();
     }
 
-    protected LookupPickerField generateUserFieldComponent(CardRole cardRole) {
+    protected Component generateUserFieldComponent(CardRole cardRole) {
         LookupPickerField cardRoleField = actorFieldsMap.get(cardRole);
         if (cardRoleField != null) {
             cardRoleField.setValue(cardRole.getUser());
