@@ -104,6 +104,7 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
 configure(sharedLibModule) {
     dependencies {
         compile(hibernate)
+        compile(bom['commons-collections:commons-collections'])
         compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework:spring-jdbc'])
         compile(bom['org.springframework:spring-orm'])
@@ -138,6 +139,7 @@ configure(coreModule) {
         compile(bom['org.json:json'])
         runtime(bom['org.glassfish.web:javax.el'])
         compile(hibernate)
+        compile(bom['commons-collections:commons-collections'])
         runtime(bom['org.javassist:javassist'])
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
         jdbc(bom['org.hsqldb:hsqldb'])
