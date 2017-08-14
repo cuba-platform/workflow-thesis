@@ -24,15 +24,15 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
-
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import javax.persistence.Transient;
 import java.io.ByteArrayInputStream;
@@ -201,7 +201,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
                 if (design.getDesignProcessVariables() != null) {
                     existsDesign.setDesignProcessVariables(design.getDesignProcessVariables());
                 } else {
-                    existsDesign.setDesignProcessVariables(SetUtils.EMPTY_SET);
+                    existsDesign.setDesignProcessVariables(Collections.emptySet());
                 }
                 for (DesignProcessVariable variable : existsDesign.getDesignProcessVariables()) {
                     variable.setDesign(existsDesign);

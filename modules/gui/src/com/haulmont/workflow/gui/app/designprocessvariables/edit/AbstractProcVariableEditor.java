@@ -3,10 +3,6 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
  */
 
-/**
- *
- *
- */
 package com.haulmont.workflow.gui.app.designprocessvariables.edit;
 
 import com.haulmont.bali.datastruct.Pair;
@@ -36,7 +32,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public abstract class AbstractProcVariableEditor extends AbstractEditor {
 

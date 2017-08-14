@@ -43,6 +43,8 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     protected UserSessionSource userSessionSource;
     @Inject
     protected TimeSource timeSource;
+    @Inject
+    protected WfAssignmentWorker wfAssignmentWorker;
 
     @Inject
     protected Metadata metadata;
@@ -158,6 +160,14 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     }
 
     protected Assignment createAssignment(Card card, CardRole cr, String state) {
+        Assignment assignment = prepareAssignment(card, cr, state);
+
+        persistence.getEntityManager().persist(assignment);
+        fireCreateEvent(assignment, cr);
+        return assignment;
+    }
+
+    protected Assignment prepareAssignment(Card card, CardRole cr, String state) {
         List<Assignment> assignments = getAssignmentsByState(card, state);
         Date dueDate = null;
         for (Assignment assignment : assignments) {
@@ -166,22 +176,15 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
                 break;
             }
         }
-        Assignment assignment = metadata.create(Assignment.class);
-        assignment.setName(state);
-        assignment.setDescription("msg://" + state);
-        assignment.setJbpmProcessId(card.getJbpmProcessId());
-        assignment.setCard(card);
-        assignment.setProc(card.getProc());
-        assignment.setUser(cr.getUser());
         Assignment master = getMasterAssignment(card, state);
-        assignment.setIteration(1);
-        assignment.setMasterAssignment(master);
-        assignment.setFamilyAssignment(getFamilyAssignment(card));
+        Assignment assignment = wfAssignmentWorker.createAssignment(state,
+                cr, "msg://" + state,
+                card.getJbpmProcessId(),
+                cr.getUser(), card, card.getProc(), 1,
+                getFamilyAssignment(card), master);
         if (dueDate != null) {
             assignment.setDueDate(dueDate);
         }
-        persistence.getEntityManager().persist(assignment);
-        fireCreateEvent(assignment, cr);
         return assignment;
     }
 

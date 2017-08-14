@@ -234,6 +234,7 @@ create table WF_ASSIGNMENT (
     ITERATION integer,
     SUBPROC_CARD_ID uniqueidentifier,
     FAMILY_ASSIGNMENT_ID uniqueidentifier,
+    CARD_ROLE_ID uniqueidentifier,
     primary key nonclustered (ID)
 )^
 
@@ -255,6 +256,7 @@ create index IDX_WF_ASSIGNMENT_USER on WF_ASSIGNMENT (USER_ID)^
 
 create index IDX_WF_ASSIGNMENT_USER_FINISHED on WF_ASSIGNMENT (USER_ID, FINISHED)^
 
+create index IDX_WF_ASSIGNMENT_MASTER on WF_ASSIGNMENT(MASTER_ASSIGNMENT_ID)^
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_ATTACHMENTTYPE (
@@ -381,6 +383,8 @@ create clustered index IDX_WF_CARD_ROLE_CARD on WF_CARD_ROLE (CARD_ID)^
 
 create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE (USER_ID, CODE)^
 
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
+create index IDX_WF_ASSIGNMENT_CARD_ROLE on WF_ASSIGNMENT (CARD_ROLE_ID)^
 ------------------------------------------------------------------------------------------------------------
 
 create table WF_CARD_PROC (

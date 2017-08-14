@@ -5,8 +5,8 @@
 
 package com.haulmont.workflow.core.app.valuehandler;
 
-import com.haulmont.cuba.core.app.prettytime.CubaPrettyTimeParser;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.workflow.core.app.prettytime.CubaPrettyTimeParser;
 import com.haulmont.workflow.core.entity.Card;
 
 public class DateCardPropertyHandler extends BaseCardPropertyHandler {

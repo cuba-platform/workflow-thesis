@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.entity.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.stereotype.Component;
@@ -52,8 +52,7 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
 
         for (final CardRole cardRole : cardRoles) {
-            if (cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
-                    !deletedEmptyRoleCodes.contains(cardRole.getCode()))) {
+            if (isCardRoleEmpty(cardRole, deletedEmptyRoleCodes)) {
                 emptyRolesNames.add(procRolesNames.get(cardRole.getCode()));
             }
 
@@ -93,6 +92,11 @@ public class CardRolesFrameWorkerBean implements CardRolesFrameWorker {
         }
 
         return emptyRolesNames;
+    }
+
+    protected boolean isCardRoleEmpty(CardRole cardRole, List<String> deletedEmptyRoleCodes) {
+        return cardRole.getUser() == null && (deletedEmptyRoleCodes == null ||
+                !deletedEmptyRoleCodes.contains(cardRole.getCode()));
     }
 
     @Override

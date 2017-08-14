@@ -4,7 +4,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '6.6-SNAPSHOT'
+    ext.cubaVersion = '6.7-SNAPSHOT'
     ext.cubaVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : cubaVersion
     
     println("CUBA Platform - Workflow Version ${ext.cubaVersion}")
@@ -34,6 +34,8 @@ dependencies {
 
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
+
+bom.load file('modules/global/src/com/haulmont/workflow/bom.properties')
 
 cuba {
     artifact {
@@ -102,6 +104,7 @@ configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
 configure(sharedLibModule) {
     dependencies {
         compile(hibernate)
+        compile(bom['commons-collections:commons-collections'])
         compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework:spring-jdbc'])
         compile(bom['org.springframework:spring-orm'])
@@ -131,11 +134,12 @@ configure(coreModule) {
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core-tests', version: baseVersion)
 
+        compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(bom['com.haulmont.thirdparty:jbpm'])
         compile(bom['org.json:json'])
         runtime(bom['org.glassfish.web:javax.el'])
-        compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(hibernate)
+        compile(bom['commons-collections:commons-collections'])
         runtime(bom['org.javassist:javassist'])
         provided(bom['org.apache.tomcat:tomcat-servlet-api'])
         jdbc(bom['org.hsqldb:hsqldb'])

@@ -22,11 +22,14 @@ create table WF_ASSIGNMENT (
     ITERATION integer,
     SUBPROC_CARD_ID varchar2(32),
     FAMILY_ASSIGNMENT_ID varchar2(32),
+    CARD_ROLE_ID varchar2(32),
     primary key(ID)
 )^
 create index IDX_WF_ASSIGNMENT_CARD on WF_ASSIGNMENT(CARD_ID)^
 create index IDX_WF_ASSIGNMENT_USER on WF_ASSIGNMENT(USER_ID)^
+create index IDX_WF_ASSIGNMENT_CARD_ROLE on WF_ASSIGNMENT(CARD_ROLE_ID)^
 create index IDX_WF_ASSIGNMENT_USER_FIN on WF_ASSIGNMENT(USER_ID, FINISHED)^
+create index IDX_WF_ASSIGNMENT_MASTER on WF_ASSIGNMENT(MASTER_ASSIGNMENT_ID)^
 
 create table WF_ATTACHMENT (
     ID varchar2(32) not null,
@@ -412,6 +415,7 @@ alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_FAMILY_ASS foreign key (F
 alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_SUBPROC_CARD foreign key (SUBPROC_CARD_ID) references WF_CARD(ID)^
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD foreign key (CARD_ID) references WF_CARD(ID)^
 alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_PROC foreign key (PROC_ID) references WF_PROC(ID)^
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE(ID)^
 
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_FILE foreign key (FILE_ID) references SYS_FILE(ID)^
 alter table WF_ATTACHMENT add constraint FK_WF_ATTACHMENT_ASSIGNMENT foreign key (ASSIGNMENT_ID) references WF_ASSIGNMENT(ID)^

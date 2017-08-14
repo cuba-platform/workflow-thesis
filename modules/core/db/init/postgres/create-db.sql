@@ -232,6 +232,7 @@ create table WF_ASSIGNMENT (
     ITERATION integer,
     SUBPROC_CARD_ID uuid,
     FAMILY_ASSIGNMENT_ID uuid,
+    CARD_ROLE_ID uuid,
     primary key (ID)
 )^
 
@@ -248,6 +249,8 @@ create index IDX_WF_ASSIGNMENT_CARD on WF_ASSIGNMENT (CARD_ID)^
 create index IDX_WF_ASSIGNMENT_USER on WF_ASSIGNMENT (USER_ID)^
 
 create index IDX_WF_ASSIGNMENT_USER_FINISHED on WF_ASSIGNMENT (USER_ID, FINISHED)^
+
+create index IDX_WF_ASSIGNMENT_MASTER on WF_ASSIGNMENT(MASTER_ASSIGNMENT_ID)^
 
 alter table WF_ASSIGNMENT add constraint WF_ASSIGNMENT_FAMILY_ASS foreign key (FAMILY_ASSIGNMENT_ID) references WF_ASSIGNMENT(ID)^
 
@@ -378,6 +381,9 @@ alter table WF_CARD_ROLE add constraint FK_WF_CARD_ROLE_USER foreign key (USER_I
 create index IDX_WF_CARD_ROLE_CARD on WF_CARD_ROLE (CARD_ID)^
 
 create index IDX_WF_CARD_ROLE_USER_CODE on WF_CARD_ROLE (USER_ID, CODE)^
+
+alter table WF_ASSIGNMENT add constraint FK_WF_ASSIGNMENT_CARD_ROLE foreign key (CARD_ROLE_ID) references WF_CARD_ROLE (ID)^
+create index IDX_WF_ASSIGNMENT_CARD_ROLE on WF_ASSIGNMENT (CARD_ROLE_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

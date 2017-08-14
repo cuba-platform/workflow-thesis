@@ -308,4 +308,47 @@ public class AttachmentActionTools {
                 !PersistenceHelper.isNew(
                         ((AttachmentCreator.CardAttachmentCreator) creator).getCard());
     }
+
+    public void updateAttachmentVersions(CollectionDatasource attachmentsDs, Attachment newVersion, Attachment prevVersion) {
+        if (prevVersion != null) {
+            prevVersion.setVersionOf(newVersion);
+            if (prevVersion.getVersionNum() == null) {
+                prevVersion.setVersionNum(1);
+            }
+            newVersion.setVersionNum(prevVersion.getVersionNum() + 1);
+            for (Object id : attachmentsDs.getItemIds()) {
+                Attachment attachment = (Attachment) attachmentsDs.getItemNN(id);
+                if (prevVersion.equals(attachment.getVersionOf())) {
+                    attachment.setVersionOf(newVersion);
+                }
+            }
+        } else {
+            newVersion.setVersionNum(1);
+        }
+        attachmentsDs.updateItem(newVersion);
+    }
+
+    public Attachment findPrevVersion(CollectionDatasource attachmentsDs, Attachment prevVersion, List<Attachment> prevVersions) {
+        Attachment resultPrevVersion = prevVersion == null ? null : (Attachment) attachmentsDs.getItem(prevVersion.getId());
+        if (resultPrevVersion == null) {
+            for (Attachment prevAttachVersion : prevVersions) {
+                resultPrevVersion = (Attachment) attachmentsDs.getItem(prevAttachVersion.getId());
+                if (resultPrevVersion != null) break;
+            }
+        }
+        if (resultPrevVersion != null) {
+            resultPrevVersion = resultPrevVersion.getVersionOf() == null ? resultPrevVersion : resultPrevVersion.getVersionOf();
+        }
+        return resultPrevVersion;
+    }
+
+    public List<Attachment> getPrevVersionOfAttachments(Collection<Attachment> attachments, Attachment prevVersion) {
+        List<Attachment> prevVersions = new ArrayList<>();
+        for (Attachment attachment : attachments) {
+            if (prevVersion.equals(attachment.getVersionOf())) {
+                prevVersions.add(attachment);
+            }
+        }
+        return prevVersions;
+    }
 }

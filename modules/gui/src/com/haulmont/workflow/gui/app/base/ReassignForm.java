@@ -20,7 +20,7 @@ import com.haulmont.workflow.core.app.WfAssignmentService;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.ReassignInfo;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 

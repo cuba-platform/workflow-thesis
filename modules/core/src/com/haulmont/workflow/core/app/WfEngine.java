@@ -13,7 +13,7 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.exception.WorkflowException;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

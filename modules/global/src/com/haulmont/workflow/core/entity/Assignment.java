@@ -83,6 +83,10 @@ public class Assignment extends StandardEntity {
     @Column(name = "ITERATION")
     protected Integer iteration;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CARD_ROLE_ID")
+    protected CardRole cardRole;
+
     public String getName() {
         return name;
     }
@@ -255,5 +259,13 @@ public class Assignment extends StandardEntity {
 
     protected AssignmentLocalizationTools getLocTools() {
         return AppBeans.get(AssignmentLocalizationTools.class);
+    }
+
+    public CardRole getCardRole() {
+        return cardRole;
+    }
+
+    public void setCardRole(CardRole cardRole) {
+        this.cardRole = cardRole;
     }
 }

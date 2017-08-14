@@ -44,9 +44,6 @@ public class TimerManager implements TimerManagerAPI {
     private ClusterManagerAPI clusterManager;
 
     @Inject
-    private WorkCalendarAPI workCalendarAPI;
-
-    @Inject
     private Persistence persistence;
 
     @Inject
@@ -91,7 +88,8 @@ public class TimerManager implements TimerManagerAPI {
         checkNotNull(execution, "execution is null");
 
         EntityManager em = persistence.getEntityManager();
-        Query q = em.createQuery("select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2");
+        TypedQuery<TimerEntity> q = em.createQuery("select t from wf$Timer t " +
+                "where t.jbpmExecutionId = ?1 and t.activity = ?2", TimerEntity.class);
         q.setParameter(1, execution.getId());
         q.setParameter(2, execution.getActivityName());
         List<TimerEntity> timerEntities = q.getResultList();
@@ -175,19 +173,30 @@ public class TimerManager implements TimerManagerAPI {
     public void processTimer(TimerEntity timer) {
         Transaction tx = persistence.createTransaction();
         try {
-            Class<?> taskClass = scripting.loadClassNN(timer.getActionClass());
-            TimerAction action = (TimerAction) taskClass.newInstance();
+            Class<?> taskClass = scripting.loadClass(timer.getActionClass());
+            if (taskClass == null) {
+                log.error(String.format("Can not find class %s for timer %s", timer.getActionClass(), timer));
+                return;
+            }
 
+            TimerAction action = (TimerAction) taskClass.newInstance();
             EntityManager em = persistence.getEntityManager();
             TimerEntity t = em.find(TimerEntity.class, timer.getId());
 
-            TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
-                    t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
-            action.execute(context);
-            em.remove(t);
-            tx.commit();
+            //The timer can be concurrently deleted so we need to check if it still exist in a db
+            if (t != null) {
+                TimerActionContext context = new TimerActionContext(t.getCard(), t.getJbpmExecutionId(),
+                        t.getActivity(), t.getDueDate(), getTimerActionParams(t.getActionParams()));
+                action.execute(context);
+                // Delete timer using native query to avoid optimistic lock
+                // if timer was deleted during timer action execution
+                em.createNativeQuery("delete from WF_TIMER where ID = ?1")
+                        .setParameter(1, t.getId())
+                        .executeUpdate();
+                tx.commit();
+            }
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Timer action's class instantiation exception: ", e);
         } finally {
             tx.end();
         }
