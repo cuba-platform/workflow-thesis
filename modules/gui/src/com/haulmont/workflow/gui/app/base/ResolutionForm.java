@@ -177,6 +177,13 @@ public class ResolutionForm extends AbstractForm {
 
     @Override
     protected void onWindowCommit() {
+        Assignment reloaded = getDsContext().getDataSupplier().reload(assignment,
+                metadata.getViewRepository().getView(Assignment.class, "resolution-edit"),
+                metadata.getClass(Assignment.class), false);
+        if (reloaded.getFinished() != null) {
+            showNotification(messages.getMessage("com.haulmont.workflow.gui.base", "optimisticLockMessage"), NotificationType.HUMANIZED);
+            return;
+        }
         Card card = getDsContext().getDataSupplier().reload(assignment.getCard(),
                 metadata.getViewRepository().getView(Card.class, View.MINIMAL),
                 metadata.getClass(Card.class), false);
