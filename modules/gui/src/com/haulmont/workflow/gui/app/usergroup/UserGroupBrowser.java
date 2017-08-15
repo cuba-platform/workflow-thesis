@@ -180,15 +180,7 @@ public class UserGroupBrowser extends AbstractWindow {
                             new DialogAction(Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    UserGroup userGroup = userGroupsDs.getItem();
-                                    userGroup.getUsers().remove(finalSelectedUser);
-                                    CommitContext ctx = new CommitContext();
-                                    ctx.getCommitInstances().add(userGroup);
-                                    Set commited = getDsContext().getDataSupplier().commit(ctx);
-                                    usersDs.refresh();
-                                    userGroup = (UserGroup) commited.iterator().next();
-                                    userGroupsDs.updateItem(userGroup);
-                                    userGroupsDs.setItem(userGroup);
+                                    removeUser(finalSelectedUser);
                                 }
                             },
                             new DialogAction(Type.NO, Status.PRIMARY)
@@ -199,5 +191,17 @@ public class UserGroupBrowser extends AbstractWindow {
         public String getCaption() {
             return messages.getMainMessage("actions.Remove");
         }
+    }
+
+    protected void removeUser(User user) {
+        UserGroup userGroup = userGroupsDs.getItem();
+        userGroup.getUsers().remove(user);
+        CommitContext ctx = new CommitContext();
+        ctx.getCommitInstances().add(userGroup);
+        Set commited = getDsContext().getDataSupplier().commit(ctx);
+        usersDs.refresh();
+        userGroup = (UserGroup) commited.iterator().next();
+        userGroupsDs.updateItem(userGroup);
+        userGroupsDs.setItem(userGroup);
     }
 }
