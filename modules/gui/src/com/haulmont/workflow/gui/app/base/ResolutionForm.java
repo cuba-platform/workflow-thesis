@@ -200,10 +200,14 @@ public class ResolutionForm extends AbstractForm {
         if (commentText.isRequired() && StringUtils.isBlank((String) commentText.getValue())) {
             showNotification(getMessage("putComments"), NotificationType.WARNING);
         } else {
-            commitAttachments();
-            onCommit();
-            close(COMMIT_ACTION_ID);
+            commitAndClose();
         }
+    }
+
+    protected void commitAndClose() {
+        commitAttachments();
+        onCommit();
+        close(COMMIT_ACTION_ID);
     }
 
     @Override
