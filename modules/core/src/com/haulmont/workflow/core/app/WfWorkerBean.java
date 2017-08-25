@@ -53,14 +53,13 @@ public class WfWorkerBean implements WfWorkerAPI {
     private Log log = LogFactory.getLog(WfWorkerBean.class);
 
     @Override
-    public Set<AssignmentInfo> getAssignmentInfos(Card card) {
+    public Set<AssignmentInfo> getAssignmentInfos(Card card, UUID userId) {
         Set<AssignmentInfo> infos = new LinkedHashSet<>();
         Transaction tx = persistence.createTransaction();
         try {
             String processId = card.getJbpmProcessId();
             if (processId != null) {
-                List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(
-                        userSessionSource.currentOrSubstitutedUserId(), card);
+                List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(userId, card);
                 if (!assignments.isEmpty()) {
                     for (Assignment assignment : assignments) {
                         if (!card.equals(assignment.getCard()))
@@ -75,6 +74,11 @@ public class WfWorkerBean implements WfWorkerAPI {
             tx.end();
         }
         return infos;
+    }
+
+    @Override
+    public Set<AssignmentInfo> getAssignmentInfos(Card card) {
+        return getAssignmentInfos(card, userSessionSource.currentOrSubstitutedUserId());
     }
 
     @Override

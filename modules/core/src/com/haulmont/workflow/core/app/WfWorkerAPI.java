@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author Sergey Saiyan
@@ -37,6 +38,8 @@ public interface WfWorkerAPI {
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
     Set<AssignmentInfo> getAssignmentInfos(Card card);
+
+    Set<AssignmentInfo> getAssignmentInfos(Card card, UUID userId);
 
     Map<String, Object> getProcessVariables(Card card);
 

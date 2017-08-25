@@ -43,7 +43,24 @@ public interface WfService {
      */
     AssignmentInfo getAssignmentInfo(Assignment assignment, String processId);
 
+    /**
+     * Returns the assignments information for the provided card and current user,
+     * including list of actions to be executed.
+     *
+     * @param card card
+     * @return assignments information created from provided card
+     */
     Set<AssignmentInfo> getAssignmentInfos(Card card);
+
+    /**
+     * Returns the assignments information for the provided card and user,
+     * including list of actions to be executed.
+     *
+     * @param card   card
+     * @param userId user id
+     * @return assignments information created from provided card and user
+     */
+    Set<AssignmentInfo> getAssignmentInfos(Card card, UUID userId);
 
     /**
      * Starts a workflow process for a given card.
