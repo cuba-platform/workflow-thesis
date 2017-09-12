@@ -101,7 +101,7 @@ public class TransitionForm extends AbstractForm {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidth(DEFAULT_FORM_WIDTH);
+        getDialogParams().setWidth(DEFAULT_FORM_WIDTH).setWidthUnit(SizeUnit.PIXELS);
         card = (Card) params.get("card");
         procContextCard = (Card) params.get("procContextCard");
         if (procContextCard == null) {
@@ -125,7 +125,7 @@ public class TransitionForm extends AbstractForm {
         } catch (NumberFormatException ignored) {
         }
 
-        getDialogParams().setHeight(formHeight);
+        getDialogParams().setHeight(formHeight).setHeightUnit(SizeUnit.PIXELS);
         if (Boolean.valueOf((String) params.get("cardRolesVisible"))) {
             if (cardRolesFrame != null) {
                 initCardRolesFrame(params);

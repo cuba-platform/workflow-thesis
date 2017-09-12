@@ -51,8 +51,8 @@ public class ReassignForm extends AbstractWindow {
     protected CardRolesFrame.CardProcRolesDatasource tmpCardRolesDs;
     protected ReassignInfo reassignmentInfo;
 
-    private static final int DEFAULT_FORM_HEIGHT = 500;
-    private static final int DEFAULT_FORM_WIDTH = 835;
+    private static final String DEFAULT_FORM_HEIGHT = "500px";
+    private static final String DEFAULT_FORM_WIDTH = "835px";
 
     @Override
     public void init(Map<String, Object> params) {

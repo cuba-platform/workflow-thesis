@@ -34,7 +34,7 @@ public class ProcVariableBrowser extends AbstractProcVariableBrowser {
         table.addAction(new AbstractAction("override") {
             @Override
             public void actionPerform(Component component) {
-                getDialogOptions().setHeight(300);
+                getDialogOptions().setHeight("300px");
                 openLookup("wf$DesignProcessVariable.browse", new Handler() {
                     @Override
                     public void handleLookup(Collection items) {

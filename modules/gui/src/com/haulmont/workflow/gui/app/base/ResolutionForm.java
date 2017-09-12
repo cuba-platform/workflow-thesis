@@ -167,11 +167,11 @@ public class ResolutionForm extends AbstractForm {
 
     protected void initDialogParams(Map<String, Object> params) {
         if (initHeight != null) {
-            getDialogOptions().setHeight(Integer.parseInt(initHeight));
+            getDialogOptions().setHeight(Integer.parseInt(initHeight)).setHeightUnit(SizeUnit.PIXELS);
         } else {
             String attachmentsVisible = (String) params.get("attachmentsVisible");
             if (attachmentsVisible == null || Boolean.valueOf(attachmentsVisible).equals(Boolean.TRUE))
-                getDialogOptions().setHeight(defaultInitHeight);
+                getDialogOptions().setHeight(defaultInitHeight).setHeightUnit(SizeUnit.PIXELS);
         }
     }
 

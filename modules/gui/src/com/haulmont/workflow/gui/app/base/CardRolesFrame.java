@@ -323,8 +323,8 @@ public class CardRolesFrame extends AbstractFrame {
             @Override
             public void actionPerform(Component component) {
                 getDialogParams()
-                        .setWidth(835)
-                        .setHeight(505);
+                        .setWidth("835px")
+                        .setHeight("505px");
 
                 Map<String, Object> params = getUsergroupAddParams(cardRole);
                 Window window = crf.openWindow("wf$UserGroup.add", WindowManager.OpenType.DIALOG, params);

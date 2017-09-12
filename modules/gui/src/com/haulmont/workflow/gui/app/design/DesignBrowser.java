@@ -172,8 +172,8 @@ public class DesignBrowser extends AbstractWindow {
             @Override
             public void doActionPerform(Component component) {
                 getDialogOptions()
-                        .setWidth(900)
-                        .setHeight(600);
+                        .setWidth("900px")
+                        .setHeight("600px");
 
                 Window window = openWindow("wf$DesignProcessVariable.browse",
                         OpenType.DIALOG,
@@ -404,7 +404,7 @@ public class DesignBrowser extends AbstractWindow {
                 if (design.getCompileTs() == null) {
                     showNotification(getMessage("notification.notCompiled"), NotificationType.WARNING);
                 } else {
-                    getDialogOptions().setWidth(500);
+                    getDialogOptions().setWidth("500px");
 
                     DeployDesignWindow window = (DeployDesignWindow) openWindow("wf$Design.deploy",
                             OpenType.DIALOG, ParamsMap.of("design", design));
@@ -478,8 +478,8 @@ public class DesignBrowser extends AbstractWindow {
 
     protected void showDesignProcessVariables(Design design) {
         getDialogOptions()
-                .setWidth(900)
-                .setHeight(600);
+                .setWidth("900px")
+                .setHeight("600px");
 
         Window window = openWindow("wf$DesignProcessVariable.browse",
                 OpenType.DIALOG, ParamsMap.of("design", design));

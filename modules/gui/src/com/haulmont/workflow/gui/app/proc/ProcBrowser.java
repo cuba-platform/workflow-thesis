@@ -34,8 +34,8 @@ public class ProcBrowser extends AbstractLookup {
             @Override
             public void actionPerform(Component component) {
                 getDialogOptions()
-                        .setWidth(900)
-                        .setHeight(600);
+                        .setWidth("900px")
+                        .setHeight("600px");
 
                 Window variablesEditor = openWindow("wf$ProcVariable.browse",
                         WindowManager.OpenType.DIALOG, ParamsMap.of("proc", target.getSingleSelected()));
