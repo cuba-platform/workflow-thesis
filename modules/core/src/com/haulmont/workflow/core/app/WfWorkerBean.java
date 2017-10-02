@@ -33,7 +33,6 @@ import java.util.*;
 
 /**
  * {@link WfService} delegate in middle ware.
- *
  */
 @Component(WfWorkerAPI.NAME)
 public class WfWorkerBean implements WfWorkerAPI {
@@ -56,6 +55,9 @@ public class WfWorkerBean implements WfWorkerAPI {
                 List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(userId, card);
                 if (!assignments.isEmpty()) {
                     for (Assignment assignment : assignments) {
+                        if (!processId.equals(assignment.getCard().getJbpmProcessId())) {
+                            return infos;
+                        }
                         if (!card.equals(assignment.getCard()))
                             processId = assignment.getCard().getJbpmProcessId();
                         AssignmentInfo info = getAssignmentInfo(assignment, processId, card);
