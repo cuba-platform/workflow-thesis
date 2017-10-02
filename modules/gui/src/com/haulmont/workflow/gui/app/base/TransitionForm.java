@@ -354,7 +354,7 @@ public class TransitionForm extends AbstractForm {
 
     protected String getAttachmentTypeLabelValue(String attachmentTypeCode) {
         AttachmentType type = getAttachmentType(attachmentTypeCode);
-        return type != null ? type.getName() : attachmentTypeCode;
+        return type != null ? type.getLocName() : attachmentTypeCode;
     }
 
     protected AttachmentType getAttachmentType(String code) {
@@ -491,7 +491,7 @@ public class TransitionForm extends AbstractForm {
             sb.append("<ul style=\"text-align:left;\">");
             for (String attachmentTypeCode : missingAttachments) {
                 final AttachmentType attachmentType = getAttachmentType(attachmentTypeCode);
-                String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getName();
+                String attachmentTypeName = attachmentType == null ? attachmentTypeCode : attachmentType.getLocName();
                 sb.append("<li>").append(attachmentTypeName).append("</li>");
             }
             sb.append("</ul>");
