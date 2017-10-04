@@ -62,7 +62,7 @@ public class WfWorkerBean implements WfWorkerAPI {
                 List<Assignment> assignments = WfHelper.getEngine().getUserAssignments(userId, card);
                 if (!assignments.isEmpty()) {
                     for (Assignment assignment : assignments) {
-                        if (!processId.equals(assignment.getCard().getJbpmProcessId())) {
+                        if (card.equals(assignment.getCard()) && !processId.equals(assignment.getCard().getJbpmProcessId())) {
                             return infos;
                         }
                         if (!card.equals(assignment.getCard()))
@@ -95,6 +95,9 @@ public class WfWorkerBean implements WfWorkerAPI {
                         userSessionSource.currentOrSubstitutedUserId(), card);
                 if (!assignments.isEmpty()) {
                     Assignment assignment = assignments.get(0);
+                    if (card.equals(assignment.getCard()) && !processId.equals(assignment.getCard().getJbpmProcessId())) {
+                        return null;
+                    }
                     if (!card.equals(assignment.getCard()))
                         processId = assignment.getCard().getJbpmProcessId();
                     info = getAssignmentInfo(assignment, processId, card);
