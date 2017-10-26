@@ -117,6 +117,7 @@ public class ResolutionForm extends AbstractForm {
         }
 
         assignmentDs.valid();
+        assignmentDs.addItem(assignment);
         assignmentDs.setItem(assignment);
         applyToCards();
 
