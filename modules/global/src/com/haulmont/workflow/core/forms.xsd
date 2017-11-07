@@ -22,35 +22,35 @@
     </xs:complexType>
 
     <xs:complexType name="saveType">
-        <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
             <xs:element type="confirmType" name="confirm" minOccurs="0"/>
             <xs:element type="screenType" name="screen" minOccurs="0"/>
-            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
-        </xs:sequence>
+            <xs:element type="invokeType" name="invoke" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="startType">
-        <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
             <xs:element type="confirmType" name="confirm" minOccurs="0"/>
             <xs:element type="screenType" name="screen" minOccurs="0"/>
-            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
-        </xs:sequence>
+            <xs:element type="invokeType" name="invoke" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="cancelType">
-        <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
             <xs:element type="confirmType" name="confirm" minOccurs="0"/>
             <xs:element type="screenType" name="screen" minOccurs="0"/>
-            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
-        </xs:sequence>
+            <xs:element type="invokeType" name="invoke" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="transitionType">
-        <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
             <xs:element type="confirmType" name="confirm" minOccurs="0"/>
             <xs:element type="screenType" name="screen" minOccurs="0"/>
-            <xs:element type="invokeType" name="invoke" minOccurs="0"/>
-        </xs:sequence>
+            <xs:element type="invokeType" name="invoke" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
         <xs:attribute type="xs:string" name="name" use="optional"/>
         <xs:attribute type="xs:string" name="style" use="optional"/>
     </xs:complexType>

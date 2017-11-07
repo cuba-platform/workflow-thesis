@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 2008-2016 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.workflow.gui.base.action;
 
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.app.ResourceService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Document;
-import org.dom4j.Element;
+import com.haulmont.workflow.gui.app.form.FormManagerChainBuilder;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class FormManagerChain {
 
@@ -23,9 +17,6 @@ public class FormManagerChain {
 
         void onFail();
     }
-
-    private static FormManagerChain nullObject = new FormManagerChain();
-    private static Map<String, FormManagerChain> cache = new ConcurrentHashMap<>();
 
     private Handler handler;
 
@@ -43,104 +34,7 @@ public class FormManagerChain {
     protected Map<String, FormResult> formResults = new HashMap<>();
 
     public static FormManagerChain getManagerChain(Card card, String actionName) {
-        if (card.getProc() == null)
-            return nullObject;
-
-        String resourceName = card.getProc().getProcessPath() + "/forms.xml";
-
-        String cacheKey = resourceName + "/" + actionName;
-        FormManagerChain cached = cache.get(cacheKey);
-        if (cached != null) {
-            cached.reset();
-            return cached.copy();
-        } else {
-            ResourceService resourceService = AppBeans.get(ResourceService.NAME);
-            String xml = resourceService.getResourceAsString(resourceName);
-            if (xml != null) {
-                Document doc = Dom4j.readDocument(xml);
-                Element root = doc.getRootElement();
-
-                Element element = null;
-                String activity = actionName;
-                String transition = null;
-                switch (actionName) {
-                    case WfConstants.ACTION_SAVE:
-                    case WfConstants.ACTION_SAVE_AND_CLOSE:
-                        element = root.element("save");
-                        break;
-                    case WfConstants.ACTION_START:
-                        element = root.element("start");
-                        break;
-                    case WfConstants.ACTION_CANCEL:
-                        element = root.element("cancel");
-                        break;
-                    case WfConstants.ACTION_REASSIGN:
-                        element = root.element("reassign");
-                        break;
-                    default:
-                        int dot = actionName.lastIndexOf('.');
-                        activity = actionName.substring(0, dot);
-                        transition = actionName.substring(actionName.lastIndexOf('.') + 1);
-
-                        for (Element activityElem : Dom4j.elements(root, "activity")) {
-                            if (activity.equals(activityElem.attributeValue("name"))) {
-                                for (Element transitionElem : Dom4j.elements(activityElem, "transition")) {
-                                    if (transition.equals(transitionElem.attributeValue("name"))) {
-                                        element = transitionElem;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                }
-                if (element != null) {
-                    FormManagerChain managerChain = new FormManagerChain();
-
-                    Map<String, Object> commonParams = new HashMap<>();
-                    commonParams.put("activity", activity);
-                    commonParams.put("transition", transition);
-
-                    String style = StringUtils.trimToNull(element.attributeValue("style"));
-                    if (style == null && ("Ok".equals(transition) || "START_PROCESS_ACTION".equals(actionName))) {
-                        style = "wf-success";
-                    }
-                    if (style == null && ("NotOk".equals(transition) || "CANCEL_PROCESS_ACTION".equals(actionName))) {
-                        style = "wf-failure";
-                    }
-                    if (style != null) {
-                        commonParams.put("style", style);
-                    }
-
-                    managerChain.setCommonParams(commonParams);
-
-                    for (Element elem : Dom4j.elements(element)) {
-                        FormManager manager;
-                        if (elem.getName().equals("screen")) {
-                            manager = new FormManager.ScreenFormManager(elem, activity, transition, managerChain);
-                        } else if (elem.getName().equals("confirm")) {
-                            manager = new FormManager.ConfirmFormManager(elem, activity, transition, managerChain);
-                        } else if (elem.getName().equals("invoke")) {
-                            manager = new FormManager.ClassFormManager(elem, activity, transition, managerChain);
-                        } else
-                            throw new UnsupportedOperationException("Unknown form element: " + elem.getName());
-
-                        if (manager.isBefore()) {
-                            managerChain.addManagerBefore(manager);
-                        }
-                        if (manager.isAfter()) {
-                            managerChain.addManagerAfter(manager);
-                        }
-                    }
-
-                    cache.put(cacheKey, managerChain);
-                    return managerChain.copy();
-                }
-            }
-
-            cache.put(cacheKey, nullObject);
-            return nullObject;
-        }
+        return AppBeans.get(FormManagerChainBuilder.class).build(card, actionName);
     }
 
     public FormManagerChain copy() {
@@ -176,7 +70,7 @@ public class FormManagerChain {
     }
 
     public void doManagerBefore(String comment) {
-        doManagerBefore(comment, new HashMap<>());
+        doManagerBefore(comment, new HashMap<String, Object>());
     }
 
     public void doManagerBefore(String comment, Map<String, Object> params) {
@@ -236,7 +130,7 @@ public class FormManagerChain {
         handler.onFail();
     }
 
-    private void reset() {
+    public void reset() {
         positionAfter = 0;
         positionBefore = 0;
     }
