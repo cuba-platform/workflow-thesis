@@ -60,7 +60,7 @@ public class FormManagerChainBuilder {
                     String activity = actionName;
                     String transition = null;
 
-                    if ("activity".equals(element.getName())) {
+                    if ("transition".equals(element.getName())) {
                         activity = StringUtils.substringBeforeLast(actionName, ".");
                         transition = StringUtils.substringAfterLast(actionName, ".");
                     }
@@ -107,14 +107,14 @@ public class FormManagerChainBuilder {
                 element = root.element("reassign");
                 break;
             default:
-                element = findActivityElement(actionName, root);
+                element = findTransitionElement(actionName, root);
                 break;
         }
 
         return element;
     }
 
-    protected Element findActivityElement(String actionName, Element root) {
+    protected Element findTransitionElement(String actionName, Element root) {
         String activity = StringUtils.substringBeforeLast(actionName, ".");
         String transition = StringUtils.substringAfterLast(actionName, ".");
         for (Element activityElem : Dom4j.elements(root, "activity")) {
