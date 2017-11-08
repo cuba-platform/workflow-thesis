@@ -670,7 +670,7 @@ public class DesignCompiler {
             //Find current locale messages
             String messages = null;
             for (DesignFile file : files) {
-                if (file.getName().equals(fileName)) {
+                if (fileName.equals(file.getName())) {
                     messages = file.getContent();
                     break;
                 }
