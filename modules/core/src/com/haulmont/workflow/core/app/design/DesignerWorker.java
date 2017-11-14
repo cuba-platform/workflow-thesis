@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.CubaXStream;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.app.CompilationMessage;
@@ -23,7 +24,6 @@ import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.DesignDeploymentException;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -268,9 +268,7 @@ public class DesignerWorker implements DesignerWorkerAPI {
     }
 
     protected XStream createXStream() {
-        XStream xStream = new XStream();
-        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
-        return xStream;
+        return new CubaXStream();
     }
 
     protected byte[] readBytesFromEntry(ZipArchiveInputStream archiveReader) throws IOException {

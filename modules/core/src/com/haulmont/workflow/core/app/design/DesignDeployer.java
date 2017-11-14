@@ -12,12 +12,12 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.CubaXStream;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.*;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -212,8 +212,7 @@ public class DesignDeployer {
     }
 
     private static XStream createXStream(Class clazz) {
-        XStream xStream = new XStream();
-        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
+        XStream xStream = new CubaXStream();
         xStream.alias(clazz.getSimpleName(), clazz);
         for (Field field : clazz.getDeclaredFields()) {
             Class cl = field.getType();
