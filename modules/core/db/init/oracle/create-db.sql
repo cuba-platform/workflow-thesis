@@ -398,7 +398,7 @@ create table WF_USER_GROUP (
 create table WF_USER_GROUP_USER (
     USER_GROUP_ID varchar2(32) not null,
     USER_ID varchar2(32) not null,
-    primary key(USER_GROUP_ID)
+    primary key(USER_GROUP_ID, USER_ID)
 )^
 
 create table WF_USER_NOTIFIED_BY_SMS (
