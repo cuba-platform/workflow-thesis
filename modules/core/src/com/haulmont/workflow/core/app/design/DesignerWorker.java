@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.app.design;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -263,8 +264,31 @@ public class DesignerWorker implements DesignerWorkerAPI {
         Object o = xStream.fromXML(xml);
         if (o instanceof BaseGenericIdEntity) {
             BaseEntityInternalAccess.setNew((BaseGenericIdEntity) o, true);
+            setNew(o);
         }
         return (T) o;
+    }
+
+    private void setNew(Object o) {
+        if(o instanceof Iterable) {
+            //noinspection unchecked
+            ((Iterable) o).forEach(this::setNew);
+        }
+        if (!(o instanceof BaseGenericIdEntity)) {
+            return;
+        }
+
+        BaseGenericIdEntity entity = ((BaseGenericIdEntity) o);
+        if(PersistenceHelper.isNew(entity)) {
+            return;
+        }
+
+        BaseEntityInternalAccess.setNew(entity, true);
+        entity.getMetaClass().getProperties().stream()
+                .map(MetadataObject::getName)
+                .filter(propName -> PersistenceHelper.isLoaded(entity, propName))
+                .map(entity::getValue)
+                .forEach(this::setNew);
     }
 
     protected XStream createXStream() {
