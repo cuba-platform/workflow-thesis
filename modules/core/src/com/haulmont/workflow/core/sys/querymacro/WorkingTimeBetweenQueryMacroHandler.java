@@ -13,6 +13,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class WorkingTimeBetweenQueryMacroHandler extends TimeBetweenQueryMacroHandler {
 
@@ -23,7 +24,7 @@ public class WorkingTimeBetweenQueryMacroHandler extends TimeBetweenQueryMacroHa
     }
 
     @Override
-    protected Date computeDate(int num, String unit) {
+    protected Date computeDate(int num, String unit, TimeZone timeZone) {
         TimeSource timeSource = AppBeans.get(TimeSource.class);
         Object timeUnit = units.get(unit.toLowerCase());
         if (timeUnit instanceof TimeUnit) {
@@ -41,7 +42,7 @@ public class WorkingTimeBetweenQueryMacroHandler extends TimeBetweenQueryMacroHa
                 default: throw new UnsupportedOperationException("Unsupported TimeUnit: " + timeUnit);
             }
         } else {
-            return super.computeDate(num, unit);
+            return super.computeDate(num, unit, timeZone);
         }
     }
 }
