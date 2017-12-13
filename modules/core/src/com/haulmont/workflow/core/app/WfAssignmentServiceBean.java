@@ -18,12 +18,14 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.lang.ObjectUtils;
+import org.jbpm.api.activity.ActivityExecution;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,9 +148,17 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         Set<User> usersSet = new LinkedHashSet<>();
         for (CardRole cr : newRoles)
             usersSet.add(cr.getUser());
-        for (Assignment assignment : assignmentsMap.values())
-            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null)
+        for (Assignment assignment : assignmentsMap.values()) {
+            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null) {
                 closeAssignment(assignment, createDummyCardRole(assignment, newRoles.get(0).getCode()), comment);
+                removeTimers(assignment);
+            }
+        }
+    }
+
+    protected void removeTimers(Assignment assignment) {
+        ActivityExecution execution = (ActivityExecution) WfHelper.getExecutionService().findExecutionById(assignment.getJbpmProcessId());
+        WfHelper.getTimerManager().removeTimers(execution, assignment);
     }
 
     protected void closeAssignment(Assignment assignment, CardRole cr, String comment) {
