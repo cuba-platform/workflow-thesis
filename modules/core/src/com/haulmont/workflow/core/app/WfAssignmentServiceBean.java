@@ -22,7 +22,6 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.core.timer.AssignmentTimersFactory;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jbpm.api.activity.ActivityExecution;
 import org.springframework.stereotype.Service;
@@ -136,7 +135,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         Predicate<CardRole> predicate = new Predicate<CardRole>() {
             @Override
             public boolean apply(@Nullable CardRole input) {
-                return input != null && ObjectUtils.equals(lastAssignment.getUser(), input.getUser());
+                return input != null && Objects.equals(lastAssignment.getUser(), input.getUser());
             }
         };
 

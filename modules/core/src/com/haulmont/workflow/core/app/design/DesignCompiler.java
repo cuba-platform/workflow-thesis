@@ -31,7 +31,6 @@ import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -140,7 +139,7 @@ public class DesignCompiler {
                 if (error instanceof ModuleError) {
                     String name = ((ModuleError) error).getModuleName();
                     for (String unusedName : unusedModules.keySet()) {
-                        if (ObjectUtils.equals(name, unusedName)) {
+                        if (Objects.equals(name, unusedName)) {
                             errorsToRemove.add(error);
                             break;
                         }
@@ -377,7 +376,7 @@ public class DesignCompiler {
     protected boolean isSameVariable(DesignProcessVariable processVariable, DesignProcessVariable designProcessVariable) {
         if (designProcessVariable.getAttributeType() == null || processVariable.getAttributeType() == null) return true;
         return designProcessVariable.getAttributeType() == processVariable.getAttributeType()
-                && ObjectUtils.equals(designProcessVariable.getMetaClassName(), processVariable.getMetaClassName());
+                && Objects.equals(designProcessVariable.getMetaClassName(), processVariable.getMetaClassName());
     }
 
     protected List<String> parseRoles(Document document) {
@@ -779,7 +778,7 @@ public class DesignCompiler {
                 String terminalName = outputs.getJSONObject(j).getString("name");
                 List<TransitionParams> currParamsList = moduleTransitionsParams.get(terminalName);
                 if (currParamsList == null) {
-                    if (ObjectUtils.equals("Fork", jsModule.get("name"))) {
+                    if (Objects.equals("Fork", jsModule.get("name"))) {
                         continue;
                     }
                     errors.add(new ModuleError(WfUtils.encodeKey(jsModule.getJSONObject("value").getString("name")),
