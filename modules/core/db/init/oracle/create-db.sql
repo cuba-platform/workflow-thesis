@@ -138,7 +138,7 @@ create index IDX_WF_CARD_COMMENT_CARD on WF_CARD_COMMENT(CARD_ID)^
 create table WF_CARD_COMMENT_USER (
     CARD_COMMENT_ID varchar2(32) not null,
     USER_ID varchar2(32) not null,
-    primary key(CARD_COMMENT_ID)
+    primary key(CARD_COMMENT_ID, USER_ID)
 )^
 
 create table WF_CARD_INFO (
