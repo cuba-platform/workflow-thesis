@@ -1,1 +1,1 @@
-alter table WF_TIMER add FACTORY_CLASS clob;
+alter table WF_TIMER add FACTORY_CLASS clob^
