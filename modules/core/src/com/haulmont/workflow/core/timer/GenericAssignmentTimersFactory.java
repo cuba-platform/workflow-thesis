@@ -71,6 +71,7 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
                     assignment.getCard(),
                     execution,
                     d,
+                    getClass(),
                     GenericAssignmentTimerAction.class,
                     params
             );

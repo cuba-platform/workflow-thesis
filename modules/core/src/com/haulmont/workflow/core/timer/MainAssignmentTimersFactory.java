@@ -18,14 +18,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainAssignmentTimersFactory implements AssignmentTimersFactory{
-    
+
     @Override
     public void createTimers(ActivityExecution execution, Assignment assignment) {
         Map<String, String> params = new HashMap<>();
         EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
         params.put("user", userLoadInfo.toString());
-        WfHelper.getTimerManager().addTimer(assignment.getCard(), execution, assignment.getDueDate(),
-                MainAssignmentTimerAction.class, params);
+        WfHelper.getTimerManager().addTimer(
+                assignment.getCard(),
+                execution,
+                assignment.getDueDate(),
+                getClass(),
+                MainAssignmentTimerAction.class,
+                params);
     }
 
     @Override

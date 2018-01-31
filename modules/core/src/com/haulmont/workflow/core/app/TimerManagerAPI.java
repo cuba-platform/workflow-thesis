@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.app;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
+import com.haulmont.workflow.core.timer.AssignmentTimersFactory;
 import com.haulmont.workflow.core.timer.TimerAction;
 import org.jbpm.api.activity.ActivityExecution;
 
@@ -18,7 +19,8 @@ public interface TimerManagerAPI {
     String NAME = "workflow_TimerManager";
 
     void addTimer(Card card, ActivityExecution execution, Date dueDate,
-                  Class<? extends TimerAction> taskClass, Map<String, String> taskParams);
+                  Class<? extends AssignmentTimersFactory> timersFactoryClass, Class<? extends TimerAction> taskClass,
+                  Map<String, String> taskParams);
 
     void removeTimers(ActivityExecution execution);
 

@@ -1,0 +1,1 @@
+alter table WF_TIMER add FACTORY_CLASS longvarchar;

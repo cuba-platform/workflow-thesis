@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.TimeSource
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.workflow.core.app.DateHelperBean
 import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.app.WfAssignmentWorker
 import com.haulmont.workflow.core.entity.Assignment
@@ -195,7 +194,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         }
 
         if (cardRole != null && cardRole.duration && cardRole.timeUnit && assignment.proc.durationEnabled) {
-            AppBeans.get(DateHelperBean.class).createOverdueTimers(execution, assignment, cardRole)
+            new OverdueAssignmentTimersFactory().createTimers(execution, assignment)
         }
     }
 
@@ -203,7 +202,7 @@ public class Assigner extends CardActivity implements ExternalActivityBehaviour 
         if (timersFactory)
             timersFactory.removeTimers(execution)
 
-        new OverdueAssignmentTimersFactory().removeTimers(execution);
+        new OverdueAssignmentTimersFactory().removeTimers(execution)
     }
 
     protected void removeTimers(ActivityExecution execution, Assignment assignment) {
