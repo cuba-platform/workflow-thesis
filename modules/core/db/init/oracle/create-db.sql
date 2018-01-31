@@ -374,6 +374,7 @@ create table WF_TIMER (
     ACTIVITY varchar2(255),
     ACTION_CLASS varchar2(200),
     ACTION_PARAMS varchar2(2000),
+    FACTORY_CLASS clob,
     primary key(ID)
 )^
 create index IDX_WF_TIMER_CARD on WF_TIMER(CARD_ID)^

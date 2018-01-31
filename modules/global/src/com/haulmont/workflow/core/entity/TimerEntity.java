@@ -30,6 +30,9 @@ public class TimerEntity extends BaseUuidEntity {
     @Column(name = "ACTIVITY", length = 255)
     protected String activity;
 
+    @Column(name = "FACTORY_CLASS", length = 0)
+    protected String factoryClass;
+
     @Column(name = "ACTION_CLASS", length = 200)
     protected String actionClass;
 
@@ -82,5 +85,13 @@ public class TimerEntity extends BaseUuidEntity {
 
     public void setActionParams(String actionParams) {
         this.actionParams = actionParams;
+    }
+
+    public String getFactoryClass() {
+        return factoryClass;
+    }
+
+    public void setFactoryClass(String factoryClass) {
+        this.factoryClass = factoryClass;
     }
 }

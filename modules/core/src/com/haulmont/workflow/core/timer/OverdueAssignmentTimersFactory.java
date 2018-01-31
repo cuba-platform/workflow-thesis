@@ -25,52 +25,33 @@ import java.util.Map;
  * @version $Id$
  */
 public class OverdueAssignmentTimersFactory implements AssignmentTimersFactory {
-
-    private Date dueDate;
-
-    public OverdueAssignmentTimersFactory() {
-    }
-
-    public OverdueAssignmentTimersFactory(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
+    public static final String NAME = "workflow_OverdueAssignmentTimersFactory";
 
     @Override
     public void createTimers(ActivityExecution execution, Assignment assignment) {
-        HashMap<String, String> params = new HashMap<String, String>();
+        EntityLoadInfo crLoadInfo = EntityLoadInfo.create(assignment.getCardRole());
+
+        Map<String, String> params = new HashMap<>();
+        params.put("cardRole", crLoadInfo.toString());
+
         EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
         params.put("user", userLoadInfo.toString());
 
         EntityLoadInfo assignmentLoadInfo = EntityLoadInfo.create(assignment);
         params.put("assignment", assignmentLoadInfo.toString());
 
-        WfHelper.getTimerManager().addTimer(
-                assignment.getCard(),
-                execution,
-                dueDate,
-                OverdueAssignmentTimerAction.class,
-                params
-        );
-    }
-
-    public void createTimers(ActivityExecution execution, Assignment assignment, Map<String, String> params) {
-        EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
-        params.put("user", userLoadInfo.toString());
-
-        EntityLoadInfo assignmentLoadInfo = EntityLoadInfo.create(assignment);
-        params.put("assignment", assignmentLoadInfo.toString());
+        Date dueDate = AppBeans.get(OverdueAssignmentDueDateHelperBean.class).getDueDate(assignment);
 
         WfHelper.getTimerManager().addTimer(
                 assignment.getCard(),
                 execution,
                 dueDate,
+                getClass(),
                 OverdueAssignmentTimerAction.class,
                 params
         );
+
+        assignment.setDueDate(dueDate);
     }
 
     @Override

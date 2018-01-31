@@ -411,6 +411,7 @@ create table WF_TIMER (
     ACTIVITY varchar(255),
     ACTION_CLASS varchar(200),
     ACTION_PARAMS varchar(2000),
+    FACTORY_CLASS longvarchar,
     primary key (ID)
 )^
 

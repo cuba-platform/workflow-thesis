@@ -1,0 +1,1 @@
+alter table WF_TIMER add column FACTORY_CLASS text;

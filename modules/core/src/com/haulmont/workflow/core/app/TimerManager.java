@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.TimerEntity;
+import com.haulmont.workflow.core.timer.AssignmentTimersFactory;
 import com.haulmont.workflow.core.timer.TimerAction;
 import com.haulmont.workflow.core.timer.TimerActionContext;
 import org.apache.commons.logging.Log;
@@ -64,7 +65,8 @@ public class TimerManager implements TimerManagerAPI {
 
     @Override
     public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
-                         Class<? extends TimerAction> taskClass, Map<String, String> taskParams) {
+                         Class<? extends AssignmentTimersFactory> factoryClass, Class<? extends TimerAction> taskClass,
+                         Map<String, String> taskParams) {
         checkArgument(card != null, "card is null");
         checkArgument(dueDate != null, "dueDate is null");
 
@@ -79,6 +81,7 @@ public class TimerManager implements TimerManagerAPI {
         timer.setDueDate(dueDate);
 
         timer.setActionClass(taskClass.getName());
+        timer.setFactoryClass(factoryClass.getName());
 
         Document doc = DocumentHelper.createDocument();
         Dom4j.storeMap(doc.addElement("params"), taskParams);

@@ -18,12 +18,11 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
-import com.haulmont.workflow.core.entity.Assignment;
-import com.haulmont.workflow.core.entity.Card;
-import com.haulmont.workflow.core.entity.CardInfo;
-import com.haulmont.workflow.core.entity.CardRole;
+import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.WfConstants;
+import com.haulmont.workflow.core.timer.AssignmentTimersFactory;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jbpm.api.activity.ActivityExecution;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -179,7 +178,36 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
         persistence.getEntityManager().persist(assignment);
         fireCreateEvent(assignment, cr);
+        createTimers(assignment);
         return assignment;
+    }
+
+    protected void createTimers(Assignment assignment) {
+        ActivityExecution execution = (ActivityExecution) WfHelper.getExecutionService().findExecutionById(assignment.getJbpmProcessId());
+        TimerEntity anyTimer = getAnyTimer(execution);
+        if (anyTimer == null || StringUtils.isBlank(anyTimer.getFactoryClass()))
+            return;
+
+        try {
+            createTimersByFactory(execution, assignment, Class.forName(anyTimer.getFactoryClass()));
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    protected TimerEntity getAnyTimer(ActivityExecution execution) {
+        return persistence.getEntityManager().createQuery(
+                "select t from wf$Timer t where t.jbpmExecutionId = ?1 and t.activity = ?2", TimerEntity.class)
+                .setParameter(1, execution.getId())
+                .setParameter(2, execution.getActivityName())
+                .setMaxResults(1)
+                .getFirstResult();
+    }
+
+    protected void createTimersByFactory(ActivityExecution execution, Assignment assignment, Class<?> factoryClass)
+            throws IllegalAccessException, InstantiationException {
+
+        ((AssignmentTimersFactory) factoryClass.newInstance()).createTimers(execution, assignment);
     }
 
     protected Assignment prepareAssignment(Card card, CardRole cr, String state) {
@@ -239,7 +267,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @SuppressWarnings("unchecked")
     protected List<Assignment> getAssignmentsByState(Card card, String state) {
         List<Assignment> r = loadAssignmentsByState(card, state);
-        Set<Assignment> masterAssignments = new HashSet<Assignment>();
+        Set<Assignment> masterAssignments = new HashSet<>();
         for (Assignment assignment : r) {
             if (assignment.getMasterAssignment() != null) {
                 masterAssignments.add(assignment.getMasterAssignment());
@@ -255,7 +283,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
         }
         //universal assignment
         Assignment lastMasterAssignment = Collections.max(masterAssignments, BY_CREATE_TS_COMPARATOR);
-        List<Assignment> filter = new LinkedList<Assignment>();
+        List<Assignment> filter = new LinkedList<>();
         for (Assignment assignment : r) {
             if (lastMasterAssignment.equals(assignment.getMasterAssignment()))
                 filter.add(assignment);
