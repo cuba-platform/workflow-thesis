@@ -11,6 +11,7 @@ import com.haulmont.workflow.core.WfHelper
 import com.haulmont.workflow.core.entity.Assignment
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
+import com.haulmont.workflow.core.exception.ParallelAssignmentIsNotFinishedException
 import com.haulmont.workflow.core.exception.WorkflowException
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
@@ -48,16 +49,29 @@ public class ParallelAssigner extends MultiAssigner {
         em.persist(master)
         afterCreateAssignment(master)
 
-        Map<Assignment, CardRole> assignmentsCardRoleMap = new HashMap<Assignment, CardRole>();
-        Assignment familyAssignment = findFamilyAssignment(card)
+        createUserAssignments(execution, card, master, cardRoles)
 
+        return true
+    }
+
+    protected Map<Assignment, CardRole> createUserAssignments(ActivityExecution execution, Card card,
+                                                              Assignment master, Collection<CardRole> cardRoles) {
+        Map<Assignment, CardRole> assignmentCardRoleMap = createUserAssignmentsWithoutNotifying(execution, card,
+                master, cardRoles)
+        notifyUser(execution, card, assignmentCardRoleMap, getNotificationState(execution))
+        return assignmentCardRoleMap
+    }
+
+    protected Map<Assignment, CardRole> createUserAssignmentsWithoutNotifying(ActivityExecution execution, Card card,
+                                                                              Assignment master,
+                                                                              Collection<CardRole> cardRoles) {
+        Map<Assignment, CardRole> assignmentCardRoleMap = new HashMap<Assignment, CardRole>();
+        Assignment familyAssignment = findFamilyAssignment(card)
         for (CardRole cr : cardRoles) {
             Assignment assignment = createUserAssignment(execution, card, cr, familyAssignment, master, false);
-            assignmentsCardRoleMap.put(assignment, cr)
+            assignmentCardRoleMap.put(assignment, cr)
         }
-
-        notifyUser(execution, card, assignmentsCardRoleMap, getNotificationState(execution))
-        return true
+        return assignmentCardRoleMap;
     }
 
     @Override
@@ -83,27 +97,17 @@ public class ParallelAssigner extends MultiAssigner {
 
             onSuccess(execution, signalName, assignment)
 
-            EntityManager em = persistence.getEntityManager()
-            Query q = em.createQuery('''
-              select a from wf$Assignment a
-              where a.masterAssignment.id = ?1 and a.id <> ?2
-            ''', metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
-            q.setParameter(1, assignment.getMasterAssignment().getId())
-            q.setParameter(2, assignment.getId())
-            List<Assignment> siblings = q.getResultList()
-
+            List<Assignment> siblings = getSiblings(assignment)
             if (finishBySingleUser)
                 finishSiblings(assignment, siblings)
 
-            String resultTransition = signalName
-            for (Assignment sibling : siblings) {
-                if (sibling.getFinished() == null) {
-                    log.debug("Parallel assignment is not finished: assignment.id=${sibling.getId()}")
-                    execution.waitForSignal()
-                    return
-                }
-                if (!successTransitions.contains(sibling.getOutcome()))
-                    resultTransition = sibling.getOutcome()
+            String resultTransition
+            try {
+                resultTransition = getResultTransition(signalName, siblings)
+            } catch (ParallelAssignmentIsNotFinishedException e) {
+                log.debug("Parallel assignment is not finished: assignment.id=${e.assignmentId}")
+                execution.waitForSignal()
+                return
             }
 
             ExecutionService es = WfHelper.getEngine().getProcessEngine().getExecutionService()
@@ -119,6 +123,32 @@ public class ParallelAssigner extends MultiAssigner {
             es.signalExecutionById(execution.getId(), resultTransition, params)
             afterSignal(execution, signalName, parameters)
         }
+    }
+
+    protected List<Assignment> getSiblings(Assignment assignment) {
+        EntityManager em = persistence.getEntityManager()
+        Query q = em.createQuery('''
+              select a from wf$Assignment a
+              where a.masterAssignment.id = ?1 and a.id <> ?2
+            ''', metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
+        q.setParameter(1, assignment.getMasterAssignment().getId())
+        q.setParameter(2, assignment.getId())
+        List<Assignment> siblings = q.getResultList()
+        siblings
+    }
+
+    protected String getResultTransition(String signalName, List<Assignment> siblings)
+            throws ParallelAssignmentIsNotFinishedException {
+
+        String resultTransition = signalName
+        for (Assignment sibling : siblings) {
+            if (!sibling.finished) {
+                throw new ParallelAssignmentIsNotFinishedException(sibling.id)
+            }
+            if (!successTransitions.contains(sibling.getOutcome()))
+                resultTransition = sibling.getOutcome()
+        }
+        return resultTransition
     }
 
     protected void finishSiblings(Assignment assignment, List<Assignment> siblings) {
