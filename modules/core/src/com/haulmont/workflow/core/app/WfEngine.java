@@ -107,7 +107,7 @@ public class WfEngine implements WfEngineAPI {
 
         NewDeployment deployment = rs.createDeployment();
 
-        String resource = resources.getResourceAsString(resourcePath);
+        String resource = getJpdlXmlString(resourcePath);
         if (resource == null)
             throw new IllegalArgumentException("Resource not found: " + resourcePath);
 
@@ -150,6 +150,10 @@ public class WfEngine implements WfEngineAPI {
 
         log.info("Deployed: key=" + pd.getKey() + ", name=" + proc.getName() + ", id=" + proc.getId());
         return proc;
+    }
+
+    protected String getJpdlXmlString(String resourcePath) {
+        return resources.getResourceAsString(resourcePath);
     }
 
     public Proc deployJpdlXml(String resourcePath) {
