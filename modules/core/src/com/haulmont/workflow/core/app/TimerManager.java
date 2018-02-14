@@ -64,8 +64,11 @@ public class TimerManager implements TimerManagerAPI {
     protected Authentication authentication;
 
     @Override
-    public void addTimer(Card card, @Nullable ActivityExecution execution, Date dueDate,
-                         Class<? extends AssignmentTimersFactory> factoryClass, Class<? extends TimerAction> taskClass,
+    public void addTimer(Card card,
+                         @Nullable ActivityExecution execution,
+                         Date dueDate,
+                         @Nullable Class<? extends AssignmentTimersFactory> factoryClass,
+                         Class<? extends TimerAction> taskClass,
                          Map<String, String> taskParams) {
         checkArgument(card != null, "card is null");
         checkArgument(dueDate != null, "dueDate is null");
@@ -81,7 +84,8 @@ public class TimerManager implements TimerManagerAPI {
         timer.setDueDate(dueDate);
 
         timer.setActionClass(taskClass.getName());
-        timer.setFactoryClass(factoryClass.getName());
+        if (factoryClass != null)
+            timer.setFactoryClass(factoryClass.getName());
 
         Document doc = DocumentHelper.createDocument();
         Dom4j.storeMap(doc.addElement("params"), taskParams);
