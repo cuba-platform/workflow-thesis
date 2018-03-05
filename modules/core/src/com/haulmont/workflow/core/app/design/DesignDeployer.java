@@ -80,7 +80,7 @@ public class DesignDeployer {
 
         String procKey = "proc_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(AppBeans.get(TimeSource.class).currentTimestamp());
 
-        Transaction tx = AppBeans.get(Persistence.class).getTransaction();
+        Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         try {
             EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
             Design design = em.find(Design.class, designId);
