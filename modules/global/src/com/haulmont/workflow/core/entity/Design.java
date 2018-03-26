@@ -26,6 +26,7 @@ public class Design extends StandardEntity {
     @Column(name = "NAME", length = 100)
     protected String name;
 
+    @Lob
     @Column(name = "SRC", length = 0)
     protected String src;
 
@@ -38,6 +39,7 @@ public class Design extends StandardEntity {
     @Column(name = "NOTIFICATION_MATRIX_UPLOADED")
     protected Boolean notificationMatrixUploaded;
 
+    @Lob
     @Column(name = "LOCALIZATION")
     protected String localization;
 

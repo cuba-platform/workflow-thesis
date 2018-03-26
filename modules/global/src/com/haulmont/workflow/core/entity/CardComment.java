@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
@@ -23,6 +22,7 @@ import java.util.List;
 @SystemLevel
 public class CardComment extends StandardEntity {
 
+    @Lob
     @Column(name = "CARD_COMMENT", length = 100000)
     protected String comment;
 

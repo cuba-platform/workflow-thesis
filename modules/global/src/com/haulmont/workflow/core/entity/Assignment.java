@@ -72,6 +72,7 @@ public class Assignment extends StandardEntity {
     @Column(name = "OUTCOME", length = 255)
     protected String outcome;
 
+    @Lob
     @Column(name = "ASSIGNMENT_COMMENT", length = 100000)
     protected String comment;
 

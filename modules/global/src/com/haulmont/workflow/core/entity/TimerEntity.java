@@ -30,6 +30,7 @@ public class TimerEntity extends BaseUuidEntity {
     @Column(name = "ACTIVITY", length = 255)
     protected String activity;
 
+    @Lob
     @Column(name = "FACTORY_CLASS", length = 0)
     protected String factoryClass;
 

@@ -29,6 +29,7 @@ public class DesignScript extends StandardEntity {
     @Column(name = "NAME", length = 100, nullable = false)
     protected String name;
 
+    @Lob
     @Column(name = "CONTENT", length = 0)
     protected String content;
 

@@ -25,6 +25,7 @@ public class ProcAppFolder extends AppFolder {
 
     private static final long serialVersionUID = 2716906222330698569L;
 
+    @Lob
     @Column(name = "PROC_CONDITIONS_XML")
     protected String procAppFolderXml;
 
