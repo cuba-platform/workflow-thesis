@@ -56,6 +56,7 @@ public class CardInfo extends BaseUuidEntity implements Creatable, Updatable, So
     @Column(name = "ACTIVITY", length = 255)
     protected String activity;
 
+    @Lob
     @Column(name = "DESCRIPTION", length = 100000)
     protected String description;
 

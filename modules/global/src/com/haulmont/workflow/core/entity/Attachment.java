@@ -47,6 +47,7 @@ public class Attachment extends StandardEntity {
     @OnDeleteInverse(value = DeletePolicy.DENY)
     protected AttachmentType attachType;
 
+    @Lob
     @Column(name = "SIGNATURES")
     protected String signatures;
 

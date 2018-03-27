@@ -26,6 +26,7 @@ public class DesignFile extends BaseUuidEntity {
     @Column(name = "DESIGN_FILE_TYPE", length = 20)
     protected String type;
 
+    @Lob
     @Column(name = "CONTENT", length = 0)
     protected String content;
 
