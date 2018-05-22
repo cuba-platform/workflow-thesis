@@ -152,14 +152,15 @@ public class UniversalAssigner extends MultiAssigner {
                 "where a.card.id = ?1 and a.user.id = ?2 and a.proc.id = ?3 and a.name = ?4 and " +
                 "a.iteration >= ALL " +
                 "(select b.iteration from wf\$Assignment b where b.card.id = ?1 and b.proc.id = ?3 " +
-                "and b.user.id = ?2 and b.iteration is not null and b.createTs > ?5) and " +
-                "a.createTs > ?5 " +
+                "and b.user.id = ?2 and b.iteration is not null and (b.cardRole.id = ?6 or b.cardRole is null) and b.createTs > ?5) and " +
+                "a.createTs > ?5 and (a.cardRole.id = ?6 or a.cardRole is null)" +
                 "order by a.finished desc")
                 .setParameter(1, card)
                 .setParameter(2, cr.user)
                 .setParameter(3, card.proc)
                 .setParameter(4, execution.activityName)
                 .setParameter(5, execution.getVariable("date"))
+                .setParameter(6, cr)
                 .getResultList()
 
         return assignments.isEmpty() || !successTransitions.contains(assignments.get(0).outcome);
