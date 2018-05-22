@@ -836,6 +836,7 @@ public class CardRolesFrame extends AbstractFrame {
             cardRole.setUser(user);
             cardRole.setNotifyByEmail(notifyByEmail);
             cardRole.setNotifyByCardInfo(notifyByCardInfo);
+            tmpCardRolesDs.updateItem(cardRole);
         }
     }
 
