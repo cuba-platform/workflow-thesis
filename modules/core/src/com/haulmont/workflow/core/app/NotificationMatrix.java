@@ -658,6 +658,10 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     protected void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
+        createNotificationCardInfo(card, user, cardInfoType, message);
+    }
+
+    protected CardInfo createNotificationCardInfo(Card card, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = metadata.create(CardInfo.class);
         ci.setType(cardInfoType);
         if (card.isSubProcCard()) {
@@ -671,6 +675,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         ci.setDescription(message.getSubject());
         EntityManager em = persistence.getEntityManager();
         em.persist(ci);
+        return ci;
     }
 
     protected int getCardInfoTypeByState(String type) {
