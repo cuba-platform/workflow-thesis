@@ -546,7 +546,13 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         }
     }
 
+    @Override
     public void notifyUser(Card card, String state, User user) {
+        notifyUser(card, state, user, new DefaultMessageGenerator());
+    }
+
+    @Override
+    public void notifyUser(Card card, String state, User user, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
         Map<String, String> matrix = getMatrix(processPath);
@@ -567,7 +573,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             if (roleList != null && user != null) {
                 for (CardRole cardRole : roleList) {
                     if (user.equals(cardRole.getUser())) {
-                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, new DefaultMessageGenerator());
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, messageGenerator);
                         break;
                     }
                 }
