@@ -549,6 +549,11 @@ public class NotificationMatrix implements NotificationMatrixAPI {
 
     @Override
     public void notifyUser(Card card, String state, User user) {
+        notifyUser(card, state, user, new DefaultMessageGenerator());
+    }
+
+    @Override
+    public void notifyUser(Card card, String state, User user, NotificationMatrixMessage.MessageGenerator messageGenerator) {
         String processPath = StringUtils.trimToEmpty(card.getProc().getMessagesPack());
 
         Map<String, String> matrix = getMatrix(processPath);
@@ -569,7 +574,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             if (roleList != null && user != null) {
                 for (CardRole cardRole : roleList) {
                     if (user.equals(cardRole.getUser())) {
-                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, new DefaultMessageGenerator());
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, messageGenerator);
                         break;
                     }
                 }
@@ -658,6 +663,10 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     protected void createNotificationCardInfo(Card card, Assignment assignment, User user, int cardInfoType, NotificationMatrixMessage message) {
+        createNotificationCardInfo(card, user, cardInfoType, message);
+    }
+
+    protected CardInfo createNotificationCardInfo(Card card, User user, int cardInfoType, NotificationMatrixMessage message) {
         CardInfo ci = metadata.create(CardInfo.class);
         ci.setType(cardInfoType);
         if (card.isSubProcCard()) {
@@ -671,6 +680,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         ci.setDescription(message.getSubject());
         EntityManager em = persistence.getEntityManager();
         em.persist(ci);
+        return ci;
     }
 
     protected int getCardInfoTypeByState(String type) {
