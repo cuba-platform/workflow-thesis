@@ -11,8 +11,10 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,8 +34,8 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
     @Override
     protected void postValidate(ValidationErrors errors) {
         WorkCalendarEntity item = getItem();
-        Date startNew = item.getStart();
-        Date endNew = item.getEnd();
+        Date startNew = onlyTime(item.getStart());
+        Date endNew = onlyTime(item.getEnd());
         if (startNew != null && endNew != null && startNew.compareTo(endNew) >= 0) {
             errors.add(getMessage("startAfterEnd"));
             return;
@@ -47,8 +49,8 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
             if (wce.getId().equals(item.getId())) {
                 continue;
             }
-            Date start = wce.getStart();
-            Date end = wce.getEnd();
+            Date start = onlyTime(wce.getStart());
+            Date end = onlyTime(wce.getEnd());
             if (start != null && end != null) {
                 if (startNew != null) {
                     if (startNew.compareTo(start) == 0
@@ -69,24 +71,32 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
         }
     }
 
+    private Date onlyTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        return new Date(DateUtils.getFragmentInMilliseconds(date, Calendar.HOUR_OF_DAY));
+    }
+
     protected List<WorkCalendarEntity> getCalendarList() {
         WorkCalendarEntity item = getItem();
         LoadContext loadContext = new LoadContext(item.getClass());
         loadContext.setView(View.LOCAL);
         if (isWorkDayEditor) {
-            if(item.getDayOfWeek() != null){
+            if (item.getDayOfWeek() != null) {
                 loadContext.setQueryString("select c from wf$Calendar c where c.dayOfWeek = :workDay")
                         .setParameter("workDay", item.getDayOfWeek().getId());
             } else {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
         } else {
-            if(item.getDay() != null){
+            if (item.getDay() != null) {
                 loadContext.setQueryString("select c from wf$Calendar c where c.day = :day")
                         .setParameter("day", item.getDay());
             } else {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
         }
