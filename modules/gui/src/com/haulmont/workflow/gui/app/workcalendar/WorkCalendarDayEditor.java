@@ -11,9 +11,9 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.sql.Time;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -79,7 +79,11 @@ public class WorkCalendarDayEditor extends AbstractEditor<WorkCalendarEntity> {
             return null;
         }
 
-        return new Time(date.getTime());
+        date = DateUtils.setYears(date, 1970);
+        date = DateUtils.setMonths(date, 0);
+        date = DateUtils.setDays(date, 1);
+
+        return date;
     }
 
     protected List<WorkCalendarEntity> getCalendarList() {
