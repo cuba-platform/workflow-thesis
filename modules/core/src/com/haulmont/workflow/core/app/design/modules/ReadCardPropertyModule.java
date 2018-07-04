@@ -15,7 +15,6 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,11 +47,22 @@ public class ReadCardPropertyModule extends CardPropertyModule {
         if (StringUtils.isEmpty(operationType) && !isVariableExists("operationType")) {
             throw new DesignCompilationException("Unable to compile module " + name + " : required field 'operation' is empty");
         }
-        if (StringUtils.isEmpty(value) && !isVariableExists("value") && !Arrays.asList(OperationsType.EMPTY, OperationsType.NOT_EMPTY).contains(OperationsType.fromId
-                (operationType))) {
+        if (StringUtils.isEmpty(value) && !isVariableExists("value") && !isOperationTypeUnary()) {
             throw new DesignCompilationException("Unable to compile module " + name + " : required field 'value' is empty");
         }
         checkValue();
+    }
+
+    @Override
+    protected void checkValue() throws DesignCompilationException {
+        if (isOperationTypeUnary())
+            return;
+        super.checkValue();
+    }
+
+    protected boolean isOperationTypeUnary() {
+        OperationsType operationTypeEnum = OperationsType.fromId(operationType);
+        return operationTypeEnum != null && operationTypeEnum.isUnary();
     }
 
     public void init(Module.Context context) throws DesignCompilationException {
