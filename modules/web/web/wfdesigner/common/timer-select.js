@@ -75,7 +75,7 @@ YAHOO.lang.extend(Wf.TimerSelect, inputEx.Field, {
             ]
         };
         this.timerParamsGroup.addField(dueDateField);
-        dueDateField.updatedEvt.subscribe(this.markUnsaved, this, true);
+        this.timerParamsGroup.getFieldByName('dueDate').updatedEvt.subscribe(this.markUnsaved,this,true);
     } ,
 
     onDueDateTypeChanged: function(e, params) {
