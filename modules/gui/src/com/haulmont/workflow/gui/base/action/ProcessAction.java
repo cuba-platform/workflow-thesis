@@ -255,7 +255,7 @@ public class ProcessAction extends AbstractAction {
         if (isCardInProcess(card) && isCardInSameProcess(card)) {
             wmp.get().showOptionDialog(
                     messages.getMessage(getClass(), "cancelProcess.title"),
-                    messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName()),
+                    getCancelProcessMessage(),
                     Frame.MessageType.CONFIRMATION,
                     new Action[]{
                             new DialogAction(Type.YES) {
@@ -300,6 +300,10 @@ public class ProcessAction extends AbstractAction {
                     }
             );
         }
+    }
+
+    protected String getCancelProcessMessage() {
+        return messages.formatMessage(getClass(), "cancelProcess.message", card.getProc().getName());
     }
 
     protected void handleActionSave(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
