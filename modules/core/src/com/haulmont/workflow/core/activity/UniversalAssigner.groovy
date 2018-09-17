@@ -102,7 +102,7 @@ public class UniversalAssigner extends MultiAssigner {
                 .getResultList();
 
         if (forRefusedOnly(execution)) {
-            if (!execution.hasVariable("date")) {
+            if (!execution.getVariable("date")) {
                 String state;
                 if (transitionToState) {
                     state = em.createQuery("select b.name from wf\$Assignment b where b.card.id=?1 and b.proc.id=?2 and b.createTs = " +
@@ -122,7 +122,7 @@ public class UniversalAssigner extends MultiAssigner {
                 Timestamp date = em.createQuery("select max(b.createTs) from wf\$Assignment b " +
                         "where b.card.id=?1 and b.proc.id=?2 " +
                         "and b.name IN ('Started',?3) and b.outcome not in (?4) " +
-                        "and b.createTs < (select max(c.createTs) from wf\$Assignment c " +
+                        "and b.createTs <= (select max(c.createTs) from wf\$Assignment c " +
                         "where c.card.id=?1 and c.proc.id=?2 and c.name = ?3)")
                         .setParameter(1, card)
                         .setParameter(2, card.proc)
@@ -152,8 +152,8 @@ public class UniversalAssigner extends MultiAssigner {
                 "where a.card.id = ?1 and a.user.id = ?2 and a.proc.id = ?3 and a.name = ?4 and " +
                 "a.iteration >= ALL " +
                 "(select b.iteration from wf\$Assignment b where b.card.id = ?1 and b.proc.id = ?3 " +
-                "and b.user.id = ?2 and b.iteration is not null and (b.cardRole.id = ?6 or b.cardRole is null) and b.createTs > ?5) and " +
-                "a.createTs > ?5 and (a.cardRole.id = ?6 or a.cardRole is null)" +
+                "and b.user.id = ?2 and b.iteration is not null and (b.cardRole.id = ?6 or b.cardRole is null) and b.createTs >= ?5) and " +
+                "a.createTs >= ?5 and (a.cardRole.id = ?6 or a.cardRole is null) " +
                 "order by a.finished desc")
                 .setParameter(1, card)
                 .setParameter(2, cr.user)
