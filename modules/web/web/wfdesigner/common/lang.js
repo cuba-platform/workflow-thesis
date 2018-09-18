@@ -9,7 +9,7 @@ var wfLanguage = {
 
     propertiesFields: [
         // default fields (the "name" field is required by the WiringEditor):
-        {"type": "string", "name": "name", label: "msg://name"}
+        {"type": "string", "name": "name", label: "msg://name", "trim": true}
     ],
 
     modules: [
@@ -26,6 +26,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "value": "msg://Start",
@@ -72,6 +73,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "required": false,
@@ -99,6 +101,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "required": false,
@@ -110,6 +113,7 @@ var wfLanguage = {
                 "fields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "required": false,
@@ -142,13 +146,15 @@ var wfLanguage = {
                 "fields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "required": false,
-                        "value": "msg://Assignment"
+                        "value": "msg://Assignment",
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "role",
                         "label": "msg://role",
                         "required": false,
@@ -159,6 +165,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "required": false,
@@ -168,6 +175,7 @@ var wfLanguage = {
 
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://description",
                         "name": "description",
                         "required": false,
@@ -229,6 +237,7 @@ var wfLanguage = {
                 "fields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "required": false,
@@ -236,6 +245,7 @@ var wfLanguage = {
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "role",
                         "label": "msg://role",
                         "required": false,
@@ -246,6 +256,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "required": false,
@@ -254,12 +265,14 @@ var wfLanguage = {
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://description",
                         "name": "description",
                         "value": ""
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://ParallelAssignment.successTransition",
                         "name": "successTransition",
                         "value": ""
@@ -278,6 +291,7 @@ var wfLanguage = {
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://ParallelAssignment.statusesForFinish",
                         "name": "statusesForFinish",
                          "value": ""
@@ -338,6 +352,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "value": "msg://Decision"
@@ -380,6 +395,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "value": "msg://Fork"
@@ -421,12 +437,14 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "value": "msg://Join"
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://role",
                         "name": "role"
                     }
@@ -457,12 +475,14 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://name",
                         "name": "name",
                         "value": "msg://IsRoleAssigned"
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "label": "msg://role",
                         "name": "roleKey",
                         "value": "msg://role"
@@ -498,7 +518,8 @@ var wfLanguage = {
 
                  "optFields": [
                      {
-                          "type":"string",
+                          "type": "string",
+                        "trim": true,
                           "label":"msg://name",
                           "name":"name",
                           "required":false,
@@ -516,6 +537,7 @@ var wfLanguage = {
                  "fields": [
                      {
                           "type": "string",
+                        "trim": true,
                           "name": "name",
                           "label": "msg://name",
                           "required": false
@@ -528,6 +550,7 @@ var wfLanguage = {
                     },
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "params",
                         "label": "msg://params",
                         "required": false
@@ -557,7 +580,8 @@ var wfLanguage = {
                 "width":264,
                 "optFields": [
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://name",
                         "name":"name",
                         "required":false,
@@ -572,7 +596,8 @@ var wfLanguage = {
                         "disabled": true
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://propertyPath",
                         "name":"propertyPath",
                         "required":false,
@@ -596,7 +621,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://value",
                         "name":"value",
                         "required":false,
@@ -604,7 +630,8 @@ var wfLanguage = {
                         "disabled": true
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://expressionTest",
                         "name":"expressionTest",
                         "required":false,
@@ -617,6 +644,7 @@ var wfLanguage = {
                 "fields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "required": false
@@ -648,7 +676,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://expressionTest",
                         "name":"expressionTest",
                         "required":false,
@@ -657,7 +686,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://value",
                         "name":"value",
                         "required":false,
@@ -695,7 +725,8 @@ var wfLanguage = {
                 "width":251,
                 "optFields": [
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://name",
                         "name":"name",
                         "required":false,
@@ -710,7 +741,8 @@ var wfLanguage = {
                         "disabled": true
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://propertyPath",
                         "name":"propertyPath",
                         "required":false,
@@ -727,7 +759,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://value",
                         "name":"value",
                         "required":false,
@@ -735,7 +768,8 @@ var wfLanguage = {
                         "disabled": true
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://expressionTest",
                         "name":"expressionTest",
                         "required":false,
@@ -748,6 +782,7 @@ var wfLanguage = {
                 "fields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "required": false
@@ -773,7 +808,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://expressionTest",
                         "name":"expressionTest",
                         "required":false,
@@ -782,7 +818,8 @@ var wfLanguage = {
                         "allowParameter": false
                     },
                     {
-                        "type":"string",
+                        "type": "string",
+                        "trim": true,
                         "label":"msg://value",
                         "name":"value",
                         "required":false,
@@ -817,6 +854,7 @@ var wfLanguage = {
                 "optFields": [
                     {
                         "type": "string",
+                        "trim": true,
                         "name": "name",
                         "label": "msg://name",
                         "value": "msg://EmptyModule"
