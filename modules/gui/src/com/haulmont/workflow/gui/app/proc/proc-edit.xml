@@ -10,7 +10,7 @@
         datasource="procDs"
         caption="msg://procEditor.caption"
         focusComponent="name"
-        >
+>
 
     <dsContext>
         <datasource
@@ -22,115 +22,117 @@
             </collectionDatasource>
         </datasource>
         <collectionDatasource id="secRolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local">
-                <query>
-                     select r from sec$Role r order by r.name
-                </query>
+            <query>
+                select r from sec$Role r order by r.name
+            </query>
         </collectionDatasource>
     </dsContext>
 
     <assign name="width" value="400"/>
 
-    <layout  expand="rolesSplit" spacing="true">
-                <grid id="procGrid" spacing="true">
+    <layout expand="rolesSplit" spacing="true">
+        <grid id="procGrid" spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="nameLabel" value="msg://name"/>
+                    <textField id="name" datasource="procDs" property="name"
+                               width="${width}"/>
+                </row>
+                <row>
+                    <label id="jbpmProcessKeyLabel" value="msg://jbpmProcessKey"/>
+                    <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="codeLabel" value="msg://code"/>
+                    <textField id="code" datasource="procDs" property="code"
+                               width="${width}"/>
+                </row>
+                <row>
+                    <label id="designLabel" value="msg://design"/>
+                    <textField id="design" datasource="procDs" property="design"
+                               width="${width}" editable="false"/>
+                </row>
+                <row>
+                    <label id="cardTypesLabel" value="msg://cardTypes"/>
+                    <textField id="cardTypes" datasource="procDs" property="cardTypes"
+                               width="${width}">
+                        <validator class="com.haulmont.cuba.gui.components.validators.PatternValidator"
+                                   pattern="\S+" message="msg://invalidCardTypes"/>
+                    </textField>
+                </row>
+                <row>
+                    <label id="statesLabel" value="msg://states"/>
+                    <textField id="states" datasource="procDs" property="states"
+                               width="${width}"/>
+                </row>
+                <row>
+                    <label id="availableRoleLabel" value="msg://availableOnlyForRole"/>
+                    <lookupField id="availableRole"
+                                 datasource="procDs"
+                                 property="availableRole"
+                                 optionsDatasource="secRolesDs"
+                                 width="${width}"/>
+                </row>
+                <row>
+                    <label id="combinedStagesEnabledLabel" value="msg://combinedStagesEnabled"/>
+                    <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
+                </row>
+                <row id="durationEnabledRow">
+                    <label id="durationEnabledLabel"
+                           value="msg://com.haulmont.workflow.core.entity/Proc.durationEnabled"/>
+                    <checkBox id="durationEnabled" datasource="procDs" property="durationEnabled"/>
+                </row>
+            </rows>
+        </grid>
+
+        <split id="rolesSplit" orientation="horizontal" width="100%">
+            <vbox id="rolesVbox" expand="rolesTable" margin="false;true;false;false;" spacing="true" width="100%"
+                  height="100%">
+                <label value="msg://roles"/>
+                <table id="rolesTable" editable="true" sortable="false" width="100%">
+                    <buttonsPanel align="MIDDLE_LEFT">
+                        <button action="rolesTable.create" icon="icons/create.png"/>
+                        <button action="rolesTable.remove" icon="icons/remove.png"/>
+                        <button id="moveUp" icon="icons/up.png"/>
+                        <button id="moveDown" icon="icons/down.png"/>
+                    </buttonsPanel>
                     <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
+                        <column id="code"/>
+                        <column id="name" editable="true"/>
+                        <column id="multiUser" editable="true"/>
+                        <column id="orderFillingType" editable="true"/>
+                        <column id="assignToCreator" editable="true"/>
+                        <column id="role" editable="true" optionsDatasource="secRolesDs"/>
                     </columns>
-                    <rows>
-                        <row>
-                            <label id="nameLabel" value="msg://name"/>
-                            <textField id="name" datasource="procDs" property="name"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label id="jbpmProcessKeyLabel" value="msg://jbpmProcessKey"/>
-                            <textField id="jbpmProcessKey" datasource="procDs" property="jbpmProcessKey"
-                                       width="${width}" editable="false"/>
-                        </row>
-                        <row>
-                            <label id="codeLabel" value="msg://code"/>
-                            <textField id="code" datasource="procDs" property="code"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label id="designLabel" value="msg://design"/>
-                            <textField id="design" datasource="procDs" property="design"
-                                       width="${width}" editable="false"/>
-                        </row>
-                        <row>
-                            <label id="cardTypesLabel" value="msg://cardTypes"/>
-                            <textField id="cardTypes" datasource="procDs" property="cardTypes"
-                                       width="${width}">
-                                <validator class="com.haulmont.cuba.gui.components.validators.PatternValidator"
-                                           pattern="\S+" message="msg://invalidCardTypes"/>
-                            </textField>
-                        </row>
-                        <row>
-                            <label id="statesLabel" value="msg://states"/>
-                            <textField id="states" datasource="procDs" property="states"
-                                       width="${width}"/>
-                        </row>
-                        <row>
-                            <label id="availableRoleLabel" value="msg://availableOnlyForRole"/>
-                            <lookupField id="availableRole"
-                                         datasource="procDs"
-                                         property="availableRole"
-                                         optionsDatasource="secRolesDs"
-                                         width="${width}"/>
-                        </row>
-                        <row>
-                            <label id="combinedStagesEnabledLabel" value="msg://combinedStagesEnabled"/>
-                            <checkBox id="combinedStagesEnabled" datasource="procDs" property="combinedStagesEnabled"/>
-                        </row>
-                        <row id="durationEnabledRow">
-                            <label id="durationEnabledLabel" value="msg://com.haulmont.workflow.core.entity/Proc.durationEnabled"/>
-                            <checkBox id="durationEnabled" datasource="procDs" property="durationEnabled"/>
-                        </row>
-                    </rows>
-                </grid>
+                    <rows datasource="rolesDs"/>
+                </table>
+            </vbox>
 
-                <split id="rolesSplit" orientation="horizontal" width="100%">
-                    <vbox expand="rolesTable" margin="false;true;false;false;" spacing="true" width="100%" height="100%">
-                        <label value="msg://roles"/>
-                        <table id="rolesTable" editable="true" sortable="false" width="100%">
-                            <buttonsPanel align="MIDDLE_LEFT">
-                                <button action="rolesTable.create" icon="icons/create.png"/>
-                                <button action="rolesTable.remove" icon="icons/remove.png"/>
-                                <button id="moveUp" icon="icons/up.png"/>
-                                <button id="moveDown" icon="icons/down.png"/>
-                            </buttonsPanel>
-                            <columns>
-                                <column id="code"/>
-                                <column id="name" editable="true"/>
-                                <column id="multiUser" editable="true"/>
-                                <column id="orderFillingType" editable="true"/>
-                                <column id="assignToCreator" editable="true"/>
-                                <column id="role" editable="true" optionsDatasource="secRolesDs"/>
-                            </columns>
-                            <rows datasource="rolesDs"/>
-                        </table>
-                    </vbox>
-
-                    <vbox margin="false;false;false;true;" width="100%" height="100%">
-                        <!--<split orientation="vertical">-->
-                            <vbox expand="dpaTable" spacing="true" height="100%">
-                                <label value="msg://dpa"/>
-                                <table id="dpaTable" editable="false" width="100%">
-                                    <buttonsPanel align="MIDDLE_LEFT">
-                                        <button action="dpaTable.create" icon="icons/create.png"/>
-                                        <button action="dpaTable.edit" icon="icons/edit.png"/>
-                                        <button action="dpaTable.remove" icon="icons/remove.png"/>
-                                    </buttonsPanel>
-                                    <columns>
-                                        <column id="user" caption="msg://user"/>
-                                        <column id="sortOrder" caption="msg://dpa.sortOrder"/>
-                                        <column id="notifyByEmail" caption="msg://notifyByEmail"/>
-                                    </columns>
-                                    <rows datasource="dpaDs"/>
-                                </table>
-                            </vbox>
-                    </vbox>
-                </split>
+            <vbox margin="false;false;false;true;" width="100%" height="100%">
+                <!--<split orientation="vertical">-->
+                <vbox id="dbaCbox" expand="dpaTable" spacing="true" height="100%">
+                    <label value="msg://dpa"/>
+                    <table id="dpaTable" editable="false" width="100%">
+                        <buttonsPanel align="MIDDLE_LEFT">
+                            <button action="dpaTable.create" icon="icons/create.png"/>
+                            <button action="dpaTable.edit" icon="icons/edit.png"/>
+                            <button action="dpaTable.remove" icon="icons/remove.png"/>
+                        </buttonsPanel>
+                        <columns>
+                            <column id="user" caption="msg://user"/>
+                            <column id="sortOrder" caption="msg://dpa.sortOrder"/>
+                            <column id="notifyByEmail" caption="msg://notifyByEmail"/>
+                        </columns>
+                        <rows datasource="dpaDs"/>
+                    </table>
+                </vbox>
+            </vbox>
+        </split>
 
         <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
