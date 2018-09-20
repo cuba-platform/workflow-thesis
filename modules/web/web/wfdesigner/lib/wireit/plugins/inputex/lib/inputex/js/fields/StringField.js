@@ -113,7 +113,11 @@ lang.extend(inputEx.StringField, inputEx.Field, {
       value = (this.options.typeInvite && this.el.value == this.options.typeInvite) ? '' : this.el.value;
       
       if (this.options.trim) {
-         value = YAHOO.lang.trim(value);
+         v2 = YAHOO.lang.trim(value);
+         if (v2 != value) {           // для апдейта поля на форме экрана
+            this.setValue(v2, false);
+         }
+         value = v2;
       }
       
 	   return value;
@@ -126,7 +130,7 @@ lang.extend(inputEx.StringField, inputEx.Field, {
     */
    setValue: function(value, sendUpdatedEvt) {
 		// + check : if Null or Undefined we put '' in the stringField
-		this.el.value = ( lang.isNull(value) || lang.isUndefined(value) ) ? '' : value;
+	  this.el.value = ( lang.isNull(value) || lang.isUndefined(value) ) ? '' : value;
 
       // call parent class method to set style and fire updatedEvt
       inputEx.StringField.superclass.setValue.call(this, value, sendUpdatedEvt);
