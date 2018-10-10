@@ -9,9 +9,13 @@ import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.workflow.core.app.ProcessVariableAPI;
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.app.design.Module;
@@ -107,7 +111,7 @@ public class SubDesignModule extends Module {
         addElementsFromSubDesignByName(parentEl, subDesign, "foreach");
     }
 
-    protected void addElementsFromSubDesignByName(Element parentEl, Element subDesign,String name) {
+    protected void addElementsFromSubDesignByName(Element parentEl, Element subDesign, String name) {
         for (Element node : (List<Element>) subDesign.elements(name)) {
             parentEl.elements().add(processNode(node));
         }
@@ -181,19 +185,26 @@ public class SubDesignModule extends Module {
     }
 
     protected DesignFile getDesignFile(String type, String fileName) throws DesignCompilationException {
+        boolean checkNameIsNull = "oracle".equals(DbmsType.getType()) && StringUtils.isEmpty(fileName);
         EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
-        Query query = em.createQuery("select df from wf$DesignFile df where df.design.id = :subDesignId and df.type=:type and df.name = :fileName");
-        query.setParameter("type", type);
-        query.setParameter("fileName", fileName);
-        query.setParameter("subDesignId", UUID.fromString(subDesignId));
-        query.setView(AppBeans.get(Metadata.class).getViewRepository().getView(DesignFile.class, View.LOCAL));
-        query.setMaxResults(1);
-        List<DesignFile> designFiles = query.getResultList();
-        if (designFiles.isEmpty()) {
+
+        TypedQuery<DesignFile> query = em.createQuery(
+                "select df from wf$DesignFile df " +
+                        "   where df.design.id = :subDesignId " +
+                        "   and df.type = :type " +
+                        (checkNameIsNull ? "and df.name is null " : "and df.name = :fileName "), DesignFile.class)
+                .setParameter("subDesignId", UUID.fromString(subDesignId))
+                .setParameter("type", type)
+                .setView(AppBeans.get(Metadata.class).getViewRepository().getView(DesignFile.class, View.LOCAL));
+        if (!checkNameIsNull)
+            query.setParameter("fileName", fileName);
+
+        DesignFile designFile = query.getFirstResult();
+        if (designFile == null) {
             throw new DesignCompilationException(String.format(messages.getMessage(SubDesignModule.class,
                     "exception.noSubDesign"), StringEscapeUtils.escapeHtml(caption)));
         }
-        return designFiles.get(0);
+        return designFile;
     }
 
     protected void addSubDesignElement(Element parentEl, String startTransitionName) {
