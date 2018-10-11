@@ -433,7 +433,8 @@ public class DesignCompiler {
                         String[] statesKeys = StringUtils.split(nextStates, ",");
                         for (String nextStateKey : statesKeys) {
                             String transitionId = elementKey + '.' + nextStateKey;
-                            String propertyStateName = properties.getProperty(elementKey) + '.' + properties.getProperty(nextStateKey);
+                            String propertyStateName = StringUtils.trim(properties.getProperty(elementKey) +
+                                    '.' + properties.getProperty(nextStateKey));
                             if (!alreadyUsedNames.contains(propertyStateName)) {
                                 alreadyUsedNames.add(propertyStateName);
                             } else {
