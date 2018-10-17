@@ -79,7 +79,7 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
         if (StringUtils.isNotBlank(this.name))
             return name;
         else
-            return AppBeans.get(Messages.class).getMessage(getClass(), this.code);
+            return StringUtils.isNotBlank(code) ? AppBeans.get(Messages.class).getMessage(getClass(), this.code) : "";
     }
 
     public Boolean getIsSystem() {
