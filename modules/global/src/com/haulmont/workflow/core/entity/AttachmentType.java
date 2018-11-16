@@ -10,10 +10,13 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity(name = "wf$AttachmentType")
 @Table(name = "WF_ATTACHMENTTYPE")
@@ -76,7 +79,7 @@ public class AttachmentType extends StandardEntity implements SoftDelete {
         if (StringUtils.isNotBlank(this.name))
             return name;
         else
-            return MessageProvider.getMessage(getClass(), this.code);
+            return StringUtils.isNotBlank(code) ? AppBeans.get(Messages.class).getMessage(getClass(), this.code) : "";
     }
 
     public Boolean getIsSystem() {
