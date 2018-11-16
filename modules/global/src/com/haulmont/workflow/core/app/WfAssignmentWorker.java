@@ -19,4 +19,8 @@ public interface WfAssignmentWorker {
                                 User user, Card card, Proc proc,
                                 Integer iteration, Assignment familyAssignment,
                                 Assignment master);
+
+    void createTimers(Assignment assignment);
+
+    void removeTimers(Assignment assignment);
 }

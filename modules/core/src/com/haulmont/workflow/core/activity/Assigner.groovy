@@ -29,7 +29,7 @@ import org.jbpm.api.activity.ExternalActivityBehaviour
 import static com.google.common.base.Preconditions.checkState
 import static org.apache.commons.lang.StringUtils.isBlank
 
-public class Assigner extends CardActivity implements ExternalActivityBehaviour {
+public class Assigner extends CardActivity implements ExternalActivityBehaviour, HasTimersFactory {
 
     private Log log = LogFactory.getLog(Assigner.class)
 
