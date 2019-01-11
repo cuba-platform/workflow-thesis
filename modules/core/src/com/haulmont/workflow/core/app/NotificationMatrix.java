@@ -449,7 +449,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
 
     @Override
     public void notifyByCard(Card card, String state, List<String> excludedRoles) {
-        notifyByCard(card, state, Collections.<String>emptyList(), new DefaultMessageGenerator());
+        notifyByCard(card, state, excludedRoles, new DefaultMessageGenerator());
     }
 
     @Override
