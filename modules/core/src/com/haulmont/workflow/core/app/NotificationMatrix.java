@@ -451,7 +451,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     }
 
     public void notifyByCard(Card card, String state, List<String> excludedRoles) {
-        notifyByCard(card, state, Collections.<String>emptyList(), new DefaultMessageGenerator());
+        notifyByCard(card, state, excludedRoles, new DefaultMessageGenerator());
     }
 
     public void notifyByCard(Card card, String state, List<String> excludedRoles, NotificationMatrixMessage.MessageGenerator messageGenerator) {
