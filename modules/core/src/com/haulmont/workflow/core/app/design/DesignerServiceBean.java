@@ -139,7 +139,7 @@ public class DesignerServiceBean implements DesignerService {
 
     @Override
     public byte[] getNotificationMatrixTemplate(UUID designId) throws TemplateGenerationException {
-        return this.compiler.compileXlsTemplate(designId);
+        return this.compiler.compileXlsxTemplate(designId);
     }
 
     @Override

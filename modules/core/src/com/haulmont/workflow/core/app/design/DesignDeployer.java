@@ -267,7 +267,7 @@ public class DesignDeployer {
     private void deployNotificationMatrix(List<DesignFile> designFiles, File dir) throws IOException {
         for (DesignFile df : designFiles) {
             if (df.getType().equals("notification")) {
-                File file = new File(dir, "notification.xls");
+                File file = new File(dir, "notification.xlsx");
                 FileUtils.writeByteArrayToFile(file, df.getBinaryContent());
                 break;
             }
