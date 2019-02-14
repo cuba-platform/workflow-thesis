@@ -6,7 +6,7 @@
 
 allprojects {
     ext.artifactGroup = 'com.haulmont.workflow'
-    ext.artifactVersion = cubaVersion.replace('-SNAPSHOT', '')
+    ext.artifactVersion = '5.9.1'
     ext.isSnapshot = cubaVersion.endsWith('-SNAPSHOT')
     ext.vcs = 'Git'
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
@@ -48,7 +48,7 @@ def json = [group: 'org.json', name: 'json', version: '20090211']
 def hibernate = [group: 'org.hibernate', name: 'hibernate-core', version: '3.3.1.GA', transitive: false];
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
-def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
+def baseVersion = '5.9' + (isSnapshot ? '-SNAPSHOT' : '')
 
 configure([sharedLibModule, globalModule, coreModule, guiModule, webModule]) {
     apply(plugin: 'java')
@@ -129,6 +129,7 @@ configure(coreModule) {
     dependencies {
         compile(globalModule)
         compile(sharedLibModule)
+        compile(group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9')
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'tests')
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
