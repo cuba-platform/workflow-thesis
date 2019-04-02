@@ -515,7 +515,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                 for (Map.Entry<Assignment, CardRole> entry : assignmentsCardRoleMap.entrySet()) {
                     CardRole cardRole = entry.getValue();
                     if (!currentUser.equals(cardRole.getUser()))
-                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, smsList, trayList,
+                        notifyUser(card, cardRole, entry.getKey(), matrix, state, mailList, trayList, smsList,
                                 messageGenerator);
 
                     excludeRoleCodes.add(cardRole.getCode());
@@ -534,7 +534,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
                             ((assignmentsCardRoleMap != null && !assignmentsCardRoleMap.containsValue(cardRole)) ||
                                     assignmentsCardRoleMap == null)) {
 
-                        notifyUser(card, cardRole, null, matrix, state, mailList, smsList, trayList, messageGenerator);
+                        notifyUser(card, cardRole, null, matrix, state, mailList, trayList, smsList, messageGenerator);
                     }
                 }
             }
