@@ -355,7 +355,7 @@ public class ProcessAction extends AbstractAction {
         managerChain.doManagerBefore("", formManagerParams);
     }
 
-    protected void handleFallback(final FormManagerChain managerChain, final Map<String, Object> formManagerParams) {
+    protected void handleFallback(FormManagerChain managerChain, Map<String, Object> formManagerParams) {
         UUID assignmentId = assignmentInfo == null ? null : assignmentInfo.getAssignmentId();
         Assignment assignment = dataService.load(new LoadContext<>(Assignment.class).setId(assignmentId).setView(View.LOCAL));
         if (assignment.getFinished() != null) {
@@ -364,19 +364,32 @@ public class ProcessAction extends AbstractAction {
             return;
         }
 
-        managerChain.setHandler(new FormManagerChain.Handler() {
-            @Override
-            public void onSuccess(String comment) {
-                CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
-                finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
-            }
-
-            @Override
-            public void onFail() {
-                CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
-                removeSubProcCard(subProcCardContext.getCard());
-            }
-        });
+        managerChain.setHandler(createFallbackFormManagerChainHandler(managerChain, formManagerParams));
         managerChain.doManagerBefore(assignment.getComment(), formManagerParams);
+    }
+
+    protected FallbackFormManagerChainHandler createFallbackFormManagerChainHandler(FormManagerChain managerChain, Map<String, Object> formManagerParams) {
+        return new FallbackFormManagerChainHandler(managerChain, formManagerParams);
+    }
+
+    protected class FallbackFormManagerChainHandler implements FormManagerChain.Handler {
+
+        protected FormManagerChain managerChain;
+        protected Map<String, Object> formManagerParams;
+
+        public FallbackFormManagerChainHandler(FormManagerChain managerChain, Map<String, Object> formManagerParams) {
+            this.managerChain = managerChain;
+            this.formManagerParams = formManagerParams;
+        }
+
+        public void onSuccess(String comment) {
+            CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+            finishAssignment(editor, comment, managerChain, subProcCardContext.getCard());
+        }
+
+        public void onFail() {
+            CardContext subProcCardContext = (CardContext) formManagerParams.get("subProcCard");
+            removeSubProcCard(subProcCardContext.getCard());
+        }
     }
 }
