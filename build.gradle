@@ -130,6 +130,7 @@ configure(coreModule) {
         compile(globalModule)
         compile(sharedLibModule)
         compile(group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9')
+        compile(group: 'org.apache.poi', name: 'poi', version: '3.9')
         compile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion)
         testCompile(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'tests')
         compile(group: 'com.haulmont.thirdparty', name: 'jbpm', version: '4.4.20130109')
