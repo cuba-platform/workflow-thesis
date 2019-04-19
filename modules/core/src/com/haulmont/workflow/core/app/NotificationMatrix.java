@@ -303,7 +303,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (matrix != null)
             return;
 
-        InputStream fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.");
+        InputStream fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
         if (fis == null)
             return;
 
