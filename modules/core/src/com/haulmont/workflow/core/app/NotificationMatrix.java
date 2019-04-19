@@ -22,10 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -211,10 +208,6 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         if (sheet == null) {
             return false;
         }
-
-        final CellStyle ColumnHeaderStyle = sheet.getRow(2).getCell(1).getCellStyle();
-        final CellStyle RowHeaderStyle = sheet.getRow(3).getCell(0).getCellStyle();
-        final CellStyle CellStyle = sheet.getRow(3).getCell(1).getCellStyle();
 
         Row statesRow = sheet.getRow(1);
 
