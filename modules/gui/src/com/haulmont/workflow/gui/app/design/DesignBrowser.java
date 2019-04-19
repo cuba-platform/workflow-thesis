@@ -209,7 +209,7 @@ public class DesignBrowser extends AbstractWindow {
                         @Override
                         public void actionPerform(Component component) {
                             Design d = getDsContext().getDataSupplier().reload(entity, "_local");
-                            exportDisplay.show(new ByteArrayDataProvider(d.getNotificationMatrix()), "NotificationMatrix", ExportFormat.XLS);
+                            exportDisplay.show(new ByteArrayDataProvider(d.getNotificationMatrix()), "NotificationMatrix", ExportFormat.XLSX);
                         }
 
                         @Override
@@ -592,7 +592,7 @@ public class DesignBrowser extends AbstractWindow {
                     if (design.getCompileTs() != null) {
                         byte[] bytes = service.getNotificationMatrixTemplate(design.getUuid());
                         ByteArrayDataProvider array = new ByteArrayDataProvider(bytes);
-                        exportDisplay.show(array, "NotificationMatrix", ExportFormat.XLS);
+                        exportDisplay.show(array, "NotificationMatrix", ExportFormat.XLSX);
                     } else {
                         showNotification(getMessage("notification.CompileDesignBefore"), NotificationType.HUMANIZED);
                     }

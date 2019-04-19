@@ -80,25 +80,25 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         this.sendNotificationToBlankEmail = sendNotificationToBlankEmail;
     }
 
-    private Map<String, String> readRoles(HSSFWorkbook hssfWorkbook) {
-        HSSFSheet sheet = hssfWorkbook.getSheet(ROLES_SHEET);
+    private Map<String, String> readRoles(Workbook Workbook) {
+        Sheet sheet = Workbook.getSheet(ROLES_SHEET);
         Map<String, String> rolesMap = new HashMap<>();
         for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
-            HSSFRow row = (HSSFRow) it.next();
+           Row row = (Row) it.next();
 
-            HSSFCell cell = row.getCell(0);
-            HSSFCell cellCode = row.getCell(1);
+            Cell cell = row.getCell(0);
+            Cell cellCode = row.getCell(1);
 
             if (cell != null && cellCode != null) {
 
                 String role = null;
                 String code = null;
 
-                if (HSSFCell.CELL_TYPE_STRING == cell.getCellType()) {
+                if (Cell.CELL_TYPE_STRING == cell.getCellType()) {
                     code = cell.getRichStringCellValue().getString();
                 }
 
-                if (HSSFCell.CELL_TYPE_STRING == cellCode.getCellType()) {
+                if (Cell.CELL_TYPE_STRING == cellCode.getCellType()) {
                     role = cellCode.getRichStringCellValue().getString();
                 }
 
@@ -117,25 +117,25 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         return rolesMap;
     }
 
-    private Map<String, String> readStates(HSSFWorkbook hssfWorkbook) {
-        HSSFSheet sheet = hssfWorkbook.getSheet(STATES_SHEET);
+    private Map<String, String> readStates(Workbook Workbook) {
+        Sheet sheet = Workbook.getSheet(STATES_SHEET);
         Map<String, String> statesMap = new HashMap<>();
         for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
-            HSSFRow row = (HSSFRow) it.next();
+            Row row = (Row) it.next();
 
-            HSSFCell cell = row.getCell(0);
-            HSSFCell cellCode = row.getCell(1);
+            Cell cell = row.getCell(0);
+            Cell cellCode = row.getCell(1);
             if ((cell == null) || (cellCode == null)) {
                 break;
             }
             String state = null;
             String code = null;
 
-            if (HSSFCell.CELL_TYPE_STRING == cell.getCellType()) {
+            if (Cell.CELL_TYPE_STRING == cell.getCellType()) {
                 code = cell.getRichStringCellValue().getString();
             }
 
-            if (HSSFCell.CELL_TYPE_STRING == cell.getCellType()) {
+            if (Cell.CELL_TYPE_STRING == cell.getCellType()) {
                 state = cellCode.getRichStringCellValue().getString();
             }
 
@@ -154,17 +154,17 @@ public class NotificationMatrix implements NotificationMatrixAPI {
     /**
      * Method for load message templates or groovy scripts
      *
-     * @param hssfWorkbook
+     * @param workbook
      * @return true, if xls file have templeates or groovy scripts
      */
-    private void loadMessages(HSSFWorkbook hssfWorkbook, String processPath) {
-        HSSFSheet sheet = hssfWorkbook.getSheet(ACTIONS_SHEET);
+    private void loadMessages(Workbook workbook, String processPath) {
+        Sheet sheet = workbook.getSheet(ACTIONS_SHEET);
         for (Iterator it = sheet.rowIterator(); it.hasNext(); ) {
-            HSSFRow row = (HSSFRow) it.next();
+            Row row = (Row) it.next();
 
-            HSSFCell cellNotifType = row.getCell(0);
-            HSSFCell cellTempleateType = row.getCell(1);
-            HSSFCell cellText = row.getCell(2);
+            Cell cellNotifType = row.getCell(0);
+            Cell cellTempleateType = row.getCell(1);
+            Cell cellText = row.getCell(2);
 
             if ((cellNotifType == null) || (cellTempleateType == null) || (cellText == null)) {
                 return;
@@ -174,15 +174,15 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             String templeateType = null;
             String text = null;
 
-            if (HSSFCell.CELL_TYPE_STRING == cellNotifType.getCellType()) {
+            if (Cell.CELL_TYPE_STRING == cellNotifType.getCellType()) {
                 notificationType = cellNotifType.getStringCellValue();
             }
 
-            if (HSSFCell.CELL_TYPE_STRING == cellTempleateType.getCellType()) {
+            if (Cell.CELL_TYPE_STRING == cellTempleateType.getCellType()) {
                 templeateType = cellTempleateType.getStringCellValue();
             }
 
-            if (HSSFCell.CELL_TYPE_STRING == cellText.getCellType()) {
+            if (Cell.CELL_TYPE_STRING == cellText.getCellType()) {
                 text = cellText.getStringCellValue();
             }
 
@@ -205,23 +205,27 @@ public class NotificationMatrix implements NotificationMatrixAPI {
 
     }
 
-    private boolean fillMatrixBySheet(Map<String, String> matrix, String sheetName, HSSFWorkbook matrixTemplate,
+    private boolean fillMatrixBySheet(Map<String, String> matrix, String sheetName, Workbook matrixTemplate,
                                       Map<String, String> rolesMap, Map<String, String> statesMap, String processPath) {
-        HSSFSheet sheet = matrixTemplate.getSheet(sheetName);
+        Sheet sheet = matrixTemplate.getSheet(sheetName);
         if (sheet == null) {
             return false;
         }
 
-        HSSFRow statesRow = sheet.getRow(1);
+        final CellStyle ColumnHeaderStyle = sheet.getRow(2).getCell(1).getCellStyle();
+        final CellStyle RowHeaderStyle = sheet.getRow(3).getCell(0).getCellStyle();
+        final CellStyle CellStyle = sheet.getRow(3).getCell(1).getCellStyle();
+
+        Row statesRow = sheet.getRow(1);
 
         for (int i = 2; i <= sheet.getLastRowNum(); i++) {
-            HSSFRow row = sheet.getRow(i);
+            Row row = sheet.getRow(i);
 
             if (row == null) {
                 continue;
             }
 
-            HSSFCell roleCell = row.getCell(0);
+            Cell roleCell = row.getCell(0);
             if (roleCell == null || "".equals(roleCell.getRichStringCellValue().toString())) {
                 continue;
             }
@@ -234,7 +238,7 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             }
 
             for (int j = 1; j < row.getLastCellNum(); j++) {
-                HSSFCell cell = row.getCell(j);
+                Cell cell = row.getCell(j);
 
                 if (cell == null) {
                     continue;
@@ -307,18 +311,18 @@ public class NotificationMatrix implements NotificationMatrixAPI {
             return;
 
         try {
-            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(fis);
+            Workbook Workbook = WorkbookFactory.create(fis);
 
-            Map<String, String> rolesMap = readRoles(hssfWorkbook);
-            Map<String, String> statesMap = readStates(hssfWorkbook);
+            Map<String, String> rolesMap = readRoles(Workbook);
+            Map<String, String> statesMap = readStates(Workbook);
 
             messageCache.put(processPath, new HashMap<String, NotificationMessageBuilder>());
-            loadMessages(hssfWorkbook, processPath);
+            loadMessages(Workbook, processPath);
 
             matrix = new HashMap<>();
-            boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
-            boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
-            boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, hssfWorkbook, rolesMap, statesMap, processPath);
+            boolean mailMatrixFilled = fillMatrixBySheet(matrix, MAIL_SHEET, Workbook, rolesMap, statesMap, processPath);
+            boolean trayMatrixFilled = fillMatrixBySheet(matrix, TRAY_SHEET, Workbook, rolesMap, statesMap, processPath);
+            boolean smsMatrixFilled = fillMatrixBySheet(matrix, SMS_SHEET, Workbook, rolesMap, statesMap, processPath);
 
             postLoad(processPath, matrix);
 

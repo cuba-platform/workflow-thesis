@@ -36,11 +36,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
 import org.dom4j.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -535,38 +532,62 @@ public class DesignCompiler {
         Iterator<Row> rowIt = statesSheet.rowIterator();
         Iterator<DesignProcState> stateIt = states.iterator();
         DesignProcState stateEntry;
-        while (rowIt.hasNext()) {
-            Row row = rowIt.next();
-            if (stateIt.hasNext()) {
-                stateEntry = stateIt.next();
-                row.getCell(0).setCellValue(stateEntry.getLocName());
-                row.getCell(1).setCellValue(stateEntry.getKey());
+        int i = 0;
+        final CellStyle firstCellStyle = statesSheet.getRow(0).getCell(0).getCellStyle();
+        final CellStyle secondCellStyle = statesSheet.getRow(0).getCell(1).getCellStyle();
+        while (stateIt.hasNext()) {
+            stateEntry = stateIt.next();
+            Row row;
+            if (rowIt.hasNext()) {
+                row = rowIt.next();
             } else {
-                row.removeCell(row.getCell(0));
-                row.removeCell(row.getCell(1));
+                row = statesSheet.createRow(i);
             }
+            Cell firstCell = row.getCell(0);
+            if (firstCell == null) {
+                firstCell = row.createCell(0);
+            }
+            firstCell.setCellValue(stateEntry.getLocName());
+            firstCell.setCellStyle(firstCellStyle);
+            Cell secondCell = row.getCell(1);
+            if (secondCell == null) {
+                secondCell = row.createCell(1);
+            }
+            secondCell.setCellValue(stateEntry.getKey());
+            secondCell.setCellStyle(secondCellStyle);
+            i++;
         }
-
     }
 
     protected void createRolesSheet(Workbook book, List<String> rolesList) {
-
         Sheet roles = book.getSheet("Roles");
         int i = 0;
         Iterator<String> roleIt = rolesList.iterator();
         Iterator<Row> rowIt = roles.rowIterator();
-        while (rowIt.hasNext()) {
-            Row row = rowIt.next();
-            if (roleIt.hasNext()) {
-                String role = roleIt.next();
-                row.getCell(0).setCellValue(role);
-                row.getCell(1).setCellValue(role);
+        final CellStyle firstCellStyle = roles.getRow(0).getCell(0).getCellStyle();
+        final CellStyle secondCellStyle = roles.getRow(0).getCell(1).getCellStyle();
+        while (roleIt.hasNext()) {
+            Row row;
+            if (rowIt.hasNext()) {
+                row = rowIt.next();
             } else {
-                row.removeCell(row.getCell(0));
-                row.removeCell(row.getCell(1));
+                row = roles.createRow(i);
             }
+            String role = roleIt.next();
+            Cell firstCell = row.getCell(0);
+            if (firstCell == null) {
+                firstCell = row.createCell(0);
+            }
+            firstCell.setCellValue(role);
+            firstCell.setCellStyle(firstCellStyle);
+            Cell secondCell = row.getCell(1);
+            if (secondCell == null) {
+                secondCell = row.createCell(1);
+            }
+            secondCell.setCellValue(role);
+            secondCell.setCellStyle(secondCellStyle);
+            i++;
         }
-
     }
 
     protected void createNotificationSheet(Workbook book, List<String> rolesList, Collection<DesignProcState> states, String sheetName) {
@@ -579,48 +600,55 @@ public class DesignCompiler {
 
         Map<String, Integer> locNameToColumnIndexMap = new HashMap<>();
         Map<String, Integer> cardRoleToRowIndexMap = new HashMap<>();
-
+        final CellStyle columnCellStyle = mail.getRow(1).getCell(1).getCellStyle();
+        final CellStyle rowCellStyle = mail.getRow(2).getCell(0).getCellStyle();
+        final CellStyle simpleCellStyle = mail.getRow(2).getCell(1).getCellStyle();
         if (mail != null) {
             Row statesRow = mail.getRow(1);
-            Iterator<Cell> cellIt = statesRow.cellIterator();
-            cellIt.next();
-            Iterator<DesignProcState> statesIt = states.iterator();
+
             int locNameColumnIndex = 1;
-            while (cellIt.hasNext()) {
-                Cell cell = cellIt.next();
-                if (statesIt.hasNext()) {
-                    DesignProcState nextState = statesIt.next();
-                    cell.setCellValue(nextState.getLocName());
-                    locNameToColumnIndexMap.put(nextState.getLocName(), locNameColumnIndex);
-                    locNameColumnIndex++;
-                } else {
-                    statesRow.removeCell(cell);
-                }
+            Iterator<DesignProcState> statesIt = states.iterator();
+            while (statesIt.hasNext()) {
+                Cell cell;
+                cell = statesRow.createCell(locNameColumnIndex);
+                DesignProcState nextState = statesIt.next();
+                cell.setCellValue(nextState.getLocName());
+                cell.setCellStyle(columnCellStyle);
+                locNameToColumnIndexMap.put(nextState.getLocName(), locNameColumnIndex);
+                locNameColumnIndex++;
             }
+
+
+            int roleRowIndex = 2;
+
             Iterator<Row> rowIt = mail.rowIterator();
             rowIt.next();
             rowIt.next();
-
-            int roleRowIndex = 2;
             Iterator<String> roleIt = rolesList.iterator();
-            while (rowIt.hasNext()) {
-                Row row = rowIt.next();
-                if (roleIt.hasNext()) {
-                    String nextRole = roleIt.next();
-                    row.getCell(0).setCellValue(nextRole);
-                    cardRoleToRowIndexMap.put(nextRole, roleRowIndex);
-                    roleRowIndex++;
-                    Iterator<Cell> cellIterator = row.cellIterator();
-                    cellIterator.next();
-                    while (cellIterator.hasNext()) {
-                        row.removeCell(cellIterator.next());
-                    }
 
+            while (roleIt.hasNext()) {
+                Row row;
+                if (rowIt.hasNext()) {
+                    row = rowIt.next();
                 } else {
-                    Iterator<Cell> cellIterator = row.cellIterator();
-                    while (cellIterator.hasNext()) {
-                        row.removeCell(cellIterator.next());
+                    row = mail.createRow(roleRowIndex);
+                    row.createCell(0);
+                }
+                String nextRole = roleIt.next();
+                row.getCell(0).setCellValue(nextRole);
+                row.getCell(0).setCellStyle(rowCellStyle);
+                cardRoleToRowIndexMap.put(nextRole, roleRowIndex);
+                roleRowIndex++;
+            }
+
+            for (int i = 2; i < roleRowIndex; i++) {
+                Row row = mail.getRow(i);
+                for (int j = 1; j < locNameColumnIndex; j++) {
+                    Cell cell = row.getCell(j);
+                    if (cell == null) {
+                        cell = row.createCell(j);
                     }
+                    cell.setCellStyle(simpleCellStyle);
                 }
             }
         }
@@ -636,6 +664,7 @@ public class DesignCompiler {
                     cell = row.createCell(columnIndex);
                 }
                 cell.setCellValue(action);
+                cell.setCellStyle(simpleCellStyle);
             } else if (BooleanUtils.isTrue(setActionToNoRole)) {
                 for (Integer rowIndex : cardRoleToRowIndexMap.values()) {
                     Row row = mail.getRow(rowIndex);
@@ -644,13 +673,16 @@ public class DesignCompiler {
                         cell = row.createCell(columnIndex);
                     }
                     cell.setCellValue(action);
+                    cell.setCellStyle(simpleCellStyle);
                 }
             }
+
         }
+
     }
 
 
-    public byte[] compileXlsTemplate(UUID designId) throws TemplateGenerationException {
+    public byte[] compileXlsxTemplate(UUID designId) throws TemplateGenerationException {
         Transaction tx = AppBeans.get(Persistence.class).createTransaction();
         List<DesignFile> files = null;
         try {
@@ -696,7 +728,7 @@ public class DesignCompiler {
             InputStream stream = AppBeans.get(Resources.class).getResourceAsStream(templatePath);
             Workbook wb;
             try {
-                wb = new HSSFWorkbook(stream);
+                wb = WorkbookFactory.create(stream);
                 createRolesSheet(wb, rolesList);
                 createStatesSheet(wb, states);
                 createNotificationSheet(wb, rolesList, states, "Mail");
@@ -709,7 +741,7 @@ public class DesignCompiler {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             wb.write(buffer);
             return buffer.toByteArray();
-        } catch (DocumentException | IOException e) {
+        } catch (DocumentException | IOException | InvalidFormatException e) {
             throw new TemplateGenerationException(e);
         } finally {
             tx.end();
