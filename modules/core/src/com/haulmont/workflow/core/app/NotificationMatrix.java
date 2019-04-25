@@ -298,8 +298,10 @@ public class NotificationMatrix implements NotificationMatrixAPI {
         Map<String, String> matrix = cache.get(processPath);
         if (matrix != null)
             return;
-
-        InputStream fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
+        InputStream fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xlsx");
+        if (fis == null) {
+            fis = resources.getResourceAsStream(processPath.replace('.', '/') + "/" + "notification.xls");
+        }
         if (fis == null)
             return;
 
