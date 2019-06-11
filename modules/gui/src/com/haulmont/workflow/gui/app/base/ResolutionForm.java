@@ -147,7 +147,7 @@ public class ResolutionForm extends AbstractForm {
                 public Map<String, Object> getInitialValues() {
                     Map<String, Object> values = new HashMap<>();
                     values.put("assignment", assignmentDs.getItem());
-                    values.put("file", new FileDescriptor());
+                    values.put("file", metadata.create(FileDescriptor.class));
                     values.put("card", card);
                     if (attachmentType != null) {
                         values.put("attachType", attachmentType);

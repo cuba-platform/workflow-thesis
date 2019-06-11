@@ -19,8 +19,11 @@ import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardAttachment;
+import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
+import com.haulmont.workflow.gui.app.base.attachments.AttachmentCreator;
+import com.haulmont.workflow.gui.app.base.attachments.NewVersionAction;
+import com.haulmont.workflow.gui.app.base.attachments.RemoveAttachmentAction;
 import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
-import com.haulmont.workflow.gui.app.base.attachments.*;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -133,7 +136,7 @@ public class CardAttachmentsFrame extends AbstractFrame {
             public Map<String, Object> getInitialValues() {
                 Map<String, Object> initialValues = new HashMap<>();
                 initialValues.put("card", cardDs.getItem());
-                initialValues.put("file", new FileDescriptor());
+                initialValues.put("file", metadata.create(FileDescriptor.class));
                 return initialValues;
             }
         };
