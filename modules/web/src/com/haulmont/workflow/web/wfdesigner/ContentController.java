@@ -61,7 +61,9 @@ public class ContentController extends StaticContentController {
         private Map<String, Object> createTemplateParams() {
             HashMap<String, Object> params = new HashMap<String, Object>();
             UserSession userSession = ControllerUtils.getUserSession(req);
-            params.put("locale", userSession == null ? "en" : userSession.getLocale().getLanguage());
+            if (userSession == null || !"ru".equals(userSession.getLocale().getLanguage()))
+                params.put("locale", "en");
+            else params.put("locale", userSession.getLocale().getLanguage());
             return params;
         }
 
@@ -124,8 +126,7 @@ public class ContentController extends StaticContentController {
 
     @Override
     protected LookupResult createLookupResult(
-            HttpServletRequest req, long lastModified, String mimeType, int contentLength, boolean acceptsDeflate, URL url)
-    {
+            HttpServletRequest req, long lastModified, String mimeType, int contentLength, boolean acceptsDeflate, URL url) {
         if (req.getPathInfo().toLowerCase().endsWith(".ftl"))
             return new FreemarkerTemplateFile(lastModified, mimeType, req);
         else
