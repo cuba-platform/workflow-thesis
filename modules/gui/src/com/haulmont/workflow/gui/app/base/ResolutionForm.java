@@ -136,7 +136,7 @@ public class ResolutionForm extends AbstractForm {
             }
         };
         pasteAttachBtn.setAction(
-                attachmentActionTools.createPasteAction(attachmentsTable, creator));
+                attachmentActionTools.createPasteAction(attachmentsTable, creator, getPasteActionParams()));
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
 
         PopupButton createPopup = getComponent("createAttachBtn");
@@ -157,17 +157,26 @@ public class ResolutionForm extends AbstractForm {
             });
         }
 
-        Map<String, Object> map = new HashMap<>();
-        if (attachmentType != null) {
-            map.put("attachType", attachmentType);
-        }
-        createPopup.addAction(attachmentActionTools.createMultiUploadAction(attachmentsTable, this, creator, WindowManager.OpenType.DIALOG, map));
+        createPopup.addAction(attachmentActionTools.createMultiUploadAction(
+                attachmentsTable, this, creator, WindowManager.OpenType.DIALOG, getMultiUploadActionParams()));
 
         attachmentsTable.addAction(copyAttachBtn.getAction());
         attachmentsTable.addAction(pasteAttachBtn.getAction());
         attachmentActionTools.createLoadAction(attachmentsTable, this);
         if (attachmentsTable != null)
             AttachmentColumnGeneratorHelper.addSizeGeneratedColumn(attachmentsTable);
+    }
+
+    protected Map<String, Object> getPasteActionParams() {
+        return null;
+    }
+
+    protected Map<String, Object> getMultiUploadActionParams() {
+        Map<String, Object> map = new HashMap<>();
+        if (attachmentType != null) {
+            map.put("attachType", attachmentType);
+        }
+        return map;
     }
 
     protected void initDialogParams(Map<String, Object> params) {
@@ -194,7 +203,7 @@ public class ResolutionForm extends AbstractForm {
         Card card = getDsContext().getDataSupplier().reload(assignment.getCard(),
                 metadata.getViewRepository().getView(Card.class, View.MINIMAL),
                 metadata.getClass(Card.class), false);
-       /* If card was modified, initiate Optimistic Lock */
+        /* If card was modified, initiate Optimistic Lock */
         if (card.getVersion().compareTo(assignment.getCard().getVersion()) != 0) {
             getDsContext().getDataSupplier().commit(new CommitContext(assignment.getCard()));
         }
