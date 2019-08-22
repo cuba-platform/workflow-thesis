@@ -137,11 +137,11 @@ configure(coreModule) {
         compile(bom['org.ocpsoft.prettytime:prettytime-nlp'])
         compile(bom['com.haulmont.thirdparty:jbpm'])
         compile(bom['org.json:json'])
-        runtime(bom['org.glassfish.web:javax.el'])
+        runtime(bom['org.glassfish:javax.el'])
         compile(hibernate)
         compile(bom['commons-collections:commons-collections'])
         runtime(bom['org.javassist:javassist'])
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
         jdbc(bom['org.hsqldb:hsqldb'])
         dbscripts(group: 'com.haulmont.cuba', name: 'cuba-core', version: baseVersion, classifier: 'db', ext: 'zip')
     }
@@ -197,7 +197,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.cuba', name: 'cuba-web', version: baseVersion)
         compile(bom['org.json:json'])
 
-        provided(bom['javax.servlet:javax.servlet-api'])
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         yui(bom['com.haulmont.thirdparty:yui'])
     }
