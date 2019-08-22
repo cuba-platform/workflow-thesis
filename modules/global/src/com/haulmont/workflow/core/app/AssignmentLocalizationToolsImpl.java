@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

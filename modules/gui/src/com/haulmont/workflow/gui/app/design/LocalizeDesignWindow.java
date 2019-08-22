@@ -21,7 +21,7 @@ import com.haulmont.workflow.core.entity.DesignLocKey;
 import com.haulmont.workflow.core.entity.DesignLocValue;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.global.WfConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;

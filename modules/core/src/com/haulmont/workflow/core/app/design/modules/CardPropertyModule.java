@@ -15,7 +15,7 @@ import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.global.CardPropertyUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 

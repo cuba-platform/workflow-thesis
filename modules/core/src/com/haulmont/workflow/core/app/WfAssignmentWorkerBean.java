@@ -12,7 +12,7 @@ import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.activity.HasTimersFactory;
 import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.timer.AssignmentTimersFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.api.ExecutionService;

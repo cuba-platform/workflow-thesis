@@ -24,7 +24,7 @@ import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorH
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentCreator;
 import com.haulmont.workflow.gui.app.tools.AttachmentActionTools;
 import com.haulmont.workflow.gui.base.action.AbstractForm;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.HashMap;

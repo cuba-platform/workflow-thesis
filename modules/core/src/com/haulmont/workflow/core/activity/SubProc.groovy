@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.Query
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.Proc
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 import org.jbpm.pvm.internal.client.ClientProcessDefinition

@@ -6,8 +6,8 @@
 package com.haulmont.workflow.core.app;
 
 import com.haulmont.workflow.core.entity.Card;
-import org.apache.commons.lang.CharUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WfUtils {
 

@@ -12,8 +12,8 @@ import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jbpm.api.*;
 
 import org.springframework.stereotype.Component;

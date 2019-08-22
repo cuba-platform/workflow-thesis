@@ -10,7 +10,7 @@ import com.haulmont.workflow.core.app.ProcessVariableAPI
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardVariable
 import com.haulmont.workflow.core.global.WfConstants
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.jbpm.api.activity.ActivityBehaviour
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.pvm.internal.util.ReflectUtil

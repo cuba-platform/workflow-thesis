@@ -12,7 +12,7 @@ import com.haulmont.workflow.core.app.WfEntityDescriptorTools;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.global.CardPropertyUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -19,7 +19,7 @@ package com.haulmont.workflow.core.app.prettytime;
 
 import com.haulmont.cuba.core.global.Resources;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.springframework.stereotype.Component;
 

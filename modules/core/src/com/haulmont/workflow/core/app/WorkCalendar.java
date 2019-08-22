@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
 import com.haulmont.workflow.core.global.TimeUnit;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

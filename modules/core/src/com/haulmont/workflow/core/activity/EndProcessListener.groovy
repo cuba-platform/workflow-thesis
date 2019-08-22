@@ -10,7 +10,7 @@ import com.haulmont.workflow.core.app.NotificationMatrixAPI
 import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardProc
 import com.haulmont.workflow.core.global.WfConstants
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.jbpm.api.listener.EventListenerExecution
 import org.jbpm.pvm.internal.model.ExecutionImpl
 

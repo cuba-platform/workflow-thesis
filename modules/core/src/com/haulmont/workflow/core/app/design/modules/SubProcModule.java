@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class SubProcModule extends Module {

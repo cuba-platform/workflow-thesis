@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.enums.OperationsType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

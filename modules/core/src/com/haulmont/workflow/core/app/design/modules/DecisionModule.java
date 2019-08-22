@@ -11,9 +11,9 @@ import com.haulmont.workflow.core.app.design.Module;
 import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 

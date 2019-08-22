@@ -22,9 +22,9 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.workflow.core.app.ProcessVariableService;
 import com.haulmont.workflow.core.entity.AbstractProcessVariable;
 import com.haulmont.workflow.core.enums.AttributeType;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;

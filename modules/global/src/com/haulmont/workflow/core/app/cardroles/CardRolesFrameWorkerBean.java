@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.entity.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.stereotype.Component;
 import java.util.*;

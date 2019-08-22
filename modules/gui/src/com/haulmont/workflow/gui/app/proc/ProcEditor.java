@@ -22,7 +22,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.DefaultProcActor;
 import com.haulmont.workflow.core.entity.Proc;
 import com.haulmont.workflow.core.entity.ProcRole;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;

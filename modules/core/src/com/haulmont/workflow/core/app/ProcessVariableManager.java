@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.workflow.core.entity.*;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;

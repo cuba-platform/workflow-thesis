@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.inject.Inject;
 import java.util.Collections;

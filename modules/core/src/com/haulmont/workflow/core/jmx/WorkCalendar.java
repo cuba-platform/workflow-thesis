@@ -17,8 +17,8 @@ import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
 import com.haulmont.workflow.core.entity.DayOfWeek;
 import com.haulmont.workflow.core.entity.WorkCalendarEntity;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 

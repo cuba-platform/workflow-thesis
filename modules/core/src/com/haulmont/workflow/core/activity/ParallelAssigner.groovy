@@ -13,7 +13,7 @@ import com.haulmont.workflow.core.entity.Card
 import com.haulmont.workflow.core.entity.CardRole
 import com.haulmont.workflow.core.exception.ParallelAssignmentIsNotFinishedException
 import com.haulmont.workflow.core.exception.WorkflowException
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.ExecutionService

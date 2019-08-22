@@ -6,7 +6,7 @@
 package com.haulmont.workflow.core.jmx;
 
 import com.haulmont.workflow.core.app.NotificationMatrixAPI;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import org.springframework.stereotype.Component;
 import javax.inject.Inject;

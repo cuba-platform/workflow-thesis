@@ -12,7 +12,7 @@ import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.global.WfConstants;
 import com.haulmont.workflow.gui.base.action.FormManager;
 import com.haulmont.workflow.gui.base.action.FormManagerChain;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;

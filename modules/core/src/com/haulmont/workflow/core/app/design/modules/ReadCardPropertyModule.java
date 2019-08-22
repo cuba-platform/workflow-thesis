@@ -12,7 +12,7 @@ import com.haulmont.workflow.core.entity.DesignProcessVariable;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.enums.OperationsType;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.List;

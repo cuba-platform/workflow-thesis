@@ -20,7 +20,7 @@ import com.haulmont.workflow.core.entity.CardAttachment;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.gui.app.base.attachments.AttachmentColumnGeneratorHelper;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;

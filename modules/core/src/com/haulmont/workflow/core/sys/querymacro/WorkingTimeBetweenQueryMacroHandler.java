@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler;
 import com.haulmont.workflow.core.app.WorkCalendarAPI;
 import com.haulmont.workflow.core.global.TimeUnit;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -9,7 +9,7 @@ import com.haulmont.chile.core.common.compatibility.InstancePropertyChangeListen
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UuidProvider;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.*;

@@ -29,9 +29,9 @@ import com.haulmont.workflow.core.entity.*;
 import com.haulmont.workflow.core.global.TimeUnit;
 import com.haulmont.workflow.gui.app.usergroup.UserGroupAdd;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

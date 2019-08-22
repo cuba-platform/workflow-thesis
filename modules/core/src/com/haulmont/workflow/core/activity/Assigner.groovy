@@ -20,14 +20,14 @@ import com.haulmont.workflow.core.entity.ProcRole
 import com.haulmont.workflow.core.exception.WorkflowException
 import com.haulmont.workflow.core.timer.AssignmentTimersFactory
 import com.haulmont.workflow.core.timer.OverdueAssignmentTimersFactory
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jbpm.api.activity.ActivityExecution
 import org.jbpm.api.activity.ExternalActivityBehaviour
 
 import static com.google.common.base.Preconditions.checkState
-import static org.apache.commons.lang.StringUtils.isBlank
+import static org.apache.commons.lang3.StringUtils.isBlank
 
 public class Assigner extends CardActivity implements ExternalActivityBehaviour, HasTimersFactory {
 

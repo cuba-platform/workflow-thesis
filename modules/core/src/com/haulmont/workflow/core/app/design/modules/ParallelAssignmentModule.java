@@ -6,7 +6,7 @@ package com.haulmont.workflow.core.app.design.modules;
 
 import com.haulmont.workflow.core.app.WfUtils;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class ParallelAssignmentModule extends AssignmentModule {

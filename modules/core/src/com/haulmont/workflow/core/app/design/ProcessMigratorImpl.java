@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.entity.DesignFile;
 import com.haulmont.workflow.core.entity.Proc;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;

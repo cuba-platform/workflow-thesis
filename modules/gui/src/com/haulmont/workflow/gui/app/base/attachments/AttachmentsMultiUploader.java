@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.workflow.core.entity.Attachment;
 import com.haulmont.workflow.core.entity.AttachmentType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;

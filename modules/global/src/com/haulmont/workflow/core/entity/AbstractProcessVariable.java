@@ -8,7 +8,7 @@ package com.haulmont.workflow.core.entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.workflow.core.enums.AttributeType;
 import com.haulmont.workflow.core.global.WfEntityDescriptor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Lob;

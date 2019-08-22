@@ -33,7 +33,7 @@ import com.haulmont.workflow.core.exception.DesignCompilationException;
 import com.haulmont.workflow.core.exception.TemplateGenerationException;
 import com.haulmont.workflow.core.global.WfConfig;
 import com.haulmont.workflow.gui.components.AbstractEntityAction;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;

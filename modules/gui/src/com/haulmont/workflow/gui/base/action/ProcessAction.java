@@ -19,7 +19,7 @@ import com.haulmont.workflow.core.entity.CardProc;
 import com.haulmont.workflow.core.global.AssignmentInfo;
 import com.haulmont.workflow.core.global.WfConstants;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.HashMap;
 import java.util.Map;

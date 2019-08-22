@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.workflow.core.app.design.FormBuilder;
 import com.haulmont.workflow.core.entity.DesignScript;
 import com.haulmont.workflow.core.exception.DesignCompilationException;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.dom4j.Element;
 import org.json.JSONObject;
 
