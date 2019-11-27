@@ -17,10 +17,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.entity.UserGroup;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Eugeniy Murzin
@@ -40,7 +37,7 @@ public class UserGroupAdd extends AbstractWindow {
     @Inject
     protected TextField searchText;
 
-    protected Set selectedUsers = new HashSet<Entity>();
+    protected Set selectedUsers = new LinkedHashSet<Entity>();
     protected Role secRole;
     protected Boolean hasInActiveUser = false;
 

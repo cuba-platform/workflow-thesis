@@ -1258,7 +1258,7 @@ public class CardRolesFrame extends AbstractFrame {
         @Override
         public void windowClosed(String actionId) {
             if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                Set<User> validUsers = new HashSet<>();
+                Set<User> validUsers = new LinkedHashSet<>();
                 Set<User> invalidUsers = new HashSet<>();
 
                 Set<User> selectedUsers = getSelectedUsers(cardRole, window);
