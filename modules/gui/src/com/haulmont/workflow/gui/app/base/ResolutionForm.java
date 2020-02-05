@@ -122,15 +122,7 @@ public class ResolutionForm extends AbstractForm {
         copyAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Copy"));
 
         Button pasteAttachBtn = (Button) getComponentNN("pasteAttach");
-        AttachmentCreator creator = new AttachmentCreator() {
-            @Override
-            public Attachment createObject() {
-                CardAttachment attachment = metadata.create(CardAttachment.class);
-                attachment.setAssignment(assignmentDs.getItem());
-                attachment.setCard(assignmentDs.getItem().getCard());
-                return attachment;
-            }
-        };
+        AttachmentCreator creator = createAttachmentCreator();
         pasteAttachBtn.setAction(
                 attachmentActionTools.createPasteAction(attachmentsTable, creator));
         pasteAttachBtn.setCaption(messages.getMessage(getClass(), "actions.Paste"));
@@ -251,5 +243,20 @@ public class ResolutionForm extends AbstractForm {
         commitContext.getCommitInstances().addAll(processAttachments.copyAttachments(assignmentDs.getItems()));
         getDsContext().getDataSupplier().commit(commitContext);
         getDsContext().commit();
+    }
+
+    protected AttachmentCreator createAttachmentCreator() {
+        return new ResolutionAttachmentCreator();
+    }
+
+    public class ResolutionAttachmentCreator implements AttachmentCreator {
+
+        @Override
+        public Attachment createObject() {
+            CardAttachment attachment = metadata.create(CardAttachment.class);
+            attachment.setAssignment(assignmentDs.getItem());
+            attachment.setCard(assignmentDs.getItem().getCard());
+            return attachment;
+        }
     }
 }
