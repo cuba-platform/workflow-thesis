@@ -5,14 +5,11 @@
 
 package com.haulmont.workflow.core.timer;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.workflow.core.WfHelper;
 import com.haulmont.workflow.core.entity.Assignment;
+import com.haulmont.workflow.core.entity.CardInfo;
 import org.apache.commons.lang.StringUtils;
 import org.jbpm.api.activity.ActivityExecution;
 
@@ -47,11 +44,11 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
                 if (d == null)
                     continue;
             } else {
-                d = new Date(TimeProvider.currentTimestamp().getTime() + WfHelper.getTimeMillis(dueDate));
+                d = new Date(AppBeans.get(TimeSource.class).currentTimestamp().getTime() + WfHelper.getTimeMillis(dueDate));
             }
             EntityLoadInfo userLoadInfo = EntityLoadInfo.create(assignment.getUser());
 
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("user", userLoadInfo.toString());
 
             if (transitionsArr.length > i && !StringUtils.isBlank(transitionsArr[i])) {
@@ -85,12 +82,15 @@ public class GenericAssignmentTimersFactory implements AssignmentTimersFactory {
         else
             WfHelper.getTimerManager().removeTimers(execution, assignment);
 
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery("delete from wf$CardInfo ci where ci.jbpmExecutionId = ?1 and ci.activity = ?2 " +
-                "and ci.user.id = ?3");
-        query.setParameter(1, execution.getId());
-        query.setParameter(2, execution.getActivityName());
-        query.setParameter(3, UserSessionProvider.currentOrSubstitutedUserId());
-        query.executeUpdate();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        List<CardInfo> cardInfos = em.createQuery("select ci from wf$CardInfo ci " +
+                "where ci.jbpmExecutionId = ?1 and ci.activity = ?2 and ci.user.id = ?3", CardInfo.class)
+                .setParameter(1, execution.getId())
+                .setParameter(2, execution.getActivityName())
+                .setParameter(3, AppBeans.get(UserSessionSource.class).currentOrSubstitutedUserId())
+                .getResultList();
+
+        for (CardInfo cardInfo : cardInfos)
+            em.remove(cardInfo);
     }
 }
