@@ -7,6 +7,7 @@ package com.haulmont.workflow.core.timer;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.workflow.core.WfHelper;
@@ -41,7 +42,8 @@ public class MainAssignmentTimerAction extends AssignmentTimerAction {
     }
 
     protected CardInfo createCardInfo(TimerActionContext context, User user, int type, String subject) {
-        CardInfo ci = new CardInfo();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        CardInfo ci = metadata.create(CardInfo.class);
         ci.setCard(context.getCard());
         ci.setType(type);
         ci.setUser(user);
