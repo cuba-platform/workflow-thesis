@@ -5,6 +5,7 @@
 
 package com.haulmont.workflow.core.app;
 
+import com.haulmont.workflow.core.app.reassignment.WfReassignmentPredicatesFactory;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardRole;
 
@@ -34,5 +35,6 @@ public interface WfAssignmentService {
      */
     void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment);
 
-
+    void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment,
+                  WfReassignmentPredicatesFactory predicatesFactory);
 }
