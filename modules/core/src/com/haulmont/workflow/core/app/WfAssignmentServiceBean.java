@@ -6,7 +6,9 @@
 package com.haulmont.workflow.core.app;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -15,18 +17,16 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.workflow.core.app.reassignment.CloseAssignmentPredicate;
-import com.haulmont.workflow.core.app.reassignment.CreateAssignmentForNewCardRolePredicate;
-import com.haulmont.workflow.core.app.reassignment.DefaultReassignmentPredicatesFactory;
-import com.haulmont.workflow.core.app.reassignment.WfReassignmentPredicatesFactory;
 import com.haulmont.workflow.core.entity.Assignment;
 import com.haulmont.workflow.core.entity.Card;
 import com.haulmont.workflow.core.entity.CardInfo;
 import com.haulmont.workflow.core.entity.CardRole;
 import com.haulmont.workflow.core.global.WfConstants;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
@@ -70,7 +70,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     protected static Comparator<Assignment> BY_CREATE_TS_COMPARATOR = new Comparator<Assignment>() {
         @Override
         public int compare(Assignment a1, Assignment a2) {
-            if (a1.getCreateTs() == null && a2.getCreateTs() == null) {
+            if (a1.getCreateTs() == null && a1.getCreateTs() == null) {
                 return 0;
             }
             if (a1.getCreateTs() == null) {
@@ -82,6 +82,7 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
             return a1.getCreateTs().compareTo(a2.getCreateTs());
         }
     };
+
 
     private final AssignmentListener notificationMatrixListener = new AssignmentListener() {
         @Override
@@ -104,46 +105,54 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @Override
     @Transactional
     public void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment) {
-        reassign(card, state, newRoles, oldRoles, comment, new DefaultReassignmentPredicatesFactory());
-    }
-
-    @Override
-    @Transactional
-    public void reassign(Card card, String state, List<CardRole> newRoles, List<CardRole> oldRoles, String comment,
-                         WfReassignmentPredicatesFactory predicatesFactory) {
         Preconditions.checkNotNull(card, "Card is null");
         Preconditions.checkState(newRoles != null && newRoles.size() > 0, "Roles list is empty");
         EntityManager em = persistence.getEntityManager();
         card = em.find(card.getClass(), card.getId());
         Multimap<User, Assignment> assignmentsMap = getAssignmentsMap(card, state);
-        CreateAssignmentForNewCardRolePredicate createPredicate = predicatesFactory.getCreateAssignmentForNewCardRolePredicate();
         for (CardRole cr : newRoles)
-            createAssignmentForNewCardRole(card, cr, state, assignmentsMap, oldRoles, createPredicate);
-        CloseAssignmentPredicate closePredicate = predicatesFactory.getCloseAssignmentPredicate();
-        closeCurrentAssignments(newRoles, assignmentsMap, comment, closePredicate);
+            createAssignmentForNewCardRole(card, cr, state, assignmentsMap, oldRoles);
+
+        closeCurrentAssignments(newRoles, assignmentsMap, comment);
     }
 
     protected Multimap<User, Assignment> getAssignmentsMap(Card card, String state) {
         Multimap<User, Assignment> assignmentsMap = ArrayListMultimap.create();
         for (Assignment assignment : getAssignmentsByState(card, state))
             assignmentsMap.put(assignment.getUser(), assignment);
+
         return assignmentsMap;
     }
 
     protected void createAssignmentForNewCardRole(Card card, CardRole cr, String state, Multimap<User, Assignment> assignmentsMap,
-                                                  List<CardRole> oldRoles, CreateAssignmentForNewCardRolePredicate predicate) {
+                                                  List<CardRole> oldRoles) {
         EntityManager em = persistence.getEntityManager();
-        if (predicate.apply(cr, assignmentsMap, oldRoles, null))
+        if (assignmentsMap.containsKey(cr.getUser())) {
+            if (needCreateAssignmentForCardRole(cr, assignmentsMap, oldRoles))
+                createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+        } else if (cr.getUser() != null) {
             createAssignment(card, em.find(cr.getClass(), cr.getId()), state);
+        }
     }
 
-    protected void closeCurrentAssignments(List<CardRole> newRoles, Multimap<User, Assignment> assignmentsMap,
-                                           String comment,  CloseAssignmentPredicate closePredicate) {
+    protected boolean needCreateAssignmentForCardRole(CardRole cr, Multimap<User, Assignment> assignmentsMap, List<CardRole> oldRoles) {
+        final Assignment lastAssignment = Collections.max(assignmentsMap.get(cr.getUser()), BY_CREATE_TS_COMPARATOR);
+        Predicate<CardRole> predicate = new Predicate<CardRole>() {
+            @Override
+            public boolean apply(@Nullable CardRole input) {
+                return input != null && ObjectUtils.equals(lastAssignment.getUser(), input.getUser());
+            }
+        };
+
+        return lastAssignment.getFinished() != null && !Iterables.any(oldRoles, predicate);
+    }
+
+    protected void closeCurrentAssignments(List<CardRole> newRoles, Multimap<User, Assignment> assignmentsMap, String comment) {
         Set<User> usersSet = new LinkedHashSet<>();
         for (CardRole cr : newRoles)
             usersSet.add(cr.getUser());
         for (Assignment assignment : assignmentsMap.values()) {
-            if (closePredicate.apply(usersSet, assignment, null)) {
+            if (!usersSet.contains(assignment.getUser()) && assignment.getFinished() == null) {
                 closeAssignment(assignment, createDummyCardRole(assignment, newRoles.get(0).getCode()), comment);
                 wfAssignmentWorker.removeTimers(assignment);
             }
@@ -204,9 +213,10 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
 
     /**
      * Create card role for notify user by email about close assignment
-     * Notification by card role won't be executed
+     * Notification by card role don't executed
      *
      * @param code - process role code
+     * @return
      */
     protected CardRole createDummyCardRole(Assignment assignment, String code) {
         CardRole cr = metadata.create(CardRole.class);
@@ -250,11 +260,9 @@ public class WfAssignmentServiceBean implements WfAssignmentService {
     @SuppressWarnings("unchecked")
     protected List<Assignment> loadAssignmentsByState(Card card, String state) {
         EntityManager em = persistence.getEntityManager();
-        Class assignmentEffectiveClass = metadata.getExtendedEntities().getEffectiveClass(Assignment.class);
-        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, assignmentEffectiveClass)
+        Query q = em.createQuery(FIND_ASSIGNMENTS_BY_STATE_QUERY, metadata.getExtendedEntities().getEffectiveClass(Assignment.class))
                 .setParameter("card", card)
-                .setParameter("state", state)
-                .setView(assignmentEffectiveClass,"reassignment");
+                .setParameter("state", state);
         return (List<Assignment>) q.getResultList();
     }
 
