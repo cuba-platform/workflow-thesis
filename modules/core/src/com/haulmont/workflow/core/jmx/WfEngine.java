@@ -13,11 +13,11 @@ import com.haulmont.workflow.core.app.WfEngineAPI;
 import com.haulmont.workflow.core.entity.Proc;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jbpm.api.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,8 +53,6 @@ public class WfEngine implements WfEngineMBean {
 
             tx.commit();
             return "Deployed process " + proc.getJbpmProcessKey();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
         }
@@ -83,8 +81,6 @@ public class WfEngine implements WfEngineMBean {
             }
             tx.commit();
             return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
         }
@@ -114,8 +110,8 @@ public class WfEngine implements WfEngineMBean {
             }
             tx.commit();
             return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read resource", e);
         } finally {
             tx.end();
         }
@@ -144,8 +140,6 @@ public class WfEngine implements WfEngineMBean {
             }
             tx.commit();
             return result;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
         }
@@ -165,8 +159,6 @@ public class WfEngine implements WfEngineMBean {
             ProcessInstance pi = es.startProcessInstanceByKey(key);
             tx.commit();
             return "ProcessInstance.id=" + pi.getId();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
         } finally {
             tx.end();
         }
