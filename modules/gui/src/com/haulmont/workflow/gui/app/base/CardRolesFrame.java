@@ -881,18 +881,6 @@ public class CardRolesFrame extends AbstractFrame {
         }
     }
 
-    protected boolean procActorExists(ProcRole procRole, User user) {
-        List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
-        if (cardRoles != null) {
-            for (CardRole cr : cardRoles) {
-                if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user) || user == null)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     protected boolean procActorExists(ProcRole procRole, User user, Integer sortOrder) {
         List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
         if (cardRoles != null) {
@@ -1279,8 +1267,9 @@ public class CardRolesFrame extends AbstractFrame {
 
                 User oldUser = cardRole.getUser();
                 Role secRole = cardRole.getProcRole().getRole();
+                Integer sortOrder = cardRole.getSortOrder();
                 for (User user : selectedUsers) {
-                    if (!procActorExists(cardRole.getProcRole(), user)
+                    if (!procActorExists(cardRole.getProcRole(), user, sortOrder)
                             || ((cardRole.getUser() != null) && cardRole.getUser().equals(user))) {
                         validUsers.add(user);
                         if ((secRole != null) && !(userInRole(user, secRole))) {
