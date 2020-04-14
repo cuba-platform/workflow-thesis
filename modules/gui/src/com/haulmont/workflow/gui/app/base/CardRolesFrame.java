@@ -862,8 +862,8 @@ public class CardRolesFrame extends AbstractFrame {
         }
         if (procRole == null)
             return;
-        if (procActorExists(procRole, user))
-            removeProcActor(procRole.getCode(), user);
+        if (procActorExists(procRole, user, sortOrder))
+            return;
         if (BooleanUtils.isTrue(procRole.getMultiUser())) {
             tmpCardRolesDs.addItem(createCardRole(procRole, user, sortOrder, notifyByEmail, notifyByCardInfo));
         } else {
@@ -886,6 +886,20 @@ public class CardRolesFrame extends AbstractFrame {
         if (cardRoles != null) {
             for (CardRole cr : cardRoles) {
                 if (procRole.equals(cr.getProcRole()) && (cr.getUser() != null && cr.getUser().equals(user) || user == null)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean procActorExists(ProcRole procRole, User user, Integer sortOrder) {
+        List<CardRole> cardRoles = getDsItems(tmpCardRolesDs);
+        if (cardRoles != null) {
+            for (CardRole cr : cardRoles) {
+                if (procRole.equals(cr.getProcRole())
+                        && (cr.getUser() != null && cr.getUser().equals(user) || user == null)
+                        && (Objects.equals(sortOrder, cr.getSortOrder()) || sortOrder == null)) {
                     return true;
                 }
             }
