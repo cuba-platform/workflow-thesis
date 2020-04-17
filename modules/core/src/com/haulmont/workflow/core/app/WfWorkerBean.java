@@ -118,7 +118,7 @@ public class WfWorkerBean implements WfWorkerAPI {
     public AssignmentInfo getAssignmentInfo(Assignment assignment, String processId, Card card) {
         Transaction tx = persistence.getTransaction();
         try {
-            AssignmentInfo info = new AssignmentInfo(assignment);
+            AssignmentInfo info = createAssignmentInfo(assignment);
             String activityName = assignment.getName();
             ProcessInstance pi = WfHelper.getExecutionService().findProcessInstanceById(processId);
             ProcessDefinitionQuery query = WfHelper.getRepositoryService().createProcessDefinitionQuery();
@@ -147,6 +147,10 @@ public class WfWorkerBean implements WfWorkerAPI {
         } finally {
             tx.end();
         }
+    }
+
+    protected AssignmentInfo createAssignmentInfo(Assignment assignment){
+        return new AssignmentInfo(assignment);
     }
 
     @SuppressWarnings("unused")
